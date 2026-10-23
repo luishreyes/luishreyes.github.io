@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 04 · Destilación por arrastre de vapor · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ---- Índice / sumario ---- */
+  .toc {
+    background: var(--papel); border-radius: 8px; padding: 26px 30px;
+    margin-top: 30px; border-left: 5px solid var(--verde);
+  }
+  .toc .toc-t { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 0 0 14px; }
+  .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; display: grid; gap: 9px; }
+  .toc li { counter-increment: toc; }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px; text-decoration: none;
+    color: var(--gris-1); font-size: 16.5px; font-weight: 600; padding: 4px 0;
+    border-bottom: 1px solid transparent; transition: color .18s ease;
+  }
+  .toc a::before { content: counter(toc, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 14px; min-width: 26px; }
+  .toc a:hover { color: var(--verde-osc); }
+
+  /* ---- Bloques / niveles (cards) ---- */
+  .blocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  figure.fig.full img { width: 100%; height: auto; display: block; }
+  .fig-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 22px; background: var(--blanco);
+    box-shadow: var(--sombra);
+  }
+  figure.fig figcaption {
+    font-size: 14px; color: var(--gris-2); line-height: 1.5; margin-top: 12px;
+    padding-left: 16px; border-left: 3px solid var(--verde);
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+
+  /* ===================== CITA / PULL-QUOTE ===================== */
+  blockquote.pull {
+    margin: 30px 0; padding: 34px 38px 30px 40px; position: relative;
+    background: var(--gris-1); color: #fff; border-radius: 8px; border-left: 8px solid var(--verde);
+  }
+  blockquote.pull p { font-size: 21px; line-height: 1.5; color: #fff; margin: 0 0 14px; font-weight: 500; }
+  blockquote.pull p:last-child { margin-bottom: 0; }
+  blockquote.pull .qmark {
+    position: absolute; top: 6px; left: 20px; font-size: 80px; line-height: 1;
+    color: var(--verde); font-family: Georgia, serif; opacity: .5;
+  }
+  blockquote.pull cite { display: block; font-style: normal; font-size: 14.5px; color: rgba(255,255,255,.6); margin-top: 16px; }
+  blockquote.pull cite b { color: var(--verde); font-weight: 600; }
+
+  /* ===================== TIMELINE ===================== */
+  .timeline { margin: 26px 0 10px; position: relative; padding-left: 6px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 78px; top: 8px; bottom: 8px; width: 2px; background: var(--gris-4);
+  }
+  .tl-item { display: grid; grid-template-columns: 70px 1fr; gap: 26px; padding: 12px 0; position: relative; }
+  .tl-year { font-size: 21px; font-weight: 700; color: var(--verde-osc); text-align: right; line-height: 1.3; }
+  .tl-dot {
+    position: absolute; left: 73px; top: 18px; width: 13px; height: 13px; border-radius: 50%;
+    background: var(--verde); border: 3px solid var(--blanco); box-shadow: 0 0 0 1px var(--gris-4);
+  }
+  .tl-body { padding-left: 22px; }
+  .tl-body b { font-size: 16.5px; line-height: 1.25; display: block; }
+  .tl-body span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 620px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); width: 22%; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+
+  /* ===================== GALERÍA DE SÍMBOLOS ===================== */
+  .gallery {
+    border: 1px solid var(--gris-4); border-radius: 12px; overflow: hidden;
+    margin: 28px 0 8px; background: var(--blanco); box-shadow: var(--sombra);
+  }
+  .gal-head {
+    background: var(--gris-1); color: #fff; padding: 18px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  .gal-head .gt { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--verde); }
+  .gal-head .gt b { display: block; color: #fff; font-size: 19px; letter-spacing: -.01em; text-transform: none; margin-top: 4px; }
+  .gal-count { font-size: 13px; color: rgba(255,255,255,.6); font-weight: 600; white-space: nowrap; }
+  .gal-count b { color: var(--verde); }
+  .gal-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 24px 0; }
+  .gal-tab {
+    font-family: var(--tipo); font-size: 13.5px; font-weight: 600; color: var(--gris-2);
+    background: var(--papel); border: 1.5px solid var(--gris-4); border-radius: 999px;
+    padding: 8px 16px; cursor: pointer; transition: all .18s ease; white-space: nowrap;
+  }
+  .gal-tab:hover { color: var(--gris-1); border-color: var(--gris-3); }
+  .gal-tab.is-active { background: var(--verde); border-color: var(--verde); color: #fff; }
+  .gal-stage { padding: 20px 24px 8px; }
+  .gal-panel { display: none; }
+  .gal-panel.is-active { display: block; animation: galfade .35s ease; }
+  @keyframes galfade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .gal-imgwrap {
+    border: 1px solid var(--gris-4); border-radius: 8px; background: #fff;
+    padding: 20px; display: flex; align-items: center; justify-content: center;
+  }
+  .gal-imgwrap img { width: 100%; height: auto; display: block; max-height: 460px; object-fit: contain; }
+  .gal-lead { font-size: 15.5px; color: var(--gris-2); line-height: 1.5; margin: 16px 0 4px; }
+  .gal-lead b { color: var(--gris-1); }
+  .gal-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 22px; margin: 14px 0 6px;
+  }
+  .gal-item { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--gris-4); align-items: start; }
+  .gal-item .lt {
+    width: 26px; height: 26px; border-radius: 6px; background: var(--verde-claro); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px;
+  }
+  .gal-item .nm { font-size: 15px; line-height: 1.35; }
+  .gal-item .nm b { color: var(--gris-1); font-weight: 700; display: block; }
+  .gal-item .nm span { color: var(--gris-2); font-size: 13.5px; }
+  .gal-nav { display: flex; align-items: center; justify-content: space-between; padding: 6px 24px 20px; }
+  .gal-btn {
+    font-family: var(--tipo); font-size: 14px; font-weight: 600; color: var(--gris-1);
+    background: var(--papel); border: 1.5px solid var(--gris-4); border-radius: 999px;
+    padding: 9px 18px; cursor: pointer; transition: all .18s ease; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .gal-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .gal-dots { display: flex; gap: 7px; }
+  .gal-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gris-4); cursor: pointer; transition: background .18s ease; border: none; padding: 0; }
+  .gal-dot.is-active { background: var(--verde); }
+  .gal-src { font-size: 13px; color: var(--gris-3); padding: 0 24px 18px; }
+
+  /* ===================== DOCUMENTOS / NORMAS ===================== */
+  .docs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 24px 0 8px; }
+  .doccard {
+    display: grid; grid-template-columns: 46px 1fr; gap: 16px; align-items: start;
+    text-decoration: none; color: inherit; background: var(--papel);
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 18px 20px;
+    transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  .doccard:hover { border-color: var(--verde); transform: translateY(-2px); box-shadow: var(--sombra); }
+  .doccard .dic {
+    width: 46px; height: 56px; border-radius: 5px; background: var(--blanco);
+    border: 1.5px solid var(--gris-4); position: relative; display: inline-flex;
+    align-items: flex-end; justify-content: center; padding-bottom: 7px;
+  }
+  .doccard .dic::before { content: ""; position: absolute; top: 0; right: 0; width: 14px; height: 14px; background: var(--gris-4); clip-path: polygon(0 0, 100% 100%, 0 100%); border-bottom-left-radius: 3px; }
+  .doccard .dic span { font-size: 9px; font-weight: 800; letter-spacing: .04em; color: #fff; background: var(--verde); padding: 2px 5px; border-radius: 3px; }
+  .doccard .dtxt b { display: block; font-size: 15.5px; line-height: 1.3; color: var(--gris-1); }
+  .doccard .dtxt span { display: block; font-size: 13.5px; color: var(--gris-2); margin-top: 4px; line-height: 1.45; }
+  .doccard .dtxt em { display: inline-block; font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--verde-osc); margin-top: 8px; letter-spacing: .03em; }
+
+  /* ===================== CITAS INTERACTIVAS ===================== */
+  .cite {
+    display: inline-block; font-size: .62em; font-weight: 700; line-height: 0;
+    vertical-align: super; color: #fff; background: var(--verde);
+    min-width: 1.55em; height: 1.55em; padding: 0 .35em; border-radius: 999px;
+    text-align: center; cursor: pointer; margin: 0 .5px 0 1px;
+    transition: background .15s ease, transform .15s ease;
+    position: relative; top: -.15em;
+    -webkit-user-select: none; user-select: none;
+  }
+  .cite::after { content: attr(data-n); display: inline-block; line-height: 1.55em; }
+  .cite:hover, .cite:focus, .cite.is-open { background: var(--verde-osc); transform: translateY(-1px); outline: none; }
+  .cite + .cite { margin-left: 2.5px; }
+  .nbk { white-space: nowrap; }
+
+  /* Popover */
+  .ref-pop {
+    position: fixed; z-index: 250; max-width: 360px; width: max-content;
+    background: var(--blanco); border: 1px solid var(--gris-4); border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12), 0 18px 48px rgba(0,0,0,.16);
+    padding: 16px 18px 15px; opacity: 0; transform: translateY(6px) scale(.98);
+    pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+  }
+  .ref-pop.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .ref-pop .rp-head {
+    display: flex; align-items: center; gap: 9px; margin-bottom: 9px;
+    font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc);
+  }
+  .ref-pop .rp-num {
+    background: var(--verde); color: #fff; min-width: 20px; height: 20px; border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 11px;
+  }
+  .ref-pop .rp-body { font-size: 14px; line-height: 1.5; color: var(--gris-1); }
+  .ref-pop .rp-body i { color: var(--gris-2); }
+  .ref-pop .rp-body a { color: var(--teal); word-break: break-word; }
+  .ref-pop::before, .ref-pop::after {
+    content: ""; position: absolute; left: var(--arrow, 50%); transform: translateX(-50%);
+    border: 9px solid transparent; width: 0; height: 0;
+  }
+  .ref-pop.below::before { top: -18px; border-bottom-color: var(--gris-4); }
+  .ref-pop.below::after  { top: -16px; border-bottom-color: var(--blanco); }
+  .ref-pop.above::before { bottom: -18px; border-top-color: var(--gris-4); }
+  .ref-pop.above::after  { bottom: -16px; border-top-color: var(--blanco); }
+
+  /* ===================== REFERENCIAS ===================== */
+  .refhint {
+    display: inline-flex; align-items: center; gap: 9px; background: var(--verde-claro);
+    border-radius: 999px; padding: 8px 16px 8px 12px; font-size: 14px; color: var(--verde-osc);
+    font-weight: 600; margin-top: 6px;
+  }
+  .refhint .dot { width: 1.5em; height: 1.5em; border-radius: 999px; background: var(--verde); color:#fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  ol.refs { list-style: none; counter-reset: ref; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+  ol.refs li {
+    counter-increment: ref; position: relative; padding: 12px 16px 12px 58px; border-radius: 8px;
+    font-size: 15px; line-height: 1.5; color: var(--gris-1);
+    scroll-margin-top: 16px; transition: background .25s ease;
+  }
+  ol.refs li::before {
+    content: counter(ref); position: absolute; left: 14px; top: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px; background: var(--papel); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700;
+  }
+  ol.refs li i { color: var(--gris-2); }
+  ol.refs li a { color: var(--teal); word-break: break-word; }
+  ol.refs li.flash { background: var(--verde-claro); }
+  ol.refs li.flash::before { background: var(--verde); color: #fff; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .blocks { grid-template-columns: 1fr; }
+    .gal-grid, .docs { grid-template-columns: 1fr; }
+    .doc-head h1 { font-size: 28px; max-width: none; }
+    .doc-head .subtitle { font-size: 17px; }
+    .doc-head .badge { font-size: 11px; padding: 5px 11px; }
+    .fig-frame { padding: 10px; }
+    .gal-head .gt b { font-size: 17px; }
+  }
+  @media (max-width: 480px) {
+    .doc-head { padding: 28px 16px 28px; }
+    .doc-body { padding-left: 16px; padding-right: 16px; }
+    .doc-head h1 { font-size: 24px; }
+    .doc-head .subtitle { font-size: 15px; }
+    .doc-meta { grid-template-columns: 1fr; gap: 10px; }
+    .fig-frame { padding: 4px; }
+    .callout { grid-template-columns: 32px 1fr; gap: 12px; padding: 14px 16px; }
+    .callout .ic { width: 32px; height: 32px; font-size: 16px; }
+  }
+
+  /* ---- Lightbox (tap-to-zoom) ---- */
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.88);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    cursor: zoom-out; padding: 12px; -webkit-tap-highlight-color: transparent;
+  }
+  .lightbox-overlay.is-open { opacity: 1; pointer-events: auto; }
+  .lightbox-overlay img {
+    max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;
+    transform: scale(.95); transition: transform .25s ease;
+  }
+  .lightbox-overlay.is-open img { transform: scale(1); }
+  .fig-frame img { cursor: zoom-in; }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, figure.fig, .blocks, .timeline, .tbl-wrap, blockquote.pull, .callout, .gallery, .docs { break-inside: avoid; }
+    .gal-panel { display: block !important; page-break-inside: avoid; }
+    .gal-tabs, .gal-nav { display: none; }
+    .cite { background: none !important; color: var(--verde-osc) !important; vertical-align: super; }
+    .cite::after { content: "[" attr(data-n) "]"; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+
+  /* ===================== QA RESPONSIVE FIXES ===================== */
+  /* Imágenes: nunca desbordar el contenedor, aun con max-width inline */
+  .fig-frame img { max-width: 100% !important; height: auto !important; }
+  /* Imágenes de la galería de símbolos: nunca desbordar */
+  .gal-imgwrap img { max-width: 100% !important; height: auto !important; }
+  /* SVG de widgets interactivos: nunca desbordar */
+  .calc-wrap svg, .chart-layout svg { max-width: 100%; }
+
+  /* ---- Ecuaciones compuestas en SVG (Plantillas/tools/math-svg.mjs) ---- */
+  .fml { overflow-x: auto; line-height: 1; margin: 22px 0; }
+  .fml svg { display: block; margin: 0 auto; max-width: 100%; height: auto; vertical-align: baseline; }
+  .fml svg + svg { margin-top: 14px; }
+  .fml-lead { text-align: center; font-size: 14.5px; margin: 18px 0 -2px; }
+  .tex svg { display: inline-block; vertical-align: -0.12em; max-width: 100%; }
+
+  /* ---- Objetivos de aprendizaje (como en la Lectura 01) ---- */
+  .obj-list {
+    list-style: none; padding: 0; margin: 22px 0;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;
+  }
+  .obj-list li {
+    display: flex; align-items: flex-start; gap: 10px; font-size: 15px;
+    padding: 10px 14px; background: var(--verde-claro); border-radius: 6px;
+    color: var(--gris-1); line-height: 1.45;
+  }
+  .obj-list li::before {
+    content: ''; display: block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--verde); flex-shrink: 0; margin-top: 6px;
+  }
+
+  /* ===================== ECUACIONES (KaTeX autoalojado) ===================== */
+  .eqbox {
+    background: var(--papel); border-radius: 8px; padding: 18px 24px;
+    margin: 22px 0 6px; border-left: 5px solid var(--verde);
+    text-align: center; font-size: 19px; overflow-x: auto;
+  }
+  .eqbox .katex-display { margin: 0; }
+  .doc-body .katex { font-size: 1.06em; }
+
+  /* ===================== DIAGRAMAS (SVG propios) =====================
+     Las tres figuras salen del caso HDS del Manual de diagramas del curso:
+     mismas etiquetas, mismas corrientes, mismos números. */
+  .doc-body .fig-frame.dg-frame { background: #fff; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  svg.dg { width: 100%; height: auto; display: block; overflow: visible; font-family: var(--tipo); }
+  svg.dg text { fill: var(--navy); font-variant-numeric: tabular-nums; }
+  svg.dg .k { fill: none; stroke: var(--navy); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  svg.dg .kf { fill: #fff; stroke: var(--navy); stroke-width: 2; stroke-linejoin: round; }
+  svg.dg .kt { fill: none; stroke: var(--navy); stroke-width: 1.3; }
+  svg.dg .fi { fill: var(--navy); stroke: none; }
+  svg.dg .proc { fill: none; stroke: var(--navy); stroke-width: 2.6; stroke-linejoin: round; }
+  svg.dg .proc2 { fill: none; stroke: var(--navy); stroke-width: 1.8; stroke-linejoin: round; }
+  svg.dg .util { fill: none; stroke: var(--navy); stroke-width: 1.7; stroke-linejoin: round; }
+  svg.dg .sig { fill: none; stroke: var(--navy); stroke-width: 1.3; stroke-dasharray: 6 4; }
+  svg.dg .sigs { fill: none; stroke: var(--navy); stroke-width: 1.3; }
+  svg.dg .imp { fill: none; stroke: var(--navy); stroke-width: 1.1; }
+  svg.dg .blk { fill: #fff; stroke: var(--navy); stroke-width: 2.5; }
+  /* El separador V-201 va marcado en amarillo en las tres figuras: es el mismo equipo. */
+  svg.dg .blk.marca, svg.dg .marca .kf { fill: var(--amarillo); }
+  svg.dg .muted { fill: var(--gris-2); }
+  svg.dg .annot { fill: var(--oliva); font-weight: 700; }
+  svg.dg .lbl { font-size: 15px; font-weight: 600; }
+  svg.dg .lbl-b { font-size: 18px; font-weight: 600; }
+  svg.dg .lbl-s { font-size: 13.5px; font-weight: 500; }
+  svg.dg .lbl-m { font-size: 15px; font-weight: 600; letter-spacing: .01em; }
+  svg.dg .lbl-ms { font-size: 12.5px; font-weight: 600; }
+  svg.dg .bub-t { font-size: 12px; font-weight: 700; text-anchor: middle; }
+  svg.dg .bub-n { font-size: 10px; font-weight: 600; text-anchor: middle; }
+  svg.dg .dmd-t { font-size: 12.5px; font-weight: 700; text-anchor: middle; }
+  svg.dg .sb { font-size: .72em; }
+  .doc-body p.dg-hint { display: none; font-size: 14px; line-height: 1.45; color: var(--gris-2); margin: 8px 0 0; }
+  @media (max-width: 760px) {
+    svg.dg { min-width: 700px; }
+    svg.dg#fig-pfd { min-width: 980px; }
+    .doc-body p.dg-hint { display: block; }
+    .eqbox { font-size: 15px; padding: 14px 10px; }
+  }
+  @media (min-width: 761px) { .fig-frame svg.dg { cursor: zoom-in; } }
+
+  /* ---- Tabla de corrientes: una fila por corriente ---- */
+  table.ou.corr { min-width: 900px; font-size: 14px; }
+  table.ou.corr th, table.ou.corr td { padding: 10px 10px; }
+  table.ou.corr td:first-child { width: auto; text-align: center; }
+  table.ou.corr .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  table.ou.corr td.sim { background: var(--papel); color: var(--gris-2); font-style: italic; vertical-align: middle; text-align: center; }
+  table.ou.cod td:first-child { width: 12%; }
+
+  /* ---- Nombres de plataformas: siempre enlazados ---- */
+  a.platform-link { color: inherit; text-decoration: none; border-bottom: 2px solid var(--amarillo); }
+  a.platform-link::after { content: " \2197"; font-size: .7em; opacity: .6; }
+
+  /* ---- Lightbox también para los diagramas SVG (pantallas anchas) ---- */
+  .lightbox-overlay .lb-svg { display: none; width: min(96vw, 1700px); max-height: 94vh; overflow: auto; background: #fff; padding: 14px; }
+  .lightbox-overlay.con-svg .lb-svg { display: block; }
+  .lightbox-overlay.con-svg img { display: none; }
+  .lb-svg svg.dg { min-width: 0 !important; cursor: zoom-out; }
+
+  /* ===================== LECTURA 04: piezas que trae de la colección =====================
+     Variables de las ecuaciones, video de Manim y moléculas (Lectura 01); calculadoras,
+     tarjetas en vivo y ejemplo paso a paso (lecturas de 2026-20, Lectura_12). */
+  .vardefs { list-style: none; padding: 0; margin: 14px 0 18px; display: grid; gap: 6px; }
+  .vardefs li { font-size: 15.5px; color: var(--gris-1); line-height: 1.45; padding-left: 16px; position: relative; }
+  .vardefs li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; border-radius: 2px; background: var(--verde); }
+  figure.fig video { width: 100%; height: auto; display: block; background: #fff; }
+  .img-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0 8px; }
+  @media (max-width: 600px) { .img-grid { grid-template-columns: 1fr; } }
+
+  /* Moléculas: las tres comparten escala (enlace de 34 px), como en la Lectura 01. */
+  .moleculas { container-type: inline-size; }
+  .moleculas .mol-marco { background: #fff; padding: 22px 22px 6px; }
+  .moleculas .mol-titulo { font-weight: 600; margin: 0 0 14px; line-height: 1.3; }
+  .moleculas .mol-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 24px; margin: 0 0 24px; }
+  .moleculas .mol { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+  .moleculas .mol-img { height: calc(136 * min(1px, 28cqi / 310)); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; max-width: 100%; }
+  figure.moleculas .mol .mol-img img { width: calc(var(--w) * min(1px, 28cqi / 310)); max-width: 100%; height: auto; display: block; }
+  .moleculas .mol b { font-weight: 600; line-height: 1.25; }
+  .moleculas .mol-form { color: #525C64; font-size: .9em; }
+  @container (max-width: 520px) {
+    .moleculas .mol-fila { grid-template-columns: 1fr; }
+    .moleculas .mol-img { height: calc(136 * min(1px, 60cqi / 310)); }
+    figure.moleculas .mol .mol-img img { width: calc(var(--w) * min(1px, 60cqi / 310)); }
+  }
+
+  /* ===================== CALCULADORAS / GRÁFICAS ===================== */
+  .calc-wrap {
+    margin: 26px 0 8px; border: 1px solid var(--gris-4); border-radius: 10px;
+    background: var(--blanco); padding: 22px 24px; box-shadow: var(--sombra);
+  }
+  .calc-wrap h4 { font-size: 17px; font-weight: 700; color: var(--gris-1); margin: 0 0 4px; }
+  .calc-sub { font-size: 14px; color: var(--gris-2); margin: 0 0 16px; }
+  .calc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px 22px; }
+  .calc-field { display: flex; flex-direction: column; gap: 4px; }
+  .calc-field-header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14px; }
+  .calc-field-header span { color: var(--gris-2); font-weight: 600; }
+  .calc-field-header b { color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; font-size: 12.5px; }
+  .calc-field input[type=range] { width: 100%; accent-color: var(--verde); }
+  .calc-field select, .calc-field input[type=text] {
+    width: 100%; border: 1px solid var(--gris-4); border-radius: 4px; box-sizing: border-box;
+    padding: 7px 10px; font-family: var(--tipo); font-size: 15px; color: var(--gris-1); background: #fff;
+  }
+  .calc-field input[type=text] { font-variant-numeric: tabular-nums; }
+  .calc-field select:focus, .calc-field input[type=text]:focus { outline: 2px solid var(--verde); outline-offset: 1px; border-color: var(--verde); }
+  .calc-field input.fuera { border-color: var(--ambar); }
+  .calc-note { font-size: 13.5px; color: var(--gris-3); font-style: italic; margin-top: 14px; overflow-x: auto; }
+  .calc-aviso { font-size: 14px; color: var(--gris-1); background: #fdf1e2; border-left: 4px solid var(--ambar); padding: 8px 12px; margin: 12px 0 0; display: none; }
+  .calc-aviso.on { display: block; }
+  .chart-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; align-items: start; margin-bottom: 14px; }
+  @media (max-width: 760px) { .chart-layout { grid-template-columns: 1fr; } }
+  .chart-controls { display: flex; flex-direction: column; gap: 12px; }
+  .chart-box { min-width: 0; }
+  .chart-box + .chart-box { margin-top: 14px; }
+  .chart-cap { font-size: 13px; font-weight: 700; color: var(--gris-2); letter-spacing: .02em; margin: 0 0 4px; }
+
+  /* Casos preestablecidos */
+  .su-criteria { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .su-btn {
+    font-family: var(--tipo); font-size: 13px; font-weight: 600;
+    padding: 7px 14px; border: 1.5px solid var(--gris-4); border-radius: 999px;
+    cursor: pointer; background: #fff; color: var(--gris-2); transition: all .18s ease;
+  }
+  .su-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .su-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .su-btn:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+  /* Tarjetas de resultados en vivo */
+  .live-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 6px; }
+  @media (max-width: 640px) { .live-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 420px) { .live-grid { grid-template-columns: 1fr; } }
+  .live-card { border-radius: 8px; padding: 13px 16px; background: var(--papel); }
+  .live-card-label { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gris-2); margin-bottom: 4px; }
+  .live-card-value { font-size: 18px; font-weight: 700; color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; line-height: 1.2; }
+  .live-card-note { font-size: 12px; color: var(--gris-3); margin-top: 3px; line-height: 1.35; }
+  .live-card.green { background: var(--verde-claro); }
+  .live-card.highlight { background: var(--verde-claro); border: 1px solid var(--verde); }
+
+  /* Gráficas de las calculadoras: se dibujan al ancho real de su caja, así la letra no se encoge. */
+  svg.plot { width: 100%; height: auto; display: block; font-family: var(--tipo); overflow: visible; }
+  svg.plot text { fill: var(--gris-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+  svg.plot .ax { stroke: var(--gris-2); stroke-width: 1.4; fill: none; }
+  svg.plot .rej { stroke: var(--gris-4); stroke-width: 1; fill: none; }
+  svg.plot .c-tot { stroke: var(--navy); stroke-width: 3; fill: none; }
+  svg.plot .c-lav { stroke: var(--oliva); stroke-width: 2.2; fill: none; }
+  svg.plot .c-dif { stroke: var(--navy); stroke-width: 2; fill: none; stroke-dasharray: 6 5; }
+  svg.plot .c-gris { stroke: var(--gris-2); stroke-width: 2; fill: none; stroke-dasharray: 3 4; }
+  svg.plot .c-eq { stroke: var(--gris-2); stroke-width: 1.6; fill: none; stroke-dasharray: 8 5; }
+  svg.plot .banda { fill: var(--amarillo); opacity: .45; }
+  svg.plot .pt { fill: var(--amarillo); stroke: var(--navy); stroke-width: 2; }
+  svg.plot .pt-o { fill: #fff; stroke: var(--oliva); stroke-width: 2; }
+  svg.plot .et { fill: var(--gris-1); font-size: 13px; font-weight: 600; }
+  svg.plot .et-o { fill: var(--oliva-osc); font-size: 13px; font-weight: 600; }
+  svg.plot .s1 { stroke: var(--navy); }
+  svg.plot .s2 { stroke: var(--oliva); }
+  svg.plot .s3 { stroke: var(--gris-2); stroke-dasharray: 6 4; }
+  svg.plot .p1 { fill: var(--navy); }
+  svg.plot .p2 { fill: var(--oliva); }
+  svg.plot .p3 { fill: #fff; stroke: var(--gris-2); stroke-width: 1.5; }
+  .leyenda { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--gris-2); margin: 6px 0 0; }
+  .leyenda span { display: inline-flex; align-items: center; gap: 7px; }
+  .leyenda i { display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--navy); }
+  .leyenda i.l2 { border-top-color: var(--oliva); }
+  .leyenda i.l3 { border-top: 2px dashed var(--gris-2); }
+  .leyenda i.l4 { border-top: 2px dashed var(--navy); }
+
+  /* ===================== EJEMPLO PASO A PASO ===================== */
+  .stepper { margin: 26px 0 8px; }
+  .step-track { display: flex; gap: 0; margin-bottom: 22px; overflow-x: auto; padding-bottom: 4px; }
+  .step-pip { display: flex; align-items: center; flex-shrink: 0; }
+  .step-dot {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--gris-4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--gris-3); background: #fff;
+    cursor: pointer; transition: all .2s; flex-shrink: 0; font-family: var(--tipo);
+  }
+  .step-dot.done { border-color: var(--verde); background: var(--verde-claro); color: var(--verde-osc); }
+  .step-dot.active { border-color: var(--navy); background: var(--amarillo); color: var(--navy); }
+  .step-line { flex: 1; height: 2px; background: var(--gris-4); min-width: 18px; }
+  .step-line.done { background: var(--verde); }
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+  .step-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .step-num { font-size: 28px; font-weight: 900; color: var(--verde); line-height: 1; }
+  .step-title { font-size: 18px; font-weight: 700; color: var(--gris-1); }
+  .step-body p { margin-bottom: 10px; }
+  .step-nav { display: flex; gap: 8px; margin-top: 14px; justify-content: space-between; align-items: center; }
+  .step-nav button {
+    font-family: var(--tipo); font-size: 14px; font-weight: 600;
+    padding: 8px 18px; border-radius: 6px; cursor: pointer; border: 1.5px solid var(--verde);
+    transition: all .15s;
+  }
+  .step-nav button:focus-visible, .step-dot:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+  .step-prev { background: #fff; color: var(--verde-osc); }
+  .step-prev:hover { background: var(--verde-claro); }
+  .step-next { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .step-next:hover { background: var(--verde-osc); }
+  .step-count { font-size: 13.5px; color: var(--gris-2); }
+  .we-result {
+    background: var(--verde-claro); border-radius: 6px; padding: 10px 14px;
+    margin-top: 8px; font-weight: 700; color: var(--verde-osc); font-size: 15px;
+  }
+  @media print {
+    .step-panel { display: block !important; break-inside: avoid; }
+    .step-track, .step-nav, .su-criteria { display: none; }
+  }
+
+  /* Figuras de esta lectura: más altas que anchas en el celular, sin deslizar. */
+  svg.dg.angosta { min-width: 0 !important; }
+  .tbl-wrap table.ou.datos td:first-child { width: auto; }
+  table.ou.datos td, table.ou.datos th { white-space: nowrap; }
+  table.ou.datos .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .descargas { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 6px; }
+  a.boton-dl {
+    display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px;
+    padding: 10px 16px; background: var(--navy); color: #fff !important; text-decoration: none;
+  }
+  a.boton-dl:hover { background: #0E141D; }
+  a.boton-dl svg { width: 1.05em; height: 1.05em; }
+  .doc-body pre.codigo {
+    background: var(--navy); color: #EDEFF2; padding: 14px 18px; overflow-x: auto; font-size: 14px; line-height: 1.5;
+    font-family: 'JetBrains Mono Variable', ui-monospace, monospace; margin: 12px 0 18px;
+  }
+</style>
+<link rel="stylesheet" href="assets/lectura-curso.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add('incrustado');</script>
+</head>
+<body>
+<header class="barra"><span class="marca">Uniandes · <span class="nbk">IQYA-203</span>1</span><span class="cual">Lectura 04 · Destilación por arrastre de vapor</span></header>
+
+<!-- Puntas de flecha compartidas por los diagramas -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#19222F"/></marker>
+    <marker id="ars" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#19222F"/></marker>
+    <marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6E6A00"/></marker>
+    <pattern id="aisl" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#525C64" stroke-width="1.2"/></pattern>
+  </defs>
+</svg>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Para qué sirve y de dónde viene</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Dos líquidos que no se mezclan</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Tres formas de destilar</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Lo que manda: la hidrodifusión</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Rendimiento contra tiempo</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Variables de diseño</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>El equipo</a>
+  <a href="#s8" class="sn-item"><span class="sn-num">08</span>Del ensayo al extractor</a>
+  <a href="#s9" class="sn-item"><span class="sn-num">09</span>Los datos del curso</a>
+  <a href="#s10" class="sn-item"><span class="sn-num">10</span>Conclusiones</a>
+  <a href="#s11" class="sn-item"><span class="sn-num">11</span>Referencias</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Lectura 04 · Proyecto de Operaciones Unitarias</div>
+    <h1>Destilación por arrastre de vapor</h1>
+    <p class="subtitle">Por qué un aceite que hierve a 176 °C sale con el vapor por debajo de 100 °C, por qué la planta saca decenas de veces menos aceite del que permite el equilibrio y cómo se dimensiona un extractor a partir de un ensayo.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · <span class="nbk">IQYA-203</span>1</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Semana</b>4 · Módulo 3</div>
+      <div><b>Lectura</b>Aproximadamente 45 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO + TOC -->
+    <section id="s0">
+      <p class="lead">El arrastre de vapor es la operación con que la industria saca de las plantas los aceites que huelen a lavanda, a menta, a eucalipto o a clavo. <b>Se apoya en un equilibrio sencillo, el de dos líquidos que no se mezclan, y en un fenómeno de transporte que en la práctica manda más que el equilibrio: la hidrodifusión.</b> Esta lectura recorre los dos y termina en lo que el ingeniero necesita para diseñar, que es convertir un ensayo de rendimiento contra tiempo en un extractor con su carga, su caudal de vapor y su tiempo de lote.</p>
+
+      <ul class="obj-list" aria-label="Objetivos de aprendizaje">
+        <li>Explicar por qué una mezcla de agua y un aceite inmiscible hierve por debajo de la temperatura de ebullición de cada líquido, y calcular esa temperatura con Antoine a cualquier presión</li>
+        <li>Aplicar la regla de las fases al sistema de dos líquidos inmiscibles con su vapor</li>
+        <li>Calcular la relación de equilibrio entre la masa de aceite y la de vapor</li>
+        <li>Comparar la hidrodestilación, la destilación con agua y vapor y el arrastre con vapor vivo</li>
+        <li>Describir la hidrodifusión y explicar por qué la relación real de aceite por kilo de vapor queda decenas de veces por debajo de la de equilibrio</li>
+        <li>Ajustar e interpretar los modelos de primer orden y de dos etapas en un ensayo de rendimiento contra tiempo</li>
+        <li>Dimensionar un extractor de lecho fijo a partir de un ensayo piloto: carga por lote, lecho, caudal de vapor, tiempo de lote y lotes por día</li>
+      </ul>
+
+      <div class="toc">
+        <p class="toc-t">En esta lectura</p>
+        <ol>
+          <li><a href="#s1">Para qué sirve el arrastre de vapor y de dónde viene</a></li>
+          <li><a href="#s2">El equilibrio de dos líquidos que no se mezclan</a></li>
+          <li><a href="#s3">Tres formas de destilar una planta</a></li>
+          <li><a href="#s4">Lo que manda en la práctica: la hidrodifusión</a></li>
+          <li><a href="#s5">Modelos de rendimiento contra tiempo</a></li>
+          <li><a href="#s6">Variables de diseño y de operación</a></li>
+          <li><a href="#s7">El equipo</a></li>
+          <li><a href="#s8">Del ensayo al extractor: ejemplo resuelto</a></li>
+          <li><a href="#s9">Los datos del curso</a></li>
+          <li><a href="#s10">Conclusiones</a></li>
+          <li><a href="#s11">Referencias</a></li>
+        </ol>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Sobre las referencias de esta lectura</b><p>A lo largo del texto encontrará marcadores numerados como este<span class="cite" data-ref="6" data-n="6" tabindex="0"></span>. Pase el cursor por encima (o tóquelo) y aparecerá la fuente completa. El listado ordenado vive al final, en <a href="#s11" style="color:var(--teal)">Referencias</a>. La <a href="#s9" style="color:var(--teal)">sección 9</a> presenta el conjunto de datos de rendimiento contra tiempo que el curso publica con esta lectura.</p></div>
+      </div>
+    </section>
+
+    <!-- 1. PARA QUÉ SIRVE -->
+    <section id="s1">
+      <div class="eyebrow">Punto de partida</div>
+      <h2 class="sec"><span class="secnum">1.</span> Para qué sirve el arrastre de vapor y de dónde viene</h2>
+      <p>Buena parte de los compuestos que dan aroma a las plantas son líquidos orgánicos que hierven entre 150 y 260 °C y que casi no se disuelven en agua. Llevarlos a su punto de ebullición para destilarlos los dañaría: se oxidan, se isomerizan, se polimerizan o se hidrolizan, y el aceite pierde justo lo que lo hace valioso. El arrastre de vapor resuelve el problema por un camino lateral. En lugar de calentar el aceite hasta que hierva solo, lo pone en contacto con vapor de agua, y la mezcla de los dos hierve por debajo de 100 °C a presión atmosférica. El vapor se lleva el aceite, se condensa, y como los dos líquidos no se mezclan, el aceite se separa del agua por densidad.</p>
+
+      <p>Con ese principio trabajan industrias muy distintas:</p>
+      <ul>
+        <li><b>Aceites esenciales.</b> Es el uso principal. Se destilan hojas, flores, semillas, cortezas, raíces y frutos: lavanda, menta, eucalipto, romero, clavo, cilantro, cítricos y cientos de especies más. Tosta Machado y sus colegas estiman que más del 93 % del volumen mundial de aceites esenciales se obtiene por destilación con vapor<span class="cite" data-ref="12" data-n="12" tabindex="0"></span>.</li>
+        <li><b>Sabores y fragancias.</b> Los aceites son materia prima de la perfumería, de los alimentos y bebidas, de los productos de aseo y de la farmacia. El agua condensada que sale con ellos, el hidrolato, también se vende: el agua de rosas es un hidrolato.</li>
+        <li><b>Purificación de compuestos orgánicos.</b> En el laboratorio y en la química fina se usa para separar un compuesto de alto punto de ebullición, inmiscible con agua, de impurezas que no son volátiles, sin llevarlo a la temperatura a la que se degrada. Treybal lo ilustra con la etilanilina<span class="cite" data-ref="13" data-n="13" tabindex="0"></span>, y es una práctica clásica de química orgánica aislar así el eugenol del clavo o el limoneno de la cáscara de naranja.</li>
+        <li><b>Parientes industriales.</b> El despojamiento con vapor (<i>steam stripping</i>) usa el mismo efecto, la presión parcial que el vapor le quita al volátil, para sacar ácidos grasos libres y olores de los aceites vegetales en la desodorización, o solventes de una corriente líquida.</li>
+      </ul>
+
+      <p class="tbl-cap"><b>Tabla 1.</b> Algunos aceites esenciales que se obtienen por destilación. Se dan los componentes principales y la práctica habitual, sin rendimientos: el contenido de aceite cambia con la variedad, la cosecha y el método, y en un diseño se mide.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead><tr><th>Material</th><th>Parte que se destila</th><th>Componentes principales</th><th>Cómo se destila y por qué</th></tr></thead>
+          <tbody>
+            <tr><td>Lavanda</td><td>Sumidades florales</td><td>Linalol, acetato de linalilo</td><td>Vapor vivo. El agua hirviendo prolongada hidroliza el acetato de linalilo, que es el éster que da calidad al aceite.</td></tr>
+            <tr><td>Menta piperita</td><td>Hojas y tallos</td><td>Mentol, mentona</td><td>Vapor vivo. El aceite está en tricomas glandulares sobre la superficie de la hoja y sale rápido.</td></tr>
+            <tr><td>Eucalipto</td><td>Hojas</td><td>1,8-cineol</td><td>Vapor vivo. Las glándulas son cavidades dentro de la hoja; picar ayuda.</td></tr>
+            <tr><td>Romero</td><td>Hojas y tallos tiernos</td><td>1,8-cineol, alcanfor, α-pineno</td><td>Vapor vivo.</td></tr>
+            <tr><td>Clavo de olor</td><td>Botones florales secos</td><td>Eugenol</td><td>Hidrodestilación o vapor. El aceite es más denso que el agua y su relación de equilibrio es baja (sección 2).</td></tr>
+            <tr><td>Naranja, limón, lima</td><td>Cáscara</td><td>Limoneno (más del 90 % en la naranja dulce)</td><td>La mayor parte se obtiene por prensado en frío; el arrastre da los aceites destilados y aprovecha la cáscara que queda de la industria de jugos<span class="cite" data-ref="1" data-n="1" tabindex="0"></span>.</td></tr>
+            <tr><td>Rosa</td><td>Pétalos</td><td>Citronelol, geraniol, alcohol feniletílico</td><td>Hidrodestilación con retorno del agua (cohobación). Los pétalos se apelmazan con vapor vivo, y el alcohol feniletílico se queda disuelto en el agua de rosas.</td></tr>
+            <tr><td>Anís, hinojo, cilantro</td><td>Frutos secos («semillas»)</td><td>Anetol (anís, hinojo), linalol (cilantro)</td><td>Vapor vivo, después de moler. El aceite está en canales internos y la semilla entera entrega muy despacio (sección 4).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Un poco de historia</h3>
+      <p>La palabra alambique viene del árabe <i>al-inbīq</i>, y este del griego <i>ámbix</i>, «copa». En el mundo islámico medieval la destilación de aguas aromáticas, como el agua de rosas, era ya un oficio con mercado, y de ahí pasó a la farmacia europea. En 1500 Hieronymus Brunschwig publicó en Estrasburgo uno de los primeros libros impresos dedicados por entero a destilar plantas, un manual para boticarios. Durante siglos el producto fue el agua aromática y el aceite que flotaba sobre ella era casi un subproducto; con el vapor generado en calderas aparte y los condensadores de agua corriente, el aceite pasó a ser el objetivo.</p>
+
+      <figure class="fig full">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031-2027-10/assets/alambique.jpg" width="1500" height="1171" loading="lazy" alt="Grabado en madera: un boticario retira el destilado de un alambique de cabeza cónica montado sobre un horno de ladrillo, con recipientes de vidrio que reciben el condensado.">
+        </div>
+        <figcaption><b>Figura 1.</b> Un boticario retira el destilado de un alambique de cabeza cónica calentado en un horno de ladrillo. El vapor sube a la cabeza, condensa y baja por los picos hacia los recipientes de vidrio. Grabado en madera, Wellcome Collection (<a href="https://commons.wikimedia.org/wiki/File:An_apothecary_drawing_liquid_from_a_primitive_distillation_m_Wellcome_V0010767.jpg" target="_blank" rel="noopener">CC BY 4.0</a>).</figcaption>
+      </figure>
+
+      <p>El siglo XX le dio a la operación su instrumento de medida. En 1928 J. F. Clevenger describió un aparato de vidrio para determinar el aceite volátil de una muestra vegetal por hidrodestilación, con un tubo graduado donde se lee el aceite y un retorno del agua al matraz<span class="cite" data-ref="4" data-n="4" tabindex="0"></span>. Sus descendientes siguen siendo el método con que se mide cuánto aceite tiene una materia prima, y por eso aparecen otra vez en la sección 7. La ingeniería de la operación, en cambio, se ordenó más tarde: el tratado de Guenther fijó a mediados de siglo la clasificación de las tres formas de destilar y la explicación de la hidrodifusión<span class="cite" data-ref="6" data-n="6" tabindex="0"></span>, y los modelos matemáticos del lecho llegaron con el siglo XXI.</p>
+    </section>
+
+    <!-- 2. EQUILIBRIO -->
+    <section id="s2">
+      <div class="eyebrow">El fenómeno de equilibrio</div>
+      <h2 class="sec"><span class="secnum">2.</span> El equilibrio de dos líquidos que no se mezclan</h2>
+      <p>El agua y un aceite esencial como el limoneno son prácticamente inmiscibles. Puestos juntos forman dos fases líquidas, y cada una es casi el líquido puro. Eso tiene una consecuencia directa sobre el vapor: cada líquido evapora como si el otro no estuviera, porque su fracción molar en su propia fase es prácticamente uno. La presión parcial del agua en el vapor es la presión de vapor del agua pura a esa temperatura, y la del aceite es la del aceite puro. Por la ley de Dalton, la presión total es la suma:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="P = p^{\circ}_{\text{agua}}(T) + p^{\circ}_{\text{aceite}}(T)">P = p°agua(T) + p°aceite(T)</span></div>
+      <p>La mezcla hierve cuando esa suma alcanza la presión del sistema. Como la suma de dos presiones de vapor es mayor que cada una, se llega a la presión del sistema a una temperatura más baja que la de ebullición de cualquiera de los dos líquidos solos. Esto no depende de cuánta agua ni de cuánto aceite haya, siempre que existan las dos fases líquidas.</p>
+
+      <h3 class="sub">Las presiones de vapor con Antoine</h3>
+      <p>Para calcular cada presión de vapor se usa la ecuación de Antoine. Esta lectura usa las mismas constantes que la calculadora del reto del curso, para que los números coincidan:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="\log_{10}\dfrac{p^{\circ}_{\text{agua}}}{\text{mmHg}} = 8{,}07131 - \dfrac{1730{,}63}{233{,}426 + T} \qquad \log_{10}\dfrac{p^{\circ}_{\text{lim}}}{\text{kPa}} = 6{,}21379 - \dfrac{1615{,}9}{208 + T}">log10 p°agua [mmHg] = 8,07131 − 1730,63/(233,426 + T); log10 p°lim [kPa] = 6,21379 − 1615,9/(208 + T)</span></div>
+      <ul class="vardefs">
+        <li><span class="kx" data-tex="T">T</span>: temperatura en °C. Las constantes del agua son las clásicas, válidas entre 1 y 100 °C; para pasar de mmHg a kPa se multiplica por 0,133322.</li>
+        <li>Las del limoneno están ajustadas a su punto de ebullición normal, 176 °C, y a su presión de vapor a 25 °C. Son orientativas y no reemplazan el modelo termodinámico de un simulador.</li>
+      </ul>
+      <p>A 101,3 kPa la suma de las dos presiones llega a la del sistema a <b>97,6 °C</b>: en ese punto el agua aporta 92,9 kPa y el limoneno 8,4 kPa. En Bogotá, a unos 75 kPa, la mezcla hierve a <b>89,6 °C</b>, cuando el agua sola herviría a 91,8 °C y el limoneno solo a 164,4 °C. La Figura 2 construye ese resultado con las curvas.</p>
+
+      <figure class="fig full">
+        <div class="fig-frame" style="background: var(--blanco);">
+          <video src="/classroom/iqya-2031-2027-10/assets/video/arrastre-vapor.mp4" poster="/classroom/iqya-2031-2027-10/assets/video/arrastre-vapor.webp" width="1920" height="1080"
+                 controls muted playsinline preload="none" data-auto aria-label="Animación: por qué el limoneno sale con el vapor por debajo de 100 °C"></video>
+        </div>
+        <figcaption><b>Figura 2.</b> Presión de vapor del agua, del limoneno y de su suma contra la temperatura. La mezcla hierve donde la suma cruza la presión del sistema: 97,6 °C a 1 atm y 89,6 °C a 75 kPa. La animación arranca sola cuando usted llega aquí; con los controles la puede detener o repetir.</figcaption>
+      </figure>
+
+      <h3 class="sub">La regla de las fases</h3>
+      <p>La regla de las fases de Gibbs cuenta las variables intensivas que se pueden fijar a voluntad:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="F = C - \pi + 2 = 2 - 3 + 2 = 1">F = C − π + 2 = 2 − 3 + 2 = 1</span></div>
+      <p>Hay dos componentes (agua y aceite) y tres fases (dos líquidas y el vapor), así que queda un solo grado de libertad. Fijada la presión, quedan fijadas la temperatura de ebullición y la composición del vapor, cualquiera que sea la proporción de los dos líquidos. Por eso, mientras haya aceite libre en contacto con el agua, la temperatura no cambia; cuando el aceite libre se acaba, el sistema pierde una fase, gana un grado de libertad y la temperatura sube hasta la de ebullición del agua sola.</p>
+
+      <h3 class="sub">Cuánto aceite lleva cada kilo de vapor</h3>
+      <p>En el vapor, el cociente de fracciones molares es el cociente de presiones parciales, y pasando a masa con las masas molares queda la relación que usa todo el diseño:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="\frac{y_{\text{aceite}}}{y_{\text{agua}}} = \frac{p^{\circ}_{\text{aceite}}}{p^{\circ}_{\text{agua}}} \qquad\Longrightarrow\qquad \frac{m_{\text{aceite}}}{m_{\text{agua}}} = \frac{p^{\circ}_{\text{aceite}}\,M_{\text{aceite}}}{p^{\circ}_{\text{agua}}\,M_{\text{agua}}}">m_aceite/m_agua = (p°aceite · M_aceite)/(p°agua · M_agua)</span></div>
+      <p>Para el limoneno a 101,3 kPa: <span class="kx" data-tex="\dfrac{8{,}43 \times 136{,}24}{92{,}89 \times 18{,}02} = 0{,}69">(8,43 × 136,24)/(92,89 × 18,02) = 0,69</span> kg de aceite por kg de vapor. Es una cifra enorme: si el vapor saliera saturado de aceite, cada kilo de vapor arrastraría casi 700 g. La masa molar del aceite trabaja a favor, porque una molécula de limoneno pesa 7,6 veces lo que una de agua, y por eso un aceite que aporta solo el 8 % de las moles del vapor aporta el 41 % de su masa.</p>
+
+      <div class="calc-wrap" id="calc-eq">
+        <h4>Calculadora del equilibrio de arrastre</h4>
+        <p class="calc-sub">Escoja el aceite y la presión del extractor. La calculadora busca la temperatura a la que la suma de las presiones de vapor iguala la presión, y con ella la composición del vapor y la relación de equilibrio. Los campos aceptan coma o punto decimal.</p>
+        <div class="su-criteria" id="eq-casos" role="group" aria-label="Presiones de referencia">
+          <button type="button" class="su-btn" data-p="101.325">Nivel del mar · 101,3 kPa</button>
+          <button type="button" class="su-btn" data-p="75">Bogotá · 75 kPa</button>
+          <button type="button" class="su-btn" data-p="50">Vacío moderado · 50 kPa</button>
+        </div>
+        <div class="calc-grid">
+          <div class="calc-field">
+            <div class="calc-field-header"><span>Aceite</span></div>
+            <select id="eq-comp" aria-label="Aceite">
+              <option value="lim">Limoneno (cítricos)</option>
+              <option value="apin">α-Pineno (pino, romero)</option>
+              <option value="eug">Eugenol (clavo de olor)</option>
+            </select>
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>Presión del extractor (kPa)</span><b id="eq-p-val">101,3</b></div>
+            <input type="text" id="eq-p-txt" inputmode="decimal" value="101,3" aria-label="Presión en kPa">
+            <input type="range" id="eq-p" min="40" max="110" step="0.1" value="101.3" aria-label="Presión en kPa, deslizador">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>Relación de una planta real (g/kg)</span><b id="eq-r-val">13</b></div>
+            <input type="text" id="eq-r-txt" inputmode="decimal" value="13" aria-label="Relación real en gramos de aceite por kilo de vapor">
+          </div>
+        </div>
+        <div class="live-grid">
+          <div class="live-card highlight"><div class="live-card-label">La mezcla hierve a</div><div class="live-card-value" id="eq-t">—</div><div class="live-card-note" id="eq-t-nota">—</div></div>
+          <div class="live-card green"><div class="live-card-label">Relación de equilibrio</div><div class="live-card-value" id="eq-rel">—</div><div class="live-card-note">kg de aceite por kg de vapor</div></div>
+          <div class="live-card"><div class="live-card-label">Aceite en el vapor</div><div class="live-card-value" id="eq-y">—</div><div class="live-card-note" id="eq-y-nota">—</div></div>
+          <div class="live-card"><div class="live-card-label">p° del aceite</div><div class="live-card-value" id="eq-po">—</div><div class="live-card-note" id="eq-pw">—</div></div>
+          <div class="live-card"><div class="live-card-label">Solos hervirían a</div><div class="live-card-value" id="eq-solos">—</div><div class="live-card-note">agua · aceite, a esa presión</div></div>
+          <div class="live-card"><div class="live-card-label">La planta real</div><div class="live-card-value" id="eq-veces">—</div><div class="live-card-note">veces por debajo del equilibrio</div></div>
+        </div>
+        <p class="calc-aviso" id="eq-aviso">Fuera del intervalo en que se ajustaron las constantes de Antoine de este compuesto: tome el resultado como una extrapolación.</p>
+        <p class="calc-note">Limoneno: las constantes del reto del curso. α-Pineno y eugenol: constantes de Antoine de la base de datos del NIST<span class="cite" data-ref="9" data-n="9" tabindex="0"></span>, con <i>p</i> en bar y <i>T</i> en K, válidas entre 19 y 156 °C para el α-pineno y entre 78 y 254 °C para el eugenol. El agua, en los tres casos, con las constantes clásicas de arriba.</p>
+      </div>
+
+      <h3 class="sub">El aceite pesa, pero lo que cuenta es su presión de vapor</h3>
+      <p>La Tabla 2 compara tres compuestos de aceites esenciales a 101,3 kPa. El α-pineno, el monoterpeno de los pinos y del romero, hierve 20 °C por debajo del limoneno y arrastra el doble por kilo de vapor. El eugenol, el fenol que da el olor del clavo, hierve a 254 °C: a 100 °C su presión de vapor es apenas 0,44 kPa, el vapor que sale de la mezcla es 99,6 % agua en moles y cada kilo de vapor puede llevar como mucho 40 g de eugenol, diecisiete veces menos que de limoneno. Su masa molar más alta no alcanza a compensarlo. Es la razón termodinámica por la que los aceites ricos en fenoles y en sesquiterpenos piden mucho más vapor y tiempos más largos.</p>
+      <p class="tbl-cap"><b>Tabla 2.</b> Equilibrio de arrastre a 101,3 kPa para tres compuestos de aceites esenciales. Temperatura de ebullición de la mezcla con agua y relación de equilibrio calculadas con las ecuaciones de Antoine de la calculadora.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead><tr><th>Compuesto</th><th>M (g/mol)</th><th>Hierve solo a</th><th>p° a 100 °C</th><th>La mezcla hierve a</th><th>Relación de equilibrio</th></tr></thead>
+          <tbody>
+            <tr><td>Limoneno</td><td>136,24</td><td>176 °C</td><td>9,3 kPa</td><td>97,6 °C</td><td>0,69 kg/kg</td></tr>
+            <tr><td>α-Pineno</td><td>136,23</td><td>156 °C</td><td>19,2 kPa</td><td>95,2 °C</td><td>1,43 kg/kg</td></tr>
+            <tr><td>Eugenol</td><td>164,20</td><td>254 °C</td><td>0,44 kPa</td><td>99,9 °C</td><td>0,040 kg/kg</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="fig full moleculas">
+        <div class="fig-frame mol-marco">
+          <div class="mol-fila">
+            <div class="mol"><span class="mol-img"><img src="/classroom/iqya-2031-2027-10/assets/moleculas/limoneno.svg" width="167" height="72" style="--w:167" alt="Estructura del (R)-limoneno" loading="lazy"></span><b>(R)-Limoneno</b><span class="mol-form">C<sub>10</sub>H<sub>16</sub> · cítricos</span></div>
+            <div class="mol"><span class="mol-img"><img src="assets/img/alfa-pineno.svg" width="114" height="71" style="--w:114" alt="Estructura del α-pineno" loading="lazy"></span><b>α-Pineno</b><span class="mol-form">C<sub>10</sub>H<sub>16</sub> · pino, romero</span></div>
+            <div class="mol"><span class="mol-img"><img src="assets/img/eugenol.svg" width="213" height="130" style="--w:213" alt="Estructura del eugenol" loading="lazy"></span><b>Eugenol</b><span class="mol-form">C<sub>10</sub>H<sub>12</sub>O<sub>2</sub> · clavo de olor</span></div>
+          </div>
+        </div>
+        <figcaption><b>Figura 3.</b> Los tres compuestos de la Tabla 2. Los dos monoterpenos son hidrocarburos y tienen la misma fórmula; el eugenol lleva un grupo fenólico y un éter metílico, se une por puentes de hidrógeno y su presión de vapor es veinte veces menor que la del limoneno a 100 °C. Estructuras dibujadas con RDKit a partir de PubChem.</figcaption>
+      </figure>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>¿Y si se baja la presión?</b><p>Con la calculadora, lleve el limoneno a 50 kPa: la mezcla hierve a 79,4 °C, pero la relación de equilibrio baja a 0,64 kg/kg, porque la presión de vapor del aceite cae con la temperatura más rápido que la del agua. El vacío protege los compuestos sensibles al calor y no ahorra vapor. Para subir la relación hay que subir la temperatura del aceite, con vapor a más presión o con vapor sobrecalentado, y eso cuesta degradación y, en una carga vegetal, la seca: el tejido necesita agua para entregar su aceite (sección 4).</p></div>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Lo que marca el termómetro de la cabeza</b><p>La temperatura de tres fases, 97,6 °C a 1 atm, es la de un sistema donde hay aceite libre en contacto con agua y el vapor sale saturado de los dos. En un extractor el vapor sale muy lejos de saturarse de aceite (sección 4), la presión parcial del aceite en la cabeza es de décimas de kPa y el termómetro marca casi la temperatura de ebullición del agua sola a esa presión. No use la temperatura de la cabeza para comprobar el equilibrio: úsela para saber a qué presión opera el extractor y si el vapor llega saturado o sobrecalentado.</p></div>
+      </div>
+    </section>
+
+    <!-- 3. TRES FORMAS -->
+    <section id="s3">
+      <div class="eyebrow">Las modalidades</div>
+      <h2 class="sec"><span class="secnum">3.</span> Tres formas de destilar una planta</h2>
+      <p>El equilibrio es el mismo en todos los equipos; lo que cambia es cómo se pone el vapor en contacto con el material. Guenther ordenó la práctica en tres modalidades que siguen siendo la referencia<span class="cite" data-ref="6" data-n="6" tabindex="0"></span>, y la Figura 4 las pone lado a lado.</p>
+
+      <figure class="fig full">
+        <div class="fig-frame dg-frame">
+<svg class="dg" id="fig-modos" viewBox="0 0 900 430" role="img" aria-label="Tres esquemas de alambique: en la hidrodestilación la carga está sumergida en agua que hierve; en la destilación con agua y vapor la carga descansa sobre una rejilla por encima del agua; en el arrastre con vapor vivo no hay agua en el recipiente y el vapor de una caldera entra por un distribuidor bajo la rejilla.">
+  <!-- títulos -->
+  <text class="lbl-b" x="150" y="26" text-anchor="middle">(a) Hidrodestilación</text>
+  <text class="lbl-b" x="450" y="26" text-anchor="middle">(b) Con agua y vapor</text>
+  <text class="lbl-b" x="750" y="26" text-anchor="middle">(c) Con vapor vivo</text>
+  <g id="modo-a">
+    <rect x="72" y="170" width="156" height="173" fill="#E3E8EE" stroke="none"/>
+    <g fill="#6E6A00" fill-opacity="0.35" stroke="#6E6A00" stroke-width="1.2">
+      <ellipse cx="105" cy="205" rx="13" ry="6" transform="rotate(-20 105 205)"/><ellipse cx="150" cy="190" rx="13" ry="6" transform="rotate(15 150 190)"/>
+      <ellipse cx="190" cy="215" rx="13" ry="6" transform="rotate(-35 190 215)"/><ellipse cx="125" cy="245" rx="13" ry="6" transform="rotate(30 125 245)"/>
+      <ellipse cx="170" cy="260" rx="13" ry="6" transform="rotate(-10 170 260)"/><ellipse cx="100" cy="285" rx="13" ry="6" transform="rotate(10 100 285)"/>
+      <ellipse cx="145" cy="300" rx="13" ry="6" transform="rotate(-25 145 300)"/><ellipse cx="200" cy="295" rx="13" ry="6" transform="rotate(40 200 295)"/>
+      <ellipse cx="120" cy="325" rx="13" ry="6" transform="rotate(-5 120 325)"/><ellipse cx="180" cy="328" rx="13" ry="6" transform="rotate(20 180 328)"/>
+    </g>
+    <path class="k" d="M70,110 L70,320 Q70,345 95,345 L205,345 Q230,345 230,320 L230,110"/>
+    <path class="kf" d="M66,110 L234,110 M70,110 C70,72 230,72 230,110"/>
+    <path class="proc" d="M150,80 L150,52 Q150,46 156,46 L262,46" marker-end="url(#ar)"/>
+    <text class="lbl-s" x="72" y="160">agua que hierve</text>
+    <text class="lbl-s" x="150" y="372" text-anchor="middle">fuego o camisa de vapor</text>
+    <path class="k" d="M115,395 l0,-26 M150,395 l0,-26 M185,395 l0,-26" marker-end="url(#ars)"/>
+    <text class="lbl-s muted" x="150" y="418" text-anchor="middle">la carga flota en el agua</text>
+  </g>
+  <g id="modo-b">
+    <rect x="372" y="290" width="156" height="53" fill="#E3E8EE" stroke="none"/>
+    <g fill="#6E6A00" fill-opacity="0.35" stroke="#6E6A00" stroke-width="1.2">
+      <ellipse cx="405" cy="160" rx="13" ry="6" transform="rotate(-20 405 160)"/><ellipse cx="450" cy="150" rx="13" ry="6" transform="rotate(15 450 150)"/>
+      <ellipse cx="495" cy="165" rx="13" ry="6" transform="rotate(-35 495 165)"/><ellipse cx="425" cy="195" rx="13" ry="6" transform="rotate(30 425 195)"/>
+      <ellipse cx="475" cy="205" rx="13" ry="6" transform="rotate(-10 475 205)"/><ellipse cx="400" cy="235" rx="13" ry="6" transform="rotate(10 400 235)"/>
+      <ellipse cx="450" cy="245" rx="13" ry="6" transform="rotate(-25 450 245)"/><ellipse cx="500" cy="235" rx="13" ry="6" transform="rotate(40 500 235)"/>
+      <ellipse cx="420" cy="268" rx="13" ry="6" transform="rotate(-5 420 268)"/><ellipse cx="480" cy="268" rx="13" ry="6" transform="rotate(20 480 268)"/>
+    </g>
+    <line x1="372" y1="281" x2="528" y2="281" stroke="#19222F" stroke-width="3" stroke-dasharray="7 4"/>
+    <path class="kt" d="M435,315 l0,-28 M465,315 l0,-28" marker-end="url(#ars)"/>
+    <path class="k" d="M370,110 L370,320 Q370,345 395,345 L505,345 Q530,345 530,320 L530,110"/>
+    <path class="kf" d="M366,110 L534,110 M370,110 C370,72 530,72 530,110"/>
+    <path class="proc" d="M450,80 L450,52 Q450,46 456,46 L562,46" marker-end="url(#ar)"/>
+    <text class="lbl-s" x="540" y="285">rejilla</text>
+    <text class="lbl-s" x="540" y="322">agua</text>
+    <text class="lbl-s" x="450" y="372" text-anchor="middle">fuego o camisa de vapor</text>
+    <path class="k" d="M415,395 l0,-26 M450,395 l0,-26 M485,395 l0,-26" marker-end="url(#ars)"/>
+    <text class="lbl-s muted" x="450" y="418" text-anchor="middle">vapor húmedo, a baja presión</text>
+  </g>
+  <g id="modo-c">
+    <g fill="#6E6A00" fill-opacity="0.35" stroke="#6E6A00" stroke-width="1.2">
+      <ellipse cx="705" cy="160" rx="13" ry="6" transform="rotate(-20 705 160)"/><ellipse cx="750" cy="150" rx="13" ry="6" transform="rotate(15 750 150)"/>
+      <ellipse cx="795" cy="165" rx="13" ry="6" transform="rotate(-35 795 165)"/><ellipse cx="725" cy="195" rx="13" ry="6" transform="rotate(30 725 195)"/>
+      <ellipse cx="775" cy="205" rx="13" ry="6" transform="rotate(-10 775 205)"/><ellipse cx="700" cy="235" rx="13" ry="6" transform="rotate(10 700 235)"/>
+      <ellipse cx="750" cy="245" rx="13" ry="6" transform="rotate(-25 750 245)"/><ellipse cx="800" cy="235" rx="13" ry="6" transform="rotate(40 800 235)"/>
+      <ellipse cx="720" cy="268" rx="13" ry="6" transform="rotate(-5 720 268)"/><ellipse cx="780" cy="268" rx="13" ry="6" transform="rotate(20 780 268)"/>
+    </g>
+    <line x1="672" y1="285" x2="828" y2="285" stroke="#19222F" stroke-width="3" stroke-dasharray="7 4"/>
+    <path class="util" d="M610,318 L780,318"/>
+    <g fill="#fff" stroke="#19222F" stroke-width="1.5"><circle cx="700" cy="318" r="3.5"/><circle cx="730" cy="318" r="3.5"/><circle cx="760" cy="318" r="3.5"/></g>
+    <path class="kt" d="M700,312 l0,-20 M730,312 l0,-20 M760,312 l0,-20" marker-end="url(#ars)"/>
+    <path class="k" d="M670,110 L670,320 Q670,345 695,345 L805,345 Q830,345 830,320 L830,110"/>
+    <path class="kf" d="M666,110 L834,110 M670,110 C670,72 830,72 830,110"/>
+    <path class="proc" d="M750,80 L750,52 Q750,46 756,46 L862,46" marker-end="url(#ar)"/>
+    <path class="k" d="M750,345 L750,372"/>
+    <path class="kf" d="M741,372 L759,384 L759,372 L741,384 Z"/>
+    <text class="lbl-s" x="766" y="383">purga</text>
+    <text class="lbl-s" x="600" y="306">vapor vivo</text>
+    <text class="lbl-s" x="600" y="340">de la caldera</text>
+    <text class="lbl-s" x="840" y="289">rejilla</text>
+    <text class="lbl-s" x="738" y="338" text-anchor="end">distribuidor</text>
+    <text class="lbl-s muted" x="750" y="418" text-anchor="middle">caudal y presión regulables</text>
+  </g>
+  <text class="lbl-s" x="270" y="42">al condensador</text>
+  <text class="lbl-s" x="570" y="42">al condensador</text>
+</svg>
+        </div>
+        <p class="dg-hint">Deslice la figura hacia los lados para verla completa.</p>
+        <figcaption><b>Figura 4.</b> Las tres modalidades. (a) En la hidrodestilación la carga está sumergida en el agua que hierve. (b) En la destilación con agua y vapor la carga descansa sobre una rejilla y el vapor nace del agua que está debajo, en el mismo recipiente. (c) En el arrastre con vapor vivo el recipiente no lleva agua: el vapor llega de una caldera, entra por un distribuidor bajo la rejilla y el condensado que se forma en el lecho sale por la purga.</figcaption>
+      </figure>
+
+      <p class="tbl-cap"><b>Tabla 3.</b> Comparación de las tres modalidades.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead><tr><th>Modalidad</th><th>Ventajas</th><th>Defectos</th><th>Dónde se usa</th></tr></thead>
+          <tbody>
+            <tr><td>Hidrodestilación</td><td>El equipo más simple y barato. Sirve para materiales que se apelmazan o se pegan con vapor vivo (pétalos, polvos finos) y para pequeños productores sin caldera. Es la base del método de laboratorio (Clevenger).</td><td>Contacto largo con agua hirviendo: hidroliza ésteres y favorece otras reacciones. Riesgo de quemar la carga contra el fondo caliente. Calienta toda el agua además del material, así que gasta más energía y es lenta. El control del caudal de vapor es pobre.</td><td>Rosa, flores delicadas, laboratorio, producción artesanal.</td></tr>
+            <tr><td>Con agua y vapor</td><td>La carga no toca el agua hirviendo: menos hidrólisis y nada quemado. El vapor llega saturado y húmedo, lo que mantiene hidratado el tejido. Equipo sencillo, sin caldera aparte.</td><td>Vapor a baja presión y caudal limitado por el fuego. Si el agua hierve con fuerza puede salpicar la carga. El tiempo de lote es más largo que con vapor vivo.</td><td>Hierbas y hojas en destilerías pequeñas y medianas.</td></tr>
+            <tr><td>Con vapor vivo</td><td>Caudal y presión regulables desde la caldera; lotes más cortos; una caldera puede servir a varios extractores. Es la modalidad de escala industrial.</td><td>Necesita caldera, aislamiento y control. El vapor seco o sobrecalentado puede secar la carga y frenar la hidrodifusión. Con caudal alto aparecen canales y arrastre de gotas (sección 6).</td><td>Lavanda, menta, eucalipto, romero, semillas molidas, la mayor parte de la industria.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Tres criterios deciden entre ellas. El primero es la <b>calidad</b>: la hidrólisis del acetato de linalilo en la lavanda, que lo convierte en linalol y ácido acético, es el ejemplo clásico de lo que el agua hirviendo le hace a un aceite rico en ésteres, y es la razón por la que la lavanda fina se destila con vapor. El segundo es el <b>consumo de vapor</b>: en la hidrodestilación el calor calienta también la masa de agua, y el vapor vivo permite poner exactamente el caudal que el lecho necesita. El tercero es la <b>naturaleza del material</b>: hay cargas que con vapor vivo se compactan en una masa impermeable, y entonces la hidrodestilación es la única que funciona.</p>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Cohobación: devolver el agua al alambique</b><p>Algunos componentes oxigenados del aceite se disuelven en el agua condensada y se perderían con el hidrolato. La cohobación devuelve ese hidrolato al recipiente para que se destile otra vez; el Clevenger la hace de forma automática con su brazo de retorno. En el agua de rosas buena parte del alcohol feniletílico se queda disuelta, y por eso la rosa se destila con cohobación. Qué hacer con el hidrolato (purgarlo, venderlo o devolverlo) es una decisión de diseño que se toma junto con el decantador florentino, en la semana 9.</p></div>
+      </div>
+    </section>
+
+    <!-- 4. HIDRODIFUSIÓN -->
+    <section id="s4">
+      <div class="eyebrow">El fenómeno de transporte</div>
+      <h2 class="sec"><span class="secnum">4.</span> Lo que manda en la práctica: la hidrodifusión</h2>
+      <p>Si el equilibrio mandara, un extractor sería un aparato pequeño. Con 0,69 kg de limoneno por kilo de vapor, una tonelada de material con 1 % de aceite soltaría sus 10 kg con unos 15 kg de vapor. Las plantas reales gastan decenas de veces más. El equilibrio dice cuánto aceite podría llevar el vapor si lo encontrara libre; no dice cuánto aceite encuentra. Y en una planta el aceite casi nunca está libre: está guardado en estructuras secretoras que hay que abrir o atravesar.</p>
+
+      <h3 class="sub">Dónde guarda la planta su aceite</h3>
+      <ul>
+        <li><b>Tricomas glandulares</b>, pelos secretores sobre la superficie de hojas y flores, con el aceite bajo una cutícula delgada. Es el caso de la menta, la lavanda y la albahaca: el aceite está cerca de la superficie y sale rápido.</li>
+        <li><b>Cavidades secretoras</b>, bolsas de aceite dentro del tejido. La cáscara de los cítricos las tiene en su capa exterior, el flavedo, y la hoja de eucalipto en su interior. Picar o desgarrar las abre.</li>
+        <li><b>Canales secretores</b> que recorren el fruto de las umbelíferas (anís, hinojo, cilantro, comino). Con la semilla entera el aceite tiene que atravesar todo el tejido.</li>
+        <li><b>Células oleíferas</b> dispersas en raíces, rizomas, maderas y cortezas, donde el aceite está repartido y lejos de cualquier superficie. Son los materiales más lentos de destilar.</li>
+      </ul>
+
+      <h3 class="sub">Cómo sale el aceite</h3>
+      <p>Guenther describió el mecanismo con el nombre de hidrodifusión<span class="cite" data-ref="6" data-n="6" tabindex="0"></span>, y los modelos modernos lo conservan<span class="cite" data-ref="11" data-n="11" tabindex="0"></span><span class="cite" data-ref="3" data-n="3" tabindex="0"></span>. Ocurre en cuatro tiempos, y en un lecho los cuatro avanzan de abajo hacia arriba:</p>
+      <ol>
+        <li><b>Calentamiento.</b> El vapor que entra frío al lecho encuentra material a temperatura ambiente y condensa sobre él. Ese condensado le cede su calor latente y lo calienta hasta la temperatura del vapor. Se forma un frente de condensación que sube por el lecho; por debajo del frente el material ya está caliente y mojado, por encima sigue frío. Hasta que el frente llega arriba no sale vapor del extractor, y la primera gota de destilado aparece después de un tiempo muerto <span class="kx" data-tex="t_0">t0</span>.</li>
+        <li><b>Hidratación y ruptura.</b> El agua condensada hidrata y ablanda el tejido. Las glándulas que el picado ya rompió exponen su aceite, y otras revientan con el calor y la presión del tejido hinchado.</li>
+        <li><b>Lavado.</b> El aceite que quedó sobre las superficies sale con el vapor en minutos. Es la etapa rápida, y es la única en que el vapor se acerca, sin alcanzarlo, a lo que permite el equilibrio.</li>
+        <li><b>Difusión.</b> El aceite de las glándulas intactas se disuelve en pequeña cantidad en el agua que empapa las paredes celulares y migra por difusión hasta la superficie, donde el vapor lo recoge. Es la etapa lenta, y la controla el tejido, no el vapor.</li>
+      </ol>
+
+      <figure class="fig full">
+        <div class="fig-frame dg-frame">
+<svg class="dg" id="fig-hidro" viewBox="0 0 900 440" role="img" aria-label="A la izquierda, un lecho en un extractor: abajo una zona caliente que ya entrega aceite, un frente de condensación que sube y arriba una zona fría donde el vapor condensa. A la derecha, una tira de material aumentada: una película de agua la cubre, una glándula rota en la superficie deja su aceite a la mano del vapor y una glándula intacta en el interior lo entrega por difusión a través del tejido hidratado.">
+  <!-- lecho -->
+  <text class="lbl" x="110" y="24" text-anchor="middle">sale vapor con poco aceite</text>
+  <path class="proc" d="M110,62 L110,34" marker-end="url(#ar)"/>
+  <rect x="32" y="250" width="156" height="138" fill="#FFFCCC" stroke="none"/>
+  <path class="k" d="M30,62 L30,390 L190,390 L190,62 Z"/>
+  <line x1="30" y1="250" x2="190" y2="250" stroke="#6E6A00" stroke-width="3.5" stroke-dasharray="9 5"/>
+  <path d="M204,292 L204,236" stroke="#6E6A00" stroke-width="2.5" fill="none" marker-end="url(#aro)"/>
+  <g fill="#fff" stroke="#19222F" stroke-width="1.2">
+    <rect x="44" y="80" width="26" height="10" rx="3" transform="rotate(-12 57 85)"/><rect x="92" y="92" width="26" height="10" rx="3" transform="rotate(20 105 97)"/>
+    <rect x="140" y="78" width="26" height="10" rx="3" transform="rotate(-30 153 83)"/><rect x="58" y="125" width="26" height="10" rx="3" transform="rotate(35 71 130)"/>
+    <rect x="118" y="130" width="26" height="10" rx="3" transform="rotate(-8 131 135)"/><rect x="40" y="170" width="26" height="10" rx="3" transform="rotate(10 53 175)"/>
+    <rect x="96" y="176" width="26" height="10" rx="3" transform="rotate(-25 109 181)"/><rect x="148" y="168" width="26" height="10" rx="3" transform="rotate(28 161 173)"/>
+    <rect x="64" y="214" width="26" height="10" rx="3" transform="rotate(-15 77 219)"/><rect x="126" y="220" width="26" height="10" rx="3" transform="rotate(18 139 225)"/>
+    <rect x="44" y="268" width="26" height="10" rx="3" transform="rotate(25 57 273)"/><rect x="100" y="276" width="26" height="10" rx="3" transform="rotate(-20 113 281)"/>
+    <rect x="148" y="262" width="26" height="10" rx="3" transform="rotate(12 161 267)"/><rect x="62" y="316" width="26" height="10" rx="3" transform="rotate(-30 75 321)"/>
+    <rect x="137" y="322" width="26" height="10" rx="3" transform="rotate(5 150 327)"/><rect x="44" y="358" width="26" height="10" rx="3" transform="rotate(8 57 363)"/>
+    <rect x="102" y="356" width="26" height="10" rx="3" transform="rotate(-12 115 361)"/><rect x="152" y="360" width="26" height="10" rx="3" transform="rotate(30 165 365)"/>
+  </g>
+  <g fill="#E3E8EE" stroke="#19222F" stroke-width="0.8">
+    <circle cx="76" cy="98" r="3"/><circle cx="128" cy="112" r="3"/><circle cx="50" cy="150" r="3"/><circle cx="104" cy="160" r="3"/>
+    <circle cx="160" cy="150" r="3"/><circle cx="90" cy="232" r="3"/><circle cx="150" cy="238" r="3"/><circle cx="60" cy="200" r="3"/>
+  </g>
+  <path class="kt" d="M70,425 l0,-30 M110,425 l0,-30 M150,425 l0,-30" marker-end="url(#ars)"/>
+  <text class="lbl-s" x="110" y="438" text-anchor="middle">vapor vivo</text>
+  <text class="lbl-s" x="214" y="120">zona fría:</text>
+  <text class="lbl-s" x="214" y="137">el vapor condensa</text>
+  <text class="lbl-s" x="214" y="154">y la calienta</text>
+  <text class="lbl-s annot" x="214" y="262">frente de</text>
+  <text class="lbl-s annot" x="214" y="279">condensación</text>
+  <text class="lbl-s" x="214" y="330">zona caliente:</text>
+  <text class="lbl-s" x="214" y="347">ya entrega aceite</text>
+  <!-- zoom -->
+  <rect x="96" y="318" width="40" height="30" fill="none" stroke="#19222F" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <path class="kt" d="M136,318 L392,62 M136,348 L392,400" stroke-dasharray="4 4"/>
+  <rect x="392" y="62" width="490" height="338" fill="#fff" stroke="#19222F" stroke-width="1.3"/>
+  <text class="lbl" x="408" y="88">Una tira del material, aumentada</text>
+  <rect x="420" y="118" width="432" height="232" rx="22" fill="#E3E8EE" stroke="none"/>
+  <rect x="434" y="132" width="404" height="204" rx="14" fill="#fff" stroke="#6E6A00" stroke-width="1.8"/>
+  <g stroke="#D3D9DF" stroke-width="1">
+    <path d="M479,132 L479,336 M524,132 L524,336 M569,132 L569,336 M614,132 L614,336 M659,132 L659,336 M704,132 L704,336 M749,132 L749,336 M794,132 L794,336"/>
+    <path d="M434,177 L838,177 M434,222 L838,222 M434,267 L838,267 M434,312 L838,312"/>
+  </g>
+  <!-- glándula rota en la superficie -->
+  <path d="M482,132 A34,34 0 0 0 550,132 Z" fill="#FFF500" stroke="#19222F" stroke-width="2"/>
+  <ellipse cx="516" cy="122" rx="44" ry="8" fill="#FFF500" stroke="#19222F" stroke-width="1.2"/>
+  <path class="proc" d="M516,112 L516,100" marker-end="url(#ar)"/>
+  <text class="lbl-s" x="560" y="108">glándula rota: el vapor lava su aceite en minutos</text>
+  <!-- glándula intacta en el interior -->
+  <circle cx="704" cy="262" r="32" fill="#FFF500" stroke="#19222F" stroke-width="2"/>
+  <path d="M704,228 L704,142" stroke="#19222F" stroke-width="1.8" fill="none" stroke-dasharray="3 5" marker-end="url(#ars)"/>
+  <path d="M738,262 L830,262" stroke="#19222F" stroke-width="1.8" fill="none" stroke-dasharray="3 5" marker-end="url(#ars)"/>
+  <text class="lbl-s" x="440" y="372">película de agua condensada</text>
+  <text class="lbl-s" x="440" y="390">sobre el tejido hidratado</text>
+  <text class="lbl-s" x="640" y="372">glándula intacta: su aceite difunde</text>
+  <text class="lbl-s" x="640" y="390">por el tejido, en horas</text>
+</svg>
+        </div>
+        <p class="dg-hint">Deslice la figura hacia los lados para verla completa.</p>
+        <figcaption><b>Figura 5.</b> La hidrodifusión en un lecho. A la izquierda, el frente de condensación sube mientras el vapor calienta la carga; solo por debajo del frente el material entrega aceite. A la derecha, una tira del material: el aceite de las glándulas rotas queda en la superficie y sale por lavado, el de las glándulas intactas tiene que difundir por el tejido mojado hasta la superficie.</figcaption>
+      </figure>
+
+      <h3 class="sub">Por qué la planta saca decenas de veces menos que el equilibrio</h3>
+      <p>Con el mecanismo a la vista, la brecha deja de ser un misterio. Se suman cuatro efectos:</p>
+      <ul>
+        <li><b>El vapor pasa rápido y casi no toca aceite libre.</b> Con una velocidad superficial de unos 5 cm/s, el vapor atraviesa un metro de lecho en unos veinte segundos, y la mayor parte viaja por los huecos sin rozar una superficie con aceite. Sale lejos de saturarse.</li>
+        <li><b>Después del lavado manda el tejido.</b> Cuando el aceite de las superficies se acaba, la velocidad con que aparece aceite nuevo la fija la difusión dentro del material. El vapor sigue entrando al mismo caudal, así que cada kilo adicional lleva menos aceite que el anterior.</li>
+        <li><b>Parte del vapor no llega arriba.</b> El que calienta la carga y el recipiente, y el que repone las pérdidas por las paredes, se cuenta en el consumo y no lleva aceite.</li>
+        <li><b>Canalización.</b> El vapor busca los caminos de menor resistencia y deja zonas del lecho sin tocar, más aún si el lecho está mal cargado o compactado.</li>
+      </ul>
+      <p>En el ejemplo de esta lectura y en los datos del curso, el promedio de un lote queda entre unos pocos gramos y una veintena de gramos de aceite por kilo de vapor, frente a varios cientos que permite el equilibrio. La Figura 6 arma la curva de rendimiento de un ensayo y muestra cómo cae, minuto a minuto, el aceite que lleva cada kilo de vapor.</p>
+
+      <figure class="fig full">
+        <div class="fig-frame">
+          <video src="assets/video/rendimiento-arrastre.mp4" poster="assets/video/rendimiento-arrastre.webp" width="1920" height="1080"
+                 controls muted playsinline preload="none" data-auto aria-label="Animación: cómo sale el aceite de un lecho en el arrastre de vapor"></video>
+        </div>
+        <figcaption><b>Figura 6.</b> Rendimiento contra tiempo del ensayo piloto del ejemplo de la sección 8 (una hierba aromática, 30 kg de carga y 12 kg/h de vapor). Primero el lecho se calienta y no sale nada; después sale rápido el aceite de las glándulas rotas (lavado) y, despacio, el que debe difundir. El aceite que lleva cada kilo de vapor empieza en un centenar de gramos y cae a unos pocos: el promedio del lote a los 90 min es de 12,7 g/kg, unas cincuenta veces menos de lo que daría el equilibrio con un monoterpeno. La animación arranca sola cuando usted llega aquí; con los controles la puede detener o repetir.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Por qué hay que moler la semilla</b><p>Sovová y Aleksovski estimaron para la semilla entera de cilantro una difusividad efectiva del aceite de unos <span class="kx" data-tex="1{,}7 \times 10^{-11}\ \text{m}^2/\text{s}">1,7 × 10⁻¹¹ m²/s</span><span class="cite" data-ref="11" data-n="11" tabindex="0"></span>. Para una esfera de radio <span class="kx" data-tex="R">R</span>, el término dominante de la solución de difusión decae con la constante <span class="kx" data-tex="k \approx \pi^2 D_{\text{ef}}/R^2">k ≈ π² D_ef / R²</span>. Con <span class="kx" data-tex="R = 1{,}5">R = 1,5</span> mm sale <span class="kx" data-tex="k \approx 0{,}0045">k ≈ 0,0045</span> min⁻¹, una constante de tiempo de casi cuatro horas; moliendo a <span class="kx" data-tex="R = 0{,}5">R = 0,5</span> mm, <span class="kx" data-tex="k \approx 0{,}040">k ≈ 0,040</span> min⁻¹ y unos 25 minutos. Reducir el radio a la tercera parte acelera la etapa lenta nueve veces. Es el mismo argumento que lleva a desgarrar una cáscara o a picar una hoja, con el límite que pone la compactación del lecho (sección 6).</p></div>
+      </div>
+    </section>
+
+    <!-- 5. MODELOS -->
+    <section id="s5">
+      <div class="eyebrow">Del fenómeno al número</div>
+      <h2 class="sec"><span class="secnum">5.</span> Modelos de rendimiento contra tiempo</h2>
+      <p>La hidrodifusión no se predice desde las propiedades del aceite: depende de la anatomía del material, de cómo se picó y de cómo se cargó el lecho. Por eso el diseño parte de un ensayo. Se carga un extractor piloto, se abre el vapor y se mide el aceite acumulado en el receptor a intervalos regulares, junto con el vapor alimentado. Con esa curva se ajusta un modelo, y el modelo es lo que se lleva a la escala de planta.</p>
+
+      <h3 class="sub">El modelo de primer orden</h3>
+      <p>El más sencillo supone que la velocidad de salida es proporcional al aceite que queda en el material:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="Y(t) = Y_\infty\left[1 - e^{-k\,(t - t_0)}\right] \quad (t > t_0)">Y(t) = Y∞ [1 − exp(−k (t − t0))]</span></div>
+      <ul class="vardefs">
+        <li><span class="kx" data-tex="Y(t)">Y(t)</span>: aceite acumulado por unidad de carga, en % de la masa de material (base húmeda o seca, según se declare) o en g por kg.</li>
+        <li><span class="kx" data-tex="Y_\infty">Y∞</span>: aceite recuperable si el lote durara indefinidamente. Suele quedar por debajo del contenido total que mide un Clevenger.</li>
+        <li><span class="kx" data-tex="k">k</span>: constante de velocidad, en min⁻¹. <span class="kx" data-tex="t_0">t0</span>: tiempo muerto, el de la primera gota.</li>
+      </ul>
+      <p>Si el modelo vale, <span class="kx" data-tex="\ln\left(1 - Y/Y_\infty\right)">ln(1 − Y/Y∞)</span> contra <span class="kx" data-tex="t">t</span> es una recta de pendiente <span class="kx" data-tex="-k">−k</span>. Es una buena prueba de diagnóstico: en la mayoría de los materiales picados esa gráfica no da una recta sino dos, una empinada al principio y otra más tendida después.</p>
+
+      <h3 class="sub">El modelo de dos etapas: lavado y difusión</h3>
+      <p>Las dos rectas son las dos etapas de la hidrodifusión, y el modelo que las representa supone dos fracciones de aceite que salen al mismo tiempo, cada una con su constante:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="Y(t) = Y_\infty\left[1 - f\,e^{-k_1 \tau} - (1 - f)\,e^{-k_2 \tau}\right], \qquad \tau = t - t_0 > 0">Y(t) = Y∞ [1 − f exp(−k1 τ) − (1 − f) exp(−k2 τ)], τ = t − t0</span></div>
+      <ul class="vardefs">
+        <li><span class="kx" data-tex="f">f</span>: fracción del aceite recuperable que sale por lavado. Crece al picar más fino, porque hay más glándulas rotas.</li>
+        <li><span class="kx" data-tex="k_1">k1</span>: constante del lavado. Depende del contacto entre el vapor y las superficies, así que sube con el vapor por kilo de carga.</li>
+        <li><span class="kx" data-tex="k_2">k2</span>: constante de la difusión, del orden de <span class="kx" data-tex="D_{\text{ef}}/L^2">D_ef/L²</span>, con <span class="kx" data-tex="L">L</span> la dimensión que el aceite tiene que recorrer. Depende del material y del picado, y casi nada del vapor.</li>
+      </ul>
+      <p>Cuando el lavado es mucho más rápido que el intervalo de muestreo, el primer término desaparece casi enseguida y el modelo se reduce a <span class="kx" data-tex="Y = Y_\infty\left[1 - (1 - f)\,e^{-k_2 \tau}\right]">Y = Y∞ [1 − (1 − f) exp(−k2 τ)]</span>, un lavado instantáneo seguido de difusión. Milojević y colaboradores compararon estas formas y otras en la hidrodestilación de varias plantas y encontraron que la de lavado y difusión simultáneos es la que mejor ajusta en conjunto<span class="cite" data-ref="8" data-n="8" tabindex="0"></span>. Detrás está la misma imagen que el modelo físico de Sovová y Aleksovski, con una población de células rotas que se vacía rápido y otra de células intactas que entrega por difusión<span class="cite" data-ref="11" data-n="11" tabindex="0"></span>. Para el arrastre con vapor vivo en lecho hay modelos que siguen el lecho a lo alto, con la difusión dentro del sólido y el transporte en el vapor, como los de Cassel y colaboradores para romero, albahaca y lavanda<span class="cite" data-ref="2" data-n="2" tabindex="0"></span> y el de Cerpa, Mato y Cocero para el lavandín<span class="cite" data-ref="3" data-n="3" tabindex="0"></span>; Romdhane y Tizaoui modelaron la cinética de una unidad de arrastre de anís<span class="cite" data-ref="10" data-n="10" tabindex="0"></span>. Para dimensionar a partir de un ensayo basta casi siempre la forma empírica de dos exponenciales con su tiempo muerto: es la más sencilla que separa las dos etapas, y sus parámetros tienen sentido físico.</p>
+
+      <h3 class="sub">Cómo se ajusta</h3>
+      <p>Se ajusta por mínimos cuadrados no lineales, minimizando la suma de los cuadrados de la diferencia entre el rendimiento medido y el del modelo. En una hoja de cálculo, con Solver; en Python, con <code>scipy.optimize.curve_fit</code>. Tres consejos: dé valores iniciales sensatos (Y∞ un poco por encima del último dato, <span class="kx" data-tex="t_0">t0</span> en la primera gota, <span class="kx" data-tex="k_1">k1</span> diez veces <span class="kx" data-tex="k_2">k2</span>); acote los parámetros a valores físicos (<span class="kx" data-tex="0 \le f \le 1">0 ≤ f ≤ 1</span>, constantes positivas); y mire los residuos contra el tiempo, porque un patrón ordenado en ellos dice que el modelo no es el adecuado aunque el ajuste se vea bien.</p>
+<pre class="codigo">import numpy as np
+from scipy.optimize import curve_fit
+
+def dos_etapas(t, Yinf, f, k1, k2, t0):
+    tau = np.clip(t - t0, 0, None)
+    return Yinf * (1 - f*np.exp(-k1*tau) - (1 - f)*np.exp(-k2*tau))
+
+p0 = [0.9, 0.5, 0.1, 0.01, 20]                       # valores iniciales
+cotas = ([0, 0, 0, 0, 0], [5, 1, 5, 1, 90])
+par, cov = curve_fit(dos_etapas, t, Y, p0=p0, bounds=cotas)
+err = np.sqrt(np.diag(cov))                          # error estándar de cada parámetro</pre>
+
+      <h3 class="sub">Del rendimiento al vapor</h3>
+      <p>Con el modelo ajustado se calcula lo que importa para el diseño. Si <span class="kx" data-tex="q">q</span> es el caudal de vapor por kilo de carga (kg de vapor por kg de material y por hora) e <span class="kx" data-tex="Y">Y</span> se expresa en g de aceite por kg de material, el aceite que lleva cada kilo de vapor en el instante <span class="kx" data-tex="t">t</span> y el promedio desde que se abrió el vapor son:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="r(t) = \frac{dY/dt}{q/60} \qquad\qquad \bar{r}(t) = \frac{Y(t)}{q\,t/60}">r(t) = (dY/dt)/(q/60);  r̄(t) = Y(t)/(q t/60)</span></div>
+      <p>La relación marginal <span class="kx" data-tex="r(t)">r(t)</span> cae con el tiempo, y en algún momento el aceite que se gana deja de justificar el vapor que se gasta. Ahí entra el criterio para cortar el lote.</p>
+
+      <h3 class="sub">Cuándo cortar el lote</h3>
+      <p>Hay tres criterios, y el diseño debe decir cuál usa y por qué:</p>
+      <ul>
+        <li><b>Máxima producción por hora de equipo.</b> Si el extractor es el cuello de botella, se busca el tiempo de destilación <span class="kx" data-tex="t">t</span> que maximiza el aceite por ciclo completo, <span class="kx" data-tex="Y(t)/(t + t_c)">Y(t)/(t + t_c)</span>, donde <span class="kx" data-tex="t_c">t_c</span> es el tiempo de descarga, limpieza y carga. El óptimo está donde la recta que sale del punto <span class="kx" data-tex="(-t_c,\,0)">(−t_c, 0)</span> toca la curva de rendimiento. Deja aceite en el lecho, a veces bastante.</li>
+        <li><b>Recuperación mínima.</b> Si la materia prima es lo escaso (una cosecha que hay que procesar en el día), se fija la fracción de <span class="kx" data-tex="Y_\infty">Y∞</span> que se quiere sacar, por ejemplo el 90 %, y el tiempo sale de la curva.</li>
+        <li><b>Relación marginal mínima.</b> Se corta cuando <span class="kx" data-tex="r(t)">r(t)</span> cae por debajo de un valor que se justifica con el costo del vapor frente al valor del aceite.</li>
+      </ul>
+
+      <div class="calc-wrap" id="calc-mod">
+        <h4>Explorador del modelo de dos etapas</h4>
+        <p class="calc-sub">Arranca con los parámetros del ejemplo de la sección 8. Mueva cada uno y vea qué cambia en la curva, en el aceite por kilo de vapor y en el tiempo de lote. Los campos aceptan coma o punto decimal.</p>
+        <div class="su-criteria" id="mod-casos" role="group" aria-label="Casos del modelo">
+          <button type="button" class="su-btn" data-caso="ejemplo">Ejemplo resuelto</button>
+          <button type="button" class="su-btn" data-caso="fino">Hoja muy picada</button>
+          <button type="button" class="su-btn" data-caso="semilla">Semilla entera</button>
+          <button type="button" class="su-btn" data-caso="primer">Primer orden (f = 0)</button>
+        </div>
+        <div class="chart-layout">
+          <div>
+            <p class="chart-cap">Aceite acumulado (g por kg de material)</p>
+            <div class="chart-box" id="mod-g1"></div>
+            <div class="leyenda"><span><i></i>modelo</span><span><i class="l2"></i>lavado</span><span><i class="l4"></i>difusión</span><span><i class="l3"></i>recta tangente desde −t_c</span></div>
+            <p class="chart-cap" style="margin-top:16px">Aceite por kilo de vapor (g/kg, escala logarítmica)</p>
+            <div class="chart-box" id="mod-g2"></div>
+            <div class="leyenda"><span><i></i>marginal, r(t)</span><span><i class="l2"></i>promedio del lote, r̄(t)</span><span><i class="l3"></i>equilibrio del limoneno, 690 g/kg</span></div>
+          </div>
+          <div class="chart-controls" id="mod-campos"></div>
+        </div>
+        <div class="live-grid">
+          <div class="live-card highlight"><div class="live-card-label">Aceite al cortar</div><div class="live-card-value" id="mod-y">—</div><div class="live-card-note" id="mod-y-nota">—</div></div>
+          <div class="live-card green"><div class="live-card-label">Promedio del lote</div><div class="live-card-value" id="mod-rm">—</div><div class="live-card-note" id="mod-rm-nota">—</div></div>
+          <div class="live-card"><div class="live-card-label">Relación marginal al cortar</div><div class="live-card-value" id="mod-rt">—</div><div class="live-card-note">g de aceite por kg de vapor, en ese minuto</div></div>
+          <div class="live-card"><div class="live-card-label">Máxima producción por hora</div><div class="live-card-value" id="mod-topt">—</div><div class="live-card-note" id="mod-topt-nota">—</div></div>
+          <div class="live-card"><div class="live-card-label">Vapor por kilo de carga</div><div class="live-card-value" id="mod-vap">—</div><div class="live-card-note">kg de vapor por kg de material, en el lote</div></div>
+          <div class="live-card"><div class="live-card-label">Lotes en 20 h</div><div class="live-card-value" id="mod-lotes">—</div><div class="live-card-note" id="mod-lotes-nota">—</div></div>
+        </div>
+        <p class="calc-note">El modelo no sabe de vapor: en un ensayo real, más vapor por kilo de carga acorta <i>t₀</i> y acelera algo el lavado, y no cambia la difusión. Aquí <i>q</i> solo convierte el rendimiento en aceite por kilo de vapor.</p>
+      </div>
+    </section>
+
+    <!-- 6. VARIABLES -->
+    <section id="s6">
+      <div class="eyebrow">Qué se decide</div>
+      <h2 class="sec"><span class="secnum">6.</span> Variables de diseño y de operación</h2>
+      <p>Cada variable del extractor actúa sobre una parte distinta de la curva. Conviene pensarlas así: qué le hace al tiempo muerto, qué le hace al lavado, qué le hace a la difusión y cuánto vapor cuesta.</p>
+
+      <h3 class="sub">Tamaño de partícula</h3>
+      <p>Picar más fino rompe más glándulas (sube <span class="kx" data-tex="f">f</span>) y acorta el camino de difusión (sube <span class="kx" data-tex="k_2">k2</span> con el inverso del cuadrado de la dimensión). Tiene dos límites. El primero es mecánico: el material fino y húmedo se compacta, el vapor no lo atraviesa de manera pareja y aparecen canales; en el extremo, el lecho se vuelve una masa que el vapor rodea. El segundo es que al picar se abren glándulas que empiezan a perder aceite por evaporación antes de llegar al extractor, así que el material se pica justo antes de cargar. La Lectura 03 trató los equipos que hacen ese picado.</p>
+
+      <h3 class="sub">Altura y compactación del lecho</h3>
+      <p>Un lecho más alto pone más material en contacto con el mismo vapor, y el vapor sale más cerca de saturarse: mejora la relación aceite por kilo de vapor. A cambio, tarda más en calentarse (el frente tiene que recorrer más lecho), el material de abajo se compacta bajo el peso del de arriba y la caída de presión crece. Por eso los extractores grandes cargan el material en canastas apiladas o con bandejas intermedias que reparten el peso. La carga debe ser pareja: un lecho con zonas sueltas y zonas apretadas canaliza.</p>
+
+      <h3 class="sub">Caudal y velocidad del vapor</h3>
+      <p>El caudal de vapor se piensa por kilo de carga (<span class="kx" data-tex="q">q</span>, en kg de vapor por kg de material y por hora) y por área del lecho, como velocidad superficial <span class="kx" data-tex="u = \dot m_v/(\rho_v A)">u = ṁ_v/(ρ_v A)</span>. Más vapor acorta el calentamiento y acelera el lavado, pero no la difusión: en la etapa lenta solo baja la relación aceite por kilo de vapor. Demasiado vapor tiene además problemas propios: arrastra gotas de condensado y de aceite emulsionado hacia el condensador, abre canales y puede levantar el material liviano. Poco vapor también falla, porque se condensa antes de llegar arriba y el fondo del lecho se inunda de condensado, que es volver a la hidrodestilación. En lechos de hojas, las velocidades superficiales habituales son de unos pocos centímetros por segundo.</p>
+      <p>Para detectar la canalización, Tosta Machado y colaboradores pusieron termopares dentro de la masa de un extractor piloto: una zona que se queda fría mientras las vecinas ya están a la temperatura del vapor es una zona que el vapor no está tocando<span class="cite" data-ref="12" data-n="12" tabindex="0"></span>.</p>
+
+      <h3 class="sub">Presión</h3>
+      <p>Casi todos los extractores operan cerca de la presión atmosférica local, con una sobrepresión pequeña para vencer la caída del lecho y de la línea. La presión fija la temperatura del lecho y la relación de equilibrio (sección 2). Bajarla protege compuestos sensibles al calor; subirla, con vapor a más presión, acelera la destilación de aceites pesados en maderas y raíces a costa de degradar algunos componentes. En Bogotá, a 75 kPa, el lecho trabaja unos 8 °C por debajo que al nivel del mar.</p>
+
+      <h3 class="sub">Condensación inicial y pérdidas de calor</h3>
+      <p>Antes de dar aceite, el vapor calienta la carga y el metal del recipiente. Con un balance de energía se estima cuánto vapor se condensa en el arranque:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="m_{v,\text{cal}} = \frac{\left(m_c\,c_{p,c} + C_{\text{metal}}\right)\left(T_v - T_{\text{ini}}\right)}{h_{v} - h_{l}(T_v)} \qquad t_0 \approx \frac{m_{v,\text{cal}}}{\dot m_v}">m_v,cal = (m_c c_p,c + C_metal)(T_v − T_ini)/(h_v − h_l(T_v));  t0 ≈ m_v,cal / ṁ_v</span></div>
+      <ul class="vardefs">
+        <li><span class="kx" data-tex="m_c,\ c_{p,c}">m_c, c_p,c</span>: masa y calor específico de la carga. Un material fresco con 70-80 % de agua tiene un calor específico de 3,4-3,8 kJ/(kg·K).</li>
+        <li><span class="kx" data-tex="C_{\text{metal}}">C_metal</span>: capacidad calorífica del recipiente y la canasta (masa de acero por 0,50 kJ/(kg·K)).</li>
+        <li><span class="kx" data-tex="T_v,\ T_{\text{ini}}">T_v, T_ini</span>: temperatura del vapor saturado a la presión del extractor y temperatura inicial de la carga.</li>
+        <li><span class="kx" data-tex="h_v - h_l(T_v)">h_v − h_l(T_v)</span>: calor que entrega cada kilo de vapor al condensar y enfriarse hasta la temperatura del lecho; para vapor saturado de 3 bar que condensa a 100 °C son unos 2300 kJ/kg.</li>
+      </ul>
+      <p>Para un material fresco, ese vapor de arranque es del orden de 0,15 kg por kg de carga, y en un lote puede ser la cuarta parte del vapor total. Las pérdidas por las paredes, <span class="kx" data-tex="\dot Q_p = U A_p (T_v - T_{\text{amb}})">Q̇_p = U A_p (T_v − T_amb)</span>, condensan vapor durante todo el lote; un buen aislamiento las deja en una fracción pequeña del caudal. Ese condensado baja al fondo y sale por la purga.</p>
+
+      <h3 class="sub">Consumo específico de vapor y energía</h3>
+      <p>El indicador de eficiencia del extractor es el consumo específico, los kilos de vapor por kilo de aceite. Su inverso es la relación real <span class="kx" data-tex="\bar r">r̄</span>. Para pasarlo a energía se usa el calor que la caldera pone en cada kilo de vapor, desde el agua de alimentación, dividido por su eficiencia:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="\frac{E}{m_{\text{aceite}}} = \frac{m_v}{m_{\text{aceite}}}\cdot\frac{h_v - h_{\text{alim}}}{\eta_{\text{caldera}}}">E/m_aceite = (m_v/m_aceite) · (h_v − h_alim)/η_caldera</span></div>
+      <p>Con 2725 kJ/kg para el vapor saturado de 3 bar, agua de alimentación a 20 °C (84 kJ/kg) y una caldera del 85 %, cada kilo de vapor cuesta unos 3,1 MJ. A 13 g de aceite por kilo de vapor, cada kilo de aceite se lleva unos 240 MJ, más de 60 kWh. Bajar el consumo de vapor y de agua es por eso un tema de diseño por derecho propio<span class="cite" data-ref="7" data-n="7" tabindex="0"></span>, y es donde se gana o se pierde la economía de un extractor.</p>
+
+      <h3 class="sub">Caída de presión en el lecho</h3>
+      <p>El vapor que sube por el lecho pierde presión como cualquier fluido que atraviesa un lecho de partículas, y la ecuación de Ergun da una primera estimación<span class="cite" data-ref="5" data-n="5" tabindex="0"></span>:</p>
+      <div class="eqbox"><span class="kx kx-d" data-tex="\frac{\Delta P}{H} = \frac{150\,\mu\,u\,(1-\varepsilon)^2}{\varepsilon^3\,(\phi\,d_p)^2} + \frac{1{,}75\,\rho_v\,u^2\,(1-\varepsilon)}{\varepsilon^3\,\phi\,d_p}">ΔP/H = 150 μ u (1−ε)²/(ε³ (φ dp)²) + 1,75 ρ_v u² (1−ε)/(ε³ φ dp)</span></div>
+      <ul class="vardefs">
+        <li><span class="kx" data-tex="\varepsilon">ε</span>: porosidad del lecho; <span class="kx" data-tex="\phi\,d_p">φ dp</span>: diámetro equivalente de las partículas por su esfericidad.</li>
+        <li><span class="kx" data-tex="\mu,\ \rho_v">μ, ρ_v</span>: viscosidad y densidad del vapor (a 100 °C y 1 atm, unos 1,2 × 10⁻⁵ Pa·s y 0,59 kg/m³).</li>
+      </ul>
+      <p>En un lecho suelto de hojas la caída es de pocos pascales por metro y no limita nada. Crece con fuerza al bajar la porosidad, porque el primer término va con <span class="kx" data-tex="(1-\varepsilon)^2/\varepsilon^3">(1−ε)²/ε³</span>: pasar de <span class="kx" data-tex="\varepsilon = 0{,}75">ε = 0,75</span> a <span class="kx" data-tex="0{,}50">0,50</span> la multiplica por más de diez. En materiales finos y húmedos, como semillas molidas o cáscaras desgarradas, el condensado que se queda en los huecos baja la porosidad efectiva y Ergun se queda corto. Una caída de presión que crece durante el lote avisa que el lecho se está compactando.</p>
+
+      <p class="tbl-cap"><b>Tabla 4.</b> Qué le hace cada variable a la curva y al consumo de vapor.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead><tr><th>Si sube…</th><th>Tiempo muerto</th><th>Lavado</th><th>Difusión</th><th>Aceite por kilo de vapor</th><th>Riesgo</th></tr></thead>
+          <tbody>
+            <tr><td>Finura del picado</td><td>Casi igual</td><td>Más aceite expuesto (f)</td><td>Más rápida (k₂)</td><td>Sube</td><td>Compactación, canales, pérdidas antes de cargar</td></tr>
+            <tr><td>Altura del lecho</td><td>Más largo</td><td>Más lento por kilo de carga</td><td>Igual</td><td>Sube</td><td>Compactación abajo, caída de presión</td></tr>
+            <tr><td>Vapor por kilo de carga</td><td>Más corto</td><td>Más rápido (k₁)</td><td>Igual</td><td>Baja</td><td>Arrastre de gotas, canales, material levantado</td></tr>
+            <tr><td>Presión</td><td>Igual</td><td>Igual</td><td>Algo más rápida por la temperatura</td><td>Depende del aceite</td><td>Degradación térmica</td></tr>
+            <tr><td>Tiempo de lote</td><td>-</td><td>-</td><td>Saca más aceite lento</td><td>El promedio baja</td><td>Gastar vapor en el final de la curva</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. EL EQUIPO -->
+    <section id="s7">
+      <div class="eyebrow">Con qué se hace</div>
+      <h2 class="sec"><span class="secnum">7.</span> El equipo</h2>
+      <p>Un extractor de arrastre con vapor vivo es un recipiente de lecho fijo que trabaja por lotes. Su forma cambia poco entre una destilería de menta y una de cítricos; lo que cambia es el tamaño, cómo se carga y cómo se reparte el vapor. La Figura 7 lo muestra en corte con lo que tiene alrededor.</p>
+
+      <figure class="fig full">
+        <div class="fig-frame dg-frame">
+<svg class="dg" id="fig-extractor" viewBox="0 0 900 560" role="img" aria-label="Corte de un extractor de arrastre de vapor: caldera a la izquierda que alimenta vapor vivo por una válvula al distribuidor del fondo; recipiente aislado con tapa abombada, cuello de cisne hacia el condensador, canasta perforada con la carga sobre una rejilla, termopares en la pared, manómetro y válvula de seguridad en la tapa y purga de condensado en el fondo; a la derecha, en línea discontinua, el condensador y el separador florentino.">
+  <!-- caldera -->
+  <rect x="30" y="410" width="110" height="80" rx="8" class="kf"/>
+  <text class="lbl" x="85" y="456" text-anchor="middle">caldera</text>
+  <path class="util" d="M140,462 L268,462"/>
+  <path class="kf" d="M190,453 L208,471 L208,453 L190,471 Z"/>
+  <text class="lbl-s" x="160" y="446">vapor vivo</text>
+  <!-- aislamiento y cuerpo -->
+  <rect x="254" y="150" width="272" height="338" fill="url(#aisl)" stroke="#19222F" stroke-width="1.2"/>
+  <path class="kf" d="M270,150 L270,470 Q270,484 284,484 L496,484 Q510,484 510,470 L510,150 Z"/>
+  <path d="M262,150 L518,150" stroke="#19222F" stroke-width="5"/>
+  <path class="kf" d="M270,150 C270,96 510,96 510,150 Z"/>
+  <rect x="258" y="141" width="12" height="18" class="kf"/><rect x="510" y="141" width="12" height="18" class="kf"/>
+  <!-- canasta y carga -->
+  <rect x="286" y="176" width="208" height="262" fill="none" stroke="#19222F" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <path class="k" d="M296,176 Q306,160 316,176 M464,176 Q474,160 484,176"/>
+  <g fill="#6E6A00" fill-opacity="0.35" stroke="#6E6A00" stroke-width="1.1">
+    <ellipse cx="320" cy="205" rx="13" ry="6" transform="rotate(-20 320 205)"/><ellipse cx="370" cy="198" rx="13" ry="6" transform="rotate(15 370 198)"/>
+    <ellipse cx="420" cy="210" rx="13" ry="6" transform="rotate(-35 420 210)"/><ellipse cx="465" cy="200" rx="13" ry="6" transform="rotate(25 465 200)"/>
+    <ellipse cx="335" cy="250" rx="13" ry="6" transform="rotate(30 335 250)"/><ellipse cx="390" cy="262" rx="13" ry="6" transform="rotate(-10 390 262)"/>
+    <ellipse cx="455" cy="248" rx="13" ry="6" transform="rotate(10 455 248)"/><ellipse cx="310" cy="300" rx="13" ry="6" transform="rotate(-25 310 300)"/>
+    <ellipse cx="365" cy="315" rx="13" ry="6" transform="rotate(40 365 315)"/><ellipse cx="470" cy="300" rx="13" ry="6" transform="rotate(-5 470 300)"/>
+    <ellipse cx="325" cy="360" rx="13" ry="6" transform="rotate(20 325 360)"/><ellipse cx="400" cy="372" rx="13" ry="6" transform="rotate(-15 400 372)"/>
+    <ellipse cx="460" cy="358" rx="13" ry="6" transform="rotate(35 460 358)"/><ellipse cx="350" cy="410" rx="13" ry="6" transform="rotate(-30 350 410)"/>
+    <ellipse cx="420" cy="420" rx="13" ry="6" transform="rotate(5 420 420)"/><ellipse cx="475" cy="412" rx="13" ry="6" transform="rotate(-20 475 412)"/>
+  </g>
+  <line x1="272" y1="446" x2="508" y2="446" stroke="#19222F" stroke-width="3" stroke-dasharray="7 4"/>
+  <path class="util" d="M268,462 L492,462"/>
+  <g fill="#fff" stroke="#19222F" stroke-width="1.4"><circle cx="320" cy="462" r="3.5"/><circle cx="370" cy="462" r="3.5"/><circle cx="420" cy="462" r="3.5"/><circle cx="470" cy="462" r="3.5"/></g>
+  <!-- purga -->
+  <path class="k" d="M390,484 L390,516"/>
+  <path class="kf" d="M381,516 L399,528 L399,516 L381,528 Z"/>
+  <path class="k" d="M390,528 L390,548" marker-end="url(#ars)"/>
+  <!-- cuello de cisne -->
+  <path class="proc" d="M390,110 L390,78 Q390,62 406,62 L596,62 Q614,62 622,78 L636,100" marker-end="url(#ar)"/>
+  <!-- instrumentos de la tapa -->
+  <path class="k" d="M470,62 L470,50"/><circle cx="470" cy="38" r="13" class="kf"/><text class="bub-t" x="470" y="42">TI</text>
+  <path class="k" d="M320,116 L320,96"/><circle cx="320" cy="84" r="13" class="kf"/><text class="bub-t" x="320" y="88">PI</text>
+  <path class="k" d="M452,112 L452,100"/><path class="kf" d="M444,100 L460,100 L452,86 Z"/><path class="k" d="M452,86 L470,86" marker-end="url(#ars)"/>
+  <!-- termopares -->
+  <g><path class="k" d="M270,232 L240,232"/><circle cx="228" cy="232" r="12" class="kf"/><text class="bub-n" x="228" y="236">TE</text></g>
+  <g><path class="k" d="M270,312 L240,312"/><circle cx="228" cy="312" r="12" class="kf"/><text class="bub-n" x="228" y="316">TE</text></g>
+  <g><path class="k" d="M270,392 L240,392"/><circle cx="228" cy="392" r="12" class="kf"/><text class="bub-n" x="228" y="396">TE</text></g>
+  <!-- condensador y florentino, solo nombrados -->
+  <rect x="610" y="100" width="56" height="190" rx="10" fill="none" stroke="#19222F" stroke-width="1.6" stroke-dasharray="6 5"/>
+  <path class="proc2" d="M638,290 L638,360" marker-end="url(#ar)"/>
+  <rect x="596" y="364" width="170" height="86" rx="6" fill="none" stroke="#19222F" stroke-width="1.6" stroke-dasharray="6 5"/>
+  <path class="proc2" d="M766,380 L826,380" marker-end="url(#ar)"/>
+  <path class="proc2" d="M766,436 L826,436" marker-end="url(#ar)"/>
+  <text class="lbl-s" x="832" y="384">aceite</text>
+  <text class="lbl-s" x="832" y="440">hidrolato</text>
+  <text class="lbl-s" x="680" y="182">condensador</text>
+  <text class="lbl-s muted" x="680" y="200">semana 8</text>
+  <text class="lbl-s" x="606" y="474">separador florentino</text>
+  <text class="lbl-s muted" x="606" y="492">semana 9</text>
+  <!-- numeración -->
+  <g class="nums">
+    <path class="kt" d="M282,118 L300,128"/><circle cx="272" cy="112" r="12" class="fi"/><text x="272" y="116" fill="#fff" class="bub-t">1</text>
+    <circle cx="540" cy="44" r="12" class="fi"/><text x="540" y="48" fill="#fff" class="bub-t">2</text>
+    <circle cx="306" cy="196" r="12" class="fi"/><text x="306" y="200" fill="#fff" class="bub-t">3</text>
+    <circle cx="430" cy="300" r="12" class="fi"/><text x="430" y="304" fill="#fff" class="bub-t">4</text>
+    <path class="kt" d="M508,446 L536,432"/><circle cx="548" cy="428" r="12" class="fi"/><text x="548" y="432" fill="#fff" class="bub-t">5</text>
+    <path class="kt" d="M492,462 L536,468"/><circle cx="548" cy="470" r="12" class="fi"/><text x="548" y="474" fill="#fff" class="bub-t">6</text>
+    <circle cx="414" cy="532" r="12" class="fi"/><text x="414" y="536" fill="#fff" class="bub-t">7</text>
+    <path class="kt" d="M526,300 L540,300"/><circle cx="552" cy="300" r="12" class="fi"/><text x="552" y="304" fill="#fff" class="bub-t">8</text>
+    <circle cx="200" cy="312" r="12" class="fi"/><text x="200" y="316" fill="#fff" class="bub-t">9</text>
+    <circle cx="490" cy="80" r="12" class="fi"/><text x="490" y="84" fill="#fff" class="bub-t">10</text>
+    <circle cx="690" cy="148" r="12" class="fi"/><text x="690" y="152" fill="#fff" class="bub-t">11</text>
+    <circle cx="742" cy="396" r="12" class="fi"/><text x="742" y="400" fill="#fff" class="bub-t">12</text>
+    <circle cx="44" cy="400" r="12" class="fi"/><text x="44" y="404" fill="#fff" class="bub-t">13</text>
+  </g>
+</svg>
+        </div>
+        <p class="dg-hint">Deslice la figura hacia los lados para verla completa.</p>
+        <figcaption><b>Figura 7.</b> Extractor de arrastre con vapor vivo, en corte. El condensador y el separador florentino van en línea discontinua: son las operaciones de las semanas 8 y 9.</figcaption>
+      </figure>
+
+      <ol class="refs" style="margin-top:22px">
+        <li><b>Tapa con cierre rápido.</b> Se abre en cada lote para cargar y descargar; las abrazaderas la cierran sin tornillos. Su junta debe aguantar la sobrepresión del lecho y la temperatura del vapor.</li>
+        <li><b>Cuello de cisne.</b> Conducto de salida del vapor cargado de aceite hacia el condensador. Sube y baja con pendiente para que el condensado que se forme en él no regrese al lecho.</li>
+        <li><b>Canasta perforada.</b> Recipiente removible donde va la carga; se saca entero con un polipasto y se vacía afuera, lo que acorta el tiempo entre lotes. Los extractores altos llevan varias canastas o bandejas apiladas para que el material de abajo no cargue el peso de todo el lecho.</li>
+        <li><b>Carga.</b> El material picado, repartido de manera pareja y sin apretar.</li>
+        <li><b>Rejilla o falso fondo.</b> Sostiene la canasta y deja un espacio libre debajo, donde el vapor se reparte antes de entrar al lecho.</li>
+        <li><b>Distribuidor de vapor.</b> Un anillo o una flauta perforada bajo la rejilla. Un vapor mal repartido canaliza desde el primer minuto.</li>
+        <li><b>Purga de condensado.</b> Saca el agua que condensa en el lecho y en las paredes. Sin ella, el fondo se inunda y el extractor termina haciendo hidrodestilación.</li>
+        <li><b>Aislamiento.</b> Reduce las pérdidas por las paredes, que se pagan en vapor durante todo el lote.</li>
+        <li><b>Instrumentos.</b> Temperatura en la salida (TI), presión en la tapa (PI) y termopares en el lecho (TE), que muestran cómo sube el frente de condensación y dónde canaliza el vapor.</li>
+        <li><b>Válvula de seguridad.</b> El extractor es un recipiente con vapor; si la salida se tapa, la presión sube.</li>
+        <li><b>Condensador.</b> Devuelve a líquido el vapor de agua y de aceite. Es la carga térmica más grande de la planta, y se diseña en la semana 8 con la Lectura 10.</li>
+        <li><b>Separador florentino.</b> Separa el aceite del agua por densidad, sin energía. Se diseña en la semana 9 con la Lectura 11.</li>
+        <li><b>Caldera.</b> Genera el vapor vivo; los servicios de la planta se ven en la semana 6 con la Lectura 07.</li>
+      </ol>
+
+      <h3 class="sub">El Clevenger: la misma operación, en el laboratorio</h3>
+      <p>Antes de diseñar un extractor hay que saber cuánto aceite tiene el material, y para eso se usa un aparato tipo Clevenger<span class="cite" data-ref="4" data-n="4" tabindex="0"></span>. Una muestra pesada se hidrodestila en un matraz; el vapor se condensa y cae a un tubo graduado donde el aceite, si es más liviano que el agua, flota y se lee en mililitros; el agua rebosa por un brazo lateral y vuelve al matraz. Con ese retorno el agua no se acaba, y el aceite disuelto en ella se recupera en la siguiente pasada. Se destila hasta que la lectura deja de cambiar, y el resultado es el contenido de aceite del material, la referencia contra la que se compara lo que saca el extractor. Para aceites más densos que el agua, como el de clavo, existen versiones del tubo que recogen el aceite en el fondo.</p>
+
+      <figure class="fig">
+        <div class="fig-frame" style="display:flex; justify-content:center;">
+<svg class="dg angosta" id="fig-clevenger" viewBox="0 0 440 470" style="max-width:440px" role="img" aria-label="Aparato tipo Clevenger: matraz con la muestra y agua sobre una manta de calentamiento; el vapor sube por un tubo y cruza al condensador vertical; el condensado cae a un tubo graduado donde el aceite flota sobre el agua; un brazo lateral devuelve el agua al matraz.">
+  <path d="M58,420 A84,84 0 0 0 222,420" fill="none" stroke="#525C64" stroke-width="10"/>
+  <circle cx="140" cy="352" r="70" class="kf"/>
+  <path d="M74.6,377 A70,70 0 0 0 205.4,377 Z" fill="#E3E8EE"/>
+  <g fill="#6E6A00" fill-opacity="0.35" stroke="#6E6A00" stroke-width="1"><ellipse cx="110" cy="395" rx="10" ry="4"/><ellipse cx="150" cy="402" rx="10" ry="4" transform="rotate(20 150 402)"/><ellipse cx="175" cy="388" rx="10" ry="4" transform="rotate(-25 175 388)"/><ellipse cx="128" cy="410" rx="10" ry="4" transform="rotate(-10 128 410)"/></g>
+  <path class="k" d="M126,284 L126,62 L290,62 M154,284 L154,250 M154,236 L154,90 L290,90"/>
+  <rect x="290" y="40" width="44" height="124" rx="8" class="kf"/>
+  <path class="kt" d="M312,62 L312,164" />
+  <path class="kt" d="M300,72 q12,8 24,0 M300,92 q12,8 24,0 M300,112 q12,8 24,0 M300,132 q12,8 24,0"/>
+  <path class="k" d="M304,164 L304,300 L320,300 L320,164"/>
+  <rect x="305" y="190" width="14" height="30" fill="#FFF500" stroke="none"/>
+  <rect x="305" y="220" width="14" height="80" fill="#E3E8EE" stroke="none"/>
+  <path class="kt" d="M320,200 l6,0 M320,212 l6,0 M320,224 l6,0 M320,236 l6,0 M320,248 l6,0"/>
+  <path class="k" d="M304,292 L170,250 L154,250 M304,300 L304,306 L170,264 L154,264 L154,236"/>
+  <path class="kt" d="M140,250 L140,130" stroke-dasharray="4 4" marker-end="url(#ars)"/>
+  <text class="lbl-s" x="342" y="100">condensador</text>
+  <text class="lbl-s" x="334" y="200">aceite:</text>
+  <text class="lbl-s" x="334" y="217">se lee aquí</text>
+  <text class="lbl-s" x="334" y="276">tubo</text>
+  <text class="lbl-s" x="334" y="293">graduado</text>
+  <text class="lbl-s" x="196" y="312">retorno del agua</text>
+  <text class="lbl-s" x="196" y="329">(cohobación)</text>
+  <text class="lbl-s" x="140" y="456" text-anchor="middle">matraz con la muestra y agua, sobre la manta</text>
+  <text class="lbl-s" x="20" y="150">vapor</text>
+  <path class="kt" d="M60,146 L118,146" marker-end="url(#ars)"/>
+</svg>
+        </div>
+        <figcaption><b>Figura 8.</b> Aparato tipo Clevenger para aceites más livianos que el agua. El aceite se acumula arriba del tubo graduado y el agua vuelve al matraz por el brazo de retorno.</figcaption>
+      </figure>
+
+      <h3 class="sub">Por lotes o en batería</h3>
+      <p>El arrastre en lecho fijo es una operación por lotes: se carga, se abre el vapor, se destila, se descarga y se vuelve a empezar. Un solo extractor le da a la caldera y al condensador una demanda intermitente, alta mientras destila y nula mientras se carga. Por eso las destilerías medianas y grandes trabajan con varios extractores en batería, desfasados: mientras uno se carga, los otros destilan, y la caldera y los servicios ven una demanda casi constante. Algunos extractores comparten condensador y florentino; otros llevan los suyos. En cultivos de gran volumen, como la menta en algunas regiones productoras, el material picado se carga en el campo en contenedores móviles que hacen de extractor y se conectan al vapor al llegar a la destilería. Los diseños continuos, en que la carga avanza por el equipo mientras el vapor la atraviesa, existen pero son la excepción.</p>
+    </section>
+
+    <!-- 8. EJEMPLO RESUELTO -->
+    <section id="s8">
+      <div class="eyebrow">Cálculo paso a paso</div>
+      <h2 class="sec"><span class="secnum">8.</span> Del ensayo al extractor: ejemplo resuelto</h2>
+      <p>Este ejemplo usa un material genérico con datos supuestos para la lectura: hoja fresca de una hierba aromática, picada a unos 2 cm. Recorre el camino completo, desde un ensayo piloto hasta las dimensiones del extractor y su consumo de vapor. La regla de escalado que lo sostiene es sencilla: si la planta conserva <b>el mismo material picado igual, la misma altura de lecho, la misma densidad de carga y el mismo vapor por kilo de carga</b>, cada porción del lecho industrial vive lo mismo que el lecho piloto, y la curva del ensayo vale tal cual. Lo que cambia es el área.</p>
+
+      <div class="stepper" id="stepper-ej">
+        <div class="step-track" id="ej-track"></div>
+        <div id="ej-panels">
+
+          <div class="step-panel active"><div class="step-header"><div class="step-num">01</div><div class="step-title">El ensayo y el encargo</div></div><div class="step-body">
+            <p><b>Ensayo piloto.</b> Extractor de 0,40 m de diámetro con un lecho de 1,0 m de altura y 30,0 kg de hoja picada (densidad de carga de 239 kg/m³). Vapor vivo a 12 kg/h, es decir <span class="kx" data-tex="q = 12/30 = 0{,}40">q = 12/30 = 0,40</span> kg de vapor por kg de carga y por hora, a 101,3 kPa. La carga entra a 20 °C. La primera gota sale a los 22 min, y se mide el aceite acumulado cada 5 min.</p>
+            <p><b>Encargo.</b> Una cooperativa cosecha 6,0 t de hoja fresca por día y quiere destilarlas el mismo día, en jornadas de 20 h. Entre lotes se necesitan 30 min para descargar, limpiar y cargar. Hay que dimensionar el extractor y estimar su vapor.</p>
+          </div></div>
+
+          <div class="step-panel"><div class="step-header"><div class="step-num">02</div><div class="step-title">El modelo ajustado</div></div><div class="step-body">
+            <p>El ajuste del modelo de dos etapas a los datos del ensayo da:</p>
+            <div class="eqbox"><span class="kx kx-d" data-tex="Y_\infty = 0{,}85\ \%,\quad f = 0{,}60,\quad k_1 = 0{,}15\ \text{min}^{-1},\quad k_2 = 0{,}020\ \text{min}^{-1},\quad t_0 = 22\ \text{min}">Y∞ = 0,85 %, f = 0,60, k1 = 0,15 1/min, k2 = 0,020 1/min, t0 = 22 min</span></div>
+            <p>con el rendimiento en porcentaje de la masa de hoja fresca (0,85 % son 8,5 g de aceite por kg de hoja). Leído con la sección 4: el 60 % del aceite está a la mano y sale con una constante de tiempo de unos 7 min; el 40 % restante tiene que difundir y su constante es de 50 min. Con estos parámetros, a los 60 min se ha recuperado el 81 % de <span class="kx" data-tex="Y_\infty">Y∞</span>; a los 90 min, el 90 %; a los 120 min, el 94 %.</p>
+          </div></div>
+
+          <div class="step-panel"><div class="step-header"><div class="step-num">03</div><div class="step-title">¿Cuadra el tiempo muerto?</div></div><div class="step-body">
+            <p>Antes de escalar conviene comprobar que el ensayo es coherente. Con un calor específico de 3,5 kJ/(kg·K) para la hoja, 25 kJ/K para el metal del piloto, vapor saturado de 3 bar (2725 kJ/kg) que condensa a 100 °C (419 kJ/kg):</p>
+            <div class="eqbox"><span class="kx kx-d" data-tex="m_{v,\text{cal}} = \frac{(30 \times 3{,}5 + 25)(100 - 20)}{2725 - 419} = \frac{10\,400}{2306} = 4{,}5\ \text{kg} \qquad t_0 \approx \frac{4{,}5\ \text{kg}}{12\ \text{kg/h}} = 23\ \text{min}">m_v,cal = 10 400/2306 = 4,5 kg; t0 ≈ 4,5/12 h = 23 min</span></div>
+            <p>El balance predice 23 min y el ensayo dio 22: el tiempo muerto es el calentamiento del lecho, no un problema de medición. Ese vapor de arranque es 0,15 kg por kg de carga, y se repite en cada lote.</p>
+          </div></div>
+
+          <div class="step-panel"><div class="step-header"><div class="step-num">04</div><div class="step-title">El tiempo de lote</div></div><div class="step-body">
+            <p>Si el extractor fuera el cuello de botella, se buscaría el máximo de <span class="kx" data-tex="Y(t)/(t + 30)">Y(t)/(t + 30)</span>. Ese óptimo cae en <b>42 min</b> y recupera solo el 70 % del aceite: el lavado es tan rápido que conviene cortar apenas termina y cargar de nuevo. Pero aquí lo escaso es la hoja, que hay que destilar el mismo día, así que se fija una recuperación mínima del 90 % de <span class="kx" data-tex="Y_\infty">Y∞</span>, que se alcanza a los <b>90 min</b> desde que se abre el vapor (<span class="kx" data-tex="Y = 0{,}763\ \%">Y = 0,763 %</span>).</p>
+            <p>¿Vale la pena seguir? A los 90 min cada kilo de vapor adicional saca apenas 2,6 g de aceite, frente a un promedio de 12,7 g/kg en el lote. Alargar a 120 min recupera un 5 % más de aceite con un 33 % más de vapor. Se adopta un tiempo de destilación de 90 min, y el explorador de la sección 5 permite ver la decisión con otros parámetros.</p>
+          </div></div>
+
+          <div class="step-panel"><div class="step-header"><div class="step-num">05</div><div class="step-title">Lotes por día y carga por lote</div></div><div class="step-body">
+            <div class="eqbox"><span class="kx kx-d" data-tex="t_{\text{ciclo}} = 90 + 30 = 120\ \text{min} \qquad n = \frac{20 \times 60}{120} = 10\ \text{lotes/día} \qquad m_{\text{lote}} = \frac{6000\ \text{kg}}{10} = 600\ \text{kg}">ciclo = 120 min; n = 10 lotes/día; m_lote = 600 kg</span></div>
+            <p>Si el resultado no fuera entero, se redondea el número de lotes hacia abajo y se recalcula la carga, o se alarga la jornada.</p>
+          </div></div>
+
+          <div class="step-panel"><div class="step-header"><div class="step-num">06</div><div class="step-title">El lecho y el diámetro</div></div><div class="step-body">
+            <p>Con la misma densidad de carga y la misma altura de lecho del ensayo:</p>
+            <div class="eqbox"><span class="kx kx-d" data-tex="V = \frac{600}{239} = 2{,}51\ \text{m}^3 \qquad A = \frac{V}{H} = \frac{2{,}51}{1{,}0} = 2{,}51\ \text{m}^2 \qquad D = \sqrt{\frac{4A}{\pi}} = 1{,}79\ \text{m}">V = 2,51 m³; A = 2,51 m²; D = 1,79 m</span></div>
+            <p>A esto se suma el espacio de la tapa, del falso fondo y de la canasta. Un lecho más alto daría un recipiente más esbelto (con 2,0 m de lecho, 1,26 m de diámetro), pero entonces el tiempo muerto y el lavado ya no serían los del ensayo, y habría que repetir el ensayo piloto con esa altura antes de adoptarlo. Otra salida es partir la carga en dos extractores de 300 kg en batería.</p>
+          </div></div>
+
+          <div class="step-panel"><div class="step-header"><div class="step-num">07</div><div class="step-title">Caudal de vapor y velocidad</div></div><div class="step-body">
+            <p>Se conserva el vapor por kilo de carga del ensayo:</p>
+            <div class="eqbox"><span class="kx kx-d" data-tex="\dot m_v = q\,m_{\text{lote}} = 0{,}40 \times 600 = 240\ \text{kg/h} \qquad G = \frac{240/3600}{2{,}51} = 0{,}0265\ \frac{\text{kg}}{\text{m}^2\,\text{s}}">ṁ_v = 240 kg/h; G = 0,0265 kg/(m² s)</span></div>
+            <p>El flujo másico por área es el mismo del piloto (<span class="kx" data-tex="12/3600/0{,}126 = 0{,}0265">12/3600/0,126 = 0,0265</span>), como debe ser al conservar la altura, la densidad de carga y <span class="kx" data-tex="q">q</span>. Con una densidad del vapor de 0,59 kg/m³, la velocidad superficial es <span class="kx" data-tex="u = 0{,}0265/0{,}59 = 0{,}045">u = 0,0265/0,59 = 0,045</span> m/s, unos 4,5 cm/s, lejos de levantar la hoja o de arrastrar gotas. El tiempo muerto también se conserva: con unos 1000 kg de acero (500 kJ/K), el arranque condensa 90 kg de vapor, que a 240 kg/h son 23 min.</p>
+          </div></div>
+
+          <div class="step-panel"><div class="step-header"><div class="step-num">08</div><div class="step-title">Vapor, aceite y energía</div></div><div class="step-body">
+            <ul>
+              <li>Vapor por lote: <span class="kx" data-tex="240 \times 1{,}5 = 360">240 × 1,5 = 360</span> kg, de los cuales unos 90 kg (la cuarta parte) se van en calentar la carga y el metal.</li>
+              <li>Aceite por lote: <span class="kx" data-tex="600 \times 0{,}00763 = 4{,}58">600 × 0,00763 = 4,58</span> kg.</li>
+              <li>Relación real: <span class="kx" data-tex="4580/360 = 12{,}7">4580/360 = 12,7</span> g de aceite por kg de vapor. Un monoterpeno como el limoneno daría en equilibrio 690 g/kg: la planta trabaja unas cincuenta veces por debajo.</li>
+              <li>Por día: 3600 kg de vapor y 45,8 kg de aceite. Con 3,1 MJ por kilo de vapor (caldera del 85 %), son 11,2 GJ al día y unos 245 MJ por kilo de aceite.</li>
+            </ul>
+            <div class="we-result">Extractor de 1,79 m de diámetro con 1,0 m de lecho, 600 kg por lote, 240 kg/h de vapor durante 90 min, 10 lotes al día y unos 46 kg de aceite diarios.</div>
+          </div></div>
+
+          <div class="step-panel"><div class="step-header"><div class="step-num">09</div><div class="step-title">La caída de presión del lecho</div></div><div class="step-body">
+            <p>Para la hoja picada se toma una porosidad de 0,75 y un diámetro equivalente de 5 mm, con el vapor a 100 °C (<span class="kx" data-tex="\mu = 1{,}22\times10^{-5}">μ = 1,22 × 10⁻⁵</span> Pa·s, <span class="kx" data-tex="\rho_v = 0{,}59">ρ_v = 0,59</span> kg/m³):</p>
+            <div class="eqbox"><span class="kx kx-d" data-tex="\frac{\Delta P}{H} = \frac{150(1{,}22\times10^{-5})(0{,}045)(0{,}25)^2}{(0{,}75)^3(0{,}005)^2} + \frac{1{,}75(0{,}59)(0{,}045)^2(0{,}25)}{(0{,}75)^3(0{,}005)} \approx 0{,}49 + 0{,}25 = 0{,}74\ \text{Pa/m}">ΔP/H ≈ 0,49 + 0,25 = 0,74 Pa/m</span></div>
+            <p>Menos de un pascal en el metro de lecho: la resistencia la ponen el distribuidor, la rejilla y la línea, no la hoja. Si el lecho se compactara hasta una porosidad de 0,50, la caída subiría a unos 8 Pa/m, todavía pequeña. En un material fino y húmedo la historia es otra, y conviene medirla en el ensayo piloto, como hacen los datos del curso.</p>
+          </div></div>
+
+        </div>
+        <div class="step-nav">
+          <button type="button" class="step-prev" id="ej-prev">← Anterior</button>
+          <span class="step-count" id="ej-count">Paso 1 de 9</span>
+          <button type="button" class="step-next" id="ej-next">Siguiente →</button>
+        </div>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Lo que no se escala solo</b><p>La regla del ejemplo vale mientras la planta repita las condiciones del ensayo. Si cambian la altura del lecho, el vapor por kilo de carga o el tamaño de picado, cambian el tiempo muerto, el lavado o la difusión, y el diseño tiene que decir cómo se corrigen (con un ensayo nuevo, con los datos de otros ensayos o con un argumento físico explícito). También cambia la presión si la planta está a otra altura sobre el nivel del mar que el piloto.</p></div>
+      </div>
+    </section>
+
+    <!-- 9. LOS DATOS DEL CURSO -->
+    <section id="s9">
+      <div class="eyebrow">Para dimensionar</div>
+      <h2 class="sec"><span class="secnum">9.</span> Los datos del curso</h2>
+      <p>Con esta lectura el curso publica un conjunto de datos de rendimiento contra tiempo para cáscara de cítricos: catorce ensayos de un extractor piloto de lecho fijo con cáscara húmeda de naranja desgarrada y vapor vivo. Es el insumo con que su equipo ajusta un modelo y dimensiona el extractor de la planta. Los ensayos siguen un diseño factorial completo, tres tamaños de desgarrado por dos alturas de lecho por dos caudales de vapor, y dos réplicas de una de las condiciones para estimar el error experimental.</p>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Son datos sintéticos</b><p>Los números no son mediciones. Salen de un modelo de dos etapas, lavado y difusión, con parámetros del orden de los que se publican para aceites esenciales, un balance de energía para el calentamiento del lecho y ruido experimental añadido en cada lectura. Están hechos para enseñar a ajustar un modelo, separar efectos y escalar un extractor. Se reemplazarán o se compararán con los datos que su equipo tome en el laboratorio de arrastre de las semanas 14 y 15. La cabecera de cada archivo lo dice.</p></div>
+      </div>
+
+      <div class="descargas">
+        <a class="boton-dl" href="/classroom/iqya-2031-2027-10/assets/datos/arrastre_rendimiento_tiempo.csv" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Rendimiento contra tiempo (CSV, 350 filas)</a>
+        <a class="boton-dl" href="/classroom/iqya-2031-2027-10/assets/datos/arrastre_condiciones.csv" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Condiciones de los ensayos (CSV, 14 filas)</a>
+      </div>
+
+      <h3 class="sub">El extractor piloto y los ensayos</h3>
+      <p>El extractor tiene 0,25 m de diámetro interno, está aislado y lleva la carga en una canasta sobre una rejilla, con el vapor por un distribuidor en el fondo, como el de la Figura 7. Toda la cáscara viene de un mismo lote de naranja Valencia descartada por una juguera y desgarrada justo antes de cargar. El vapor es saturado de 3 bar, estrangulado hasta la presión de la cabeza, que es la atmosférica de Bogotá (unos 75 kPa). El tiempo se cuenta desde que se abre el vapor. Se lee el aceite acumulado en el receptor graduado y se pasa a masa con 0,843 g/mL; el destilado acuoso se pesa; el vapor alimentado sale del totalizador del medidor. Las lecturas son cada 5 min hasta los 60 min y cada 10 min hasta los 180 min.</p>
+      <p>Los tres factores son el tamaño de desgarrado (3, 6 y 12 mm, la malla de la desgarradora), la altura del lecho (0,6 y 1,2 m) y el caudal de vapor (8 y 16 kg/h nominales). E13 y E14 repiten la condición de E07. El orden de corrida se sorteó.</p>
+
+      <p class="tbl-cap"><b>Tabla 5.</b> Condiciones de los catorce ensayos (archivo <code>arrastre_condiciones.csv</code>). El vapor es el caudal medio medido; el aceite total es el que dio un Clevenger exhaustivo sobre una submuestra de cada carga; la caída de presión se midió entre la rejilla y el tope del lecho a los 60 min; purga y residuo se pesaron al terminar.</p>
+      <div class="tbl-wrap">
+        <table class="ou datos">
+          <thead><tr><th>Ensayo</th><th>Tamaño (mm)</th><th>Lecho (m)</th><th>Carga (kg)</th><th>Vapor (kg/h)</th><th>Aceite total (% bh)</th><th>Primera gota (min)</th><th>ΔP lecho (Pa)</th><th>Purga (kg)</th><th>Residuo (kg)</th><th>Réplica de</th></tr></thead>
+          <tbody>
+            <tr><td>E01</td><td class="num">3</td><td class="num">0,6</td><td class="num">15,51</td><td class="num">8,04</td><td class="num">0,733</td><td class="num">19,2</td><td class="num">100</td><td class="num">2,41</td><td class="num">16,74</td><td></td></tr>
+            <tr><td>E02</td><td class="num">3</td><td class="num">0,6</td><td class="num">15,61</td><td class="num">16,06</td><td class="num">0,723</td><td class="num">9,7</td><td class="num">236</td><td class="num">2,12</td><td class="num">16,75</td><td></td></tr>
+            <tr><td>E03</td><td class="num">3</td><td class="num">1,2</td><td class="num">31,15</td><td class="num">7,94</td><td class="num">0,714</td><td class="num">34,0</td><td class="num">166</td><td class="num">2,88</td><td class="num">33,41</td><td></td></tr>
+            <tr><td>E04</td><td class="num">3</td><td class="num">1,2</td><td class="num">31,05</td><td class="num">15,85</td><td class="num">0,719</td><td class="num">17,1</td><td class="num">361</td><td class="num">2,81</td><td class="num">33,41</td><td></td></tr>
+            <tr><td>E05</td><td class="num">6</td><td class="num">0,6</td><td class="num">13,92</td><td class="num">8,14</td><td class="num">0,73</td><td class="num">17,6</td><td class="num">22</td><td class="num">2,34</td><td class="num">14,94</td><td></td></tr>
+            <tr><td>E06</td><td class="num">6</td><td class="num">0,6</td><td class="num">14,24</td><td class="num">16,12</td><td class="num">0,709</td><td class="num">9,7</td><td class="num">59</td><td class="num">2,69</td><td class="num">15,35</td><td></td></tr>
+            <tr><td>E07</td><td class="num">6</td><td class="num">1,2</td><td class="num">27,97</td><td class="num">8,11</td><td class="num">0,696</td><td class="num">30,2</td><td class="num">36</td><td class="num">2,61</td><td class="num">30,09</td><td></td></tr>
+            <tr><td>E08</td><td class="num">6</td><td class="num">1,2</td><td class="num">27,83</td><td class="num">15,79</td><td class="num">0,742</td><td class="num">16,1</td><td class="num">95</td><td class="num">2,93</td><td class="num">29,89</td><td></td></tr>
+            <tr><td>E09</td><td class="num">12</td><td class="num">0,6</td><td class="num">12,47</td><td class="num">7,93</td><td class="num">0,712</td><td class="num">15,9</td><td class="num">7</td><td class="num">2,1</td><td class="num">13,45</td><td></td></tr>
+            <tr><td>E10</td><td class="num">12</td><td class="num">0,6</td><td class="num">12,77</td><td class="num">15,76</td><td class="num">0,712</td><td class="num">8,8</td><td class="num">23</td><td class="num">2,38</td><td class="num">13,66</td><td></td></tr>
+            <tr><td>E11</td><td class="num">12</td><td class="num">1,2</td><td class="num">26,19</td><td class="num">8,06</td><td class="num">0,745</td><td class="num">28,5</td><td class="num">18</td><td class="num">2,85</td><td class="num">28,19</td><td></td></tr>
+            <tr><td>E12</td><td class="num">12</td><td class="num">1,2</td><td class="num">25,28</td><td class="num">16,13</td><td class="num">0,71</td><td class="num">14,6</td><td class="num">47</td><td class="num">2,72</td><td class="num">27,28</td><td></td></tr>
+            <tr><td>E13</td><td class="num">6</td><td class="num">1,2</td><td class="num">28,36</td><td class="num">8,05</td><td class="num">0,701</td><td class="num">30,7</td><td class="num">50</td><td class="num">2,9</td><td class="num">30,45</td><td>E07</td></tr>
+            <tr><td>E14</td><td class="num">6</td><td class="num">1,2</td><td class="num">28,12</td><td class="num">8,03</td><td class="num">0,713</td><td class="num">30,8</td><td class="num">43</td><td class="num">2,61</td><td class="num">30,26</td><td>E07</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>El archivo de condiciones trae además, para cada ensayo, la humedad de la cáscara (75,2-77,4 % en base húmeda), la densidad aparente del lecho (423-530 kg/m³), su porosidad (0,44-0,56), la presión y la temperatura de la cabeza (74,7-75,6 kPa y 91,3-92,3 °C), la temperatura inicial de la carga (15,5-19,7 °C) y el orden de corrida.</p>
+
+      <h3 class="sub">Las columnas del archivo de rendimiento</h3>
+      <p class="tbl-cap"><b>Tabla 6.</b> Columnas de <code>arrastre_rendimiento_tiempo.csv</code>. Una fila por ensayo y por lectura; las tres mediciones son acumuladas desde que se abre el vapor.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead><tr><th>Columna</th><th>Unidad</th><th>Qué es</th></tr></thead>
+          <tbody>
+            <tr><td><code>ensayo</code></td><td>-</td><td>E01 a E14, el mismo código del archivo de condiciones.</td></tr>
+            <tr><td><code>tamano_mm</code></td><td>mm</td><td>Tamaño de desgarrado: 3, 6 o 12.</td></tr>
+            <tr><td><code>altura_lecho_m</code></td><td>m</td><td>Altura del lecho: 0,6 o 1,2.</td></tr>
+            <tr><td><code>vapor_kg_h</code></td><td>kg/h</td><td>Caudal de vapor nominal: 8 o 16 (el medido está en el archivo de condiciones).</td></tr>
+            <tr><td><code>tiempo_min</code></td><td>min</td><td>Tiempo desde que se abre el vapor: 0 a 60 cada 5 y 70 a 180 cada 10.</td></tr>
+            <tr><td><code>vapor_alimentado_kg</code></td><td>kg</td><td>Vapor que ha entrado al extractor.</td></tr>
+            <tr><td><code>destilado_acuoso_kg</code></td><td>kg</td><td>Agua condensada recogida en el receptor (el hidrolato), sin el aceite.</td></tr>
+            <tr><td><code>aceite_g</code></td><td>g</td><td>Aceite recogido.</td></tr>
+            <tr><td><code>rendimiento_pct_bh</code></td><td>%</td><td>Aceite recogido sobre la masa de cáscara húmeda cargada, por cien.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Cómo abrirlos</h3>
+      <p>Los dos archivos van en UTF-8, con <b>la coma como separador de columnas y el punto como separador decimal</b>, el formato que leen sin ajustes Python, R, Colab y la mayoría de los programas. Las primeras líneas empiezan con <code>#</code> y son la cabecera que describe el archivo: diez en el de rendimiento y seis en el de condiciones.</p>
+      <ul>
+        <li><b>Python o <a class="platform-link" href="https://colab.research.google.com" target="_blank" rel="noopener">Google Colab</a>:</b> pandas los lee directamente desde la dirección del curso, saltando la cabecera.</li>
+        <li><b>Excel:</b> use Datos, Obtener datos, Desde archivo, Desde texto/CSV. Escoja «65001: Unicode (UTF-8)» como origen y la coma como delimitador; en Transformar datos quite las filas superiores que empiezan con <code>#</code> y use la siguiente como encabezado. Si su Excel usa la coma como separador decimal, cambie el tipo de las columnas numéricas usando la configuración regional «Inglés (Estados Unidos)», para que lea bien el punto.</li>
+      </ul>
+<pre class="codigo">import pandas as pd
+
+base = "https://portfolio.luishreyes.com/classroom/iqya-2031-2027-10/assets/datos/"
+datos = pd.read_csv(base + "arrastre_rendimiento_tiempo.csv", comment="#")
+cond  = pd.read_csv(base + "arrastre_condiciones.csv", comment="#")
+
+e07 = datos[datos.ensayo == "E07"]                   # un ensayo
+tabla = datos.merge(cond, on=["ensayo", "tamano_mm", "altura_lecho_m"])</pre>
+
+      <div class="calc-wrap" id="calc-datos">
+        <h4>Vista previa de los datos</h4>
+        <p class="calc-sub">Los puntos son las lecturas del archivo, sin ningún ajuste. Escoja qué comparar.</p>
+        <div class="su-criteria" id="datos-casos" role="group" aria-label="Comparaciones">
+          <button type="button" class="su-btn" data-grupo="tamano">Tamaño de desgarrado</button>
+          <button type="button" class="su-btn" data-grupo="altura">Altura del lecho</button>
+          <button type="button" class="su-btn" data-grupo="vapor">Caudal de vapor</button>
+          <button type="button" class="su-btn" data-grupo="replicas">Réplicas</button>
+        </div>
+        <p class="chart-cap">Rendimiento acumulado (% de la cáscara húmeda)</p>
+        <div class="chart-box" id="datos-g"></div>
+        <div class="leyenda" id="datos-ley"></div>
+        <p class="calc-note" id="datos-nota">Cargando los datos…</p>
+      </div>
+    </section>
+
+    <!-- 10. CONCLUSIONES -->
+    <section id="s10">
+      <div class="eyebrow">Para llevarse</div>
+      <h2 class="sec"><span class="secnum">10.</span> Conclusiones</h2>
+      <p>Tres ideas para llevarse de esta lectura.</p>
+      <p><b>La primera:</b> el equilibrio de dos líquidos inmiscibles explica por qué el arrastre funciona. Cada líquido evapora como si estuviera solo, la mezcla hierve donde la suma de sus presiones de vapor iguala la del sistema y, con un grado de libertad, la presión fija la temperatura y la composición del vapor. Ese equilibrio da el máximo que puede llevar el vapor: 0,69 kg de limoneno por kilo a 1 atm, mucho menos para un aceite pesado como el eugenol.</p>
+      <p><b>La segunda:</b> la hidrodifusión explica cuánto saca en realidad. El vapor primero calienta el lecho, después lava el aceite que quedó expuesto y al final espera a que el resto difunda por el tejido. Por eso la relación real queda decenas de veces por debajo del equilibrio, y por eso el diseño no sale de una correlación sino de un ensayo de rendimiento contra tiempo y de un modelo ajustado a él.</p>
+      <p><b>La tercera:</b> con el ensayo y el modelo, el extractor se dimensiona. Conservando el material, la altura y la densidad del lecho y el vapor por kilo de carga, la curva del piloto vale en la planta; el tiempo de lote se decide con un criterio explícito y de ahí salen los lotes por día, la carga, el diámetro, el vapor y su energía. El tamaño de partícula, la altura del lecho y el caudal de vapor son las palancas, y cada una actúa sobre una parte distinta de la curva.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Antes del quiz</b><p>Compruebe que puede responder estas preguntas sin volver al texto:</p>
+          <ol>
+            <li>¿Por qué una mezcla de agua y limoneno hierve a 97,6 °C a 1 atm si el limoneno solo hierve a 176 °C? ¿Qué cambia en Bogotá?</li>
+            <li>Según la regla de las fases, ¿cuántos grados de libertad tiene el sistema de agua, aceite inmiscible y vapor? ¿Qué significa eso para la temperatura durante la destilación?</li>
+            <li>¿Por qué el eugenol da una relación de equilibrio unas diecisiete veces menor que el limoneno, si su masa molar es mayor?</li>
+            <li>¿Qué gana la lavanda al destilarse con vapor vivo en vez de hidrodestilarse, y en qué caso conviene todavía la hidrodestilación?</li>
+            <li>Explique la hidrodifusión con sus palabras y diga por qué la relación real de aceite por kilo de vapor queda decenas de veces por debajo de la de equilibrio.</li>
+            <li>En el modelo de dos etapas, ¿qué parámetro cambia al picar más fino y cuál casi no cambia al subir el caudal de vapor?</li>
+            <li>¿Por qué el tiempo de lote que maximiza la producción por hora deja aceite en el lecho, y cuándo conviene alargarlo?</li>
+            <li>Si un extractor industrial conserva la altura de lecho del piloto y quintuplica su área, ¿cómo debe cambiar el caudal de vapor para que sirva la curva del ensayo?</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>En su proyecto</b><p>El extractor es la estación 03 de su planta, entre el desgarrado y el condensador. Su equipo lo dimensiona en la Bitácora 3 con el conjunto de datos de la sección 9: resuelve el equilibrio con Antoine a la presión de su planta, ajusta un modelo de rendimiento contra tiempo, justifica el tiempo de lote y explica la brecha entre el equilibrio y la relación real, llevándola al tamaño de partícula, a la altura del lecho y al vapor. El tamaño de desgarrado que justificó en la Bitácora 1 entra aquí como dato de diseño. El vapor que salga de este cálculo es la carga del condensador de la semana 8. Recuerde que <a class="platform-link" href="https://www.aspentech.com/en/products/engineering/aspen-plus" target="_blank" rel="noopener">ASPEN Plus</a> cierra el balance del extractor, pero no predice su rendimiento: eso sale de los datos. Los detalles están en el <a href="/classroom/iqya-2031-2027-10/reto-aceite-esencial.html" target="_blank" rel="noopener">reto del curso</a> y en la guía de bitácoras.</p></div>
+      </div>
+    </section>
+
+    <!-- 11. REFERENCIAS -->
+    <section id="s11">
+      <div class="eyebrow">Fuentes</div>
+      <h2 class="sec"><span class="secnum">11.</span> Referencias</h2>
+      <p>Dos textos de consulta, en la Biblioteca de la Universidad:</p>
+      <div class="docs">
+        <a class="doccard" href="https://biblioteca.uniandes.edu.co" target="_blank" rel="noopener">
+          <span class="dic"><span>LIBRO</span></span>
+          <span class="dtxt"><b>The essential oils, volumen 1</b><span>Guenther (D. Van Nostrand, 1948). El tratado clásico de la producción de aceites esenciales: las tres formas de destilar, la hidrodifusión y la práctica de las destilerías.</span><em>EN LA BIBLIOTECA →</em></span>
+        </a>
+        <a class="doccard" href="https://biblioteca.uniandes.edu.co" target="_blank" rel="noopener">
+          <span class="dic"><span>LIBRO</span></span>
+          <span class="dtxt"><b>Mass-transfer operations</b><span>Treybal (McGraw-Hill, 3.ª ed., 1980). El capítulo de destilación trata los líquidos inmiscibles y la destilación con vapor, con un ejemplo resuelto.</span><em>EN LA BIBLIOTECA →</em></span>
+        </a>
+      </div>
+      <p>Pase el cursor por cualquier marcador del texto para ver la fuente sin perder el hilo. Aquí está el listado completo, en orden alfabético.</p>
+      <div class="refhint"><span class="dot">i</span> Cada número de esta lista corresponde a un marcador en el texto.</div>
+      <ol class="refs">
+        <li id="ref-1">Bustamante, J., van Stempvoort, S., García-Gallarreta, M., Houghton, J. A., Briers, H. K., Budarin, V. L., Matharu, A. S., &amp; Clark, J. H. (2016). Microwave assisted hydro-distillation of essential oils from wet citrus peel waste. <i>Journal of Cleaner Production, 137</i>, 598-605. <a href="https://doi.org/10.1016/j.jclepro.2016.07.108" target="_blank" rel="noopener">doi.org/10.1016/j.jclepro.2016.07.108</a></li>
+        <li id="ref-2">Cassel, E., Vargas, R. M. F., Martinez, N., Lorenzo, D., &amp; Dellacassa, E. (2009). Steam distillation modeling for essential oil extraction process. <i>Industrial Crops and Products, 29</i>(1), 171-176. <a href="https://doi.org/10.1016/j.indcrop.2008.04.017" target="_blank" rel="noopener">doi.org/10.1016/j.indcrop.2008.04.017</a></li>
+        <li id="ref-3">Cerpa, M. G., Mato, R. B., &amp; Cocero, M. J. (2008). Modeling steam distillation of essential oils: Application to lavandin super oil. <i>AIChE Journal, 54</i>(4), 909-917. <a href="https://doi.org/10.1002/aic.11438" target="_blank" rel="noopener">doi.org/10.1002/aic.11438</a></li>
+        <li id="ref-4">Clevenger, J. F. (1928). Apparatus for the determination of volatile oil. <i>Journal of the American Pharmaceutical Association, 17</i>(4), 345-349. <a href="https://doi.org/10.1002/jps.3080170407" target="_blank" rel="noopener">doi.org/10.1002/jps.3080170407</a></li>
+        <li id="ref-5">Ergun, S. (1952). Fluid flow through packed columns. <i>Chemical Engineering Progress, 48</i>(2), 89-94.</li>
+        <li id="ref-6">Guenther, E. (1948). <i>The essential oils. Volume one: History, origin in plants, production, analysis.</i> D. Van Nostrand.</li>
+        <li id="ref-7">Masango, P. (2005). Cleaner production of essential oils by steam distillation. <i>Journal of Cleaner Production, 13</i>(8), 833-839. <a href="https://doi.org/10.1016/j.jclepro.2004.02.039" target="_blank" rel="noopener">doi.org/10.1016/j.jclepro.2004.02.039</a></li>
+        <li id="ref-8">Milojević, S., Radosavljević, D., Pavićević, V., Pejanović, S., &amp; Veljković, V. (2013). Modeling the kinetics of essential oil hydrodistillation from plant materials. <i>Hemijska Industrija, 67</i>(5), 843-859. <a href="https://doi.org/10.2298/HEMIND121026009M" target="_blank" rel="noopener">doi.org/10.2298/HEMIND121026009M</a></li>
+        <li id="ref-9">National Institute of Standards and Technology. (s.f.). <i>NIST Chemistry WebBook, SRD 69</i>: parámetros de la ecuación de Antoine del <a href="https://webbook.nist.gov/cgi/cbook.cgi?ID=C80568&amp;Mask=4" target="_blank" rel="noopener">α-pineno</a> y del <a href="https://webbook.nist.gov/cgi/cbook.cgi?ID=C97530&amp;Mask=4" target="_blank" rel="noopener">eugenol</a>. Consultado el 23 de octubre de 2026.</li>
+        <li id="ref-10">Romdhane, M., &amp; Tizaoui, C. (2005). The kinetic modelling of a steam distillation unit for the extraction of aniseed (<i>Pimpinella anisum</i>) essential oil. <i>Journal of Chemical Technology &amp; Biotechnology, 80</i>(7), 759-766. <a href="https://doi.org/10.1002/jctb.1221" target="_blank" rel="noopener">doi.org/10.1002/jctb.1221</a></li>
+        <li id="ref-11">Sovová, H., &amp; Aleksovski, S. A. (2006). Mathematical model for hydrodistillation of essential oils. <i>Flavour and Fragrance Journal, 21</i>(6), 881-889. <a href="https://doi.org/10.1002/ffj.1729" target="_blank" rel="noopener">doi.org/10.1002/ffj.1729</a></li>
+        <li id="ref-12">Tosta Machado, C. A., Hodel, K. V. S., Lepikson, H. A., &amp; Machado, B. A. S. (2024). Distillation of essential oils: An innovative technological approach focused on productivity, quality and sustainability. <i>PLOS ONE, 19</i>(2), e0299502. <a href="https://doi.org/10.1371/journal.pone.0299502" target="_blank" rel="noopener">doi.org/10.1371/journal.pone.0299502</a></li>
+        <li id="ref-13">Treybal, R. E. (1980). <i>Mass-transfer operations</i> (3.ª ed.). McGraw-Hill. Capítulo 9: destilación de líquidos inmiscibles y destilación con vapor.</li>
+      </ol>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Proyecto de Operaciones Unitarias · <span class="nbk">IQYA-203</span>1</span>
+      <span>Universidad de los Andes · Ingeniería Química y de Alimentos</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<!-- Popover de referencia (único, reutilizado) -->
+<div class="ref-pop" id="refpop" role="tooltip">
+  <div class="rp-head"><span class="rp-num"></span> Referencia</div>
+  <div class="rp-body"></div>
+</div>
+
+<script>
+(function () {
+  /* ---- Barra de progreso de lectura ---- */
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ===================== POPOVERS DE CITAS ===================== */
+  var pop = document.getElementById('refpop');
+  var popNum = pop.querySelector('.rp-num');
+  var popBody = pop.querySelector('.rp-body');
+  var current = null;
+  var hideTimer = null;
+
+  function refHTML(n) {
+    var li = document.getElementById('ref-' + n);
+    return li ? li.innerHTML : '';
+  }
+
+  function place(marker) {
+    var r = marker.getBoundingClientRect();
+    pop.style.visibility = 'hidden';
+    pop.classList.add('show');
+    var pw = pop.offsetWidth, ph = pop.offsetHeight;
+    var cx = r.left + r.width / 2;
+    var left = cx - pw / 2;
+    var margin = 12;
+    left = Math.max(margin, Math.min(left, window.innerWidth - pw - margin));
+    var below = r.top < ph + 24;
+    var top = below ? r.bottom + 12 : r.top - ph - 12;
+    pop.classList.toggle('below', below);
+    pop.classList.toggle('above', !below);
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+    pop.style.setProperty('--arrow', (cx - left) + 'px');
+    pop.style.visibility = '';
+  }
+
+  function show(marker) {
+    clearTimeout(hideTimer);
+    var n = marker.getAttribute('data-ref');
+    if (current && current !== marker) current.classList.remove('is-open');
+    current = marker;
+    marker.classList.add('is-open');
+    popNum.textContent = n;
+    popBody.innerHTML = refHTML(n);
+    place(marker);
+    requestAnimationFrame(function () { pop.classList.add('show'); });
+  }
+
+  function hide() {
+    hideTimer = setTimeout(function () {
+      pop.classList.remove('show');
+      if (current) current.classList.remove('is-open');
+      current = null;
+    }, 120);
+  }
+
+  document.querySelectorAll('.cite').forEach(function (m) {
+    m.addEventListener('mouseenter', function () { show(m); });
+    m.addEventListener('mouseleave', hide);
+    m.addEventListener('focus', function () { show(m); });
+    m.addEventListener('blur', hide);
+    m.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (current === m && pop.classList.contains('show')) {
+        var li = document.getElementById('ref-' + m.getAttribute('data-ref'));
+        if (li) {
+          var y = li.getBoundingClientRect().top + window.scrollY - 90;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          li.classList.add('flash');
+          setTimeout(function () { li.classList.remove('flash'); }, 1600);
+          pop.classList.remove('show'); m.classList.remove('is-open'); current = null;
+        }
+      } else {
+        show(m);
+      }
+    });
+  });
+
+  pop.addEventListener('mouseenter', function () { clearTimeout(hideTimer); });
+  pop.addEventListener('mouseleave', hide);
+  window.addEventListener('scroll', function () {
+    if (current) place(current);
+  }, { passive: true });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { pop.classList.remove('show'); if (current) current.classList.remove('is-open'); current = null; }
+  });
+
+  /* ---- Navegación suave del índice ---- */
+  document.querySelectorAll('.toc a, .doc-body a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        var y = el.getBoundingClientRect().top + window.scrollY - 24;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    });
+  });
+})();
+
+// Sticky side-nav active section
+(function() {
+  var sects = Array.from(document.querySelectorAll('.doc-body section[id]')).filter(function(s){ return s.id !== 's0'; });
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + 180;
+    var cur = sects[0].id;
+    for (var i = 0; i < sects.length; i++) { if (sects[i].offsetTop <= y) cur = sects[i].id; }
+    document.querySelectorAll('.sn-item').forEach(function(a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>
+
+<script>
+/* ── Lightbox (tap-to-zoom): imágenes y, en pantalla ancha, diagramas SVG ── */
+(function(){
+  var ov=document.createElement('div');
+  ov.className='lightbox-overlay';
+  ov.innerHTML='<img alt=""><div class="lb-svg"></div>';
+  document.body.appendChild(ov);
+  var ovImg=ov.querySelector('img'), ovSvg=ov.querySelector('.lb-svg');
+  function close(){ ov.classList.remove('is-open'); setTimeout(function(){ if(!ov.classList.contains('is-open')){ ov.classList.remove('con-svg'); ovSvg.innerHTML=''; } }, 260); }
+  document.querySelectorAll('.fig-frame > img').forEach(function(img){
+    img.addEventListener('click',function(){
+      ov.classList.remove('con-svg'); ovSvg.innerHTML='';
+      ovImg.src=this.src; ovImg.alt=this.alt;
+      ov.classList.add('is-open');
+    });
+  });
+  document.querySelectorAll('.fig-frame svg.dg').forEach(function(svg){
+    svg.addEventListener('click',function(){
+      if (window.innerWidth < 761) return;   /* en el celular el diagrama se desliza */
+      var c=svg.cloneNode(true); c.removeAttribute('id');
+      ovSvg.innerHTML=''; ovSvg.appendChild(c);
+      ov.classList.add('con-svg','is-open');
+    });
+  });
+  ov.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+})();
+</script>
+
+<script src="/classroom/vendor/katex/katex.min.js"></script>
+<script>
+/* Fórmulas: cada [data-tex] se compone con KaTeX autoalojado. Si KaTeX no
+   carga, queda el texto de respaldo que trae el elemento. */
+function renderMath(){
+  if (!window.katex) return;
+  document.querySelectorAll('[data-tex]').forEach(function(el){
+    try {
+      katex.render(el.getAttribute('data-tex'), el, { displayMode: el.classList.contains('kx-d'), throwOnError: false, strict: 'ignore' });
+    } catch (e) { /* se conserva el texto de respaldo */ }
+  });
+}
+renderMath();
+</script>
+
+<script>
+/* ===================== Utilidades de las calculadoras ===================== */
+var AR = (function () {
+  function leer(s) {
+    var v = parseFloat(String(s).replace(/\s/g, '').replace(',', '.'));
+    return isFinite(v) ? v : NaN;
+  }
+  function c(x, d) {
+    if (!isFinite(x)) return '—';
+    var s = x.toFixed(d);
+    var neg = s.charAt(0) === '-';
+    if (neg) s = s.slice(1);
+    var p = s.split('.');
+    var ent = p[0].length > 4 ? p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : p[0];
+    return (neg ? '−' : '') + ent + (p[1] ? ',' + p[1] : '');
+  }
+  /* Gráfica en SVG al ancho real de su caja: la letra queda en 13 px a cualquier ancho. */
+  function grafica(el, g) {
+    var W = Math.max(280, Math.round(el.clientWidth || 600)), H = g.alto || 250;
+    var mL = 54, mR = 16, mT = 12, mB = 42, iw = W - mL - mR, ih = H - mT - mB;
+    var lg = !!g.log;
+    function fy(v) { return lg ? Math.log10(Math.max(v, 1e-9)) : v; }
+    var y0 = fy(g.ymin), y1 = fy(g.ymax);
+    function X(x) { return mL + (x - g.xmin) / (g.xmax - g.xmin) * iw; }
+    function Y(y) { var v = Math.min(Math.max(fy(y), y0), y1); return mT + ih - (v - y0) / (y1 - y0) * ih; }
+    var s = '<svg class="plot" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="' + (g.aria || '') + '">';
+    s += '<defs><clipPath id="clip-' + el.id + '"><rect x="' + mL + '" y="' + mT + '" width="' + iw + '" height="' + ih + '"/></clipPath></defs>';
+    (g.yt || []).forEach(function (v) {
+      s += '<line class="rej" x1="' + mL + '" x2="' + (mL + iw) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/>';
+      s += '<text x="' + (mL - 8) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + (g.fy ? g.fy(v) : c(v, 0)) + '</text>';
+    });
+    (g.xt || []).forEach(function (v) {
+      s += '<text x="' + X(v) + '" y="' + (mT + ih + 18) + '" text-anchor="middle">' + c(v, 0) + '</text>';
+    });
+    s += '<path class="ax" d="M' + mL + ',' + mT + ' L' + mL + ',' + (mT + ih) + ' L' + (mL + iw) + ',' + (mT + ih) + '"/>';
+    if (g.xlab) s += '<text x="' + (mL + iw / 2) + '" y="' + (H - 4) + '" text-anchor="middle">' + g.xlab + '</text>';
+    s += '<g clip-path="url(#clip-' + el.id + ')">';
+    (g.bandas || []).forEach(function (b) {
+      s += '<rect class="banda" x="' + X(b[0]) + '" y="' + mT + '" width="' + Math.max(0, X(b[1]) - X(b[0])) + '" height="' + ih + '"/>';
+    });
+    (g.series || []).forEach(function (se) {
+      var d = '';
+      se.d.forEach(function (p, i) { d += (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1); });
+      if (d) s += '<path class="' + se.cls + '" d="' + d + '"/>';
+      if (se.pts) se.d.forEach(function (p) { s += '<circle class="' + se.pts + '" cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="3.2"/>'; });
+    });
+    (g.vlineas || []).forEach(function (v) {
+      s += '<line class="' + (v.cls || 'c-gris') + '" x1="' + X(v.x) + '" x2="' + X(v.x) + '" y1="' + mT + '" y2="' + (mT + ih) + '"/>';
+    });
+    s += '</g>';
+    (g.puntos || []).forEach(function (p) {
+      s += '<circle class="' + p.cls + '" cx="' + X(p.x) + '" cy="' + Y(p.y) + '" r="6"/>';
+      if (p.et) {
+        var tx = X(p.x) + (p.dx || 9), ta = 'start';
+        if (tx > mL + iw - 90) { tx = X(p.x) - 9; ta = 'end'; }
+        s += '<text class="' + (p.etcls || 'et') + '" x="' + tx + '" y="' + (Y(p.y) + (p.dy || -9)) + '" text-anchor="' + ta + '">' + p.et + '</text>';
+      }
+    });
+    s += '</svg>';
+    el.innerHTML = s;
+  }
+  /* Campo con texto (acepta coma o punto) y deslizador sincronizados. */
+  function campo(cont, f, alCambiar) {
+    var d = document.createElement('div');
+    d.className = 'calc-field';
+    d.innerHTML = '<div class="calc-field-header"><span>' + f.et + '</span><b>' + (f.u || '') + '</b></div>' +
+      '<input type="text" inputmode="decimal" aria-label="' + f.aria + '">' +
+      '<input type="range" min="' + f.min + '" max="' + f.max + '" step="' + f.paso + '" aria-label="' + f.aria + ', deslizador">';
+    cont.appendChild(d);
+    var tx = d.querySelector('input[type=text]'), rg = d.querySelector('input[type=range]');
+    var api = {
+      poner: function (v) { tx.value = c(v, f.dec); rg.value = v; tx.classList.remove('fuera'); },
+      valor: NaN
+    };
+    tx.addEventListener('input', function () {
+      var v = leer(tx.value);
+      var ok = isFinite(v) && v >= f.min && v <= f.max;
+      tx.classList.toggle('fuera', !ok);
+      if (ok) { rg.value = v; api.valor = v; alCambiar(); }
+    });
+    rg.addEventListener('input', function () {
+      var v = parseFloat(rg.value); api.valor = v; tx.value = c(v, f.dec); tx.classList.remove('fuera'); alCambiar();
+    });
+    var orig = api.poner;
+    api.poner = function (v) { orig(v); api.valor = v; };
+    return api;
+  }
+  function alRedimensionar(fn) {
+    var t = null, w = window.innerWidth;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === w) return;
+      w = window.innerWidth; clearTimeout(t); t = setTimeout(fn, 120);
+    });
+  }
+  return { leer: leer, c: c, grafica: grafica, campo: campo, alRedimensionar: alRedimensionar };
+})();
+
+/* ===================== Calculadora del equilibrio ===================== */
+(function () {
+  var raiz = document.getElementById('calc-eq');
+  if (!raiz) return;
+  // Agua: Antoine en mmHg y °C (las constantes del reto). Limoneno: kPa y °C (las del reto).
+  // α-Pineno y eugenol: NIST Chemistry WebBook, p en bar y T en K.
+  function pAgua(t) { return Math.pow(10, 8.07131 - 1730.63 / (233.426 + t)) * 0.133322; }
+  var AC = {
+    lim:  { M: 136.24, nombre: 'limoneno', p: function (t) { return Math.pow(10, 6.21379 - 1615.9 / (t + 208)); }, rango: null },
+    apin: { M: 136.23, nombre: 'α-pineno', p: function (t) { return 100 * Math.pow(10, 3.92161 - 1411.869 / (t + 273.15 - 68.817)); }, rango: [19.4, 155.8] },
+    eug:  { M: 164.20, nombre: 'eugenol',  p: function (t) { return 100 * Math.pow(10, 5.08897 - 2463.351 / (t + 273.15 - 42.226)); }, rango: [78.5, 253.6] }
+  };
+  function biseca(f, a, b) { for (var i = 0; i < 80; i++) { var m = (a + b) / 2; if (f(m) > 0) b = m; else a = m; } return (a + b) / 2; }
+  var sel = document.getElementById('eq-comp'), pt = document.getElementById('eq-p-txt'), pr = document.getElementById('eq-p');
+  var rt = document.getElementById('eq-r-txt');
+  var casos = raiz.querySelectorAll('#eq-casos .su-btn');
+  var P = 101.325, R = 13;
+  function pinta() {
+    var ac = AC[sel.value];
+    var T = biseca(function (t) { return pAgua(t) + ac.p(t) - P; }, 20, 130);
+    var po = ac.p(T), pw = pAgua(T);
+    var rel = po * ac.M / (pw * 18.02);
+    var yo = po / P;
+    var Tw = biseca(function (t) { return pAgua(t) - P; }, 20, 140);
+    var To = biseca(function (t) { return ac.p(t) - P; }, 20, 400);
+    document.getElementById('eq-t').textContent = AR.c(T, 1) + ' °C';
+    document.getElementById('eq-t-nota').textContent = 'a ' + AR.c(P, 1) + ' kPa, con agua y ' + ac.nombre + ' líquidos';
+    document.getElementById('eq-rel').textContent = AR.c(rel, rel < 0.1 ? 3 : 2) + ' kg/kg';
+    document.getElementById('eq-y').textContent = AR.c(100 * yo, yo < 0.01 ? 2 : 1) + ' % molar';
+    document.getElementById('eq-y-nota').textContent = AR.c(100 * rel / (1 + rel), 1) + ' % del vapor en masa';
+    document.getElementById('eq-po').textContent = AR.c(po, po < 1 ? 3 : 2) + ' kPa';
+    document.getElementById('eq-pw').textContent = 'el agua aporta ' + AR.c(pw, 2) + ' kPa';
+    document.getElementById('eq-solos').textContent = AR.c(Tw, 1) + ' · ' + AR.c(To, 1) + ' °C';
+    document.getElementById('eq-veces').textContent = (isFinite(R) && R > 0) ? AR.c(rel / (R / 1000), 0) + ' veces' : '—';
+    var fuera = ac.rango && (T < ac.rango[0] || T > ac.rango[1]);
+    document.getElementById('eq-aviso').classList.toggle('on', !!fuera);
+    document.getElementById('eq-p-val').textContent = AR.c(P, 1);
+    document.getElementById('eq-r-val').textContent = AR.c(R, 1);
+    casos.forEach(function (b) { b.classList.toggle('active', Math.abs(parseFloat(b.getAttribute('data-p')) - P) < 0.05); });
+  }
+  function ponP(v, desdeTexto) {
+    P = v; pr.value = v;
+    if (!desdeTexto) pt.value = AR.c(v, 1);
+    pinta();
+  }
+  pt.addEventListener('input', function () {
+    var v = AR.leer(pt.value), ok = isFinite(v) && v >= 40 && v <= 110;
+    pt.classList.toggle('fuera', !ok);
+    if (ok) ponP(v, true);
+  });
+  pr.addEventListener('input', function () { pt.classList.remove('fuera'); ponP(parseFloat(pr.value)); });
+  rt.addEventListener('input', function () {
+    var v = AR.leer(rt.value), ok = isFinite(v) && v > 0 && v < 2000;
+    rt.classList.toggle('fuera', !ok);
+    if (ok) { R = v; pinta(); }
+  });
+  sel.addEventListener('change', pinta);
+  casos.forEach(function (b) { b.addEventListener('click', function () { pt.classList.remove('fuera'); ponP(parseFloat(b.getAttribute('data-p'))); }); });
+  ponP(101.325);
+})();
+
+/* ===================== Explorador del modelo de dos etapas ===================== */
+(function () {
+  var raiz = document.getElementById('calc-mod');
+  if (!raiz) return;
+  var EQ = 690; // g de limoneno por kg de vapor en equilibrio a 1 atm
+  var CASOS = {
+    ejemplo: { yinf: 0.85, f: 0.60, k1: 0.15, k2: 0.020, t0: 22, q: 0.40, tc: 30, tb: 90 },
+    fino:    { yinf: 0.90, f: 0.80, k1: 0.25, k2: 0.040, t0: 22, q: 0.40, tc: 30, tb: 60 },
+    semilla: { yinf: 0.85, f: 0.15, k1: 0.10, k2: 0.005, t0: 22, q: 0.40, tc: 30, tb: 120 },
+    primer:  { yinf: 0.85, f: 0.00, k1: 0.15, k2: 0.040, t0: 22, q: 0.40, tc: 30, tb: 90 }
+  };
+  var DEF = [
+    { k: 'yinf', et: 'Y∞, aceite recuperable', u: '% de la carga', min: 0.1, max: 3, paso: 0.01, dec: 2 },
+    { k: 'f',    et: 'f, fracción por lavado', u: '', min: 0, max: 1, paso: 0.01, dec: 2 },
+    { k: 'k1',   et: 'k₁, lavado', u: '1/min', min: 0.01, max: 1, paso: 0.005, dec: 3 },
+    { k: 'k2',   et: 'k₂, difusión', u: '1/min', min: 0.001, max: 0.2, paso: 0.001, dec: 3 },
+    { k: 't0',   et: 't₀, primera gota', u: 'min', min: 0, max: 60, paso: 1, dec: 0 },
+    { k: 'q',    et: 'q, vapor por kilo de carga', u: 'kg/(kg·h)', min: 0.1, max: 2, paso: 0.01, dec: 2 },
+    { k: 'tc',   et: 't_c, descarga y carga', u: 'min', min: 0, max: 120, paso: 1, dec: 0 },
+    { k: 'tb',   et: 'Tiempo de destilación', u: 'min', min: 10, max: 300, paso: 1, dec: 0 }
+  ];
+  var cont = document.getElementById('mod-campos');
+  var C = {};
+  DEF.forEach(function (f) { f.aria = f.et; C[f.k] = AR.campo(cont, f, pinta); });
+  var botones = raiz.querySelectorAll('#mod-casos .su-btn');
+  function v(k) { return C[k].valor; }
+  function Y(t, p) { if (t <= p.t0) return 0; var s = t - p.t0; return p.yinf * (1 - p.f * Math.exp(-p.k1 * s) - (1 - p.f) * Math.exp(-p.k2 * s)); }
+  function Yl(t, p) { if (t <= p.t0) return 0; return p.yinf * p.f * (1 - Math.exp(-p.k1 * (t - p.t0))); }
+  function Yd(t, p) { if (t <= p.t0) return 0; return p.yinf * (1 - p.f) * (1 - Math.exp(-p.k2 * (t - p.t0))); }
+  function dY(t, p) { if (t <= p.t0) return 0; var s = t - p.t0; return p.yinf * (p.f * p.k1 * Math.exp(-p.k1 * s) + (1 - p.f) * p.k2 * Math.exp(-p.k2 * s)); }
+  function pinta() {
+    var p = {}; DEF.forEach(function (f) { p[f.k] = v(f.k); });
+    if (DEF.some(function (f) { return !isFinite(p[f.k]); })) return;
+    // óptimo de producción por hora de equipo
+    var best = 0, topt = p.t0;
+    for (var t = p.t0 + 0.25; t <= 600; t += 0.25) { var P = Y(t, p) / (t + p.tc); if (P > best) { best = P; topt = t; } }
+    var tb = p.tb, yb = Y(tb, p);
+    var rb = 10 * yb / (p.q * tb / 60), rt = 10 * dY(tb, p) / (p.q / 60);
+    document.getElementById('mod-y').textContent = AR.c(10 * yb, 2) + ' g/kg';
+    document.getElementById('mod-y-nota').textContent = AR.c(100 * yb / p.yinf, 0) + ' % de Y∞ · ' + AR.c(yb, 3) + ' % de la carga';
+    document.getElementById('mod-rm').textContent = AR.c(rb, 1) + ' g/kg';
+    document.getElementById('mod-rm-nota').textContent = rb > 0 ? 'unas ' + AR.c(EQ / rb, 0) + ' veces por debajo del equilibrio del limoneno' : 'todavía no sale aceite';
+    document.getElementById('mod-rt').textContent = AR.c(rt, rt < 1 ? 2 : 1) + ' g/kg';
+    document.getElementById('mod-topt').textContent = AR.c(topt, 0) + ' min';
+    document.getElementById('mod-topt-nota').textContent = 'recupera el ' + AR.c(100 * Y(topt, p) / p.yinf, 0) + ' % de Y∞';
+    document.getElementById('mod-vap').textContent = AR.c(p.q * tb / 60, 2) + ' kg/kg';
+    var n = Math.floor(1200 / (tb + p.tc));
+    document.getElementById('mod-lotes').textContent = n;
+    document.getElementById('mod-lotes-nota').textContent = 'ciclo de ' + AR.c(tb + p.tc, 0) + ' min';
+    var caso = null;
+    Object.keys(CASOS).forEach(function (k) { var c = CASOS[k], igual = true; DEF.forEach(function (f) { if (Math.abs(c[f.k] - p[f.k]) > 1e-9) igual = false; }); if (igual) caso = k; });
+    botones.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-caso') === caso); });
+    // gráficas
+    var xmax = Math.max(180, Math.ceil((Math.max(tb, topt) + 20) / 30) * 30);
+    var tot = [], lav = [], dif = [], r = [], rm = [];
+    for (var x = 0; x <= xmax; x += xmax / 360) {
+      tot.push([x, 10 * Y(x, p)]); lav.push([x, 10 * Yl(x, p)]); dif.push([x, 10 * Yd(x, p)]);
+      if (x > p.t0 + 0.3) { r.push([x, 10 * dY(x, p) / (p.q / 60)]); rm.push([x, 10 * Y(x, p) / (p.q * x / 60)]); }
+    }
+    var ymax = Math.max(2, Math.ceil(10 * p.yinf * 1.12));
+    var yt = []; var pasoY = ymax <= 6 ? 1 : (ymax <= 15 ? 2 : 5); for (var yy = 0; yy <= ymax + 1e-9; yy += pasoY) yt.push(yy);
+    var xt = []; for (var xx = 0; xx <= xmax; xx += (xmax > 200 ? 60 : 30)) xt.push(xx);
+    var pend = Y(topt, p) / (topt + p.tc) * 10;
+    var tang = [[0, pend * p.tc], [xmax, pend * (xmax + p.tc)]];
+    AR.grafica(document.getElementById('mod-g1'), {
+      xmin: 0, xmax: xmax, ymin: 0, ymax: ymax, xt: xt, yt: yt, xlab: 'Tiempo desde que se abre el vapor (min)',
+      aria: 'Aceite acumulado contra el tiempo, con sus componentes de lavado y difusión',
+      bandas: [[0, p.t0]],
+      series: [{ d: tang, cls: 'c-gris' }, { d: dif, cls: 'c-dif' }, { d: lav, cls: 'c-lav' }, { d: tot, cls: 'c-tot' }],
+      vlineas: [{ x: tb, cls: 'c-eq' }],
+      puntos: [{ x: topt, y: 10 * Y(topt, p), cls: 'pt-o', et: 't* = ' + AR.c(topt, 0) + ' min', etcls: 'et-o', dy: 18 },
+               { x: tb, y: 10 * yb, cls: 'pt', et: 'corte, ' + AR.c(tb, 0) + ' min', dy: -10 }]
+    });
+    AR.grafica(document.getElementById('mod-g2'), {
+      xmin: 0, xmax: xmax, ymin: 0.1, ymax: 2000, log: true, xt: xt, yt: [0.1, 1, 10, 100, 1000],
+      fy: function (v) { return v < 1 ? AR.c(v, 1) : AR.c(v, 0); }, xlab: 'Tiempo desde que se abre el vapor (min)',
+      aria: 'Aceite por kilo de vapor contra el tiempo, en escala logarítmica, con el equilibrio del limoneno como referencia',
+      bandas: [[0, p.t0]],
+      series: [{ d: [[0, EQ], [xmax, EQ]], cls: 'c-eq' }, { d: rm, cls: 'c-lav' }, { d: r, cls: 'c-tot' }],
+      vlineas: [{ x: tb, cls: 'c-eq' }],
+      puntos: [{ x: tb, y: Math.max(rb, 0.1), cls: 'pt', et: AR.c(rb, 1) + ' g/kg', dy: -10 }]
+    });
+  }
+  function carga(k) { var c = CASOS[k]; DEF.forEach(function (f) { C[f.k].poner(c[f.k]); }); pinta(); }
+  botones.forEach(function (b) { b.addEventListener('click', function () { carga(b.getAttribute('data-caso')); }); });
+  carga('ejemplo');
+  AR.alRedimensionar(pinta);
+})();
+
+/* ===================== Ejemplo resuelto paso a paso ===================== */
+(function () {
+  var track = document.getElementById('ej-track');
+  var panels = document.querySelectorAll('#ej-panels .step-panel');
+  if (!track || !panels.length) return;
+  var cur = 0, cuenta = document.getElementById('ej-count');
+  panels.forEach(function (p, i) {
+    var pip = document.createElement('div'); pip.className = 'step-pip';
+    var dot = document.createElement('button'); dot.type = 'button'; dot.className = 'step-dot'; dot.textContent = i + 1;
+    dot.setAttribute('aria-label', 'Paso ' + (i + 1));
+    dot.addEventListener('click', function () { cur = i; render(); });
+    pip.appendChild(dot);
+    if (i < panels.length - 1) { var l = document.createElement('div'); l.className = 'step-line'; pip.appendChild(l); }
+    track.appendChild(pip);
+  });
+  function render() {
+    track.querySelectorAll('.step-dot').forEach(function (d, i) { d.className = 'step-dot' + (i < cur ? ' done' : i === cur ? ' active' : ''); });
+    track.querySelectorAll('.step-line').forEach(function (l, i) { l.className = 'step-line' + (i < cur ? ' done' : ''); });
+    panels.forEach(function (p, i) { p.classList.toggle('active', i === cur); });
+    cuenta.textContent = 'Paso ' + (cur + 1) + ' de ' + panels.length;
+    document.getElementById('ej-prev').disabled = cur === 0;
+    document.getElementById('ej-next').disabled = cur === panels.length - 1;
+  }
+  document.getElementById('ej-prev').addEventListener('click', function () { cur = Math.max(0, cur - 1); render(); });
+  document.getElementById('ej-next').addEventListener('click', function () { cur = Math.min(panels.length - 1, cur + 1); render(); });
+  render();
+})();
+
+/* ===================== Vista previa de los datos del curso ===================== */
+(function () {
+  var raiz = document.getElementById('calc-datos');
+  if (!raiz) return;
+  var nota = document.getElementById('datos-nota'), ley = document.getElementById('datos-ley');
+  var GRUPOS = {
+    tamano:   { e: ['E03', 'E07', 'E11'], et: ['3 mm', '6 mm', '12 mm'], nota: 'Lecho de 1,2 m y 8 kg/h de vapor en los tres; cambia el tamaño de desgarrado.' },
+    altura:   { e: ['E05', 'E07'], et: ['lecho de 0,6 m', 'lecho de 1,2 m'], nota: 'Tiras de 6 mm y 8 kg/h de vapor en los dos; cambia la altura del lecho, y con ella la carga.' },
+    vapor:    { e: ['E07', 'E08'], et: ['8 kg/h', '16 kg/h'], nota: 'Tiras de 6 mm y lecho de 1,2 m en los dos; cambia el caudal de vapor.' },
+    replicas: { e: ['E07', 'E13', 'E14'], et: ['E07', 'E13', 'E14'], nota: 'Tres corridas de la misma condición (6 mm, 1,2 m, 8 kg/h): la diferencia entre ellas es el error experimental.' }
+  };
+  var CLS = [['s1', 'p1', ''], ['s2', 'p2', 'l2'], ['s3', 'p3', 'l3']];
+  var datos = null, grupo = 'tamano';
+  var botones = raiz.querySelectorAll('#datos-casos .su-btn');
+  function pinta() {
+    botones.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-grupo') === grupo); });
+    if (!datos) return;
+    var G = GRUPOS[grupo];
+    var series = G.e.map(function (e, i) {
+      var d = datos.filter(function (r) { return r.ensayo === e; }).map(function (r) { return [r.t, r.y]; });
+      return { d: d, cls: CLS[i][0], pts: CLS[i][1] };
+    });
+    AR.grafica(document.getElementById('datos-g'), {
+      xmin: 0, xmax: 180, ymin: 0, ymax: 0.8, xt: [0, 30, 60, 90, 120, 150, 180], yt: [0, 0.2, 0.4, 0.6, 0.8],
+      fy: function (v) { return AR.c(v, 1); }, xlab: 'Tiempo desde que se abre el vapor (min)', alto: 260,
+      aria: 'Rendimiento acumulado contra el tiempo de los ensayos ' + G.e.join(', '),
+      series: series
+    });
+    ley.innerHTML = G.e.map(function (e, i) { return '<span><i class="' + CLS[i][2] + '"></i>' + e + ' · ' + G.et[i] + '</span>'; }).join('');
+    nota.textContent = G.nota;
+  }
+  botones.forEach(function (b) { b.addEventListener('click', function () { grupo = b.getAttribute('data-grupo'); pinta(); }); });
+  pinta();
+  fetch('/classroom/iqya-2031-2027-10/assets/datos/arrastre_rendimiento_tiempo.csv')
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(function (txt) {
+      var lineas = txt.split(/\r?\n/).filter(function (l) { return l && l.charAt(0) !== '#'; });
+      var cab = lineas.shift().split(',');
+      var iE = cab.indexOf('ensayo'), iT = cab.indexOf('tiempo_min'), iY = cab.indexOf('rendimiento_pct_bh');
+      datos = lineas.map(function (l) { var c = l.split(','); return { ensayo: c[iE], t: parseFloat(c[iT]), y: parseFloat(c[iY]) }; });
+      pinta();
+    })
+    .catch(function () { nota.textContent = 'No se pudieron cargar los datos aquí; descárguelos con los botones de arriba.'; });
+  AR.alRedimensionar(pinta);
+})();
+</script>
+
+<script src="/classroom/animaciones-lectura.js"></script>
+</body>
+</html>
