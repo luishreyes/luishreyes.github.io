@@ -627,7 +627,7 @@ export const eduProCourse: Course = {
   tagline: 'Cursos abiertos de Educación Continua que dicto en Uniandes',
   description:
     'Espacio personal donde reúno los cursos abiertos de la Dirección de Educación Continua (EDCO) de la Universidad de los Andes en los que participo como conferencista. Cada curso tiene su propio cronograma, equipo docente, material y enlace de Zoom.',
-  accessCode: 'codigo-retirado',
+  accessHash: '7868a6b05cf99f0cea26f8a34339879b11b07060cf55247ec2191258c30b1640',
   bannerUrl: '/classroom/edu-pro/banner.jpg',
   kind: 'professional',
   edcoCourses: [cursoIaMayo2026, cursoGeneralidadesIaG2, cursoModelosIa, cursoDaviviendaCucuta],

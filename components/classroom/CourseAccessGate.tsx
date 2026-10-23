@@ -3,14 +3,15 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import type { Course } from '../data/classroom';
 import { todayISO } from './today';
+import { huellaCodigo } from './codigoAula';
 
 const storageKey = (slug: string) => `classroom:unlock:${slug}`;
 const roleKey = (slug: string) => `classroom:role:${slug}`;
 
 /**
  * Con qué código se abrió el curso:
- * - 'student' → código normal del curso (`accessCode`).
- * - 'staff'   → código del equipo docente (`staffAccessCode`).
+ * - 'student' → código normal del curso (`accessHash`).
+ * - 'staff'   → código del equipo docente (`staffAccessHash`).
  */
 export type CourseRole = 'student' | 'staff';
 
@@ -103,11 +104,20 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
   // que se pidió, no contra los dos. Así el profesor puede entrar como
   // estudiante —escribiendo el código del curso— para ver el aula tal como la
   // ven ellos, en vez de que el sistema lo ascienda solo.
-  const entrar = (role: CourseRole) => {
-    const attempt = input.trim().toUpperCase();
-    const esperado = role === 'staff' ? course.staffAccessCode : course.accessCode;
+  //
+  // Lo que se compara es la huella del código, no el código: el curso solo
+  // guarda la huella (ver `codigoAula.ts`).
+  const entrar = async (role: CourseRole) => {
+    let huella: string;
+    try {
+      huella = await huellaCodigo(input);
+    } catch {
+      setError('Este navegador no pudo revisar el código. Abra el aula con https o en otro navegador.');
+      return;
+    }
+    const esperado = role === 'staff' ? course.staffAccessHash : course.accessHash;
 
-    if (esperado && attempt === esperado.toUpperCase()) {
+    if (esperado && huella === esperado) {
       openCourse(course.slug, role);
       setError(null);
       return;
@@ -117,8 +127,8 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
     // que se dice cuál era en vez de un «código incorrecto» a secas.
     const eraElOtro =
       role === 'student' &&
-      !!course.staffAccessCode &&
-      attempt === course.staffAccessCode.toUpperCase();
+      !!course.staffAccessHash &&
+      huella === course.staffAccessHash;
 
     setError(
       eraElOtro
@@ -130,13 +140,13 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
   };
 
   // Un curso en preparación solo tiene puerta de profesor.
-  const soloProfesor = !!course.staffOnlyAccess && !!course.staffAccessCode;
+  const soloProfesor = !!course.staffOnlyAccess && !!course.staffAccessHash;
 
   // Con Enter se entra como estudiante, que es el caso de casi todo el mundo.
   // En un curso de solo profesor no hay otra puerta.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    entrar(soloProfesor ? 'staff' : 'student');
+    void entrar(soloProfesor ? 'staff' : 'student');
   };
 
   // Acento de color (siempre, incluso archivados) + tipografía de curso
@@ -185,7 +195,7 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
             <p className="text-sm text-brand-gray mt-1 leading-relaxed">
               {soloProfesor
                 ? 'Este semestre todavía se está armando y solo lo ve el equipo docente. Escriba el código del equipo para continuar.'
-                : course.staffAccessCode
+                : course.staffAccessHash
                   ? 'Este espacio está reservado para el curso. Escriba su código y entre por la puerta que le corresponde.'
                   : 'Este espacio está reservado para estudiantes del curso. Ingrese el código que le entregó el profesor para continuar.'}
             </p>
@@ -203,7 +213,7 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="w-full px-4 py-3 rounded-md border border-zinc-300 text-brand-dark font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:border-brand-yellow transition"
-                placeholder="Ej. codigo-retirado"
+                placeholder="Escriba aquí el código"
                 aria-invalid={!!error}
                 aria-describedby={error ? 'course-code-error' : undefined}
               />
@@ -217,7 +227,7 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
                 >
                   Acceder como profesor
                 </button>
-              ) : course.staffAccessCode ? (
+              ) : course.staffAccessHash ? (
                 <div className="grid gap-2 sm:grid-cols-2">
                   <button
                     type="submit"
@@ -227,7 +237,7 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
                   </button>
                   <button
                     type="button"
-                    onClick={() => entrar('staff')}
+                    onClick={() => void entrar('staff')}
                     className="w-full py-3 rounded-md border border-zinc-300 text-brand-dark font-semibold hover:border-brand-dark hover:bg-zinc-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow"
                   >
                     Acceder como profesor

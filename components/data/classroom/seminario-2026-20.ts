@@ -109,7 +109,7 @@ export const seminario202620Course: Course = {
   tagline: 'Ocho miércoles para pasar de un reto propuesto a una propuesta que su asesor pueda firmar',
   description:
     'El Seminario de Proyecto de Desarrollo Profesional (SPDP) es el primer curso de una serie de dos. Aquí los estudiantes, junto con un mentor, diseñan el reto de innovación o la pregunta de investigación que desarrollarán durante el semestre 2027-10. A lo largo de 8 sesiones se construyen progresivamente tres entregas: la propuesta de valor, el flujograma del proceso y la propuesta final completa — con avales del mentor, presupuesto, consideraciones éticas y evaluación de riesgo.',
-  accessCode: 'codigo-retirado',
+  accessHash: '258de32bddd264244976d9b1032c750b669af91981f295c1649aaa172aa1ffb1',
   bannerUrl: '/classroom/iqya-3050-2026-20/banner.jpg',
   challenges: {
     label: '¿Qué retos hay para este semestre?',

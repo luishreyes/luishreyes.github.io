@@ -15,12 +15,13 @@ export const pou202620Course: Course = {
   tagline: 'Diseñe y dimensione una planta de pectina a partir de cáscara de fruta colombiana',
   description:
     'En este curso diseñará, dimensionará y simulará una planta completa de producción de pectina de grado alimentario a partir de cáscara de cítricos o maracuyá, un residuo agroindustrial colombiano. Bajo el enfoque de Diseño Integrado de Productos y Procesos, cada semana aplica lo aprendido directamente en su proyecto: manejo de sólidos, transporte de fluidos, agitación, intercambio de calor, filtración y la columna que recupera el etanol de precipitación. El modelo es híbrido: aula invertida con lecturas previas, quices al iniciar clase, talleres prácticos en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
-  // Dos códigos, dos vistas. Los estudiantes entran con codigo-retirado y solo ven
-  // las semanas que el equipo docente ya publicó; el equipo docente entra con
-  // codigo-retirado, ve el semestre completo desde el primer día y publica u
-  // oculta cada semana con el botón ON/OFF de la página de Material.
-  accessCode: 'codigo-retirado',
-  staffAccessCode: 'codigo-retirado',
+  // Dos códigos, dos vistas. Los estudiantes entran con el código del curso y
+  // solo ven las semanas que el equipo docente ya publicó; el equipo docente
+  // entra con el suyo, ve el semestre completo desde el primer día y publica u
+  // oculta cada semana con el botón ON/OFF de la página de Material. Aquí van
+  // solo las huellas (ver codigoAula.ts).
+  accessHash: 'd38c7716f4875cd76dd59810489806326fca5c35f2876922546f2eaf8ca437a6',
+  staffAccessHash: '79f82148955c883919f382a3e915c28b97ddcb826ac307575582391dccdd7793',
   manualRelease: true,
   bannerUrl: '/classroom/iqya-2031-2026-20/banner.jpg',
   pillars: [

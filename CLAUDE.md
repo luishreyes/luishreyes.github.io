@@ -184,11 +184,11 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 
 ### Código de acceso
 
-Cada curso tiene un `accessCode`. Case-insensitive.
+Cada curso tiene un código, case-insensitive. **En los datos va solo su huella** (`accessHash`), nunca el código: el repositorio es público. La reja saca la huella de lo que se escribe (PBKDF2, `components/classroom/codigoAula.ts`) y la compara. Los códigos en claro viven en el repositorio privado (`aula_privada/codigos.md`). Código nuevo: `node scripts/codigo-aula.mjs CODIGO` imprime la huella que va en el curso, y el código se anota en el privado.
 
 **El acceso caduca cada día.** En `localStorage`, la key `classroom:unlock:{slug}` guarda la **fecha** en que se abrió el curso (`2026-08-05`), no un `'true'` perpetuo: si no coincide con la de hoy, el código se vuelve a pedir. Vale para todos los cursos del Classroom.
 
-Opcionalmente un curso puede definir un **segundo código para el equipo docente** (`staffAccessCode`). Cuando existe, el gate muestra **dos botones** —«Acceder como estudiante» y «Acceder como profesor»— y cada uno valida **solo** el código de su rol: escribir el código del equipo y pulsar «estudiante» no asciende a nadie. Eso es deliberado, porque así el profesor entra con el código del curso para ver el aula tal como la ven los estudiantes. El rol queda en `classroom:role:{slug}` y se lee con el hook `useCourseRole(slug)` de `CourseAccessGate.tsx`.
+Opcionalmente un curso puede definir un **segundo código para el equipo docente** (su huella en `staffAccessHash`). Cuando existe, el gate muestra **dos botones** —«Acceder como estudiante» y «Acceder como profesor»— y cada uno valida **solo** el código de su rol: escribir el código del equipo y pulsar «estudiante» no asciende a nadie. Eso es deliberado, porque así el profesor entra con el código del curso para ver el aula tal como la ven los estudiantes. El rol queda en `classroom:role:{slug}` y se lee con el hook `useCourseRole(slug)` de `CourseAccessGate.tsx`.
 
 ### Publicación manual del material (`manualRelease`) — SISTEMA VIGENTE en POU 2026-20
 
@@ -210,11 +210,11 @@ Si un curso define `manualRelease: true`, **nada se abre solo por fecha**: el eq
 
 ### Entrega gradual del material (`gradualRelease`)
 
-Si un curso define `gradualRelease: true`, quien entra con el **código de estudiante** solo ve el material de las semanas ya transcurridas y de la semana en curso; quien entra con el **`staffAccessCode`** ve el semestre completo desde el primer día.
+Si un curso define `gradualRelease: true`, quien entra con el **código de estudiante** solo ve el material de las semanas ya transcurridas y de la semana en curso; quien entra con el **código del equipo docente** ve el semestre completo desde el primer día.
 
 | Campo del `Course` | Qué hace |
 |---|---|
-| `staffAccessCode` | Código alterno del equipo docente. Sin filtro por semana. |
+| `staffAccessHash` | Huella del código alterno del equipo docente. Sin filtro por semana. |
 | `gradualRelease` | Activa el filtro para los estudiantes. |
 | `releaseLeadDays` | Días de anticipación con que abre cada semana (por defecto 2). |
 
@@ -306,11 +306,12 @@ Servidor MCP instalado el 22 oct 2026 desde [jurimaxam-dotcom/chemdraw-mcp](http
 - Lee PubChem, NCI, EBI, KEGG y UniProt; en la nube toma el certificado del proxy de `REQUESTS_CA_BUNDLE`, que ya está en el entorno.
 - **Claude Desktop** (la app de chat del Mac) no lee `.mcp.json`: para tenerlo ahí se instala aparte el `.mcpb` de sus releases.
 
-### Generador de PFD con errores sembrados (`scripts/pfd/`)
-Hecho el 23 oct 2026 a pedido del profesor («me encantaría que pudieran crearse PFDs bajo demanda con errores plantados»), sobre su plantilla de Visio (`Plantilla_PFD-PID1_2.vsd`, hoja A2 con el cuadro de títulos de Uniandes, convertida con LibreOffice a `plantilla/marco.svg`). Ver `scripts/pfd/README.md`.
-- `node scripts/pfd/generar.mjs --proceso ron --errores 15 --semilla S` dibuja el PFD y su clave (círculos rojos numerados y una tabla de qué está mal y cómo se corrige). Procesos: `ron` (la planta del Taller 1) y `hds` (la unidad del Manual de diagramas). 22 tipos de error; `--listar` los muestra.
-- **Las claves no se suben:** el repositorio es público y con el proceso y la semilla cualquiera regenera la clave. La salida va a `scripts/pfd/salida/` (en `.gitignore`) o fuera del repo; el archivo que se publica se renombra sin la semilla (`Taller_01_PFD.pdf`). La clave, con el comando y la semilla, se guarda en el repositorio **privado** `luishreyes/aula_privada` (`{slug}/talleres/Taller_NN/`), que es donde va todo lo del aula que los estudiantes no deben ver.
-- El Taller 1 de 2027-10 usa un PFD de ron generado así, y sus preguntas no dependen de los errores de un plano en particular: el semestre siguiente basta con generar otro y cambiar el archivo.
+### Lo que no ven los estudiantes: el repositorio privado `luishreyes/aula_privada`
+Este repositorio es público: cualquiera lee su código y su historial, y `public/` se publica completo. Lo que un estudiante no debe ver vive en el repositorio **privado** `luishreyes/aula_privada` (pedido del profesor, 23 oct 2026: «Guarde ahí todo lo que no puedan ver los estudiantes»), clonado al lado de este (`../aula_privada`; en la nube, con `add_repo`). Su README dice qué hay y cómo decidir.
+- **La regla:** si al verlo un estudiante puede saltarse el trabajo que se le pide (una clave, una solución, el plano correcto, un código que no es el suyo) o ve lo que el profesor prepara antes de tiempo, va al privado. Aquí se queda todo lo que el estudiante usa y las herramientas que construyen ese material sin revelar respuestas.
+- **Allá están:** el generador de PFD con errores sembrados (`herramientas/pfd/`, hecho el 23 oct 2026 sobre la plantilla de Visio del Departamento) con las claves de cada taller, los códigos del aula en claro, las hojas del docente (claves de prácticas, guías de facilitación), la planeación de cada sesión y los guiones de clase (el skill `/guion` escribe allá).
+- **Aquí solo va lo que se reparte:** el plano con errores, renombrado sin la semilla (`public/classroom/{slug}/talleres/Taller_NN/Taller_NN_PFD.svg` y `.pdf`). El Taller 1 de 2027-10 usa uno de ron, y sus preguntas no dependen de los errores de un plano en particular: el semestre siguiente basta con generar otro y cambiar los dos archivos.
+- **Nunca** se nombran aquí semillas, soluciones ni códigos: ni en páginas, ni en comentarios, ni en commits. `planeacion/`, `guiones/` y `scripts/pfd/` están en `.gitignore` para que no vuelvan por error.
 
 ### Skill `design-taste-frontend` (taste skill: dirección de arte de páginas)
 Instalado en `.claude/skills/design-taste-frontend/` desde [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT, v2.0.0, commit `f624f37`, oct 2026), sin cambios. Se invoca con `/design-taste-frontend`. Le da dirección de arte a una página pública para que no se vea genérica: `scripts/draw.mjs` reparte direcciones sacadas de un estudio de 247 sitios, `scripts/lint.mjs` revisa el código y `scripts/inspect.mjs` mide la página en Chromium a 1440, 768 y 390 px y guarda capturas, que luego se critican y se corrigen (hasta tres rondas).

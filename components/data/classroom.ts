@@ -189,20 +189,26 @@ export interface Course {
   duration: string;
   description: string;
   tagline?: string;
-  accessCode: string;
   /**
-   * Código alterno del equipo docente (profesor, asistente, monitora). Abre el
-   * curso igual que `accessCode`, pero marca la sesión como «staff»: si el
-   * curso usa entrega gradual (`gradualRelease`), quien entra con este código
-   * ve TODO el material del semestre sin esperar a que llegue la semana.
-   * La comparación es case-insensitive, igual que la de `accessCode`.
+   * Huella del código del curso (ver `classroom/codigoAula.ts`). El código en
+   * claro no va en este repositorio, que es público: lo guarda el repositorio
+   * privado del profesor. Se saca con `node scripts/codigo-aula.mjs CODIGO`.
    */
-  staffAccessCode?: string;
+  accessHash: string;
+  /**
+   * Huella del código alterno del equipo docente (profesor, asistente,
+   * monitora). Abre el curso igual que el código del curso, pero marca la
+   * sesión como «staff»: si el curso usa entrega gradual (`gradualRelease`),
+   * quien entra con este código ve TODO el material del semestre sin esperar a
+   * que llegue la semana. La comparación es case-insensitive, como la del
+   * código del curso.
+   */
+  staffAccessHash?: string;
   /**
    * Curso al que solo entra el equipo docente: la reja muestra únicamente la
-   * puerta de profesor y pide `staffAccessCode`. Se usa en los semestres que
-   * todavía se están armando, para poder verlos sin abrirle la puerta a nadie
-   * más. Requiere `staffAccessCode`; sin él no tiene efecto.
+   * puerta de profesor y pide el código del equipo. Se usa en los semestres
+   * que todavía se están armando, para poder verlos sin abrirle la puerta a
+   * nadie más. Requiere `staffAccessHash`; sin él no tiene efecto.
    */
   staffOnlyAccess?: boolean;
   /**
@@ -212,12 +218,12 @@ export interface Course {
    */
   identidad?: 'uniandes';
   /**
-   * Entrega gradual del material. Si es `true`, quien entra con `accessCode`
+   * Entrega gradual del material. Si es `true`, quien entra con el código del curso
    * (los estudiantes) solo ve el material de las semanas ya transcurridas y de
    * la semana en curso; las semanas futuras aparecen listadas pero cerradas.
    * El material transversal (guías sin `week`) siempre está disponible.
    * Requiere que el curso tenga `cronograma` y que su material esté etiquetado
-   * con `week`. Quien entra con `staffAccessCode` no se ve afectado.
+   * con `week`. Quien entra con el código del equipo docente no se ve afectado.
    */
   gradualRelease?: boolean;
   /**

@@ -1,6 +1,6 @@
 # Lecturas del Classroom — Plantilla HTML autocontenida (SISTEMA ACTUAL)
 
-> **Leer SIEMPRE este documento antes de crear o editar una lectura del curso POU 2026-20 (`iqya-2031-2026-20`, accessCode `codigo-retirado`) y cualquier curso nuevo.**
+> **Leer SIEMPRE este documento antes de crear o editar una lectura del curso POU 2026-20 (`iqya-2031-2026-20`) y cualquier curso nuevo.**
 >
 > Este es el sistema **vigente**. El antiguo sistema de componentes React (`LECTURES.md`) quedó **deprecado** para los cursos nuevos — ver la nota al final.
 
@@ -215,6 +215,6 @@ Reglas para las imágenes (igual que los banners de curso):
 
 ## Nota sobre el sistema React deprecado (`LECTURES.md`)
 
-El documento `LECTURES.md` describe el sistema **antiguo** de lecturas como componentes React (`.tsx` + `ReadingLayout` + `readingsRegistry.ts` + Tailwind), usado en el curso **`iqya-2031` (POU 2026-10, accessCode `codigo-retirado`)**. Ese sistema **NO** se usa para los cursos nuevos. Si trabajas en una lectura del curso 2026-20 o posterior, ignora `LECTURES.md` y sigue **este** documento.
+El documento `LECTURES.md` describe el sistema **antiguo** de lecturas como componentes React (`.tsx` + `ReadingLayout` + `readingsRegistry.ts` + Tailwind), usado en el curso **`iqya-2031` (POU 2026-10)**. Ese sistema **NO** se usa para los cursos nuevos. Si trabajas en una lectura del curso 2026-20 o posterior, ignora `LECTURES.md` y sigue **este** documento.
 
 Coexisten porque el curso 2026-10 ya tiene sus lecturas React publicadas; no se migran retroactivamente.

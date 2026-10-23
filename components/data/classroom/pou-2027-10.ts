@@ -82,7 +82,8 @@ export const pou202710Course: Course = {
   // esconder el curso.
   //
   // Solo entra el equipo docente: la reja muestra una sola puerta y pide
-  // `staffAccessCode`, el mismo del semestre anterior. Un estudiante que
+  // el código del equipo docente (`staffAccessHash`), el mismo del semestre
+  // anterior. Un estudiante que
   // llegue a la tarjeta ve que el semestre se está armando y no pasa.
   staffOnlyAccess: true,
   identidad: 'uniandes',

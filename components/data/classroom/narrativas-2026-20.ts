@@ -25,7 +25,7 @@ export const narrativas202620Course: Course = {
     'De mostrar datos a contar historias centradas en el usuario, con IA generativa como copiloto.',
   description:
     'Aprende a transformar datos técnicos en historias visuales que impulsan decisiones — y a traducirlas en narrativas centradas en la experiencia de usuario y la propuesta de valor. El curso integra los dos libros de Cole Nussbaumer Knaflic: Storytelling with Data (fundamentos de narrativa visual, primera mitad) y Storytelling with You (planificar, crear y entregar una presentación estelar, segunda mitad), con IA generativa (Google AI Studio, Claude, ChatGPT) como copiloto bajo un enfoque human-in-the-loop. Cada módulo abre con un espacio corto de «mostrar, no contar», y la ética en la comunicación de datos es un hilo conductor permanente. La evaluación es un portafolio acumulativo, sin exámenes.',
-  accessCode: 'codigo-retirado',
+  accessHash: 'ce639bb54a893a54b69657e7f27251b5a087e0ce925f3da4895d8820f025d306',
   bannerUrl: '/classroom/iqya-3751-2026-20/banner.jpg',
 
   team: [

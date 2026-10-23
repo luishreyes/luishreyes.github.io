@@ -21,7 +21,7 @@ import {
 //   botón ON/OFF; el estado vive en `published/{slug}.json` en el repositorio
 //   (ver `publishState.ts`).
 //
-// Quien entra con el código del equipo docente (`staffAccessCode`) ve todo
+// Quien entra con el código del equipo docente (`staffAccessHash`) ve todo
 // desde el primer día; el filtro es una capa de presentación, no un control de
 // seguridad: los HTML de `public/` siguen siendo archivos estáticos servidos
 // por GitHub Pages y quien conozca la URL exacta puede abrirlos.

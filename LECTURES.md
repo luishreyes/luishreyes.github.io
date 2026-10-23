@@ -1,8 +1,8 @@
 # Material del curso — Guía de creación de lecturas y guías (SISTEMA REACT — DEPRECADO)
 
-> ⚠️ **DEPRECADO PARA CURSOS NUEVOS.** Este documento describe el sistema **antiguo** de lecturas como componentes React (`.tsx` + `ReadingLayout` + `readingsRegistry.ts` + Tailwind), usado solo en el curso **`iqya-2031` (POU 2026-10, accessCode `codigo-retirado`)**.
+> ⚠️ **DEPRECADO PARA CURSOS NUEVOS.** Este documento describe el sistema **antiguo** de lecturas como componentes React (`.tsx` + `ReadingLayout` + `readingsRegistry.ts` + Tailwind), usado solo en el curso **`iqya-2031` (POU 2026-10)**.
 >
-> **Para el curso POU 2026-20 (`iqya-2031-2026-20`, `codigo-retirado`) y cualquier curso nuevo, las lecturas son documentos HTML autocontenidos.** Usar **[LECTURAS-HTML.md](LECTURAS-HTML.md)**, NO este documento.
+> **Para el curso POU 2026-20 (`iqya-2031-2026-20`) y cualquier curso nuevo, las lecturas son documentos HTML autocontenidos.** Usar **[LECTURAS-HTML.md](LECTURAS-HTML.md)**, NO este documento.
 >
 > Este archivo se conserva solo como referencia de las lecturas React ya publicadas del curso 2026-10.
 

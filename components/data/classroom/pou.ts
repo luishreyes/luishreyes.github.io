@@ -363,7 +363,7 @@ export const pouCourse: Course = {
   tagline: 'Diseño integral de una planta de producción de alcohol',
   description:
     'En este curso diseñarás, dimensionarás y simularás una planta completa de producción de alcohol a partir de materias primas renovables colombianas. Desde los diagramas de ingeniería hasta la torre de destilación, pasando por manejo de sólidos, transporte de fluidos, agitación, intercambio de calor y filtración — cada semana aplicas lo aprendido directamente en tu proyecto. El modelo es híbrido: aula invertida con podcasts y lecturas previas, quices al iniciar clase, talleres prácticos en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
-  accessCode: 'codigo-retirado',
+  accessHash: '0829b9655e3da16481ee0d21c7be27e6ddc6810020e0baf5176dc73890cec665',
   bannerUrl: '/classroom/iqya-2031/banner.jpg',
   pillars: [
     {

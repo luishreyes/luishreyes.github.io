@@ -126,7 +126,7 @@ export const dpro4300Course: Course = {
     'Del diseño molecular computacional al escalamiento industrial de bioproductos',
   description:
     'Este curso aborda el diseño de bioproductos mediante una aproximación sistémica y multiescala. Partiendo de la escala molecular, donde se optimizan computacionalmente las moléculas de interés, el curso avanza hacia la selección del organismo hospedero, el diseño metabólico celular, la operación de biorreactores, y finalmente la evaluación tecno-económica y el escalamiento industrial. Esta integración de escalas permite a los estudiantes comprender cómo las decisiones en cada nivel afectan el desempeño global del bioproceso, aplicando herramientas computacionales, modelos matemáticos y criterios de ingeniería para el diseño racional de bioprocesos viables.',
-  accessCode: 'codigo-retirado',
+  accessHash: '913c58c0288c69fcc038b9c795ac1ba3b2f864857d37832d194fae1ba0c31384',
   bannerUrl: '/classroom/dpro-4300/banner.jpg',
   team: [
     {

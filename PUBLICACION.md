@@ -46,7 +46,7 @@ Reglas que se conservan del sistema gradual:
 
 - El material **sin `week`** (programa, cronograma, guías transversales) está
   siempre disponible.
-- Quien entra con `staffAccessCode` ve el semestre completo; además, **solo en
+- Quien entra con el código del equipo docente ve el semestre completo; además, **solo en
   esa vista** aparecen los botones Publicada/Oculta (en la página de Material:
   uno por actividad, más el de la cabecera que maneja la semana completa y
   marca el estado parcial como `x/n publicadas`). La vista de estudiante no
@@ -60,7 +60,7 @@ Reglas que se conservan del sistema gradual:
 En `components/data/classroom/{slug}.ts`:
 
 ```ts
-staffAccessCode: '…',
+staffAccessHash: '…',  // node scripts/codigo-aula.mjs CODIGO
 manualRelease: true,   // reemplaza a gradualRelease / releaseLeadDays
 ```
 
@@ -87,7 +87,7 @@ revocarlo en GitHub al terminar el semestre o si se filtra.
 
 ## Uso diario
 
-- Entrar con `staffAccessCode` → Material del curso → botón **Publicada /
+- Entrar con el código del equipo docente → Material del curso → botón **Publicada /
   Oculta** junto a cada actividad; el botón de la cabecera de la semana
   publica u oculta el paquete completo (si está a medias muestra
   `x/n publicadas` y el clic publica lo que falta). Cada cambio queda como un

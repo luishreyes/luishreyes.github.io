@@ -50,8 +50,8 @@ Para **cada** diapositiva, en orden, produce un bloque con:
 
 ## 5. Entrega
 
-1. Escribe el guión en `guiones/{nombre-del-deck}-guion.md` (crea la carpeta `guiones/` en la raíz del repo si no existe; queda fuera de `public/`, así que no se despliega).
-2. Envíalo al usuario con `SendUserFile`.
+1. Escribe el guión en el repositorio **privado** `luishreyes/aula_privada`, en `{slug-del-curso}/guiones/{nombre-del-deck}-guion.md` (los de edu-pro van en `edu-pro/guiones/`). Ese repositorio se clona al lado de este (`../aula_privada`); en una sesión en la nube se agrega con `add_repo`. **Nunca** en este repositorio: es público, y un guión es material del docente.
+2. Envíalo al usuario con `SendUserFile` (en la nube, desde una copia en el scratchpad, que la app sí abre).
 3. En el chat, resume: deck, duración, número de diapositivas cubiertas y el reparto de tiempos por sección. No pegues el guión completo en el chat.
 4. **No** hagas commit ni push salvo que el usuario lo pida.
 
