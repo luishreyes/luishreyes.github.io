@@ -11,6 +11,7 @@
 // Uso:
 //   node scripts/build-taller-pdf.mjs Taller_06
 //   node scripts/build-taller-pdf.mjs Taller_06 http://localhost:8765
+//   CURSO=iqya-2031-2027-10 node scripts/build-taller-pdf.mjs Taller_01
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -18,7 +19,8 @@ import fs from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../public');
-const SLUG = 'iqya-2031-2026-20';
+const SLUG = process.env.CURSO || 'iqya-2031-2026-20';
+const PERIODO = SLUG.match(/\d{4}-\d{2}$/)?.[0] ?? '';
 const folder = process.argv[2];
 const base = process.argv[3] || 'http://localhost:8765';
 if (!folder) { console.error('Uso: node scripts/build-taller-pdf.mjs <Carpeta_del_taller> [url-base]'); process.exit(1); }
@@ -33,7 +35,7 @@ const hf = (left, right) =>
   `display:flex;justify-content:space-between;box-sizing:border-box;">` +
   `<span>${left}</span><span>${right}</span></div>`;
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ args: process.getuid?.() === 0 ? ['--no-sandbox'] : [] });
 try {
   const page = await browser.newPage();
   await page.goto(`${base}/classroom/${SLUG}/talleres/${folder}/${htmlName}`, { waitUntil: 'networkidle' });
@@ -45,7 +47,7 @@ try {
     path: out, format: 'Letter', printBackground: true,
     margin: { top: '0.75in', bottom: '0.6in', left: '0.9in', right: '0.9in' },
     displayHeaderFooter: true,
-    headerTemplate: hf('Proyecto de Operaciones Unitarias', 'IQYA-2031 · 2026-20'),
+    headerTemplate: hf('Proyecto de Operaciones Unitarias', `IQYA-2031 · ${PERIODO}`),
     footerTemplate: hf('Universidad de los Andes', 'Proyecto de Operaciones Unitarias'),
   });
   console.log('PDF escrito en', out);
