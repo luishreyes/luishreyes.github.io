@@ -28,7 +28,7 @@ const DESTACADOS = ['Carlos Manuel Ramírez Acosta', 'Jason Bernal Sánchez', 'J
 
 interface Persona {
   name: string;
-  imageUrl: string;
+  imageUrl?: string;
   role: Testimonial['info'];
   quotes: Testimonial[];
 }
@@ -94,13 +94,15 @@ export const TestimonialsPage = () => {
             const [principal, ...otras] = ordenarCitas(p);
             return (
               <Sube key={`${activeFilter}-${p.name}`} delay={0.04 * (i % 3)}>
-                <figure className="grid gap-8 md:grid-cols-[minmax(0,280px)_minmax(0,1fr)] md:gap-14 border-t-2 border-tinta-900 pt-10">
-                  <img
-                    src={p.imageUrl}
-                    alt={fill(t('testimonials.photo'), { name: p.name })}
-                    loading={i < 3 ? undefined : 'lazy'}
-                    className="a-bn w-full max-w-[280px] aspect-[4/5] object-cover object-top"
-                  />
+                <figure className={`grid gap-8 border-t-2 border-tinta-900 pt-10 ${p.imageUrl ? 'md:grid-cols-[minmax(0,280px)_minmax(0,1fr)] md:gap-14' : 'md:pl-[calc(280px+3.5rem)]'}`}>
+                  {p.imageUrl && (
+                    <img
+                      src={p.imageUrl}
+                      alt={fill(t('testimonials.photo'), { name: p.name })}
+                      loading={i < 3 ? undefined : 'lazy'}
+                      className="a-bn w-full max-w-[280px] aspect-[4/5] object-cover object-top"
+                    />
+                  )}
                   <div>
                     <blockquote className="a-cita space-y-4 max-w-[40ch]">
                       <Parrafos quote={principal} lang={lang} />
