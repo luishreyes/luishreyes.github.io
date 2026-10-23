@@ -110,6 +110,10 @@ Los datos de cada curso viven en `components/data/classroom/{slug}.ts` y se impo
 
 También falta, para cuando se escriba la semana del arrastre de vapor: el conjunto de datos de rendimiento contra tiempo que el reto y la guía de bitácoras prometen publicar con esa lectura.
 
+Para la semana 3: el Taller 2 todavía dice «BloqueNeón» sin enlace (dos veces); va como en el Taller 1, «Bloque Neón» con `platform-link`, y después se regenera su PDF.
+
+El Taller 1 pide 15 errores y el bono desde 13: si otro semestre se siembra otro número, se cambia en la pregunta 2.1 y en el recuadro del bono.
+
 Decisiones ya tomadas (oct 2026): el profesor forma los equipos de 4 a 5; el entregable de diagramas es el PFD completo (el PBD es su borrador y el P&ID se practica en el Taller 1, sin entregarse); la winterización es el enfriado y filtrado del aceite del florentino con un filtro de profundidad, no un desencerado, y va en la Bitácora 3; la presentación final es la sesión de pósters de la semana 17; el contrato firmado se sube a Bloque Neón; las fuentes de fabricantes (como Pall) sirven de referencia.
 
 **⚠️ Terminología:** la UI pública dice "Material del curso", no "Lecturas". Los objetos de datos siguen llamándose `readings` / `Reading` en el código por compatibilidad. La URL sigue siendo `/classroom/{slug}/readings/...`.
