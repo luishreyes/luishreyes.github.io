@@ -57,7 +57,7 @@ class CicloCompresor(Scene):
                   x_titulo="volumen del cilindro (% del barrido)", y_titulo="presión (kPa)").move_to([3.35, -0.55, 0])
         muerto = Rectangle(width=ax.c2p(C, 0)[0] - ax.c2p(0, 0)[0], height=ax.c2p(0, 800)[1] - ax.c2p(0, 0)[1],
                            stroke_width=0, fill_color=REJILLA, fill_opacity=0.7).move_to(ax.c2p(C / 2, 400))
-        r_muerto = texto("espacio muerto", TAM_NOTA, TINTA_2).rotate(PI / 2).move_to(muerto.get_center() + UP * 0.9)
+        r_muerto = texto("espacio muerto", TAM_NOTA * 0.85, TINTA_2).rotate(PI / 2).move_to(muerto.get_center() + UP * 0.9 + RIGHT * 0.03)
 
         # el cilindro: paredes, culata con dos válvulas, gas y pistón
         pared = VGroup(
@@ -169,7 +169,7 @@ class CicloCompresor(Scene):
         traza.clear_updaters()
         llave = DoubleArrow(ax.c2p(v4, 40), ax.c2p(V1, 40), buff=0, color=NAVY, stroke_width=4, tip_length=0.14,
                             max_tip_length_to_length_ratio=0.12)
-        r_titulo_llave = texto("aspira, en % del barrido:", TAM_NOTA, TINTA_2).move_to(ax.c2p(52, 700), aligned_edge=LEFT)
+        r_titulo_llave = texto("aspira, en % del barrido:", TAM_NOTA, TINTA_2).move_to(ax.c2p(33, 720), aligned_edge=LEFT)
         r_llave = VGroup(r_titulo_llave, texto(f"una etapa, {num(eta_v(P2) * 100, 0)} %", TAM_NOTA, NAVY)
                          .next_to(r_titulo_llave, DOWN, 0.12, aligned_edge=LEFT))
         relleno = Polygon(*[ax.c2p(x, y) for x, y in
