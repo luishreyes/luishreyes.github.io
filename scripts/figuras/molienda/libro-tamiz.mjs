@@ -11,7 +11,7 @@
 // Abre la figura en Chromium con el código en vivo del explorador (FSieve, en out/fig.js), deja caer los granos de
 // una vez (snap) hasta el tamiz que los retiene, para la pila y el martillo, y saca el SVG con los rótulos de las
 // piezas y de cada tamiz. Escribe el .qmd con el SVG en un bloque de HTML crudo y el CSS propio de la tamizadora en
-// estilo/anatomia-molienda.css del libro (las clases del kit van en estilo/anatomia.css, que escribe bomba/libro.mjs).
+// estilo/anatomia-molienda.css del libro, con el de los molinos (las clases del kit van en estilo/anatomia.css, que escribe bomba/libro.mjs).
 import { chromium } from 'playwright';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -98,11 +98,13 @@ const nombre = CASO.nombre || '_tamizadora.qmd';
 writeFileSync(join(DEST, nombre), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log(join(DEST, nombre), Math.round(cuerpo.length / 1024), 'KB');
 
-// el CSS propio de la tamizadora (las reglas tz-), sin el tema azul de planos
-const reglas = CSS.match(/[^{}]+\{[^{}]*\}/g).filter(r => r.includes('tz-') && !/blueprint/.test(r)).map(r => r.trim());
+// el CSS propio de la molienda (las reglas ml-, ds- y tz- de ml.css), sin el lienzo vivo ni el tema azul de planos;
+// libro-molinos.mjs escribe el mismo archivo con las mismas reglas
+const reglas = readFileSync(join(AQUI, 'ml.css'), 'utf8').match(/[^{}]+\{[^{}]*\}/g)
+  .filter(r => !/blueprint|canvas/.test(r)).map(r => r.trim().replace(/^\/\*[\s\S]*?\*\/\s*/, ''));
 const LIBRO = resolve(DEST, '../..');
 if (existsSync(join(LIBRO, 'estilo'))) {
   writeFileSync(join(LIBRO, 'estilo/anatomia-molienda.css'),
-    '/* Las piezas propias de la tamizadora (skill anatomy). Lo escribe scripts/figuras/molienda/libro-tamiz.mjs\n   del repositorio público: no se edita a mano. */\n' + reglas.join('\n') + '\n');
+    '/* Las piezas propias de los equipos de molienda y de la tamizadora (skill anatomy). Lo escriben\n   scripts/figuras/molienda/libro-molinos.mjs y libro-tamiz.mjs del repositorio público: no se edita a mano. */\n' + reglas.join('\n') + '\n');
   console.log(join(LIBRO, 'estilo/anatomia-molienda.css'));
 }
