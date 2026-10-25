@@ -10,7 +10,7 @@ q = f / sqrt(a + (1 - a) f²), la ecuación con que el libro reproduce la
 fig. 8-79 del Perry. Al bajar a, la de igual porcentaje se endereza y la lineal
 se dobla hacia la de apertura rápida. Al final, el caso del capítulo: la línea
 de agua de los capítulos 9 y 10 con la bomba de 190 mm y dos válvulas de globo
-de jaula de 2 in (Darby, tabla 11.3), con los caudales que salen de
+de jaula de 2 in (Emerson, p. 121; Darby, tabla 11.3), con los caudales que salen de
 herramientas/control-linea-agua.py del libro.
 
     uv run publicar.py escenas/libro/caracteristica_instalada.py CaracteristicaInstalada \
@@ -31,11 +31,9 @@ def instalada(f, a):
 
 
 # El caso: caudal (m³/h) contra carrera, cada 5 %, con la bomba y la línea (control-linea-agua.py)
-CASO_IGUAL = [0.0, 1.978, 2.343, 2.775, 3.286, 3.888, 4.597, 5.428, 6.4, 7.529, 8.828, 10.308, 11.97, 13.796,
-              15.754, 17.786, 19.81, 21.731, 23.459, 24.923, 26.104]
-CASO_LINEAL = [0.0, 3.016, 5.963, 8.763, 11.359, 13.714, 15.812, 17.653, 19.25, 20.621, 21.791, 22.784, 23.625,
-               24.335, 24.938, 25.45, 25.886, 26.26, 26.583, 26.862, 27.105]
-DEMANDA = [(8.0, 0.469, 0.136), (18.0, 0.755, 0.36), (25.0, 0.953, 0.706)]   # Q, carrera igual %, carrera lineal
+CASO_IGUAL = [0.0, 2.025, 2.399, 2.841, 3.364, 3.98, 4.704, 5.554, 6.545, 7.696, 9.018, 10.52, 12.2, 14.04, 16.002, 18.023, 20.021, 21.901, 23.577, 24.988, 26.117]
+CASO_LINEAL = [0.0, 3.123, 6.166, 9.045, 11.697, 14.083, 16.192, 18.026, 19.601, 20.943, 22.077, 23.033, 23.837, 24.514, 25.084, 25.567, 25.978, 26.328, 26.63, 26.892, 27.119]
+DEMANDA = [(8.0, 0.462, 0.131), (18.0, 0.749, 0.349), (25.0, 0.95, 0.692)]   # Q, carrera igual %, carrera lineal
 
 
 class CaracteristicaInstalada(Scene):
@@ -115,8 +113,8 @@ class CaracteristicaInstalada(Scene):
                                fill_opacity=1))
         self.play(FadeIn(guias), FadeIn(rot), run_time=0.6)
         self.play(LaggedStart(*[GrowFromCenter(p) for p in puntos], lag_ratio=0.15), run_time=1.4)
-        r_c = VGroup(texto("igual porcentaje: 47, 76 y 95 %", TAM_NOTA * 0.9, NAVY),
-                     texto("lineal: 14, 36 y 71 %", TAM_NOTA * 0.9, OLIVA)).arrange(DOWN, buff=0.1, aligned_edge=LEFT) \
+        r_c = VGroup(texto("igual porcentaje: 46, 75 y 95 %", TAM_NOTA * 0.9, NAVY),
+                     texto("lineal: 13, 35 y 69 %", TAM_NOTA * 0.9, OLIVA)).arrange(DOWN, buff=0.1, aligned_edge=LEFT) \
             .move_to(ax2.c2p(44, 6.0), aligned_edge=UL)
         self.play(FadeIn(r_c), run_time=0.6)
         self.wait(1.6)
