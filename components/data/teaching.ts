@@ -437,7 +437,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "David Santiago Ramos",
     info: { en: "Studied Chemical Engineering; now in the Master's in Information Engineering (MINE), Universidad de los Andes", es: "Estudió Ingeniería Química; hoy cursa la Maestría en Ingeniería de la Información (MINE), Universidad de los Andes" },
-    context: { en: "Undergraduate professional development project in Chemical Engineering, and the Augmented Intelligence team, where he worked with Systems and Computing Engineering students", es: "Proyecto de desarrollo profesional de pregrado en Ingeniería Química, y equipo de Inteligencia Aumentada, donde trabajó con estudiantes de Ingeniería de Sistemas y Computación" },
+    context: { en: "Undergraduate professional development project in Chemical Engineering, and the Augmented Intelligence team", es: "Proyecto de desarrollo profesional de pregrado en Ingeniería Química, y equipo de Inteligencia Aumentada" },
     category: 'Research Advising'
   }
 ];
