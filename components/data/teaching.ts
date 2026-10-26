@@ -429,6 +429,16 @@ export const testimonials: Testimonial[] = [
     info: { en: "Lead of the Artificial Intelligence Node, Continuing Education, Universidad de los Andes", es: "Líder del Nodo de Inteligencia Artificial de la Dirección de Educación Continua, Universidad de los Andes" },
     context: { en: "Systems and Computing Engineering student; student assistant and graduate research assistant, Augmented Intelligence", es: "Estudiante de Ingeniería de Sistemas y Computación; monitor y asistente graduado de investigación, Inteligencia Aumentada" },
     category: 'Teaching & Mentorship'
+  },
+  {
+    quote: {
+      en: "In my humble opinion, Luis H. is the definition of the word vocation. It is inspiring to see someone who is not afraid to become friends with young talents, with different talents and with different ideas.\n\nSince I have known him, he has always sought to improve: to improve his classes, the projects he works on and his surroundings. Around him there is a constant atmosphere of growth and learning. He helps anyone who wants to bring about positive change, and he has no trouble making room in his schedule to guide those processes.\n\nI have no problem saying that Luis is the person who has placed the most trust in me throughout my academic career. I owe him many of the opportunities I have had to push myself and explore new knowledge. He is a great inspiration to me.",
+      es: "A mi humilde parecer, Luis H es la definición de la palabra vocación. Es inspirador ver a alguien que no tiene miedo en volverse amigo de los talentos jóvenes, de los talentos diferentes y de las ideas diferentes.\n\nDesde que lo conozco, siempre ha buscado mejorar. Mejorar sus clases, mejorar los proyectos en los que trabaja, mejorar su entorno. A su alrededor se crea un ambiente constante de evolución y aprendizaje. Ayuda a todo el que quiera generar un cambio positivo, y no le cuesta abrir un espacio en su agenda para guiar esos procesos.\n\nNo tengo ningún problema en decir que Luis es la persona que más confianza ha depositado en mí a lo largo de mi carrera académica. Le debo muchas de las oportunidades que he tenido para superarme y explorar nuevos conocimientos. Es una gran inspiración para mí."
+    },
+    name: "David Santiago Ramos",
+    info: { en: "Studied Chemical Engineering; now in the Master's in Information Engineering (MINE), Universidad de los Andes", es: "Estudió Ingeniería Química; hoy cursa la Maestría en Ingeniería de la Información (MINE), Universidad de los Andes" },
+    context: { en: "Undergraduate professional development project in Chemical Engineering, and the Augmented Intelligence team", es: "Proyecto de desarrollo profesional de pregrado en Ingeniería Química, y equipo de Inteligencia Aumentada" },
+    category: 'Research Advising'
   }
 ];
 
