@@ -2,11 +2,14 @@
 
     uv run publicar.py ESCENA.py Clase --curso SLUG --deck CARPETA [opciones]
     uv run publicar.py ESCENA.py Clase --curso SLUG --carpeta lecturas/Lectura_NN [opciones]
+    uv run publicar.py ESCENA.py Clase --destino CARPETA [opciones]   (fuera del aula: el libro)
     uv run publicar.py ESCENA.py Clase --borrador          (solo para revisar)
 
 Opciones:
   --deck      la presentación: equivale a --carpeta slides/CARPETA
   --carpeta   cualquier carpeta dentro del curso, como lecturas/Lectura_01
+  --destino   una carpeta cualquiera, como figuras/bombas del libro de operaciones
+              unitarias: el video y el póster quedan ahí mismo, sin assets/video/
   --tema      industry (POU 2026-20, por defecto) | uniandes (POU 2027-10)
   --fondo     el de la diapositiva o la lectura: blanco | papel | oscuro, y en
               uniandes también nieve (los recuadros de las secciones pares de las lecturas)
@@ -93,6 +96,7 @@ def main():
     p.add_argument("--curso")
     p.add_argument("--deck")
     p.add_argument("--carpeta")
+    p.add_argument("--destino", type=Path)
     p.add_argument("--tema", default="industry", choices=["industry", "uniandes"])
     p.add_argument("--nombre")
     p.add_argument("--titulo")
@@ -107,6 +111,13 @@ def main():
         ancho, alto, fps = round(ancho * 480 / alto) // 2 * 2, 480, 15
         video, _ = renderizar(escena, a.clase, ancho, alto, fps, a.fondo, a.tema)
         print(f"\nBorrador: {video}")
+        return
+    if a.destino:
+        a.destino.mkdir(parents=True, exist_ok=True)
+        video, _ = renderizar(escena, a.clase, ancho, alto, FPS, a.fondo, a.tema)
+        mp4 = a.destino.resolve() / f"{a.nombre or kebab(a.clase)}.mp4"
+        publicar(video, mp4, mp4.with_suffix(".webp"))
+        print(f"\nPublicado: {mp4} ({mp4.stat().st_size / 1e6:.1f} MB) y {mp4.with_suffix('.webp').name}")
         return
     carpeta = a.carpeta or (f"slides/{a.deck}" if a.deck else None)
     if not (a.curso and carpeta):

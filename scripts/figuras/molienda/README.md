@@ -85,6 +85,8 @@ en dos dimensiones del lienzo, con sus anotaciones (hombro, pie, sentido de giro
 | `live.js` | `FMill`: lo que gira y lo que se mueve, y las partículas en el plano de cada máquina. |
 | `tamiz.mjs`, `tamiz-live.js` | La tamizadora (`--eq=tamiz --n=3…9`) y `FSieve`, que la mueve con la muestra del explorador. |
 | `ml.css` | Fundición, acero, concreto, motor, corona, criba, correas, cortes y lo vivo. El tema blueprint va en el explorador. |
+| `libro-molinos.mjs` | Para el libro de operaciones unitarias: abre el explorador de 2027-10, deja correr la simulación con cada equipo y saca la máquina quieta, con las partículas del lienzo como una capa WebP dentro del SVG y los nombres de las piezas en español (`_molino-{eq}.qmd`). `--cajas` dibuja las cajas de todas las piezas para escoger dónde van los rótulos. |
+| `libro-tamiz.mjs` | Para el libro: la tamizadora quieta con la pila de un análisis y sus rótulos (`_tamizadora.qmd`). Las dos escriben el CSS de la molienda del libro (`estilo/anatomia-molienda.css`). |
 | `splice.mjs` | Mete el código y los datos en el HTML publicado (marcadores `MLFIG_*`, con `ML_FIGS` y `ML_TAMIZ`) y copia los SVG a `simulaciones/fig/molienda/`. |
 
 ```sh

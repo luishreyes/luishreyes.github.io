@@ -134,7 +134,8 @@ export interface Testimonial {
   /** Fallback shown when graduateName is unset, or when the linked record has
    *  no current position on file. */
   info: Localized;
-  imageUrl: string;
+  /** Foto de la persona; sin ella, la cita va sola. */
+  imageUrl?: string;
   context: Localized;
   category: 'Teaching & Mentorship' | 'Research Advising';
 }
@@ -417,6 +418,16 @@ export const testimonials: Testimonial[] = [
     info: { en: "Scientist at VaxThera", es: "Científica en VaxThera" },
     imageUrl: "/images/students/maria-camila-henao.jpg",
     context: { en: "General Mentorship", es: "Mentoría general" },
+    category: 'Teaching & Mentorship'
+  },
+  {
+    quote: {
+      en: "I met Professor Luis H. in the Augmented Artificial Intelligence initiative at Universidad de los Andes, where he was the lead professor and I joined first as a student assistant and then as a graduate research assistant. Although we come from different branches of engineering, from the start I was impressed by his ability to bring his experience to emerging topics such as generative artificial intelligence. Luis constantly expands his own knowledge and, at the same time, opens the space and offers the tools for his colleagues and students to challenge themselves. Working alongside him meant contributing to valuable research and projects and, above all, a kind of learning I would hardly have found any other way.\n\nToday, as Lead of the Artificial Intelligence Node at Uniandes Continuing Education, we count on Professor Luis as a key ally and consultant in the projects we develop. His commitment to the learning of those who work with him is still a reference for me. I thank him for his dedication to his students and for the way he promotes, by example, research and lifelong learning.",
+      es: "Conocí al profesor Luis H. en la iniciativa de Inteligencia Artificial Aumentada de la Universidad de los Andes, donde él se desempeñaba como profesor líder y yo me vinculé primero como monitor y luego como asistente graduado de investigación. Aunque venimos de ramas distintas de la ingeniería, desde el inicio me impresionó su capacidad para llevar su experiencia a temas emergentes como la inteligencia artificial generativa. Luis amplía constantemente su propio conocimiento y, al mismo tiempo, abre el espacio y ofrece las herramientas para que sus colegas y estudiantes se reten. Trabajar a su lado significó contribuir a investigaciones y proyectos de valor y, sobre todo, vivir un aprendizaje que difícilmente habría encontrado de otra forma.\n\nHoy, desde mi rol como Líder del Nodo de Inteligencia Artificial de Educación Continua Uniandes, contamos con el profesor Luis como un aliado y consultor fundamental en los proyectos que desarrollamos. Su compromiso con el aprendizaje de quienes trabajan con él sigue siendo un referente para mí. Le agradezco su dedicación a sus estudiantes y su manera de promover, con el ejemplo, la investigación y el aprendizaje continuo."
+    },
+    name: "Andrés Guerrero",
+    info: { en: "Lead of the Artificial Intelligence Node, Continuing Education, Universidad de los Andes", es: "Líder del Nodo de Inteligencia Artificial de la Dirección de Educación Continua, Universidad de los Andes" },
+    context: { en: "Systems and Computing Engineering student; student assistant and graduate research assistant, Augmented Intelligence", es: "Estudiante de Ingeniería de Sistemas y Computación; monitor y asistente graduado de investigación, Inteligencia Aumentada" },
     category: 'Teaching & Mentorship'
   }
 ];

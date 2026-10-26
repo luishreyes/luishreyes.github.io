@@ -69,7 +69,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
     ...(award ? [{ at: TERMS.length - 1, label: t('tch.uo.ev.award'), row: 0 }] : []),
   ].filter((h) => h.at >= 0);
 
-  const cursos: { when: UIKey; title: string; code: string; parrafos: React.ReactNode[]; foto?: Foto }[] = [
+  const cursos: { when: UIKey; title: string; code: string; parrafos: React.ReactNode[]; foto?: Foto; apaisada?: boolean }[] = [
     {
       when: 'tch.uo.ou.when', title: localize(COURSE.ou, lang), code: 'IQUI-3010',
       parrafos: [t('tch.uo.ou.p1'), t('tch.uo.ou.p2'), t('tch.uo.ou.p3'), t('tch.uo.ou.p4')],
@@ -86,6 +86,9 @@ export const UnitOperationsInnovationPage: React.FC = () => {
         <Resaltar key="p2" texto={t('tch.uo.pou.p2')} frase={t('tch.uo.pou.mark')} />,
         t('tch.uo.pou.p3'),
       ],
+      // Una foto de grupo: va entera, apaisada, para que no se corte a nadie.
+      foto: fotos.alpinaPou,
+      apaisada: true,
     },
   ];
 
@@ -178,8 +181,8 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                     <p key={k} className={`detalle ${k === 0 ? 'text-tinta-900' : ''}`}>{p}</p>
                   ))}
                   {c.foto && (
-                    <figure className="mt-6 max-w-[420px]">
-                      <div className="overflow-hidden aspect-[3/4]">
+                    <figure className={`mt-6 ${c.apaisada ? 'max-w-[640px]' : 'max-w-[420px]'}`}>
+                      <div className={`overflow-hidden ${c.apaisada ? 'aspect-[4/3]' : 'aspect-[3/4]'}`}>
                         <img src={c.foto.src} alt={localize(c.foto.alt, lang)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: c.foto.foco }} />
                       </div>
                       <figcaption className="a-pie">{localize(c.foto.alt, lang)}.</figcaption>
