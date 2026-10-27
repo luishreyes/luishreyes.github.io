@@ -90,7 +90,7 @@ for (const [nombre, vista] of Object.entries(VISTAS)) {
     return `${linea}<text class="rot-texto" x="${r(tx)}" y="${r(t.y + vista.letra * 0.35)}" text-anchor="${fin}" font-size="${vista.letra}">${t.texto}</text>`;
   }).join('');
   const etiqueta = nombre === 'instalacion'
-    ? 'Dibujo isométrico de una instalación de bombeo: tanque de succión, línea de succión con válvula de compuerta, bomba centrífuga abierta, acople, motor sobre su base y descarga con válvula de retención y válvula de globo.'
+    ? 'Dibujo isométrico de una instalación de bombeo: tanque de succión, línea de succión con válvula de compuerta, bomba centrífuga en corte, acople, motor sobre su base y descarga con válvula de retención y válvula de globo.'
     : 'Dibujo isométrico de cerca de una bomba centrífuga de succión axial con la mitad de arriba de la tapa de succión quitada: se ven el impulsor, la voluta, el sello, la caja de rodamientos y el acople.';
   const cuerpo = svg
     .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
