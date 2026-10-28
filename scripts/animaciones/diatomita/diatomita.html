@@ -1,0 +1,362 @@
+<title>Del montón al poro</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* la letra de las animaciones del libro: Barlow, autoalojada en ../fuentes */
+@font-face { font-family: "Barlow"; src: url("/fuentes/Barlow-Regular.ttf"); font-weight: 400 }
+@font-face { font-family: "Barlow"; src: url("/fuentes/Barlow-Medium.ttf"); font-weight: 500 }
+@font-face { font-family: "Barlow"; src: url("/fuentes/Barlow-SemiBold.ttf"); font-weight: 600 }
+/* Dos visores oscuros, como la cámara del microscopio, dentro de una página clara: el acercamiento arriba y las partículas sueltas abajo. */
+:root {
+  --papel: #F4F5F1; --tinta: #1B2536; --tinta-2: #535C6A; --linea: #D8DBD2; --oliva: #5F5C00;
+  --camara: #17191E; --camara-tx: #E9EBEF; --camara-2: #9AA1AD; --resaltado: #FFF500;
+  --serif: "Barlow", sans-serif; --sans: "Barlow", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --papel: #12151B; --tinta: #E6E8EC; --tinta-2: #A3AAB6; --linea: #2C323D; --oliva: #D4CF5A; color-scheme: dark } }
+:root[data-theme="dark"] { --papel: #12151B; --tinta: #E6E8EC; --tinta-2: #A3AAB6; --linea: #2C323D; --oliva: #D4CF5A; color-scheme: dark }
+* { box-sizing: border-box }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 16px/1.55 var(--sans) }
+.env { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 40px }
+h1 { font: 600 1.7rem/1.2 var(--serif); margin: 0 0 6px; text-wrap: balance }
+h2.sec { font: 600 1.25rem/1.25 var(--serif); margin: 34px 0 6px }
+.sub { color: var(--tinta-2); margin: 0 0 16px; max-width: 70ch }
+.botones { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center }
+.botones button { font: inherit; color: var(--tinta); background: none; border: 1px solid var(--linea); border-radius: 999px; padding: 6px 14px; cursor: pointer; min-height: 38px }
+.botones button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta) }
+.botones input[type=range] { flex: 1 1 200px; min-width: 0; accent-color: var(--oliva) }
+:focus-visible { outline: 3px solid var(--resaltado); outline-offset: 2px }
+.visor { position: relative; background: var(--camara); border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 9; max-width: 100% }
+.visor canvas { display: block; width: 100%; height: 100%; touch-action: none }
+.barra { position: absolute; left: 12px; bottom: 12px; color: var(--camara-tx); font: 500 .85rem var(--sans); display: grid; gap: 4px; pointer-events: none; background: rgba(23, 25, 30, .72); padding: 6px 10px 8px; border-radius: 6px }
+.barra i { display: block; height: 4px; background: var(--camara-tx); border-radius: 1px }
+.pista { position: absolute; right: 14px; bottom: 14px; color: var(--camara-2); font-size: .8rem; pointer-events: none }
+.nivel { position: absolute; left: 14px; top: 12px; color: var(--camara-tx); pointer-events: none; max-width: calc(100% - 250px); transition: opacity .5s; background: rgba(23, 25, 30, .78); padding: 8px 12px; border-radius: 6px }
+.nivel b { display: block; font: 600 1.15rem var(--serif) }
+.nivel span { color: var(--camara-2); font-size: .9rem }
+.ficha { margin-top: 14px; display: grid; gap: 4px }
+.ficha h3 { font: 600 1.1rem var(--serif); margin: 0 }
+.ficha p { margin: 0; color: var(--tinta-2); max-width: 75ch }
+.ficha dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px; margin: 8px 0 0; font-variant-numeric: tabular-nums }
+.ficha dt { color: var(--tinta-2) } .ficha dd { margin: 0 }
+.nota { margin-top: 22px; font-size: .88rem; color: var(--tinta-2); max-width: 75ch }
+.regla { position: absolute; right: 12px; top: 12px; bottom: 12px; width: 206px; pointer-events: none; font: 500 .74rem var(--sans); color: #B8BEC8; background: rgba(23, 25, 30, .72); border-radius: 6px }
+.regla .dentro { position: absolute; inset: 22px 0 }
+.regla .eje { position: absolute; left: 120px; top: 0; bottom: 0; width: 2px; background: #6A707B }
+.regla .sin { position: absolute; left: 120px; width: 2px; bottom: 0; background: repeating-linear-gradient(#17191E 0 4px, transparent 4px 8px) }
+.regla .tic, .regla .obj, .regla .marca { position: absolute; transform: translateY(-50%); white-space: nowrap }
+.regla .tic { left: 116px; padding-left: 16px; color: var(--camara-tx) }
+.regla .tic::before { content: ""; position: absolute; left: 0; top: 50%; width: 10px; height: 1px; background: var(--camara-tx) }
+.regla .obj { right: 92px; text-align: right }
+.regla .obj::after { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--camara-2); margin-left: 6px; vertical-align: middle }
+.regla .marca { left: 104px; width: 36px; height: 3px; background: var(--resaltado); transition: top .08s linear }
+.regla .marca b { position: absolute; right: 44px; top: 50%; transform: translateY(-50%); color: var(--camara-tx); font-weight: 600; background: rgba(23,25,30,.8); padding: 1px 6px; border-radius: 3px }
+@media (max-width: 560px) { .visor { aspect-ratio: 4 / 5 } .nivel { max-width: calc(100% - 120px) } .nivel b { font-size: 1rem } .nivel span { font-size: .8rem } .regla { width: 100px } .regla .eje, .regla .sin { left: 40px } .regla .tic { left: 36px } .regla .marca { left: 24px } .regla .obj { display: none } }
+@media (prefers-reduced-motion: reduce) { .regla .marca { transition: none } }
+@media (prefers-reduced-motion: reduce) { .nivel { transition: none } }
+/* para grabar: el visor llena la ventana y los rótulos crecen con ella */
+body.video { overflow: hidden }
+body.video .env { max-width: none; padding: 0 }
+body.video h1, body.video .sub, body.video .botones, body.video .nota { display: none }
+body.video .visor { position: fixed; inset: 0; aspect-ratio: auto; border-radius: 0 }
+body.video .nivel, body.video .regla, body.video .barra { zoom: 1.75 }
+body.video .nivel, body.video .regla .marca { transition: none }
+</style>
+
+<div class="env">
+  <h1>Del montón al poro</h1>
+  <p class="sub">Un montón de tierra diatomácea, la que se usa como ayuda filtrante, visto cada vez más de cerca: de tres centímetros de polvo a un alvéolo de una sola diatomea. Los modelos salen de las medidas de micrografías SEM.</p>
+
+  <div class="botones">
+    <button type="button" id="z-play" aria-pressed="false">Reproducir</button>
+    <button type="button" id="z-otra">Desde el principio</button>
+    <input type="range" id="z-t" min="0" max="1000" value="0" aria-label="Avance del acercamiento">
+  </div>
+  <div class="visor" id="zoom">
+    <div class="nivel" id="z-nivel"><b></b><span></span></div>
+    <div class="regla" id="z-regla" aria-hidden="true"><div class="dentro"><div class="eje"></div><div class="sin"></div></div></div>
+    <div class="barra"><span class="tx"></span><i></i></div>
+  </div>
+
+  <p class="nota">Modelo del libro. Las medidas se tomaron con la barra de escala de micrografías SEM de tierra diatomácea comercial; las micrografías no se reproducen. La forma de los alvéolos, el espesor de las paredes, la curvatura, el cíngulo y el montón de polvo son estimaciones del dibujo.</p>
+</div>
+
+<script type="importmap">{ "imports": { "three": "/three/three.module.min.js", "three/addons/": "/three/" } }</script>
+<script type="module">
+import * as THREE from 'three';
+
+const VIDEO = new URLSearchParams(location.search).has('video');   // para grabar el video del libro, cuadro por cuadro
+const MOVER = !VIDEO && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (VIDEO) document.body.classList.add('video');
+
+// ── material: el brillo de los bordes de una micrografía (las caras vistas de canto emiten más) ──
+function sem(m) { m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance += vec3(0.55) * pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 2.5);'); }; return m; }
+const MAT = sem(new THREE.MeshStandardMaterial({ color: 0xCDD0D5, roughness: 0.66, metalness: 0.0, side: THREE.DoubleSide }));
+function luces(escena) {
+  escena.add(new THREE.HemisphereLight(0xEEF2FF, 0x2A2C33, 1.25));
+  const a = new THREE.DirectionalLight(0xFFFFFF, 2.2); a.position.set(-0.4, 0.6, 0.8); escena.add(a);
+  const b = new THREE.DirectionalLight(0xCFD8FF, 1.4); b.position.set(0.6, -0.3, -0.7); escena.add(b);
+}
+
+// ── geometría ────────────────────────────────────────────────────────────
+// Cada lámina es una malla fina; los agujeros los corta una máscara dibujada en un lienzo, y cada agujero
+// lleva su pared: un cilindro abierto del espesor de la lámina.
+function azar(s) { return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+function hexagonal(R, paso, rnd, jit = 0.06) {
+  const pts = [], dy = paso * Math.sqrt(3) / 2;
+  for (let j = -Math.ceil(R / dy); j <= Math.ceil(R / dy); j++)
+    for (let i = -Math.ceil(R / paso) - 1; i <= Math.ceil(R / paso) + 1; i++) {
+      const x = (i + (j & 1) * 0.5) * paso + (rnd() - 0.5) * jit * paso, y = j * dy + (rnd() - 0.5) * jit * paso;
+      if (Math.hypot(x, y) <= R) pts.push([x, y]);
+    }
+  return pts;
+}
+function mascara(Lx, Ly, dibujar, px = 2048) {
+  const c = document.createElement('canvas'); c.width = px; c.height = Math.max(8, Math.round(px * Ly / Lx));
+  const g = c.getContext('2d'), k = px / Lx;
+  g.setTransform(k, 0, 0, -k, c.width / 2, c.height / 2);
+  dibujar(g);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; t.anisotropy = 4; return t;
+}
+// el grano de la sílice: un relieve fino, de décimas de micrómetro, sobre cada lámina
+const GRANO = (() => { const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d'), r = azar(91);
+  g.fillStyle = '#808080'; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 1400; i++) { const x = r() * 512, y = r() * 512, rad = 6 + r() * 22, v = 60 + r() * 140; g.fillStyle = `rgba(${v},${v},${v},0.55)`;
+    for (const dx of [-512, 0, 512]) for (const dy of [-512, 0, 512]) { g.beginPath(); g.arc(x + dx, y + dy, rad, 0, 7); g.fill(); } }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.NoColorSpace; return t; })();
+function lamina(geo, alpha, rep = [55, 55]) {
+  const m = sem(MAT.clone()); m.alphaMap = alpha; m.alphaTest = 0.5;
+  m.bumpMap = GRANO.clone(); m.bumpMap.repeat.set(...rep); m.bumpScale = 0.9;
+  return new THREE.Mesh(geo, m);
+}
+function disco(R, f, dz, L, nr = 140, nt = 360) {
+  const g = new THREE.RingGeometry(0.0001, R, nt, nr), p = g.attributes.position, uv = g.attributes.uv;
+  for (let k = 0; k < p.count; k++) { const x = p.getX(k), y = p.getY(k); p.setZ(k, f(Math.hypot(x, y)) + dz); uv.setXY(k, x / L + 0.5, y / L + 0.5); }
+  g.computeVertexNormals(); return g;
+}
+function paredes(agujeros, alto, f, dz) {
+  const base = new THREE.CylinderGeometry(1, 1, alto, 18, 1, true).rotateX(Math.PI / 2);
+  const im = new THREE.InstancedMesh(base, MAT, agujeros.length), m = new THREE.Matrix4(), q = new THREE.Quaternion(), e = 0.01;
+  agujeros.forEach(([x, y, a, b = a, th = 0], i) => {
+    const rho = Math.hypot(x, y), z = f(rho) + dz, dzdr = rho > e ? (f(rho + e) - f(rho - e)) / (2 * e) : 0;
+    const n = new THREE.Vector3(-dzdr * x / (rho || 1), -dzdr * y / (rho || 1), 1).normalize();
+    q.setFromUnitVectors(new THREE.Vector3(0, 0, 1), n).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), th));
+    m.compose(new THREE.Vector3(x, y, z), q, new THREE.Vector3(a, b, 1)); im.setMatrixAt(i, m);
+  });
+  return im;
+}
+function domo(R, flecha) {
+  if (!flecha) return () => 0;
+  const Rs = (R * R + flecha * flecha) / (2 * flecha), b = Math.sqrt(Rs * Rs - R * R);
+  return rho => Math.sqrt(Math.max(0, Rs * Rs - Math.min(rho, R) ** 2)) - b;
+}
+// una valva: la capa de alvéolos afuera y la lámina con poros finos adentro; z = 0 es la mitad de la capa de alvéolos
+function valva({ R, paso, abre, poroFondo, tAlv, tFondo, flecha, margen, semilla, px = 2048, borde = 0 }) {
+  const rnd = azar(semilla), grupo = new THREE.Group(), f = domo(R, flecha), L = 2 * R + 2;
+  const enc = rho => 1 - 0.25 * Math.pow(rho / R, 4);
+  const alv = hexagonal(R - margen - abre / 2, paso, rnd).map(([x, y]) => [x, y, abre / 2 * enc(Math.hypot(x, y))]);
+  const disc = (g, hoyos) => { g.fillStyle = '#fff'; g.beginPath(); g.arc(0, 0, R, 0, 7); g.fill(); g.fillStyle = '#000'; for (const [x, y, r] of hoyos) { g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); } };
+  const finos = alv.map(([x, y]) => [x, y, poroFondo / 2]);
+  const mAlv = mascara(L, L, g => disc(g, alv), px), mFon = mascara(L, L, g => disc(g, finos), px);
+  const zF = -tAlv / 2 - tFondo;
+  grupo.add(lamina(disco(R, f, tAlv / 2, L), mAlv), lamina(disco(R, f, -tAlv / 2, L), mFon), lamina(disco(R, f, zF, L), mFon));
+  grupo.add(paredes(alv, tAlv, f, 0), paredes(finos, tFondo, f, -tAlv / 2 - tFondo / 2));
+  const alto = tAlv + tFondo + borde, canto = new THREE.CylinderGeometry(R, R, alto, 240, 1, true).rotateX(Math.PI / 2);
+  canto.translate(0, 0, tAlv / 2 - alto / 2); grupo.add(new THREE.Mesh(canto, MAT));
+  grupo.userData = { alv, f, tAlv };
+  return grupo;
+}
+// el cíngulo: las bandas que unen las dos valvas, con hileras de poros pequeños
+function cingulo(R, H, px = 3072) {
+  const C = 2 * Math.PI * R;
+  const m = mascara(C, H, g => {
+    g.fillStyle = '#fff'; g.fillRect(-C / 2, -H / 2, C, H); g.fillStyle = '#000';
+    const filas = Math.floor((H - 1.6) / 1.1);
+    for (let j = 0; j < filas; j++) { const y = -H / 2 + 0.8 + (j + 0.5) * (H - 1.6) / filas; for (let x = -C / 2 + 0.5; x < C / 2; x += 0.9) { g.beginPath(); g.arc(x + (j & 1) * 0.45, y, 0.22, 0, 7); g.fill(); } }
+    g.fillRect(-C / 2, -0.06, C, 0.12);
+  }, px);
+  const geo = new THREE.CylinderGeometry(R, R, H, 360, 24, true).rotateX(Math.PI / 2);
+  return lamina(geo, m, [Math.round(C / 1.3), Math.round(H / 1.3)]);
+}
+function frustula(o) {
+  const H = o.H, g = new THREE.Group();
+  const arriba = valva(o); arriba.position.z = H / 2;
+  const abajo = valva({ ...o, semilla: o.semilla + 1, px: Math.min(o.px || 2048, 2048) }); abajo.rotation.x = Math.PI; abajo.position.z = -H / 2;
+  g.add(arriba, abajo, cingulo(o.R, H - o.tAlv));
+  g.userData = { arriba };
+  return g;
+}
+function dentro(pol, x, y) { let d = false; for (let i = 0, j = pol.length - 1; i < pol.length; j = i++) { const [xi, yi] = pol[i], [xj, yj] = pol[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) d = !d; } return d; }
+function distBorde(pol, x, y) { let m = 1e9; for (let i = 0, j = pol.length - 1; i < pol.length; j = i++) { const [ax, ay] = pol[j], [bx, by] = pol[i], vx = bx - ax, vy = by - ay; const t = Math.max(0, Math.min(1, ((x - ax) * vx + (y - ay) * vy) / (vx * vx + vy * vy))); m = Math.min(m, Math.hypot(x - ax - t * vx, y - ay - t * vy)); } return m; }
+const CONTORNO = [[-28, -20], [-12, -22], [6, -21], [24, -19], [21, -9], [14, -2], [17, 6], [10, 12], [6, 22], [-2, 20], [-6, 13], [-14, 8], [-12, 1], [-19, -6]];
+function fragmento(semilla = 11, px = 2048) {
+  const rnd = azar(semilla), t = 1.2, L = 64, f = rho => -0.004 * rho * rho;
+  const pol = [];
+  for (let i = 0; i < CONTORNO.length; i++) {
+    const [ax, ay] = CONTORNO[i], [bx, by] = CONTORNO[(i + 1) % CONTORNO.length];
+    for (let k = 0; k < 4; k++) { const s = k / 4; pol.push([ax + (bx - ax) * s + (rnd() - 0.5) * 1.6, ay + (by - ay) * s + (rnd() - 0.5) * 1.6]); }
+  }
+  const hechos = [];
+  for (let n = 0; n < 30000 && hechos.length < 60; n++) {
+    const x = -28 + rnd() * 52, y = -22 + rnd() * 44, a = 3.0 + rnd() * 1.6, b = a * (0.72 + rnd() * 0.22), th = rnd() * Math.PI;
+    if (!dentro(pol, x, y) || distBorde(pol, x, y) < a + 0.9) continue;
+    if (hechos.some(h => Math.hypot(h[0] - x, h[1] - y) < h[2] + a + 1.2)) continue;
+    hechos.push([x, y, a, b, th]);
+  }
+  const msk = mascara(L, L, g => { g.fillStyle = '#fff'; g.beginPath(); pol.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); g.fill();
+    g.fillStyle = '#000'; for (const [x, y, a, b, th] of hechos) { g.beginPath(); g.ellipse(x, y, a, b, th, 0, 7); g.fill(); } }, px);
+  const plano = dz => { const g = new THREE.PlaneGeometry(L, L, 220, 220), p = g.attributes.position; for (let k = 0; k < p.count; k++) p.setZ(k, f(Math.hypot(p.getX(k), p.getY(k))) + dz); g.computeVertexNormals(); return g; };
+  const grupo = new THREE.Group().add(lamina(plano(t / 2), msk), lamina(plano(-t / 2), msk), paredes(hechos, t, f, 0));
+  const pos = [];
+  for (let i = 0; i < pol.length; i++) {
+    const [ax, ay] = pol[i], [bx, by] = pol[(i + 1) % pol.length], za = f(Math.hypot(ax, ay)), zb = f(Math.hypot(bx, by));
+    pos.push(ax, ay, za - t / 2, bx, by, zb - t / 2, bx, by, zb + t / 2, ax, ay, za - t / 2, bx, by, zb + t / 2, ax, ay, za + t / 2);
+  }
+  const canto = new THREE.BufferGeometry(); canto.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); canto.computeVertexNormals();
+  return grupo.add(new THREE.Mesh(canto, MAT));
+}
+const FRUSTULA = { R: 34.5, paso: 3.4, abre: 2.6, poroFondo: 0.9, tAlv: 1.3, tFondo: 0.3, flecha: 1.5, margen: 1.2, H: 15, semilla: 7 };
+const DOMO = { R: 17.2, paso: 2.1, abre: 1.6, poroFondo: 0.4, tAlv: 0.8, tFondo: 0.25, flecha: 11, margen: 0.6, semilla: 3, borde: 1.5 };
+
+// ── la barra de escala ───────────────────────────────────────────────────
+function medida(um) {
+  const n = (v, d) => v.toLocaleString('es-CO', { maximumFractionDigits: d });
+  return um >= 10000 ? n(um / 10000, 1) + ' cm' : um >= 1000 ? n(um / 1000, 1) + ' mm' : um >= 1 ? n(um, um < 10 ? 1 : 0) + ' µm' : n(um * 1000, 0) + ' nm';
+}
+function barra(visor, cam, dist) {
+  const pxUm = visor.clientHeight / (2 * dist * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)));
+  const opciones = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+  const um = opciones.find(u => u * pxUm >= 60) ?? 2000;
+  visor.querySelector('.barra i').style.width = (um * pxUm).toFixed(1) + 'px';
+  visor.querySelector('.barra .tx').textContent = medida(um);
+}
+function renderizador(visor) {
+  const r = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true, preserveDrawingBuffer: true });
+  r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+  visor.prepend(r.domElement); return r;
+}
+
+// ════ 1. Del polvo al poro ═══════════════════════════════════════════════
+const zv = document.getElementById('zoom'), zr = renderizador(zv);
+const ze = new THREE.Scene(), FONDO = new THREE.Color(0x17191E); ze.background = FONDO; luces(ze);
+ze.fog = new THREE.FogExp2(FONDO, 0.0001);
+const zc = new THREE.PerspectiveCamera(32, 16 / 10, 0.01, 20000); zc.up.set(0, 0, 1);
+
+// el montón: unos 3 cm de polvo. Lejos es una superficie con textura de grano; cerca del punto al que llega
+// la cámara, unas 25 000 partículas sueltas acostadas sobre ella
+const RM = 15000, HM = 6000;
+// los terrones: ondas en direcciones al azar, más finas cuanto más cortas, que se apagan en el borde y en la cima
+const ONDAS = (() => { const r = azar(77), o = []; for (let i = 0; i < 14; i++) { const l = 250 + r() ** 2 * 2600, a = r() * 7; o.push([Math.cos(a) * 6.283 / l, Math.sin(a) * 6.283 / l, r() * 7, 0.014 * l]); } return o; })();
+const hM = (x, y) => { const r = Math.hypot(x, y); if (r >= RM) return 0; const u = 1 - (r / RM) ** 2;
+  let d = 0; for (const [kx, ky, f, a] of ONDAS) d += a * Math.sin(kx * x + ky * y + f);
+  return HM * u ** 1.3 + d * u * Math.min(1, r / 2500); };
+const HEROE = new THREE.Vector3(0, 0, hM(0, 0) + 10);
+(function monton() {
+  const c = document.createElement('canvas'); c.width = c.height = 1024; const g = c.getContext('2d'), rnd = azar(41);
+  g.fillStyle = '#9a9ca0'; g.fillRect(0, 0, 1024, 1024);
+  for (let i = 0; i < 9000; i++) { const x = rnd() * 1024, y = rnd() * 1024, r = 1.5 + rnd() * 7, v = 110 + rnd() * 140;
+    g.fillStyle = `rgb(${v},${v},${v + 4})`; for (const dx of [-1024, 0, 1024]) for (const dy of [-1024, 0, 1024]) { g.beginPath(); g.ellipse(x + dx, y + dy, r, r * (0.4 + rnd() * 0.6), rnd() * 3, 0, 7); g.fill(); } }
+  const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(40, 40); tex.anisotropy = 8; tex.colorSpace = THREE.SRGBColorSpace;
+  const geo = new THREE.RingGeometry(0.01, RM, 720, 320), p = geo.attributes.position;
+  for (let k = 0; k < p.count; k++) p.setZ(k, hM(p.getX(k), p.getY(k)) - 25);
+  geo.computeVertexNormals();
+  const m = new THREE.MeshStandardMaterial({ color: 0xE2E4E8, map: tex, bumpMap: tex, bumpScale: 1.2, roughness: 0.9 });
+  ze.add(new THREE.Mesh(geo, m));
+})();
+function tipos() {
+  const rnd = azar(5), L = 1, T = [];
+  const nuevo = (dib, n, esc) => T.push({ tex: mascara(L, L, dib, 512), n, esc });
+  for (const paso of [0.05, 0.075]) nuevo(g => { g.fillStyle = '#fff'; g.beginPath(); g.arc(0, 0, 0.48, 0, 7); g.fill(); g.fillStyle = '#000'; for (const [x, y] of hexagonal(0.44, paso, rnd)) { g.beginPath(); g.arc(x, y, paso * 0.36, 0, 7); g.fill(); } }, 5500, [25, 70]);
+  for (let v = 0; v < 3; v++) nuevo(g => {
+    g.fillStyle = '#fff'; g.beginPath(); const n = 9 + v * 2;
+    for (let i = 0; i < n; i++) { const a = i / n * 7, r = 0.3 + rnd() * 0.18; i ? g.lineTo(Math.cos(a) * r, Math.sin(a) * r) : g.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+    g.closePath(); g.fill(); g.fillStyle = '#000';
+    for (let i = 0; i < 14; i++) { const x = (rnd() - 0.5) * 0.5, y = (rnd() - 0.5) * 0.5; g.beginPath(); g.ellipse(x, y, 0.04 + rnd() * 0.03, 0.035, rnd() * 3, 0, 7); g.fill(); }
+  }, 4700, [20, 60]);
+  nuevo(g => { g.fillStyle = '#fff'; g.beginPath(); g.ellipse(0, 0, 0.48, 0.11, 0, 0, 7); g.fill(); g.fillStyle = '#000'; for (let x = -0.42; x < 0.43; x += 0.022) for (const y of [-0.06, -0.03, 0, 0.03, 0.06]) if ((x / 0.46) ** 2 + (y / 0.1) ** 2 < 1) { g.beginPath(); g.arc(x, y, 0.006, 0, 7); g.fill(); } }, 3400, [30, 90]);
+  for (let v = 0; v < 3; v++) nuevo(g => { g.fillStyle = '#fff'; g.beginPath(); const n = 5 + v; for (let i = 0; i < n; i++) { const a = i / n * 7 + rnd() * 0.4, r = 0.2 + rnd() * 0.28; i ? g.lineTo(Math.cos(a) * r, Math.sin(a) * r) : g.moveTo(Math.cos(a) * r, Math.sin(a) * r); } g.closePath(); g.fill(); }, 5900, [4, 18]);
+  return T;
+}
+const RP = 5500;
+(function pila() {
+  const rnd = azar(23), geo = new THREE.PlaneGeometry(1, 1), m = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), c = new THREE.Color();
+  for (const t of tipos()) {
+    const mat = sem(MAT.clone()); mat.alphaMap = t.tex; mat.alphaTest = 0.5;
+    const im = new THREE.InstancedMesh(geo, mat, t.n);
+    for (let i = 0; i < t.n; i++) {
+      let p = null;
+      do { const r = RP * Math.sqrt(rnd()), th = rnd() * 7, x = r * Math.cos(th), y = r * Math.sin(th);
+        if (rnd() > 1 - (r / RP) ** 3) continue;           // menos partículas hacia el borde de la zona, para que no se note
+        p = new THREE.Vector3(x, y, hM(x, y) - Math.abs(rnd() + rnd() - 1) * 45); } while (!p || p.distanceTo(HEROE) < 70);
+      e.set((rnd() - 0.5) * 1.6, (rnd() - 0.5) * 1.6, rnd() * 7); q.setFromEuler(e);
+      const s = t.esc[0] + rnd() * (t.esc[1] - t.esc[0]);
+      m.compose(p, q, new THREE.Vector3(s, s, 1)); im.setMatrixAt(i, m);
+      im.setColorAt(i, c.setScalar(0.78 + rnd() * 0.3));
+    }
+    ze.add(im);
+  }
+})();
+// la frústula del centro, completa, y unas vecinas con todo su detalle
+const heroe = frustula({ ...FRUSTULA, px: 3072 });
+const normalHeroe = new THREE.Vector3(0.18, -0.42, 0.89).normalize();
+heroe.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normalHeroe);
+heroe.position.copy(HEROE); ze.add(heroe); heroe.updateMatrixWorld(true);
+[[fragmento(31, 1024), [95, 40, -6], [0.5, 0.2, 1.2], 0.9], [valva({ ...DOMO, px: 1024 }), [-70, 55, -2], [0.2, -0.3, 0.4], 1.4],
+ [fragmento(47, 1024), [-40, -95, -10], [-0.4, 0.3, 2.4], 1.1], [valva({ ...DOMO, semilla: 9, px: 1024 }), [60, -80, -4], [-0.6, 0.1, 0], 1.0]]
+  .forEach(([o, p, r, s]) => { o.position.copy(HEROE).add(new THREE.Vector3(...p)); o.rotation.set(...r); o.scale.setScalar(s); ze.add(o); });
+// el alvéolo al que llega la cámara: uno cerca del centro de la valva de arriba
+const ua = heroe.userData.arriba.userData;
+const [ax, ay] = ua.alv.reduce((b, a) => Math.hypot(a[0] - 4, a[1] - 3) < Math.hypot(b[0] - 4, b[1] - 3) ? a : b);
+const FOCO = heroe.localToWorld(new THREE.Vector3(ax, ay, FRUSTULA.H / 2 + ua.f(Math.hypot(ax, ay)) - 0.8));
+
+// el recorrido: la distancia baja en escala logarítmica y el blanco pasa de la pila a la frústula y al alvéolo
+const D0 = 70000, D1 = 4.2, DUR = 30;
+const suave = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+const NIVELES = [[9000, 'Un montón', 'Tierra diatomácea recién sacada del saco: unos 3 cm de polvo blanco'], [1000, 'El polvo', 'De cerca, el montón se deshace en partículas sueltas'], [140, 'Las partículas', 'Valvas, fragmentos y astillas de 5 a 100 µm, acostadas al azar'],
+  [45, 'Una frústula', 'La caja de sílice de una diatomea: dos valvas unidas por el cíngulo'], [7, 'Los alvéolos', 'Huecos de 2,6 µm; en el fondo de cada uno, un poro de 0,9 µm'],
+  [0, 'El poro del fondo', 'Un poro de 0,9 µm en la lámina de adentro. Más abajo de este tamaño, las micrografías medidas ya no muestran detalle']];
+// la regla del costado: escala logarítmica de 6 cm a 100 nm; la marca es el ancho del campo que se ve
+const regla = document.querySelector('#z-regla .dentro'), ARRIBA = Math.log10(60000), ABAJO = -1;
+const enRegla = um => ((ARRIBA - Math.log10(um)) / (ARRIBA - ABAJO) * 100).toFixed(2) + '%';
+for (const um of [10000, 1000, 100, 10, 1, 0.1]) { const d = document.createElement('div'); d.className = 'tic'; d.style.top = enRegla(um); d.textContent = medida(um); regla.appendChild(d); }
+for (const [um, tx] of [[30000, 'el montón'], [69, 'una frústula'], [2.6, 'un alvéolo'], [0.9, 'el poro del fondo'], [0.25, 'ya no hay datos']]) { const d = document.createElement('div'); d.className = 'obj'; d.style.top = enRegla(um); d.textContent = tx; regla.appendChild(d); }
+regla.querySelector('.sin').style.top = enRegla(0.6);
+const marca = document.createElement('div'); marca.className = 'marca'; marca.innerHTML = '<b></b>'; regla.appendChild(marca);
+const nivel = document.getElementById('z-nivel'); let nivelActual = -1;
+function poner(t) {
+  const e = (1 - Math.cos(Math.PI * t)) / 2;
+  const dist = Math.exp(Math.log(D0) + (Math.log(D1) - Math.log(D0)) * e);
+  const w1 = suave((Math.log(30000) - Math.log(dist)) / (Math.log(30000) - Math.log(1500)));
+  const w2 = suave((Math.log(60) - Math.log(dist)) / (Math.log(60) - Math.log(18)));
+  const blanco = new THREE.Vector3(0, 0, HM * 0.35).lerp(HEROE, w1).lerp(FOCO, w2);
+  const dir = new THREE.Vector3(0.45, -0.72, 0.42).lerp(new THREE.Vector3(0.42, -0.6, 0.68), suave(e * 2)).normalize().applyAxisAngle(new THREE.Vector3(0, 0, 1), -0.9 * e).lerp(normalHeroe, w2 * 0.85).normalize();
+  zc.position.copy(blanco).addScaledVector(dir, dist); zc.lookAt(blanco);
+  zc.near = Math.max(0.02, dist * 0.01); zc.far = dist * 30 + 200000; zc.updateProjectionMatrix();
+  ze.fog.density = 0.45 / (dist * 3);
+  zr.render(ze, zc); barra(zv, zc, dist);
+  const campo = 2 * dist * Math.tan(THREE.MathUtils.degToRad(zc.fov / 2)) * zc.aspect;
+  marca.style.top = enRegla(campo); marca.querySelector('b').textContent = 'campo: ' + medida(campo);
+  const k = NIVELES.findIndex(([d]) => dist >= d);
+  if (k !== nivelActual) {
+    nivelActual = k;
+    const cambiar = () => { nivel.querySelector('b').textContent = NIVELES[k][1]; nivel.querySelector('span').textContent = NIVELES[k][2]; nivel.style.opacity = 1; };
+    if (MOVER) { nivel.style.opacity = 0; setTimeout(cambiar, 250); } else cambiar();
+  }
+}
+const zt = document.getElementById('z-t'), zplay = document.getElementById('z-play');
+let t = 0, corre = false, antes = 0;
+function marcar() { zplay.textContent = corre ? 'Pausa' : 'Reproducir'; zplay.setAttribute('aria-pressed', String(corre)); }
+function bucle(ms) {
+  if (corre) { t = Math.min(1, t + (ms - antes) / 1000 / DUR); zt.value = Math.round(t * 1000); if (t >= 1) { corre = false; marcar(); } }
+  antes = ms; poner(t); requestAnimationFrame(bucle);
+}
+zplay.addEventListener('click', () => { if (t >= 1) t = 0; corre = !corre; marcar(); });
+document.getElementById('z-otra').addEventListener('click', () => { t = 0; corre = MOVER; marcar(); });
+zt.addEventListener('input', () => { t = zt.value / 1000; corre = false; marcar(); });
+function tamZ() { const w = zv.clientWidth, h = zv.clientHeight; zr.setSize(w, h, false); zc.aspect = w / h; zc.updateProjectionMatrix(); }
+new ResizeObserver(tamZ).observe(zv); tamZ();
+if (MOVER && !VIDEO) new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { corre = true; marcar(); o.disconnect(); } }, { threshold: 0.5 }).observe(zv);
+if (!VIDEO) requestAnimationFrame(ms => { antes = ms; bucle(ms); });
+
+window.__zoom = v => { corre = false; t = v; marcar(); };   // para sacar cuadros fijos
+window.__cuadro = v => poner(v);   // el grabador pide cada cuadro
+window.__listo = true;
+</script>
