@@ -6,7 +6,7 @@ Acercamiento en 3D para el capítulo 17 del libro (Filtración): un montón de u
 CHROME_PATH=/opt/pw-browsers/chromium node grabar.mjs --destino ../../../../libro-operaciones-unitarias/libro/figuras/filtracion
 ```
 
-Escribe `del-monton-al-poro.mp4` (1920 × 1080, 24 cuadros por segundo, 30 s, H.264 yuv420p) y `del-monton-al-poro.webp` (el último cuadro, el póster). Cada cuadro tarda unos 4 s en Chromium sin tarjeta gráfica; con tres navegadores (`--hilos 3`, el valor por omisión) el video sale en unos 20 minutos. `--fps` y `--duracion` cambian el ritmo; los cuadros de trabajo quedan en `out/`, ignorado en git. Para mirar la página sin grabar, sirva esta carpeta con el mismo mapeo de `grabar.mjs` y ábrala sin `?video`: trae botones y una barra para recorrer el acercamiento a mano.
+Escribe `del-monton-al-poro.mp4` (cuadros tomados a 1920 × 1080 y video a 1280 × 720 con CRF 30, 24 cuadros por segundo, 30 s, H.264 yuv420p, unos 5 MB; a 1080p pasaba de 50 MB, porque el polvo comprime mal) y `del-monton-al-poro.webp` (el último cuadro, el póster). Cada cuadro tarda unos 4 s en Chromium sin tarjeta gráfica; con tres navegadores (`--hilos 3`, el valor por omisión) el video sale en unos 20 minutos. `--fps` y `--duracion` cambian el ritmo, `--ancho` y `--crf` el tamaño del video, y `--solo-codificar` rehace el video con los cuadros que ya están en `out/`; los cuadros de trabajo quedan en `out/`, ignorado en git. Para mirar la página sin grabar, sirva esta carpeta con el mismo mapeo de `grabar.mjs` y ábrala sin `?video`: trae botones y una barra para recorrer el acercamiento a mano.
 
 ## Qué sale de dónde
 

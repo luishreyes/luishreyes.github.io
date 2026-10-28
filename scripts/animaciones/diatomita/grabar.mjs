@@ -33,7 +33,8 @@ const servidor = createServer(async (req, res) => {
 await new Promise(r => servidor.listen(0, '127.0.0.1', r));
 const base = `http://127.0.0.1:${servidor.address().port}/?video`;
 
-await rm(OUT, { recursive: true, force: true }); await mkdir(OUT, { recursive: true });
+const SOLO_CODIFICAR = process.argv.includes('--solo-codificar');   // vuelve a armar el video con los cuadros de out/
+if (!SOLO_CODIFICAR) { await rm(OUT, { recursive: true, force: true }); await mkdir(OUT, { recursive: true }); }
 const lanzar = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {};
 const t0 = Date.now(); let hechos = 0;
 async function hilo(h) {
@@ -48,13 +49,16 @@ async function hilo(h) {
   }
   await nav.close();
 }
-await Promise.all(Array.from({ length: HILOS }, (_, h) => hilo(h)));
+if (!SOLO_CODIFICAR) await Promise.all(Array.from({ length: HILOS }, (_, h) => hilo(h)));
 servidor.close();
 
 const mp4 = join(OUT, NOMBRE + '.mp4'), webp = join(OUT, NOMBRE + '.webp');
-execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', join(OUT, 'c%05d.png'),
-  '-c:v', 'libx264', '-preset', 'slow', '-crf', '23', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', mp4]);
-execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', join(OUT, `c${String(N - 1).padStart(5, '0')}.png`), '-quality', '88', webp]);
+// Los cuadros se toman a 1920 × 1080 y el video sale a 1280 × 720 (--ancho): el polvo, con miles de
+// partículas que cambian en cada cuadro, comprime mal, y a 1080p con CRF 23 el video pasaba de 50 MB.
+const ANCHO_VIDEO = +arg('ancho', 1280), CRF = arg('crf', '30'), ESCALA = `scale=${ANCHO_VIDEO}:-2:flags=lanczos`;
+execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', join(OUT, 'c%05d.png'), '-vf', ESCALA,
+  '-c:v', 'libx264', '-preset', 'slow', '-crf', CRF, '-pix_fmt', 'yuv420p', '-movflags', '+faststart', mp4]);
+execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', join(OUT, `c${String(N - 1).padStart(5, '0')}.png`), '-vf', ESCALA, '-quality', '88', webp]);
 if (DESTINO) {
   await mkdir(DESTINO, { recursive: true });
   for (const f of [mp4, webp]) await copyFile(f, join(DESTINO, f.split('/').pop()));
