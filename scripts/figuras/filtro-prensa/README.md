@@ -18,6 +18,7 @@ el mismo que replica el audit) y cada torta cae a la banda.
 | `drive_test.js` | Ciclo sintético para `preview.html` (`?t=18.5` congela un instante). |
 | `fp.css`, `fp-theme.css` | Colores de torta, suspensión y agua; tema papel y blueprint del explorador. |
 | `splice.mjs` | Reinserta `out/` en el HTML publicado, entre los marcadores `FPRESS_*_START/END`. |
+| `libro.mjs` | La vista quieta del libro (capítulo 17, Filtración): congela la figura a mitad de la filtración (`ESTADO`) y escribe `figuras/filtracion/_prensa.qmd` del libro con los nombres de las piezas, y `out/libro-preview.html` para revisarla. Corre después de `node build.mjs --audit`. |
 | `isozoom.js` | Pellizco, arrastre, doble toque y botones + − «todo» para acercar la figura. Copia de referencia: el explorador lo lleva en su propio script (no está en `out/`), y sirve igual para la figura del tambor. |
 
 ```sh
