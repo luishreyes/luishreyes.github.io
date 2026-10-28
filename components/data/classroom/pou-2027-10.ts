@@ -14,7 +14,8 @@ import { pou202620Course } from './pou-2026-20';
 // PENDIENTE antes de abrirlo a estudiantes:
 //   · `presentations` y casi todo `readings` todavía son los de pectina,
 //     heredados de 2026-20. Ya son propios de 2027-10: el reto, los módulos
-//     y el material de las semanas 1 a 3.
+//     y el material de las semanas 1 a 3, más la Lectura 12 (filtración y
+//     winterización), que reemplaza a la Lectura 09 de pectina.
 //   · `schedule`, `cronograma`, el equipo de asistentes y las fechas esperan
 //     el calendario oficial de 2027-10.
 //   · Falta el banner propio del semestre: mientras tanto usa el de 2026-20.
@@ -330,6 +331,23 @@ export const pou202710Course: Course = {
             date: '2026-10-17',
             tags: ['proyecto', 'reto', 'aceite esencial', 'guía'],
             href: '/classroom/iqya-2031-2027-10/reto-aceite-esencial.html',
+          }
+        : r.slug === 'lectura-09-filtracion'
+        ? {
+            // La filtración de 2027-10 es su propia Lectura 12 (filtración y
+            // winterización), no la Lectura 09 de pectina. Conserva el banner
+            // de filtración de 2026-20 mientras no haya uno propio.
+            ...r,
+            slug: 'lectura-12-filtracion-winterizacion',
+            order: 12,
+            week: 9,
+            title: 'Filtración industrial y winterización',
+            summary:
+              'La barrera porosa que separa sólidos y gotas de un líquido: mecanismos de retención, la ley de Darcy con la resistencia de la torta y la del medio, el ensayo a presión constante, la compresibilidad, los equipos, los medios y las ayudas filtrantes. Después, la filtración de profundidad con cartuchos y placas (retención nominal y absoluta, razón beta, caída de presión limpia, ensayos de capacidad y cambio del medio) y la winterización de la planta: enfriar el aceite del florentino a 5-10 °C y pasarlo por un filtro de profundidad para quitarle el agua y la turbidez. No es un desencerado.',
+            date: '2026-10-23',
+            readingMinutes: 45,
+            tags: ['filtración', 'ley de Darcy', 'torta', 'resistencia del medio', 'filtración de profundidad', 'cartuchos', 'placas filtrantes', 'razón beta', 'winterización', 'aceite esencial'],
+            href: '/classroom/iqya-2031-2027-10/lecturas/Lectura_12/Lectura_12_Filtracion.html',
           }
         : r,
     ),
