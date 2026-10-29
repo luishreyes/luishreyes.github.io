@@ -14,6 +14,24 @@ export interface OutreachActivity {
 export const outreachData: OutreachActivity[] = [
   {
     year: 2026,
+    date: 'October 29',
+    title: {
+      en: 'ECOS 2026: opening talk, «ECOS de una nueva revolución»',
+      es: 'ECOS 2026: charla inaugural, «ECOS de una nueva revolución»',
+    },
+    location: {
+      en: 'Teatro Panorama, Bogotá · Innovation Node, Universidad de los Andes',
+      es: 'Teatro Panorama, Bogotá · Nodo de Innovación, Universidad de los Andes',
+    },
+    description: {
+      en: "The Innovation Node of the Universidad de los Andes invited me to give the opening talk of the second edition of ECOS, its conference on managing technological innovation, organized with the schools of Management, Architecture and Design, and Engineering and their master's and doctoral programs in Technological Innovation Management. In «ECOS de una nueva revolución» I talked with the audience about what is really changing with artificial intelligence, as context for the day's panels.",
+      es: "El Nodo de Innovación de la Universidad de los Andes me invitó a dar la charla inaugural de la segunda edición de ECOS, su conferencia sobre la gestión de la innovación tecnológica, que organiza con las facultades de Administración, Arquitectura y Diseño e Ingeniería y sus programas de Maestría y Doctorado en Gestión de la Innovación Tecnológica. En «ECOS de una nueva revolución» conversé con el público sobre lo que de verdad está cambiando con la inteligencia artificial, como contexto para los paneles del día.",
+    },
+    type: 'Talk',
+    url: 'https://nodo.uniandes.edu.co/eventos/ecos-technological-innovation-managed-2026/',
+  },
+  {
+    year: 2026,
     date: 'September 24',
     title: {
       en: 'Expert source in Puntos: cooking oils',

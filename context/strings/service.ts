@@ -88,6 +88,8 @@ export const service = {
   'outreach.sub':            { en: 'I also write and speak for people who do not read scientific journals: columns, interviews, a documentary episode, talks for the sectors we work with, and visits, fairs and workshops for school students.', es: 'Escribo y hablo también para quien no lee revistas científicas: columnas, entrevistas, un episodio documental, charlas para los sectores con los que trabajamos y visitas, ferias y talleres para estudiantes de colegio.' },
   'outreach.watch':          { en: 'Watch the Visionarios episode', es: 'Ver el episodio de Visionarios' },
   'outreach.watchShort':     { en: 'Watch the episode on YouTube', es: 'Ver el episodio en YouTube' },
+  'outreach.readShort':      { en: 'Read the article', es: 'Leer el artículo' },
+  'outreach.eventShort':     { en: 'Event page', es: 'Página del evento' },
   'outreach.press.title':    { en: 'In the press and on screen', es: 'En la prensa y en pantalla' },
   'outreach.press.lead':     { en: 'Columns, interviews and a documentary that take our work to a general audience.', es: 'Columnas, entrevistas y un documental que llevan nuestro trabajo a un público general.' },
   'outreach.events.title':   { en: 'Talks, schools, fairs and campus', es: 'Charlas, colegios, ferias y campus' },

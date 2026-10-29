@@ -24,17 +24,23 @@ const fecha = (texto: string, lang: Lang) => {
   return texto;
 };
 
-/** Las fotos que pertenecen a una entrada: el estreno del documental, el panel de ECOS, la
- *  charla en el congreso de palmicultores, el profesor en su perfil y los egresados que firman
- *  lo que la entrada lleva al público. */
-const FOTOS: { match: RegExp; src: string; alt: Localized; ancho?: boolean }[] = [
+/** Las fotos que pertenecen a una entrada: el estreno del documental, el panel de ECOS 2025 y la
+ *  charla inaugural de 2026, la charla en el congreso de palmicultores, el profesor en su perfil y
+ *  los egresados que firman lo que la entrada lleva al público. La de 2026 va entera y vertical
+ *  (`alto`): tomada desde lo alto del teatro, solo así se ven a la vez él, el público y la pantalla. */
+const FOTOS: { match: RegExp; src: string; alt: Localized; ancho?: boolean; alto?: boolean }[] = [
   { match: /Visionarios/, ...fotos.visionarios },
-  { match: /^ECOS/, ...fotos.ecos, ancho: true },
+  { match: /^ECOS 2026/, ...fotos.ecosCharla, alto: true },
+  { match: /^ECOS 2025/, ...fotos.ecos, ancho: true },
   { match: /Oil Palm Growers/, ...fotos.palmaCharla, ancho: true },
   { match: /^Profile in Puntos/, src: '/images/site/1756469286343.jpg', alt: 'Luis H. Reyes' },
   { match: /Brayan Rodríguez/, src: '/images/students/brayan-rodriguez.jpg', alt: 'Brayan Rodríguez' },
   { match: /Becerra-Encinales/, src: '/images/students/julian-fernando-becerra-encinales.jpg', alt: 'Julián F. Becerra-Encinales' },
 ];
+
+/** El enlace dice adónde lleva: el episodio en YouTube, el artículo por su DOI o la página del evento. */
+const ENLACE = (url: string): UIKey =>
+  /youtu\.?be/.test(url) ? 'outreach.watchShort' : /doi\.org/.test(url) ? 'outreach.readShort' : 'outreach.eventShort';
 
 const Entrada: React.FC<{ a: OutreachActivity }> = ({ a }) => {
   const { t, lang } = useI18n();
@@ -47,7 +53,7 @@ const Entrada: React.FC<{ a: OutreachActivity }> = ({ a }) => {
         <span className="block font-semibold text-tinta-900">{a.year}</span>
         {fecha(a.date, lang)}
       </span>
-      <div className={persona ? `sm:grid sm:gap-10 ${persona.ancho ? 'sm:grid-cols-[minmax(0,1fr)_260px]' : 'sm:grid-cols-[minmax(0,1fr)_180px]'}` : undefined}>
+      <div className={persona ? `sm:grid sm:gap-10 ${persona.ancho || persona.alto ? 'sm:grid-cols-[minmax(0,1fr)_260px]' : 'sm:grid-cols-[minmax(0,1fr)_180px]'}` : undefined}>
         <div>
           <p className="que">{localize(a.title, lang)}</p>
           <p className="donde">
@@ -57,7 +63,7 @@ const Entrada: React.FC<{ a: OutreachActivity }> = ({ a }) => {
           {a.url && (
             <p className="mt-6 pb-8">
               <a href={a.url} target="_blank" rel="noopener noreferrer" className="a-boton">
-                {t('outreach.watchShort')} <span aria-hidden="true">↗</span>
+                {t(ENLACE(a.url))} <span aria-hidden="true">↗</span>
               </a>
             </p>
           )}
@@ -67,7 +73,7 @@ const Entrada: React.FC<{ a: OutreachActivity }> = ({ a }) => {
             src={persona.src}
             alt={localize(persona.alt, lang)}
             loading="lazy"
-            className={`mt-6 sm:mt-1 sm:w-full object-cover object-top a-bn ${persona.ancho ? 'w-[260px] aspect-[4/3]' : 'w-[150px] aspect-[4/5]'}`}
+            className={`mt-6 sm:mt-1 sm:w-full object-cover object-top a-bn ${persona.alto ? 'w-[260px] aspect-[9/16]' : persona.ancho ? 'w-[260px] aspect-[4/3]' : 'w-[150px] aspect-[4/5]'}`}
           />
         )}
       </div>
@@ -79,7 +85,7 @@ export const OutreachPage: React.FC = () => {
   const { t, lang } = useI18n();
   const prensa = outreachData.filter((a) => a.type === 'Media Feature');
   const eventos = outreachData.filter((a) => a.type !== 'Media Feature');
-  const episodio = outreachData.find((a) => a.url);
+  const episodio = outreachData.find((a) => a.url && /youtu\.?be/.test(a.url));
 
   return (
     <PageWrapper noPadding>
