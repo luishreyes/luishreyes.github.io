@@ -1,6 +1,6 @@
 # Mezclador estático en isométrico (skill `anatomy`)
 
-Figura del capítulo 14 del libro de operaciones unitarias (Mezclado y escalado de tanques agitados): el ácido
+Figura del capítulo 15 del libro de operaciones unitarias (Mezclado y escalado de tanques agitados): el ácido
 clorhídrico al 32 % que entra, uno en mil, a la línea de agua de proceso del reactor de extracción de pectina, y el
 mezclador estático que lo reparte antes de que llegue al reactor. Todo va a escala real, en milímetros (`geo.mjs`):
 

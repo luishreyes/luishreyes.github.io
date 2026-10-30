@@ -1,6 +1,6 @@
 # Filtro de arena a presión en isométrico (skill `anatomy`)
 
-Figura del capítulo 15 del libro de operaciones unitarias (Partículas en un fluido): el filtro a presión de doble medio
+Figura del capítulo 16 del libro de operaciones unitarias (Partículas en un fluido): el filtro a presión de doble medio
 que limpia el agua de servicios de la planta. Es un recipiente cerrado: el agua cruda entra por la corona, baja por el
 agua libre, la antracita y la arena, pasa por las boquillas del falso fondo y sale del pleno. Todo va a escala real, en
 milímetros (`geo.mjs`):

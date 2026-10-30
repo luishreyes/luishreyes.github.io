@@ -1,6 +1,6 @@
 # Tanque agitado en isométrico (skill `anatomy`)
 
-Figura del capítulo 13 del libro de operaciones unitarias (Agitación): el reactor de extracción de pectina de la
+Figura del capítulo 14 del libro de operaciones unitarias (Agitación): el reactor de extracción de pectina de la
 cáscara de cítricos, un tanque agitado de acero inoxidable con chaqueta. Todo va a escala real, en milímetros
 (`geo.mjs`):
 

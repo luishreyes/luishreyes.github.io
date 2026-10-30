@@ -1,6 +1,6 @@
 # Válvula de control de globo en isométrico (skill `anatomy`)
 
-Figura del capítulo 12 del libro de operaciones unitarias (Válvulas, tuberías y medición de flujo): una válvula de
+Figura del capítulo 13 del libro de operaciones unitarias (Tanques, válvulas, tuberías y medición): una válvula de
 control de globo de 2″, clase 150 RF, de un solo asiento, guiada por arriba y con obturador perfilado, en una línea de
 agua. Todo va a escala real, en milímetros (`geo.mjs`):
 

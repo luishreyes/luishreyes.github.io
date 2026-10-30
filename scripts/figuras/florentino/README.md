@@ -1,6 +1,6 @@
 # Florentino en isométrico (skill `anatomy`)
 
-Figura del capítulo 16 del libro de operaciones unitarias (Sedimentación y decantación): el florentino de la planta de
+Figura del capítulo 17 del libro de operaciones unitarias (Sedimentación y decantación): el florentino de la planta de
 aceite esencial de cáscara de cítricos, que separa el condensado del arrastre de vapor (agua con un 1,3 % de aceite,
 casi todo d-limoneno, más liviano que el agua) en aceite y agua. Es el diseño del capítulo con la regla de Towler y
 Sinnott y la forma del vaso florentino de Başer y Buchbauer: un cilindro cerrado, la entrada por un tubo central que
