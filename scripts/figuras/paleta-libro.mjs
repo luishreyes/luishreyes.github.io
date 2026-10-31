@@ -8,7 +8,7 @@
 //
 //   import { aplicarPaleta, cssAnatomia, cssMolienda } from '../paleta-libro.mjs';   // en cada libro.mjs
 //
-//   node paleta-libro.mjs                 vuelve a pintar las 18 vistas del libro y los dos CSS, sin rehacer los
+//   node paleta-libro.mjs                 vuelve a pintar las 19 vistas del libro y los dos CSS, sin rehacer los
 //                                         dibujos (los rótulos y la geometría quedan como están)
 //   node paleta-libro.mjs --revisar       solo dice qué colores de las vistas no están en paleta.json
 //   node paleta-libro.mjs --libro RUTA    si el libro está en otra parte (también LIBRO_OU=RUTA)
@@ -142,6 +142,9 @@ export const CLASES = {
   // impulsores (capítulo 14)
   'im-ss': 'acero', 'im-sh': 'pintado', 'im-hw': 'fundicion', 'im-gh': { material: 'acero', opacity: 0.5 }, 'im-cut': 'acero/corte',
   'im-bore': { fill: 'hueco.medio', stroke: 'hueco.oscuro' }, 'im-sock': { fill: 'hueco.oscuro' },
+  // impulsores de bomba (capítulo 11): el anillo de desgaste es de bronce; la carcasa del axial, de fundición
+  'ib-ss': 'acero', 'ib-sh': 'pintado', 'ib-hw': 'fundicion', 'ib-ring': 'cobre', 'ib-cast': 'fundicion',
+  'ib-cut': 'acero/corte', 'ib-cut-c': 'fundicion/corte', 'ib-bore': { fill: 'hueco.medio', stroke: 'hueco.oscuro' },
   // filtro prensa (capítulo 18): la torta, la suspensión y el agua del lavado
   '.fp-cake .iso-fill,.fp-cake .iso-top': { fill: 'solido.cara' }, '.fp-cake .iso-top': { fill: 'solido.tapa' },
   '.fp-cake .iso-shade[data-shade="0"]': { fill: 'solido.sombras.0' }, '.fp-cake .iso-shade[data-shade="1"]': { fill: 'solido.sombras.1' },
@@ -196,6 +199,7 @@ const RAMPA_GRANO = ['solido.oscuro', 'solido.sombras.0', 'solido.sombras.1'];
 export const VISTAS = {
   'agitacion/_impulsores': {},
   'agitacion/_tanque-agitado': {},
+  'bombas/_impulsores': {},
   'bombas/_instalacion': {},
   'bombas/_por-dentro': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
