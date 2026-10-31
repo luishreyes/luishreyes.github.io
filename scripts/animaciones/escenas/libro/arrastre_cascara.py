@@ -1,7 +1,7 @@
 """Lo que cuesta hundir la cáscara: la potencia de la turbina contra su velocidad, la velocidad que pide la cáscara
 que flota y por qué una turbina más grande y más lenta la arrastra con menos potencia.
 
-Para el capítulo 13 del libro de operaciones unitarias (Agitación). El caso es el reactor de extracción de pectina del
+Para el capítulo 14 del libro de operaciones unitarias (Agitación). El caso es el reactor de extracción de pectina del
 Explorador de agitación: tanque de 2,5 m, turbina de cuatro palas inclinadas a 45° de 0,83 m con N_P = 1,27 (McCabe,
 tabla 9.2) en agua a 85 °C (968,6 kg/m³) y cáscara de 950 kg/m³. La potencia es P = N_P ρ N³ D⁵; la velocidad para
 arrastrar sólidos que flotan, la correlación de Joosten et al. según Paul et al. (ec. 10-14):
