@@ -7,7 +7,7 @@ como un equipo de planta:
 - **la línea de succión** de 4″, con su válvula de compuerta, el soporte, la toma del manómetro de succión, el tramo
   recto y la reducción excéntrica de 4″ × 3″, plana arriba;
 - **la bomba**, una 2×3-8 de succión axial: voluta en espiral con su lengüeta y la garganta que sube a la descarga,
-  impulsor abierto de seis álabes, tapa de la carcasa, cámara del sello con su prensa, caja de rodamientos con su
+  impulsor semiabierto de seis álabes (tapa trasera completa, sin delantera), tapa de la carcasa, cámara del sello con su prensa, caja de rodamientos con su
   mirilla de aceite y su respiradero, pata de la carcasa y pata de la caja. A la carcasa se le quita la mitad de
   arriba de la tapa de succión (y de la boquilla de succión) para ver el impulsor;
 - **el acople de espaciador** con su guarda (sin la mitad del lado del lector) y **el motor** con sus aletas, su caja de
