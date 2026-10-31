@@ -10,6 +10,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores de las piezas salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras
+import { aplicarPaleta } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -91,9 +93,9 @@ const etiqueta = 'Florentino de la planta de aceite esencial de cáscara de cít
   'A la derecha, la pierna del agua: un tubo que sale cerca del fondo, baja, da la vuelta en U y sube por fuera hasta un codo un poco más bajo que el rebose del aceite, que fija la interfase; tiene un tramo ajustable con prensaestopas. Del codo sube el rompe-sifón, que entra al espacio de cabeza, y el hidrolato baja a dos válvulas: hacia la caldera y hacia el desagüe. ' +
   'También a la derecha, una mirilla de tubo de vidrio muestra el agua abajo y el aceite arriba, y cerca del fondo un borne con un cable de puesta a tierra que baja a una varilla. En la tapa, el venteo con el codo hacia abajo; en el centro del fondo, el drenaje con su válvula. ' +
   'Unas flechas muestran el condensado que baja por el tubo de calma y sale bajo el deflector, el agua que va hacia la pierna, las gotas que suben y el aceite que va hacia el rebose.';
-const cuerpo = svg
+const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, at) => `<svg${at.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
+  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'sedimentacion-y-decantacion/_florentino');
 mkdirSync(DEST, { recursive: true });
 writeFileSync(join(DEST, '_florentino.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log('_florentino.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);

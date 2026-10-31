@@ -114,3 +114,5 @@ CHROME_PATH=/opt/pw-browsers/chromium node ../../../.claude/skills/anatomy/scrip
 
 En el capítulo se incluye con `{{< include figuras/sedimentacion-y-decantacion/_florentino.qmd >}}` dentro de un bloque
 `::: {#fig-florentino}`; el CSS de las piezas es el de siempre (`estilo/anatomia.css`).
+
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. `fl-ss`, `fl-pipe` y `fl-trim` son acero, y `fl-in`, el acero por dentro (un paso más oscuro); `fl-cast` y `fl-lever`, fundición; `fl-cu`, cobre; el cable de tierra (`fl-tierra`), caucho; el agua y su mirilla, agua; el aceite, sus gotas y su mirilla, aceite; `fl-cut`, el corte del acero; taladros y malla, hueco, y las flechas, el azul de la base y el oscuro del aceite. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

@@ -41,3 +41,5 @@ Las vistas de planta, de elevación y de tubería son dibujos de línea con las 
 (`estilo/libro.scss`), y el isométrico usa `estilo/anatomia.css`. Si se mueve un equipo en `geo.mjs`, las
 cuatro vistas se mueven con él; los rótulos del isométrico y de las vistas están puestos a mano en
 `libro.mjs` y hay que revisarlos.
+
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. El isométrico no trae clases de material: la paleta le pone las clases `mat-*` de `estilo/anatomia.css` por el nombre de la pieza: concreto en los pedestales, los bloques de los compresores y el foso del agua de enfriamiento; amarillo en la baranda y la escalera del reactor; pintado en el rack, las patas y los motores; fundición en las carcasas de los compresores; lo demás, acero. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

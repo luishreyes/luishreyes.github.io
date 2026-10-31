@@ -12,6 +12,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores del isométrico salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras isométricas
+import { aplicarPaleta } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -53,9 +55,9 @@ const txt = (x, y, t, cls = 'lbl-s', anc = 'start') => `<text x="${r1(x)}" y="${
   }).join('');
   const svg = readFileSync(join(AQUI, 'out/fig.svg'), 'utf8');
   const etiqueta = 'Isométrico de la sección de reacción de la planta de benceno: el rack de tuberías en el centro; al norte, el horno H-101, el precalentador E-101 y el reactor R-101 con su plataforma y su escalera; al sur, el enfriador E-102, el separador V-102 con su válvula de seguridad y los compresores C-101 A/B. Las líneas de proceso van de un equipo al otro por el rack.';
-  const cuerpo = svg
+  const cuerpo = aplicarPaleta(svg
     .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="0 80 1090 680" role="img" aria-label="${etiqueta}">`)
-    .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
+    .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'los-diagramas-de-ingenieria/_planta-iso');
   escribir('_planta-iso.qmd', '<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>');
 }
 

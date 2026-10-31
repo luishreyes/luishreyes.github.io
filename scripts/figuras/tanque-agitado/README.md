@@ -63,3 +63,5 @@ pantalla y quién va delante. `TA_STEP=0.5` hace la rejilla del orden más grues
 
 En el capítulo se incluye con `{{< include figuras/agitacion/_tanque-agitado.qmd >}}` dentro de un bloque
 `::: {#fig-tanque-agitado}`; el CSS de las piezas es el de siempre (`estilo/anatomia.css`).
+
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. `ta-ss` y `ta-trim` son acero; `ta-drive`, pintado; `ta-cast` y `ta-lever`, fundición; `ta-sub` y el agua (`ta-liq`), agua; la cáscara (`ta-peel`), cáscara; `ta-cut`, el corte del acero; `ta-bore`, hueco, y las flechas del flujo, el azul de la base. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

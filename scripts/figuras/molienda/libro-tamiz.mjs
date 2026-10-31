@@ -16,6 +16,8 @@ import { chromium } from 'playwright';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores salen de la paleta del libro (estilo/paleta.json): los granos van en la rampa del sólido
+import { aplicarPaleta, cssMolienda } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -90,21 +92,18 @@ for (let k = 0; k < n; k++) {
   trazos.push(linea([ax, ay], ay, `${row.m} · ${abertura} · ${coma(m, 1)}${nbsp}g`));
 }
 const etiqueta = CASO.titulo || `Tamizadora de golpeteo con una pila de ${n} tamices de 200 mm abierta por delante: cada tamiz retiene los granos que no pasan por su malla.`;
-const cuerpo = svg.replace(/(\d+\.\d)\d+/g, '$1')
+const cuerpo = aplicarPaleta(svg.replace(/(\d+\.\d)\d+/g, '$1')
   .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role)="[^"]*"/g, '')} viewBox="-70 12 710 650" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos.join('')}</g></svg>`);
+  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos.join('')}</g></svg>`), 'tamizado-y-analisis-granulometrico/_tamizadora');
 mkdirSync(DEST, { recursive: true });
 const nombre = CASO.nombre || '_tamizadora.qmd';
 writeFileSync(join(DEST, nombre), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log(join(DEST, nombre), Math.round(cuerpo.length / 1024), 'KB');
 
-// el CSS propio de la molienda (las reglas ml-, ds- y tz- de ml.css), sin el lienzo vivo ni el tema azul de planos;
-// libro-molinos.mjs escribe el mismo archivo con las mismas reglas
-const reglas = readFileSync(join(AQUI, 'ml.css'), 'utf8').match(/[^{}]+\{[^{}]*\}/g)
-  .filter(r => !/blueprint|canvas/.test(r)).map(r => r.trim().replace(/^\/\*[\s\S]*?\*\/\s*/, ''));
+// el CSS propio de la molienda (las reglas ml-, ds- y tz- de ml.css), sin el lienzo vivo ni el tema azul de planos y
+// con los colores de la paleta; libro-molinos.mjs escribe el mismo archivo con las mismas reglas
 const LIBRO = resolve(DEST, '../..');
 if (existsSync(join(LIBRO, 'estilo'))) {
-  writeFileSync(join(LIBRO, 'estilo/anatomia-molienda.css'),
-    '/* Las piezas propias de los equipos de molienda y de la tamizadora (skill anatomy). Lo escriben\n   scripts/figuras/molienda/libro-molinos.mjs y libro-tamiz.mjs del repositorio público: no se edita a mano. */\n' + reglas.join('\n') + '\n');
+  writeFileSync(join(LIBRO, 'estilo/anatomia-molienda.css'), cssMolienda(readFileSync(join(AQUI, 'ml.css'), 'utf8')));
   console.log(join(LIBRO, 'estilo/anatomia-molienda.css'));
 }

@@ -45,3 +45,5 @@ node splice.mjs
 Lo vivo se registra con la forma del volumen que ocupa. La pared de arriba de la voluta, el canal y la boquilla de
 succión se parten por el plano que mira al lector (el tramo cercano va delante del líquido y del impulsor, el lejano
 detrás), para que el orden de pintura no haga ciclos.
+
+**Colores en el libro.** Las dos vistas del libro no llevan colores propios: `libro.mjs` escribe `estilo/anatomia.css` del libro con `cssAnatomia` de `../paleta-libro.mjs`, que pone el tema claro del kit en el acero de la paleta del libro (`estilo/paleta.json`, sección `isometricas`) y cada clase de `pb.css` en su material: `pb-cast`, fundición; `pb-conc`, concreto; `pb-motor`, pintado; `pb-glass`, vidrio; el impulsor y el vástago, los grises del metal de materiales; el líquido del nivel, agua. Ese archivo trae también las clases `mat-*` de cada material, para las figuras que las ponen por pieza. El explorador conserva `pb.css` tal como está: `splice.mjs` no pasa por la paleta. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a escribir `anatomia.css` y a pintar las vistas del libro sin rehacer el dibujo.

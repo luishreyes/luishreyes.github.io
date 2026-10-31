@@ -15,6 +15,8 @@ import { createServer } from 'node:http';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores salen de la paleta del libro (estilo/paleta.json), también los de la capa de partículas
+import { aplicarPaleta, cssMolienda, rampasCapa, RECOLOREAR_JS } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const PUBLICO = resolve(AQUI, '../../../public');
@@ -138,7 +140,7 @@ for (const [eq, E] of Object.entries(EQUIPOS)) {
     for (const [id, v] of [['lF', lF], ['lP', lP]]) { const s = document.getElementById(id); s.value = v; s.dispatchEvent(new Event('input', { bubbles: true })); }
   }, E);
   await pagina.waitForTimeout(9000);
-  const { svg, cajas, capa } = await pagina.evaluate(() => {
+  const { svg, cajas, capa } = await pagina.evaluate(({ R, fn }) => {
     const host = document.querySelector('#mlFig'), raiz = host.querySelector('svg'), cv = host.querySelector('canvas.ml-live');
     // la misma cuenta de FMill.fit: de unidades del viewBox a píxeles del lienzo
     const r = raiz.getBoundingClientRect(), b = cv.getBoundingClientRect(), dpr = cv.width / b.width;
@@ -147,8 +149,12 @@ for (const [eq, E] of Object.entries(EQUIPOS)) {
     const M = [dpr * s, dpr * (r.left - b.left + (r.width - vb[2] * s) / 2 - vb[0] * s), dpr * (r.top - b.top + (r.height - vb[3] * s) / 2 - vb[1] * s)];
     const cajas = {};
     for (const g of raiz.querySelectorAll('[data-name]')) { const c = g.getBBox(); cajas[g.getAttribute('data-name')] = [c.x, c.y, c.width, c.height]; }
-    return { svg: raiz.outerHTML, cajas, capa: { url: cv.toDataURL('image/webp', 0.86), x: -M[1] / M[0], y: -M[2] / M[0], w: cv.width / M[0], h: cv.height / M[0] } };
-  });
+    // las partículas, con los tonos de la paleta: el mineral en la rampa del sólido y las bolas en la del metal oscuro
+    const copia = document.createElement('canvas'); copia.width = cv.width; copia.height = cv.height;
+    const cc = copia.getContext('2d'); cc.drawImage(cv, 0, 0);
+    const px = cc.getImageData(0, 0, copia.width, copia.height); new Function(`${fn}; return recolorear;`)()(px.data, R); cc.putImageData(px, 0, 0);
+    return { svg: raiz.outerHTML, cajas, capa: { url: copia.toDataURL('image/webp', 0.86), x: -M[1] / M[0], y: -M[2] / M[0], w: cv.width / M[0], h: cv.height / M[0] } };
+  }, { R: rampasCapa(), fn: RECOLOREAR_JS });
   const todo = Object.values(cajas).filter(c => c[2] > 0 && c[3] > 0);
   const x0 = Math.min(...todo.map(c => c[0])), y0 = Math.min(...todo.map(c => c[1]));
   const x1 = Math.max(...todo.map(c => c[0] + c[2])), y1 = Math.max(...todo.map(c => c[1] + c[3]));
@@ -169,10 +175,10 @@ for (const [eq, E] of Object.entries(EQUIPOS)) {
       `<circle class="rot-punto" cx="${r1(t.ax)}" cy="${r1(t.ay)}" r="${r1(E.letra * 0.2)}"/>` +
       `<text class="rot-texto" x="${x}" y="${r1(t.y + E.letra * 0.35)}" text-anchor="${t.der ? 'start' : 'end'}" font-size="${E.letra}">${t.texto}</text>`;
   }).join('');
-  const imagen = `<image class="ml-capa" href="${capa.url}" x="${r1(capa.x)}" y="${r1(capa.y)}" width="${r1(capa.w)}" height="${r1(capa.h)}" preserveAspectRatio="none"/>`;
-  const cuerpo = svg.replace(/(\d+\.\d)\d+/g, '$1')
+  const imagen = `<image class="ml-capa" data-paleta="1" href="${capa.url}" x="${r1(capa.x)}" y="${r1(capa.y)}" width="${r1(capa.w)}" height="${r1(capa.h)}" preserveAspectRatio="none"/>`;
+  const cuerpo = aplicarPaleta(svg.replace(/(\d+\.\d)\d+/g, '$1')
     .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${r1(vx)} ${r1(vy)} ${r1(vw)} ${r1(vh)}" role="img" aria-label="${E.titulo}">`)
-    .replace(/<\/svg>\s*$/, `${imagen}<g class="rotulos">${trazos}</g></svg>`);
+    .replace(/<\/svg>\s*$/, `${imagen}<g class="rotulos">${trazos}</g></svg>`), `reduccion-de-tamano/_molino-${eq}`);
   const nombre = `_molino-${eq}.qmd`;
   writeFileSync(join(DEST, nombre), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
   console.log(join(DEST, nombre), Math.round(cuerpo.length / 1024), 'KB, de ellos la capa', Math.round(capa.url.length / 1024), 'KB');
@@ -189,13 +195,10 @@ for (const [eq, E] of Object.entries(EQUIPOS)) {
 await navegador.close();
 servidor.close();
 
-// el CSS propio de la molienda (las reglas ml-, ds- y tz- de ml.css), sin el lienzo vivo ni el tema azul de planos;
-// libro-tamiz.mjs escribe el mismo archivo con las mismas reglas
-const reglas = readFileSync(join(AQUI, 'ml.css'), 'utf8').match(/[^{}]+\{[^{}]*\}/g)
-  .filter(r => !/blueprint|canvas/.test(r)).map(r => r.trim().replace(/^\/\*[\s\S]*?\*\/\s*/, ''));
+// el CSS propio de la molienda (las reglas ml-, ds- y tz- de ml.css), sin el lienzo vivo ni el tema azul de planos y
+// con los colores de la paleta; libro-tamiz.mjs escribe el mismo archivo con las mismas reglas
 const LIBRO = resolve(DEST, '../..');
 if (existsSync(join(LIBRO, 'estilo'))) {
-  writeFileSync(join(LIBRO, 'estilo/anatomia-molienda.css'),
-    '/* Las piezas propias de los equipos de molienda y de la tamizadora (skill anatomy). Lo escriben\n   scripts/figuras/molienda/libro-molinos.mjs y libro-tamiz.mjs del repositorio público: no se edita a mano. */\n' + reglas.join('\n') + '\n');
+  writeFileSync(join(LIBRO, 'estilo/anatomia-molienda.css'), cssMolienda(readFileSync(join(AQUI, 'ml.css'), 'utf8')));
   console.log(join(LIBRO, 'estilo/anatomia-molienda.css'));
 }

@@ -3,13 +3,15 @@
 //   node build.mjs --audit && node libro.mjs --en ../../../../libro-operaciones-unitarias/en/figuras/02/v102.svg
 //
 // Escribe un solo SVG autónomo: ancho de 318 pt (la caja del texto), alto el que pida el dibujo, medidas en puntos,
-// los colores resueltos (sin variables CSS ni la hoja del kit) en un <style> propio y la letra Archivo en cada texto.
+// los colores de la paleta del libro resueltos (sin variables CSS ni la hoja del kit) en un <style> propio y la letra Archivo en cada texto.
 // Los rótulos van en inglés, con su línea y su punto, a los dos lados del dibujo. Chromium (Playwright) resuelve los
 // estilos del kit y mide los textos con la Archivo del libro. Después: node ../en/herramientas/svg-a-pdf.mjs v102.svg.
 import { createRequire } from 'node:module';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras isométricas
+import { aplicarPaleta, cssAnatomia } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -19,7 +21,7 @@ if (!existsSync(join(AQUI, 'out/fig.svg'))) throw new Error('Falta out/: corra a
 const KIT = fileURLToPath(new URL('../../../.claude/skills/anatomy', import.meta.url));
 const k = await import(KIT + '/kit/iso-kit.mjs');
 const { P, ANCLAS } = JSON.parse(readFileSync(join(AQUI, 'out/separador_data.json'), 'utf8'));
-const svgFuente = readFileSync(join(AQUI, 'out/fig.svg'), 'utf8');
+const svgFuente = aplicarPaleta(readFileSync(join(AQUI, 'out/fig.svg'), 'utf8'));
 
 /* ── medidas de la página ────────────────────────────────────────────── */
 const ANCHO = 318, ALTO_MAX = 415;      // pt
@@ -58,7 +60,7 @@ const b64 = (f) => readFileSync(join(FUENTES, f)).toString('base64');
 const fuentes = [400, 500, 600].map((w) => `@font-face{font-family:Archivo;font-weight:${w};src:url(data:font/ttf;base64,${b64(`Archivo-${w}.ttf`)})}`).join('');
 const nav = await chromium.launch({ args: ['--no-sandbox'], ...(process.env.CHROME_PATH && existsSync(join(process.env.CHROME_PATH, 'chrome')) ? { executablePath: join(process.env.CHROME_PATH, 'chrome') } : {}) });
 const pag = await nav.newPage();
-await pag.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${fuentes}${k.ISO_CSS}</style></head><body><div class="iso" data-theme="light" style="width:700px">${svgFuente}</div></body></html>`, { waitUntil: 'load' });
+await pag.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${fuentes}${cssAnatomia(k.ISO_CSS, '')}</style></head><body><div class="iso" data-theme="light" style="width:700px">${svgFuente}</div></body></html>`, { waitUntil: 'load' });
 await pag.evaluate(() => document.fonts.ready);
 const res = await pag.evaluate(({ textos, letra }) => {
   const svg = document.querySelector('svg');
@@ -169,7 +171,9 @@ console.log('escala', s.toFixed(4), 'pt por unidad · dibujo', r1((B[2] - B[0]) 
 
 /* ── 3. El SVG ─────────────────────────────────────────────────────── */
 const ALTO = Math.ceil(L.alto);
-const css = res.css.map(([n, decl]) => `.v102 .${n}{${decl.replace(/stroke-width:([\d.]+)/, (_, w) => `stroke-width:${r1((+w * TRAZO) / s * 1000) / 1000}`)}}`).join('');
+// los colores resueltos van en hex, como en paleta.json
+const hex = (decl) => decl.replace(/rgb\((\d+), (\d+), (\d+)\)/g, (_, r, g, b) => '#' + [r, g, b].map((v) => (+v).toString(16).padStart(2, '0')).join('').toUpperCase());
+const css = res.css.map(([n, decl]) => `.v102 .${n}{${hex(decl).replace(/stroke-width:([\d.]+)/, (_, w) => `stroke-width:${r1((+w * TRAZO) / s * 1000) / 1000}`)}}`).join('');
 const rotulos = [...L.lados.izq, ...L.lados.der].map((r) => {
   const izq = r.lado === 'izq', xe = r.x + (izq ? 1.2 : -1.2), ye = r.y + RENGLON * 0.55;
   const tx = r1(r.x), lineas = r.lineas.map((t, i) => `<text x="${tx}" y="${r1(r.y + RENGLON * (i + 0.78))}" text-anchor="${izq ? 'end' : 'start'}" font-family="Archivo" font-size="${LETRA}" font-weight="500" fill="${TINTA}">${t}</text>`).join('');

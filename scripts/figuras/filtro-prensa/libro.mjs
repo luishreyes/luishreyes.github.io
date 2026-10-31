@@ -11,11 +11,14 @@
 // Cada rótulo apunta a un punto de la pieza en coordenadas de la prensa (cm; x a lo largo de la prensa, y hacia
 // atrás negativo, z hacia arriba; las medidas son las de build.mjs) y su texto va en (x, y) del dibujo, a la
 // izquierda o a la derecha del punto; un texto con «\n» va en dos renglones y la línea llega al primero.
-// Los colores de la torta, la suspensión y el agua van dentro del SVG (fp.css): estilo/anatomia.css solo trae el kit.
+// Las reglas de la torta, la suspensión y el agua van dentro del SVG (fp.css), con los colores de la paleta del libro
+// (paleta-libro.mjs los cambia al escribir la vista); estilo/anatomia.css trae el kit.
 import { chromium } from 'playwright';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+// los colores de la torta, la suspensión, el agua y las piezas salen de la paleta del libro (estilo/paleta.json)
+import { aplicarPaleta } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -100,9 +103,9 @@ const etiqueta = 'Filtro prensa de placas de cámara, en isométrico, a mitad de
   'Las placas cuelgan de la barra lateral y las aprieta el cabezal móvil, empujado por el vástago de un cilindro hidráulico abierto, con su pistón adentro, montado en el cabezal trasero; las mangueras del cilindro bajan a la central hidráulica, con su tanque, su bloque de válvulas y su motor. ' +
   'Debajo de las placas, una tolva sin fondo deja caer la torta en la descarga sobre una banda transportadora entre dos tambores; ahora está vacía.';
 const fpcss = readFileSync(join(AQUI, 'fp.css'), 'utf8').replace(/;transition:[^;}]*/g, '').replace(/\n/g, '');
-const cuerpo = svg
+const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, at) => `<svg${at.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}"><style>${fpcss}</style>`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
+  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'filtracion/_prensa');
 mkdirSync(DEST, { recursive: true });
 writeFileSync(join(DEST, '_prensa.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log('figuras/filtracion/_prensa.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);

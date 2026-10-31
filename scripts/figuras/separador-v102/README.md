@@ -49,3 +49,5 @@ mueve una pieza, hay que revisarlos en el PDF.
 varillas por su eje, y el codo de la salida de líquido cae bajo el polo de esa varilla imaginaria, 26 cm detrás de la
 pared (`crowd`); y el asiento de la salida de gas sobre la cabeza deja una astilla de 2 px² en su base, donde la
 cúpula sube delante de él (`allow`).
+
+**Colores.** Los colores resueltos son los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`), la misma de las figuras isométricas de la edición en español: `libro.mjs` pasa el dibujo por `../paleta-libro.mjs` antes de resolverlos (`sv-cav`, el fondo del acero; `sv-cutface`, el corte del acero; `sv-mesh`, acero; `sv-concrete`, concreto; el líquido y el nivel de vidrio, agua; la línea del nivel normal, el azul de la base) y los escribe en hex. Si cambia un color de `paleta.json`, se vuelve a correr `libro.mjs` y después `svg-a-pdf.mjs`.

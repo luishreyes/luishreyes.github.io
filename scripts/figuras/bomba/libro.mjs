@@ -10,11 +10,14 @@
 //   figuras/bombas/_por-dentro.qmd   la bomba de cerca, con la carcasa abierta
 // Cada .qmd lleva el SVG en un bloque de HTML crudo, para incluirlo en el
 // capítulo con {{< include >}}: así el SVG hereda la letra del libro. El CSS de
-// las piezas va una sola vez, en estilo/anatomia.css, con el tema claro.
+// las piezas va una sola vez, en estilo/anatomia.css, con el tema claro y los colores de la paleta del libro.
 import { chromium } from 'playwright';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+// los colores salen de la paleta del libro (estilo/paleta.json): las vistas no llevan colores propios y
+// estilo/anatomia.css los toma de la paleta
+import { aplicarPaleta, cssAnatomia } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -95,15 +98,13 @@ for (const [nombre, vista] of Object.entries(VISTAS)) {
   const cuerpo = svg
     .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
     .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
-  const qmd = '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n';
+  const qmd = '```{=html}\n<div class="iso iso-libro" data-theme="light">' + aplicarPaleta(cuerpo, `bombas/_${nombre}`) + '</div>\n```\n';
   writeFileSync(join(LIBRO, `figuras/bombas/_${nombre}.qmd`), qmd);
   console.log(`figuras/bombas/_${nombre}.qmd  ${Math.round(qmd.length / 1024)} KB`);
 }
 
-// El CSS de las piezas, con el tema claro por defecto (el oscuro no se usa en el libro).
-const css = readFileSync(join(AQUI, 'out/fig.css'), 'utf8')
-  .replace(/\.iso\[data-theme="light"\]\{/, '.iso,.iso[data-theme="light"]{');
-writeFileSync(join(LIBRO, 'estilo/anatomia.css'),
-  '/* Las piezas de las figuras isométricas (skill anatomy), con el tema claro.\n' +
-  '   Lo escribe scripts/figuras/bomba/libro.mjs del repositorio público: no se edita a mano. */\n' + css);
+// El CSS de las piezas, con el tema claro por defecto (el oscuro no se usa en el libro) y los colores de la paleta.
+const KIT = fileURLToPath(new URL('../../../.claude/skills/anatomy', import.meta.url));
+const { ISO_CSS } = await import(KIT + '/kit/iso-kit.mjs');
+writeFileSync(join(LIBRO, 'estilo/anatomia.css'), cssAnatomia(ISO_CSS, readFileSync(join(AQUI, 'pb.css'), 'utf8')));
 console.log('estilo/anatomia.css');

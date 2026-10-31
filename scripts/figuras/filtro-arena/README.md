@@ -99,3 +99,5 @@ CHROME_PATH=/opt/pw-browsers/chromium node ../../../.claude/skills/anatomy/scrip
 
 En el capítulo se incluye con `{{< include figuras/particulas-en-un-fluido/_filtro-arena.qmd >}}` dentro de un bloque
 `::: {#fig-filtro-arena}`; el CSS de las piezas es el de siempre (`estilo/anatomia.css`).
+
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. `fa-ss`, `fa-pipe`, `fa-trim` y `fa-noz` son acero; `fa-cast` y `fa-lever`, fundición; `fa-gauge`, pintado; `fa-sub`, agua; la antracita (`fa-ant-*`, `fa-mixa`), antracita; la arena (`fa-san-*`, `fa-mixs` y sus motas), sólido; `fa-cut`, el corte del acero; taladros y agujeros, hueco, y las flechas, el azul de la base. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

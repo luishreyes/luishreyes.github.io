@@ -8,6 +8,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores de las piezas salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras
+import { aplicarPaleta } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -88,15 +90,16 @@ const etiqueta = 'Válvula de control de globo de 2 pulgadas, clase 150, en isom
   'Arriba, el actuador neumático de diafragma y resorte, con un cuarto de la caja quitado: el aire entra debajo del diafragma y lo levanta (aire para abrir); el resorte, sobre el plato del diafragma, empuja el obturador contra el asiento si falta el aire (falla cerrada). ' +
   'Las dos tapas de la caja se unen por sus bridas con pernos. En la columna izquierda, el posicionador, con su palanca de realimentación enganchada a un pasador del conector y el tubo que lleva el aire a la tapa de abajo del actuador. ' +
   'A cada lado, un tramo corto de tubo con su brida de cuello soldable, el empaque y los espárragos.';
-const cuerpo = svg
+const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
+  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'valvulas-tuberias-y-medicion-de-flujo/_valvula-control');
 mkdirSync(DEST, { recursive: true });
 writeFileSync(join(DEST, '_valvula-control.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log('_valvula-control.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);
 
 // una página para revisar la figura con los rótulos, con el CSS de las piezas y el de los rótulos del libro
-const css = readFileSync(join(AQUI, 'out/fig.css'), 'utf8').replace(/\.iso\[data-theme="light"\]\{/, '.iso,.iso[data-theme="light"]{');
+const cssLibro = join(LIBRO, 'estilo/anatomia.css');
+const css = existsSync(cssLibro) ? readFileSync(cssLibro, 'utf8') : readFileSync(join(AQUI, 'out/fig.css'), 'utf8').replace(/\.iso\[data-theme="light"\]\{/, '.iso,.iso[data-theme="light"]{');
 writeFileSync(join(AQUI, 'out/libro-preview.html'), `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Válvula de control (libro)</title><style>${css}
 body{margin:0;background:#fff;font-family:"Archivo Variable",system-ui,sans-serif}.marco{width:900px;margin:20px auto}
 .iso-libro svg{display:block;width:100%;height:auto;overflow:visible}

@@ -10,6 +10,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores de las piezas salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras
+import { aplicarPaleta } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -76,9 +78,9 @@ const etiqueta = 'Mezclador estático en una línea de agua de 2½ pulgadas, en 
   'Medio diámetro más adelante empiezan siete elementos Kenics KMS: cintas torcidas media vuelta en un largo de 1,5 diámetros, una de giro derecho y la siguiente de giro izquierdo, cada una girada 90 grados respecto a la anterior. ' +
   'Un chorro de ácido, dibujado de forma esquemática, sale de la lanza por el eje; la arista de entrada del primer elemento lo parte en dos y cada mitad sigue una cara de la cinta mientras se aclara hasta perderse en el agua. ' +
   'A la derecha, la brida de salida con su cara realzada y el extremo del tubo soldado por dentro.';
-const cuerpo = svg
+const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, at) => `<svg${at.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
+  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'mezclado/_mezclador-estatico');
 mkdirSync(DEST, { recursive: true });
 writeFileSync(join(DEST, '_mezclador-estatico.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log('_mezclador-estatico.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);

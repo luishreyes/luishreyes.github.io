@@ -7,6 +7,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores de las piezas salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras
+import { aplicarPaleta } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -40,8 +42,8 @@ const trazos = R.map(([a, x, y, t, dx, dy]) => {
 }).join('');
 const svg = readFileSync(join(AQUI, 'out/fig.svg'), 'utf8');
 const etiqueta = 'Divisor de rifles en isométrico: arriba, la tolva de alimentación; debajo, doce canaletas de 25 mm separadas por tabiques, que desaguan una sí y una no hacia lados opuestos; abajo, a cada lado, una bandeja que recibe la mitad de la muestra. El equipo se apoya en cuatro patas con travesaños y tiene un asa en cada extremo.';
-const cuerpo = svg
+const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="-120 0 1240 760" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
+  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'caracterizacion-de-solidos-particulados/_divisor');
 writeFileSync(join(DEST, '_divisor.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log('_divisor.qmd', Math.round(cuerpo.length / 1024), 'KB');

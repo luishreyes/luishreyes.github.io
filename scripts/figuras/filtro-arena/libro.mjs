@@ -10,6 +10,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// los colores de las piezas salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras
+import { aplicarPaleta } from '../paleta-libro.mjs';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -87,9 +89,9 @@ const etiqueta = 'Filtro a presión de doble medio para el agua de servicios, en
   'En la tapa están el venteo, con su válvula de alivio de aire, y la boca de visita con su tapa empernada. En la tubería de entrada y en la de salida hay un manómetro; los dos juntos leen la caída de presión del lecho. ' +
   'En la pared de la derecha, sobre la placa, un registro de mano y, debajo, la entrada del aire al pleno con su válvula. ' +
   'Abajo salen del fondo la salida del agua filtrada, hacia la izquierda, y la entrada del agua de lavado, hacia la derecha, cada una con su brida y su válvula de mariposa; en el centro, el drenaje con su válvula de bola.';
-const cuerpo = svg
+const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, at) => `<svg${at.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
+  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'particulas-en-un-fluido/_filtro-arena');
 mkdirSync(DEST, { recursive: true });
 writeFileSync(join(DEST, '_filtro-arena.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log('_filtro-arena.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);

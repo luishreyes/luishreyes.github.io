@@ -83,3 +83,5 @@ CHROME_PATH=/opt/pw-browsers/chromium node ../../../.claude/skills/anatomy/scrip
 En el capítulo se incluye con `{{< include figuras/mezclado/_mezclador-estatico.qmd >}}` dentro de un bloque
 `::: {#fig-mezclador-estatico}`; el CSS de las piezas es el de siempre (`estilo/anatomia.css`). El `.qmd` pesa unos
 325 KB.
+
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. `mz-ss`, `mz-trim`, `mz-el` y la lanza son acero; `mz-weld`, fundición; `mz-gasket`, caucho; `mz-sub` y la lanza dentro del agua, agua; cada corte, el de su material; taladros, hueco, y el chorro de ácido pasa de los tonos de la cáscara (los mismos del ácido de materiales, con su naranja de borde) a los del agua, con los extremos de cada degradado donde la mezcla vale 0 y 1. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

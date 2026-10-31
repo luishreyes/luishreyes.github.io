@@ -77,3 +77,5 @@ orden más gruesa (más rápido, menos fino).
 
 En el capítulo se incluye con `{{< include figuras/valvulas-tuberias-y-medicion-de-flujo/_tanque-llegada.qmd >}}`
 dentro de un bloque `::: {#fig-val-tanque-llegada}`; el CSS de las piezas es el de siempre (`estilo/anatomia.css`).
+
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. `tl-ss` y `tl-pipe` son acero; `tl-str`, pintado; `tl-cast` y `tl-lever`, fundición; `tl-conc`, concreto; `tl-yel`, amarillo; `tl-sub` y el agua (`tl-liq`), agua; `tl-cut`, el corte del acero (su sombra más honda, plana), y `tl-bore` y la malla, los grises de hueco. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

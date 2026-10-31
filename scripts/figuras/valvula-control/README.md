@@ -54,3 +54,5 @@ Para depurar el orden sin correr todo: `VC_PAIRS="pieza.a,pieza.b" node build.mj
 En el capítulo se incluye con `{{< include figuras/valvulas-tuberias-y-medicion-de-flujo/_valvula-control.qmd >}}`
 dentro de un bloque `::: {#fig-valvula-control}`; el CSS de las piezas es el de siempre (`estilo/anatomia.css`) y los
 colores propios de la figura (corte, fundición, caucho, cobre) van en un `<style>` dentro del SVG.
+
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. `vc-cast` es fundición; `vc-trim`, acero; `vc-paint`, pintado; `vc-rubber`, `vc-pack` y `vc-gasket`, caucho; `vc-copper` y `vc-copper-fit`, cobre; cada corte, el de su material, y el del asiento y el obturador, un paso más claro que el del cuerpo. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

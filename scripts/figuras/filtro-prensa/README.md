@@ -16,7 +16,7 @@ el mismo que replica el audit) y cada torta cae a la banda.
 | `xprism.mjs` | Prismas a lo largo de x con sección cóncava (las piezas en corte, la torta). Sin imports: también corre en la página. |
 | `live.js` | `FPress`: la figura en vivo dentro del explorador. |
 | `drive_test.js` | Ciclo sintético para `preview.html` (`?t=18.5` congela un instante). |
-| `fp.css`, `fp-theme.css` | Colores de torta, suspensión y agua; tema papel y blueprint del explorador. |
+| `fp.css`, `fp-theme.css` | Colores de torta, suspensión y agua (en la vista del libro, los de la paleta del libro); tema papel y blueprint del explorador. |
 | `splice.mjs` | Reinserta `out/` en el HTML publicado, entre los marcadores `FPRESS_*_START/END`. |
 | `libro.mjs` | La vista quieta del libro (capítulo 18, Filtración): congela la figura a mitad de la filtración (`ESTADO`) y escribe `figuras/filtracion/_prensa.qmd` del libro con los nombres de las piezas, y `out/libro-preview.html` para revisarla. Corre después de `node build.mjs --audit`. |
 | `isozoom.js` | Pellizco, arrastre, doble toque y botones + − «todo» para acercar la figura. Copia de referencia: el explorador lo lleva en su propio script (no está en `out/`), y sirve igual para la figura del tambor. |
@@ -29,3 +29,5 @@ node splice.mjs            # mete la figura nueva en public/.../Explorador_Filtr
 ```
 
 Las capturas necesitan `CHROME_PATH=/opt/pw-browsers/chromium` en las sesiones en la nube.
+
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. La torta es sólido; la suspensión, la de materiales; el agua del lavado, agua; las flechas y el nivel, el azul de la base; las piezas, el acero del tema. El explorador conserva `fp.css` y sus colores: `splice.mjs` no pasa por la paleta. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

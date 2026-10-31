@@ -13,6 +13,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { IMPULSORES, ROTULOS, ROTULOS_EN, DESCRIPCION } from './rotulos.mjs';
+// los colores de las piezas salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras
+import { aplicarPaleta, cssAnatomia, reescribirCss } from '../paleta-libro.mjs';
 
 export { IMPULSORES, ROTULOS, ROTULOS_EN };
 const AQUI = dirname(fileURLToPath(import.meta.url));
@@ -121,12 +123,13 @@ function libro() {
   const radios = IMPULSORES.map(({ id }, i) => `<input class="imp-radio" type="radio" name="imp-sel" id="imp-sel-${id}"${i === 0 ? ' checked' : ''}>`).join('\n');
   const botones = `<div class="imp-botones">${IMPULSORES.map(({ id, es }) => `<label for="imp-sel-${id}">${es}</label>`).join('')}</div>`;
   const svgs = vistas.map((v) => `<svg xmlns="http://www.w3.org/2000/svg" class="iso-svg imp-vista imp-v-${v.id}" viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${DESCRIPCION[v.id]}">${v.cuerpo}<g class="rotulos">${v.trazos}</g></svg>`).join('\n');
-  const html = `<div class="imp-sel" role="group" aria-label="Los siete impulsores del capítulo: escoja uno para verlo">\n<style>\n${css}\n</style>\n${radios}\n${botones}\n<div class="iso iso-libro" data-theme="light">\n${svgs}\n</div>\n</div>`;
+  const html = aplicarPaleta(`<div class="imp-sel" role="group" aria-label="Los siete impulsores del capítulo: escoja uno para verlo">\n<style>\n${css}\n</style>\n${radios}\n${botones}\n<div class="iso iso-libro" data-theme="light">\n${svgs}\n</div>\n</div>`, 'agitacion/_impulsores');
   mkdirSync(DEST, { recursive: true });
   writeFileSync(join(DEST, '_impulsores.qmd'), '```{=html}\n' + html + '\n```\n');
   console.log('_impulsores.qmd', Math.round(html.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);
   // una página para revisarla, con el CSS de las piezas y el de los rótulos del libro, en una columna como la del libro
-  const kit = readFileSync(join(AQUI, 'out/fig.css'), 'utf8').replace(/\.iso\[data-theme="light"\]\{/, '.iso,.iso[data-theme="light"]{');
+  const cssLibro = join(DEST, '../../estilo/anatomia.css');
+  const kit = existsSync(cssLibro) ? readFileSync(cssLibro, 'utf8') : readFileSync(join(AQUI, 'out/fig.css'), 'utf8').replace(/\.iso\[data-theme="light"\]\{/, '.iso,.iso[data-theme="light"]{');
   writeFileSync(join(AQUI, 'out/libro-preview.html'), `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Impulsores (libro)</title><style>${kit}
 body{margin:0;background:#fff;font-family:"Archivo Variable",Archivo,system-ui,sans-serif;color:#19222F}.marco{max-width:780px;margin:24px auto;padding:0 16px}
 .iso-libro{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
@@ -152,7 +155,7 @@ async function lamina() {
   const nav = await chromium.launch({ args: ['--no-sandbox'], ...(exe && existsSync(exe) ? { executablePath: exe } : {}) });
   const pag = await nav.newPage();
   const datos = IMPULSORES.map(({ id }) => leer(id));
-  await pag.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${fuentes}${k.ISO_CSS}${CLASES}</style></head><body>${datos.map((d, i) => `<div class="iso" data-theme="light" style="width:600px" data-i="${i}">${d.svg.replace(/<style>[^<]*<\/style>/, '')}</div>`).join('')}</body></html>`, { waitUntil: 'load' });
+  await pag.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${fuentes}${cssAnatomia(k.ISO_CSS, '')}${reescribirCss(CLASES)}</style></head><body>${datos.map((d, i) => `<div class="iso" data-theme="light" style="width:600px" data-i="${i}">${d.svg.replace(/<style>[^<]*<\/style>/, '')}</div>`).join('')}</body></html>`, { waitUntil: 'load' });
   await pag.evaluate(() => document.fonts.ready);
   const res = await pag.evaluate((nombres) => {
     const FORMAS = new Set(['path', 'circle', 'rect', 'ellipse', 'line', 'polyline', 'polygon']);
@@ -219,7 +222,9 @@ async function lamina() {
     ...['paleta', 'ancla', 'cinta'].map((id, i) => [IMPULSORES[idx(id)].en, c2 * (i + 0.5), nombre2]),
   ].map(([t, x, y]) => `<text x="${r1(x)}" y="${r1(y)}" text-anchor="middle" font-family="Archivo" font-size="${LETRA}" font-weight="600" fill="${TINTA}">${t}</text>`).join('');
   const ancho = (decl, s) => decl.replace(/stroke-width:([\d.]+)/, (_, w) => `stroke-width:${Math.round(((+w * TRAZO) / s) * 1000) / 1000}`);
-  const css = res.css.map(([decl, n]) => `.imp .t${n}{${ancho(decl, sT)}}.imp .w${n}{${ancho(decl, sW)}}`).join('');
+  // los colores resueltos van en hex, como en paleta.json
+  const hex = (decl) => decl.replace(/rgb\((\d+), (\d+), (\d+)\)/g, (_, r, g, b) => '#' + [r, g, b].map((v) => (+v).toString(16).padStart(2, '0')).join('').toUpperCase());
+  const css = res.css.map(([decl, n]) => `.imp .t${n}{${ancho(hex(decl), sT)}}.imp .w${n}{${ancho(hex(decl), sW)}}`).join('');
   const etiqueta = 'The seven impellers of the chapter, in isometric. Top row, all with the same diameter and at the same scale: a three-blade marine propeller with pitch equal to its diameter; a four-blade turbine with flat blades bolted to lugs at 45 degrees; a three-blade hydrofoil whose blades narrow and flatten toward the tip; and a Rushton turbine, a disc with six flat vertical blades. Bottom row: a flat two-blade paddle at the same scale, and, at a larger scale and inside the back half of their tank, an anchor and a double helical ribbon, each 95 percent of the tank diameter, so they pass 30 mm from the wall.';
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" class="imp" width="${ANCHO}pt" height="${ALTO}pt" viewBox="0 0 ${ANCHO} ${ALTO}" role="img" aria-label="${etiqueta}">`
     + `<style>${css}</style>${celdas.join('')}<g>${textos}</g></svg>\n`;
