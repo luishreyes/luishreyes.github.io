@@ -2,7 +2,7 @@
 en proporción a la velocidad hasta igualar el peso sumergido del lecho, el lecho se levanta y la curva se queda en una
 meseta mientras el lecho se expande.
 
-Para el capítulo 15 del libro de operaciones unitarias (Partículas en un fluido). El lecho es la capa de arena del
+Para el capítulo 16 del libro de operaciones unitarias (Partículas en un fluido). El lecho es la capa de arena del
 filtro del caso tomada como uniforme, del tamaño efectivo: 0,30 m de arena de 0,5 mm y 2650 kg/m³ con porosidad de
 0,42, en agua a 25 °C (997,05 kg/m³ y 0,890 mPa·s, IAPWS). La pérdida del lecho fijo es la de Ergun con las constantes
 de la arena y d = ES (MWH, ec. 11-13 y tabla 11-3: 112 y 2,25); la del lecho fluidizado, su peso sumergido (MWH,
