@@ -14,8 +14,8 @@ export const IMPULSORES = [
 
 export const ROTULOS = {
   helice: [
-    ['PALA', 'izq', 'Pala torcida, paso igual al diámetro'],
-    ['CUBO', 'izq', 'Cubo, fundido con las palas'],
+    ['PALA', 'izq', 'Pala torcida'],
+    ['CUBO', 'izq', 'Cubo'],
     ['TUERCA', 'izq', 'Tuerca del extremo'],
     ['EJE', 'der', 'Eje'],
     ['CHAVETA', 'der', 'Chaveta'],
@@ -28,7 +28,7 @@ export const ROTULOS = {
     ['EJE', 'der', 'Eje'],
     ['CHAVETA', 'der', 'Chaveta'],
     ['PRISIONERO', 'der', 'Prisionero'],
-    ['OREJA', 'der', 'Oreja soldada al cubo'],
+    ['OREJA', 'der', 'Oreja soldada'],
   ],
   hidrofoil: [
     ['PALA', 'izq', 'Pala con perfil de ala'],
@@ -37,7 +37,7 @@ export const ROTULOS = {
     ['EJE', 'der', 'Eje'],
     ['CHAVETA', 'der', 'Chaveta'],
     ['PRISIONERO', 'der', 'Prisionero'],
-    ['PUNTA', 'der', 'Punta angosta, menos inclinada'],
+    ['PUNTA', 'der', 'Punta angosta'],
   ],
   rushton: [
     ['DISCO', 'izq', 'Disco'],
@@ -49,13 +49,13 @@ export const ROTULOS = {
     ['PERNOS', 'der', 'Pernos'],
   ],
   paleta: [
-    ['PALA', 'izq', 'Pala plana'],
-    ['PERNOS', 'izq', 'Pernos de la pala'],
+    ['OREJA', 'izq', 'Oreja soldada'],
     ['CUBO', 'izq', 'Cubo'],
     ['EJE', 'der', 'Eje'],
     ['CHAVETA', 'der', 'Chaveta'],
     ['PRISIONERO', 'der', 'Prisionero'],
-    ['OREJA', 'der', 'Oreja soldada al cubo'],
+    ['PALA', 'der', 'Pala plana'],
+    ['PERNOS', 'der', 'Pernos de la pala'],
   ],
   ancla: [
     ['TIRANTE', 'izq', 'Tirante'],
@@ -72,20 +72,19 @@ export const ROTULOS = {
     ['CINTA2', 'izq', 'Segunda cinta, a 180°'],
     ['EJE', 'der', 'Eje'],
     ['COLLAR', 'der', 'Collar'],
-    ['PARED', 'der', 'Pared del tanque'],
-    ['HOLGURA', 'der', 'Holgura de 30 mm'],
+    ['PARED', 'der', 'Pared del tanque, a 30 mm'],
   ],
 };
 
 // los mismos rótulos en inglés, por ancla (para la edición impresa o una lámina con nombres)
 export const ROTULOS_EN = {
-  helice: { PALA: 'Twisted blade, pitch equal to diameter', CUBO: 'Hub, cast with the blades', TUERCA: 'End nut', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw' },
-  pbt: { PALA: 'Flat blade at 45°', PERNOS: 'Blade bolts', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', OREJA: 'Lug welded to the hub' },
-  hidrofoil: { PALA: 'Airfoil blade', CUBO: 'Hub', PERNO: 'End bolt', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', PUNTA: 'Narrow, flatter tip' },
+  helice: { PALA: 'Twisted blade', CUBO: 'Hub', TUERCA: 'End nut', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw' },
+  pbt: { PALA: 'Flat blade at 45°', PERNOS: 'Blade bolts', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', OREJA: 'Welded lug' },
+  hidrofoil: { PALA: 'Airfoil blade', CUBO: 'Hub', PERNO: 'End bolt', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', PUNTA: 'Narrow tip' },
   rushton: { DISCO: 'Disc', PALA: 'Flat vertical blade', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', SOPORTE: 'Blade clip', PERNOS: 'Bolts' },
-  paleta: { PALA: 'Flat blade', PERNOS: 'Blade bolts', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', OREJA: 'Lug welded to the hub' },
+  paleta: { PALA: 'Flat blade', PERNOS: 'Blade bolts', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', OREJA: 'Welded lug' },
   ancla: { TIRANTE: 'Cross arm', BRAZO: 'U-shaped arm', CUBO: 'Hub', EJE: 'Shaft', COLLAR: 'Collar', PARED: 'Tank wall', HOLGURA: '30 mm clearance' },
-  cinta: { CINTA1: 'Helical ribbon', BRAZO: 'Support arm', CINTA2: 'Second ribbon, 180° apart', EJE: 'Shaft', COLLAR: 'Collar', PARED: 'Tank wall', HOLGURA: '30 mm clearance' },
+  cinta: { CINTA1: 'Helical ribbon', BRAZO: 'Support arm', CINTA2: 'Second ribbon, 180° apart', EJE: 'Shaft', COLLAR: 'Collar', PARED: 'Tank wall, 30 mm away' },
 };
 
 // lo que lee un lector de pantalla en cada vista

@@ -170,6 +170,33 @@ function contexto(P, U, pre) {
     }
     return out;
   }
+  /* la unión de polígonos que se tocan por sus lados: se orientan todos igual, se cancelan los lados que aparecen en
+     los dos sentidos y lo que queda se encadena en lazos (un solo trazo por franja de tono, mucho más liviano) */
+  function unionPath(polys) {
+    const key = (p) => r10(p[0]) + " " + r10(p[1]);
+    const edges = new Map();
+    for (let poly of polys) {
+      let a2 = 0; for (let i = 0; i < poly.length; i++) { const p = poly[i], q = poly[(i + 1) % poly.length]; a2 += p[0] * q[1] - q[0] * p[1]; }
+      if (Math.abs(a2) < 1e-6) continue;
+      if (a2 < 0) poly = poly.slice().reverse();
+      const ks = poly.map(key).filter((kk, i, arr) => kk !== arr[(i + 1) % arr.length]);
+      for (let i = 0; i < ks.length; i++) {
+        const a = ks[i], b = ks[(i + 1) % ks.length], rev = b + "|" + a, fw = a + "|" + b;
+        if (edges.get(rev) > 0) edges.set(rev, edges.get(rev) - 1); else edges.set(fw, (edges.get(fw) || 0) + 1);
+      }
+    }
+    const out = new Map();
+    for (const [e, n] of edges) for (let i = 0; i < n; i++) { const [a, b] = e.split("|"); if (!out.has(a)) out.set(a, []); out.get(a).push(b); }
+    let d = "";
+    for (const start of out.keys()) {
+      while (out.get(start).length) {
+        let cur = start, loop = [start];
+        for (let guard = 0; guard < 100000; guard++) { const nx = out.get(cur); if (!nx || !nx.length) break; cur = nx.pop(); if (cur === start) break; loop.push(cur); }
+        if (loop.length >= 3) d += "M" + loop.join("L") + "Z";
+      }
+    }
+    return d;
+  }
   function triPieces(t) {
     const verts = t.p.map((p, i) => { const s = pr(p); return [s[0], s[1], dot3(t.n[i], V3), dot3(t.n[i], L3)]; });
     const vis = clipPoly(verts, 2, 1e-4, true);
@@ -179,7 +206,7 @@ function contexto(P, U, pre) {
       let q = vis;
       if (b > 0) q = clipPoly(q, 3, BANDS[b - 1], true);
       if (b < 4 && q.length >= 3) q = clipPoly(q, 3, BANDS[b], false);
-      if (q.length >= 3) out.push({ band: b, d: pth1(q.map((v) => [v[0], v[1]])) });
+      if (q.length >= 3) out.push({ band: b, d: pth1(q.map((v) => [v[0], v[1]])), poly: q.map((v) => [v[0], v[1]]) });
     }
     return out;
   }
@@ -189,9 +216,9 @@ function contexto(P, U, pre) {
     const per = Math.ceil(list.length / slabs);
     for (let s = 0; s < slabs; s++) {
       const by = [[], [], [], [], []];
-      for (const { t } of list.slice(s * per, (s + 1) * per)) for (const pc of triPieces(t)) by[pc.band].push(pc.d);
-      by.slice(0, 4).forEach((d, i) => d.length && out.push(`<path class="iso-shade" data-shade="${i}" d="${d.join("")}"/>`));
-      if (by[4].length) out.push(`<path class="iso-top" d="${by[4].join("")}"/>`);
+      for (const { t } of list.slice(s * per, (s + 1) * per)) for (const pc of triPieces(t)) by[pc.band].push(pc.poly);
+      by.slice(0, 4).forEach((ps, i) => ps.length && out.push(`<path class="iso-shade" data-shade="${i}" d="${unionPath(ps)}"/>`));
+      if (by[4].length) out.push(`<path class="iso-top" d="${unionPath(by[4])}"/>`);
     }
     return { svg: `<g class="iso-solid${cls ? " " + cls : ""}" data-seamless="">${out.join("")}</g>`, list };
   }
@@ -269,7 +296,7 @@ function ejeConChaveta(cx, z0, keyAng) {
   const poly = [[-hw, z0], [hw, z0]];
   for (let i = 0; i <= 8; i++) { const a = (PI * i) / 8; poly.push([hw * Math.cos(a), top - rr + rr * Math.sin(a)]); }
   fp("chaveta", F, poly, KY.r0, SH.r + KY.out, {}, { cls: "im-hw", cut: [A.disc(F0, z0 - 1, top + 1, SH.r)] });
-  cx.ANCLAS.EJE = G.pointOf(F0, z0 + 175, SH.r, (GEO.COMUN.AZ - 70) * D2R);
+  cx.ANCLAS.EJE = G.pointOf(F0, z0 + (SH.top - z0) * 0.62, SH.r, (GEO.COMUN.AZ - 70) * D2R);
   cx.ANCLAS.CHAVETA = G.pointOf(F0, z0 + KY.len * 0.5, SH.r + KY.out, t);
   return shaft;
 }
@@ -427,10 +454,11 @@ function helice(cx) {
     if (q === 0) cx._spec0 = spec;
   }
   // los rótulos: la pala que mira al lector, el cubo, el prisionero, la tuerca
-  const Bq = palaTorcida(cx._spec0);
+  // los rótulos de la izquierda van a la pala de la izquierda (ψ = AZ + 90°) y al lado izquierdo del cubo
+  const Bq = palaTorcida({ ...cx._spec0, phi: phase + TAU / 3 });
   Object.assign(cx.ANCLAS, {
-    PALA: Bq.top(0.62, 0.1), CUBO: G.pointOf(F0, -20, hub.r, (AZ + 40) * D2R), PRISIONERO: G.pointOf(F0, 46, hub.r, (AZ - 20) * D2R),
-    TUERCA: G.pointOf(F0, hub.z0 - H.washer.h - H.nut.h / 2, H.nut.r * 0.92, (AZ - 10) * D2R),
+    PALA: Bq.top(0.55, 0.25), CUBO: G.pointOf(F0, 30, hub.r, (AZ + 62) * D2R), PRISIONERO: G.pointOf(F0, 46, hub.r, (AZ - 20) * D2R),
+    TUERCA: G.pointOf(F0, hub.z0 - H.washer.h - H.nut.h / 2, H.nut.r * 0.95, (AZ + 25) * D2R),
   });
 }
 
@@ -465,16 +493,19 @@ function pbt(cx) {
     });
     if (q === 0) cx._F0 = { F, rad, d, n, t };
   }
-  // la pala que mira al lector: q = 0 si la fase la pone adelante
-  const best = [0, 1, 2, 3].map((q) => ({ q, t: ph + (q * TAU) / T.n })).sort((a, b) => dot3(er(b.t), cx.V3) - dot3(er(a.t), cx.V3))[0];
-  const tB = best.t, nB = add3(mul3(et(tB), -sA), mul3(ZD, cA)), dB = add3(mul3(et(tB), cA), mul3(ZD, sA));
-  const tS = ph + ((best.q + 1) % 4) * (PI / 2), nS = add3(mul3(et(tS), -sA), mul3(ZD, cA)), dS = add3(mul3(et(tS), cA), mul3(ZD, sA));
+  // los rótulos: a la izquierda la pala de adelante a la izquierda (que muestra su cara de arriba con los pernos) y la
+  // cara izquierda del cubo; a la derecha, la oreja de la pala de atrás a la derecha (que muestra su cara de abajo)
+  const pick = (sgn, front) => [0, 1, 2, 3].map((q) => ph + (q * TAU) / T.n).sort((a, b) => (sgn * Math.sin((AZ * D2R) - b) + front * Math.cos((AZ * D2R) - b)) - (sgn * Math.sin((AZ * D2R) - a) + front * Math.cos((AZ * D2R) - a)))[0];
+  const geo = (t) => ({ t, d: add3(mul3(et(t), cA), mul3(ZD, sA)), n: add3(mul3(et(t), -sA), mul3(ZD, cA)) });
+  const L1 = geo(pick(-1, 0.8)), R1 = geo(pick(1, -0.8));
+  const faceL = [0, 1, 2, 3].map((q) => ph + (q * PI) / 2).sort((a, b) => (-Math.sin(AZ * D2R - b) + 0.3 * Math.cos(AZ * D2R - b)) - (-Math.sin(AZ * D2R - a) + 0.3 * Math.cos(AZ * D2R - a)))[0];
+  const faceS = [0, 1, 2, 3].map((q) => ph + (q * PI) / 2).filter((tt) => dot3(er(tt), cx.V3) > 0.25).sort((a, b) => Math.sin(AZ * D2R - b) - Math.sin(AZ * D2R - a))[0];
   Object.assign(cx.ANCLAS, {
-    PALA: add3(add3(mul3(er(tB), 185), mul3(dB, 10)), mul3(nB, T.t)),
-    PERNOS: add3(add3(mul3(er(tB), T.bolts[1]), mul3(nB, T.t + BT.h)), mul3(dB, 0)),
-    OREJA: add3(add3(mul3(er(tS), 105), mul3(dS, -LG.w / 2)), mul3(nS, -LG.t / 2)),
-    CUBO: (() => { const q = [0, 1, 2, 3].sort((a, b) => dot3(er(ph + (b * PI) / 2), cx.V3) - dot3(er(ph + (a * PI) / 2), cx.V3))[0]; return add3(mul3(er(ph + (q * PI) / 2), hub.h), [0, 0, -46]); })(),
-    PRISIONERO: (() => { for (let q = 0; q < 4; q++) { const tt = ph + (q * PI) / 2; if (dot3(er(tt), cx.V3) > 0.25) return add3(mul3(er(tt), hub.h), [0, 0, 44]); } return [0, 0, 44]; })(),
+    PALA: add3(add3(mul3(er(L1.t), 190), mul3(L1.d, 18)), mul3(L1.n, T.t)),
+    PERNOS: add3(mul3(er(L1.t), T.bolts[0]), mul3(L1.n, T.t + BT.h)),
+    OREJA: add3(add3(mul3(er(R1.t), 120), mul3(R1.d, 0)), mul3(R1.n, -LG.t)),
+    CUBO: add3(add3(mul3(er(faceL), hub.h), mul3(et(faceL), 26)), [0, 0, -44]),
+    PRISIONERO: add3(mul3(er(faceS), hub.h), [0, 0, 44]),
   });
 }
 function X_roundSquare(h, rc, n = 5) {
@@ -508,12 +539,11 @@ function hidrofoil(cx) {
     dibujaPala(cx, `pala${q}`, palaTorcida(spec), { nx: 24, nc: 18, tipCap: true, owner: `pala${q}` });
     if (q === 0) spec0 = spec;
   }
-  // la pala que más mira al lector
-  const qs = [0, 1, 2].map((q) => ({ q, t: ph + (q * TAU) / 3 })).sort((a, b) => dot3(er(b.t + 0.2), cx.V3) - dot3(er(a.t + 0.2), cx.V3));
-  const Bq = palaTorcida({ ...spec0, phi: qs[0].t }), Bp = palaTorcida({ ...spec0, phi: qs[1].t });
+  // la pala de la izquierda (ψ = fase + 120°) para la pala; la de adelante a la derecha (ψ = fase) para la punta
+  const Bq = palaTorcida({ ...spec0, phi: ph + TAU / 3 }), Bp = palaTorcida({ ...spec0, phi: ph });
   Object.assign(cx.ANCLAS, {
-    PALA: Bq.top(0.45, 0.2), PUNTA: Bp.top(0.97, 0.1), CUBO: G.pointOf(F0, -26, hub.r, (AZ + 35) * D2R),
-    PRISIONERO: G.pointOf(F0, 40, hub.r, (AZ - 20) * D2R), PERNO: G.pointOf(F0, hub.z0 - Hh.washer.h - Hh.cap.h / 2, Hh.cap.r * 0.9, (AZ + 5) * D2R),
+    PALA: Bq.top(0.62, -0.55), PUNTA: Bp.top(0.96, 0.0), CUBO: G.pointOf(F0, 32, hub.r, (AZ + 62) * D2R),
+    PRISIONERO: G.pointOf(F0, 40, hub.r, (AZ - 20) * D2R), PERNO: G.pointOf(F0, hub.z0 - Hh.washer.h - Hh.cap.h / 2, Hh.cap.r * 0.95, (AZ + 25) * D2R),
   });
 }
 
@@ -555,14 +585,17 @@ function rushton(cx) {
       });
     });
   }
-  const order = [...Array(T.n).keys()].map((q) => ({ q, t: ph + (q * TAU) / T.n })).sort((a, b) => dot3(er(b.t), cx.V3) - dot3(er(a.t), cx.V3));
-  const tf = order[0].t, ts = order[1].t;
+  // a la izquierda, la pala que más se ve de ese lado; a la derecha, el soporte de la pala que tiene el soporte de cara
+  const scr = (t) => Math.sin(AZ * D2R - t);
+  const blades = [...Array(T.n).keys()].map((q) => ph + (q * TAU) / T.n);
+  const tf = blades.slice().sort((a, b) => scr(a) - scr(b))[0];
+  const ts = blades.filter((t) => dot3(et(t), cx.V3) > 0.3).sort((a, b) => Math.cos(AZ * D2R - b) - Math.cos(AZ * D2R - a))[0];
   Object.assign(cx.ANCLAS, {
-    PALA: add3(add3(mul3(er(tf), R - 22), [0, 0, 28]), mul3(et(tf), dot3(et(tf), cx.V3) > 0 ? ht : -ht)),
-    DISCO: G.pointOf(F0, hz, rd - 30, (AZ + 140) * D2R),
+    PALA: add3(add3(mul3(er(tf), R - 26), [0, 0, 30]), mul3(et(tf), dot3(et(tf), cx.V3) > 0 ? ht : -ht)),
+    DISCO: G.pointOf(F0, hz, rd - 26, (AZ + 115) * D2R),
     SOPORTE: add3(add3(mul3(er(ts), (CL.r0 + CL.r1) / 2), [0, 0, hz + CL.h * 0.8]), mul3(et(ts), ht + CL.t)),
     PERNOS: add3(add3(mul3(er(ts), T.bolts[1]), [0, 0, hz + CL.h / 2 + 1]), mul3(et(ts), ht + CL.t + BT.h)),
-    CUBO: G.pointOf(F0, hz + 26, T.hub.r, (AZ + 40) * D2R),
+    CUBO: G.pointOf(F0, hz + 40, T.hub.r, (AZ + 62) * D2R),
   });
 }
 
@@ -592,11 +625,14 @@ function paleta(cx) {
   }
   const order = [0, 1].map((q) => ({ q, t: ph + q * PI })).sort((a, b) => dot3(add3(er(b.t), mul3(et(b.t), 0.6)), cx.V3) - dot3(add3(er(a.t), mul3(et(a.t), 0.6)), cx.V3));
   const tf = order[0].t, tb = order[1].t, sgf = dot3(et(tf), cx.V3) > 0 ? 1 : -1, sgb = dot3(et(tb), cx.V3) > 0 ? 1 : -1;
+  // la pala de la derecha muestra su cara de afuera con los pernos; la de la izquierda, su oreja
+  const tR = [0, 1].map((q) => ph + q * PI).sort((a, b) => Math.sin(AZ * D2R - b) - Math.sin(AZ * D2R - a))[0], tL = tR + PI;
+  const sR = dot3(et(tR), cx.V3) > 0 ? 1 : -1, sL = dot3(et(tL), cx.V3) > 0 ? 1 : -1;
   Object.assign(cx.ANCLAS, {
-    PALA: add3(add3(mul3(er(tf), 192), [0, 0, 18]), mul3(et(tf), sgf > 0 ? hl + T.t : -hl)),
-    PERNOS: add3(add3(mul3(er(tf), T.bolts[3][0]), [0, 0, T.bolts[3][1]]), mul3(et(tf), sgf > 0 ? hl + T.t + BT.h : -hl - BT.nut)),
-    OREJA: add3(add3(mul3(er(tb), 120), [0, 0, LG.h / 2]), mul3(et(tb), 0)),
-    CUBO: G.pointOf(F0, -30, hub.r, (AZ + 45) * D2R), PRISIONERO: G.pointOf(F0, 52, hub.r, (AZ - 30) * D2R),
+    PALA: add3(add3(mul3(er(tR), 196), [0, 0, 20]), mul3(et(tR), sR > 0 ? hl + T.t : -hl)),
+    PERNOS: add3(add3(mul3(er(tR), T.bolts[3][0]), [0, 0, T.bolts[3][1]]), mul3(et(tR), sR > 0 ? hl + T.t + BT.h : -hl - BT.nut)),
+    OREJA: add3(add3(mul3(er(tL), 128), [0, 0, 18]), mul3(et(tL), sL > 0 ? hl : -hl)),
+    CUBO: G.pointOf(F0, 20, hub.r, (AZ + 62) * D2R), PRISIONERO: G.pointOf(F0, 52, hub.r, (AZ - 30) * D2R),
   });
 }
 
@@ -688,8 +724,8 @@ function ancla(cx) {
   Object.assign(cx.ANCLAS, {
     EJE: G.pointOf(F0, 1180, N.sh.r, az - 1.2), CUBO: G.pointOf(F0, N.hub.z0 + 40, N.hub.r, az + 0.9),
     BRAZO: [-(Rt - C - W / 2), ht, 520], FONDO: (() => { const p = off(C + W / 2)[18]; return [p[0], ht, p[1]]; })(),
-    TIRANTE: [-(Rt - C - W) * 0.5, ht, zTop - N.stay.h / 2], COLLAR: G.pointOf(F0, N.collar.z0 + 30, N.collar.r, az + 0.9),
-    PARED: [-Rt * Math.cos(0.5), -Rt * Math.sin(0.5), 1050], HOLGURA: [Rt - C / 2, 0, 300],
+    TIRANTE: [-(Rt - C - W) * 0.5, ht, zTop - N.stay.h / 2], COLLAR: G.pointOf(F0, N.collar.z0 + 30, N.collar.r, az - 0.9),
+    PARED: [Rt * Math.cos(-1.05), Rt * Math.sin(-1.05), 1000], HOLGURA: [Rt - C / 2, 0, 300],
   });
 }
 
@@ -786,12 +822,13 @@ function cinta(cx) {
   cx.turned("eje", F0, [[levels[2] + hc, N.sh.r], [N.sh.top - 3, N.sh.r], [N.sh.top, N.sh.r - 3]], {}, { cls: "im-sh", ground: true });
   cx.fp("perno.extremo", F0, HEX(N.cap.r, 0.2), levels[0] - hc - N.cap.h, levels[0] - hc, {}, { cls: "im-hw" });
   const fFront = az, zA = z0 + kp * fFront, zB = z0 + kp * (fFront + PI);
+  // las dos cintas, donde pasan por la izquierda del dibujo (ψ = AZ + 90°, a media altura la primera y arriba la segunda)
+  const fl = az + PI / 2, onTop = (r, f, base) => add3([r * Math.cos(f), r * Math.sin(f), z0 + kp * (f - base)], mul3(ZD, ht));
   Object.assign(cx.ANCLAS, {
     EJE: G.pointOf(F0, 1340, N.sh.r, az - 1.2),
-    CINTA1: add3([(Ro - 12) * Math.cos(fFront - 0.25), (Ro - 12) * Math.sin(fFront - 0.25), z0 + kp * (fFront - 0.25)], mul3(ZD, ht)),
-    CINTA2: add3([(Ro - 12) * Math.cos(fFront + 0.35), (Ro - 12) * Math.sin(fFront + 0.35), z0 + p / 2 + kp * (fFront + 0.35)], mul3(ZD, ht)),
-    BRAZO: [-(Ri + CO.r) / 2, 0, levels[1] + hv], COLLAR: G.pointOf(F0, levels[2] - 5, CO.r, az + 0.9),
-    PARED: [-Rt * Math.cos(0.5), -Rt * Math.sin(0.5), 1100], HOLGURA: [Rt - (Rt - Ro) / 2, 0, levels[1] + 60],
+    CINTA1: onTop(Ro - 30, fl, 0), CINTA2: onTop(Ro - 30, fl + TAU, PI),
+    BRAZO: [-(Ri + CO.r) / 2, 0, levels[2] + hv], COLLAR: G.pointOf(F0, levels[2] - 8, CO.r, az - 0.9),
+    PARED: [Rt * Math.cos(-1.05), Rt * Math.sin(-1.05), 700],
   });
   void zA; void zB;
 }

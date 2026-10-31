@@ -12,7 +12,7 @@ export const D = 450, R = D / 2;
 // M12 de cabeza hueca y el perno del extremo del eje con su arandela
 export const COMUN = {
   AZ: 52, EL: 28,
-  sh: { r: 25, top: 270 },                 // el eje sube hasta z = top, donde se corta
+  sh: { r: 25, top: 215 },                 // el eje sube hasta z = top, donde se corta
   key: { w: 14, out: 3.5, len: 34, r0: 24 },  // chaveta: ancho, lo que sobresale del eje, largo a la vista, cara de abajo
   set: { r: 6, hex: 3 },                    // prisionero M12: radio del agujero y de la llave hexagonal
 };

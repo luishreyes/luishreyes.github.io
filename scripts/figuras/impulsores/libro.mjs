@@ -41,7 +41,7 @@ function contorno(svg) {
       absol.push([x, y]);
     }
   }
-  return { minX: Math.min(...absol.map((p) => p[0])), maxX: Math.max(...absol.map((p) => p[0])), minY: Math.min(...absol.map((p) => p[1])), maxY: Math.max(...absol.map((p) => p[1])) };
+  return { absol, minX: Math.min(...absol.map((p) => p[0])), maxX: Math.max(...absol.map((p) => p[0])), minY: Math.min(...absol.map((p) => p[1])), maxY: Math.max(...absol.map((p) => p[1])) };
 }
 const cuerpoDe = (svg) => svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/<style>[^<]*<\/style>/, '').replace(/<defs><\/defs>/, '');
 
@@ -57,8 +57,9 @@ function libro() {
   const letra = 14, paso = letra * 1.75, ancho = (t) => t.length * letra * 0.56;
   const vistas = IMPULSORES.map(({ id }) => {
     const { svg, P, ANCLAS } = leer(id);
-    const { minX, maxX, minY, maxY } = contorno(svg);
-    const xIzq = minX - 22, xDer = maxX + 22;
+    const { absol, minX, maxX, minY, maxY } = contorno(svg);
+    // el borde del texto: lo más cerca del dibujo que permitan las piezas a la altura de cada rótulo
+    const franja = (y, izq) => { const en = absol.filter((p) => Math.abs(p[1] - y) < letra * 1.1); return en.length ? (izq ? Math.min(...en.map((p) => p[0])) : Math.max(...en.map((p) => p[0]))) : izq ? maxX : minX; };
     const lados = { izq: [], der: [] };
     for (const [a, lado, t] of ROTULOS[id]) {
       if (!ANCLAS[a]) throw new Error(`Falta el ancla ${a} de ${id}`);
@@ -75,17 +76,33 @@ function libro() {
       const piso = minY + 12;
       if (lista.length && lista[0].y < piso) { lista[0].y = piso; for (let i = 1; i < lista.length; i++) lista[i].y = Math.max(lista[i].y, lista[i - 1].y + paso); }
     }
+    for (const r of lados.izq) r.x = Math.min(franja(r.y, true), r.ax - 12) - 18;
+    for (const r of lados.der) r.x = Math.max(franja(r.y, false), r.ax + 12) + 18;
+    // en cada lado, los textos que se pisarían con la línea de otro se alinean al más alejado
+    for (const [lista, izq] of [[lados.izq, true], [lados.der, false]]) {
+      for (let vuelta = 0; vuelta < 10; vuelta++) {
+        let cambio = false;
+        for (const r of lista) for (const o of lista) {
+          if (o === r) continue;
+          const x0 = izq ? o.x - ancho(o.t) - 2 : o.x - 2, x1 = izq ? o.x + 2 : o.x + ancho(o.t) + 2, y0 = o.y - letra * 0.8, y1 = o.y + letra * 0.5;
+          let cruza = false;
+          for (let t = 0; t <= 1; t += 0.02) { const x = r.x + (izq ? 5 : -5) + (r.ax - r.x) * t, y = r.y + (r.ay - r.y) * t; if (x > x0 && x < x1 && y > y0 && y < y1) cruza = true; }
+          if (cruza) { const x = izq ? Math.min(r.x, o.x) : Math.max(r.x, o.x); if (r.x !== x || o.x !== x) { r.x = x; o.x = x; cambio = true; } }
+        }
+        if (!cambio) break;
+      }
+    }
     const trazo = (r, izq) => {
-      const x = izq ? xIzq : xDer, fin = izq ? x + 5 : x - 5;
+      const x = r.x, fin = izq ? x + 5 : x - 5;
       return `<path class="rot-linea" d="M${r.ax} ${r.ay}L${r1(fin)} ${r1(r.y)}"/><circle class="rot-punto" cx="${r.ax}" cy="${r.ay}" r="2.6"/>` +
         `<text class="rot-texto" x="${r1(x)}" y="${r1(r.y + letra * 0.35)}" text-anchor="${izq ? 'end' : 'start'}" font-size="${letra}">${r.t}</text>`;
     };
     const trazos = lados.izq.map((r) => trazo(r, true)).join('') + lados.der.map((r) => trazo(r, false)).join('');
-    const izq = Math.max(0, ...lados.izq.map((r) => ancho(r.t))), der = Math.max(0, ...lados.der.map((r) => ancho(r.t)));
-    return { id, cuerpo: cuerpoDe(svg), trazos, x0: xIzq - izq - 8, x1: xDer + der + 8, y0: Math.min(minY, ...lados.izq.map((r) => r.y), ...lados.der.map((r) => r.y)) - 12, y1: Math.max(maxY, ...lados.izq.map((r) => r.y), ...lados.der.map((r) => r.y)) + 10 };
+    return { id, cuerpo: cuerpoDe(svg), trazos, x0: Math.min(minX, ...lados.izq.map((r) => r.x - ancho(r.t))) - 6, x1: Math.max(maxX, ...lados.der.map((r) => r.x + ancho(r.t))) + 6, y0: Math.min(minY, ...lados.izq.map((r) => r.y), ...lados.der.map((r) => r.y)) - 12, y1: Math.max(maxY, ...lados.izq.map((r) => r.y), ...lados.der.map((r) => r.y)) + 10 };
   });
   // todas las vistas con la misma caja, así el selector no mueve la página: las turbinas, que comparten cámara, quedan
   // en el mismo sitio
+  if (process.env.IM_CAJAS) for (const v of vistas) console.log(v.id, Math.round(v.x0), Math.round(v.x1), Math.round(v.y0), Math.round(v.y1));
   const vx = Math.floor(Math.min(...vistas.map((v) => v.x0))), vy = Math.floor(Math.min(...vistas.map((v) => v.y0)));
   const vw = Math.ceil(Math.max(...vistas.map((v) => v.x1)) - vx), vh = Math.ceil(Math.max(...vistas.map((v) => v.y1)) - vy);
   const ids = IMPULSORES.map(({ id }) => id);
