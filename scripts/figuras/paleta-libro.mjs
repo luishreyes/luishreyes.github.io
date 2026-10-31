@@ -8,7 +8,7 @@
 //
 //   import { aplicarPaleta, cssAnatomia, cssMolienda } from '../paleta-libro.mjs';   // en cada libro.mjs
 //
-//   node paleta-libro.mjs                 vuelve a pintar las 20 vistas del libro y los dos CSS, sin rehacer los
+//   node paleta-libro.mjs                 vuelve a pintar las vistas del libro y los dos CSS, sin rehacer los
 //                                         dibujos (los rótulos y la geometría quedan como están)
 //   node paleta-libro.mjs --revisar       solo dice qué colores de las vistas no están en paleta.json
 //   node paleta-libro.mjs --libro RUTA    si el libro está en otra parte (también LIBRO_OU=RUTA)
@@ -143,6 +143,18 @@ export const CLASES = {
   'hm-oil': 'aceite', 'hm-spring': 'acero', 'hm-pipe': 'acero', 'hm-oil-liq': { fill: 'aceite.sombras.0', 'fill-opacity': 0.55 },
   'hm-flujo': { stroke: 'azul' }, 'hm-flecha': { fill: 'azul' }, 'hm-det-fondo': { fill: 'blanco' },
   'hm-det-marco': { stroke: 'tinta-2' }, 'hm-det-marca': { stroke: 'tinta-2' }, 'hm-det-linea': { stroke: 'tinta-2' },
+  // congelador de lecho fluidizado (capítulo 16): paneles pintados con el poliuretano en el corte (amarillo), las arvejas
+  // en los tonos del sólido, la escarcha en el del vidrio y la línea de succión aislada en el del caucho
+  'cg-cut': 'acero/corte', 'cg-cut1': 'acero/corte1', 'cg-foam': 'amarillo/corte1', 'cg-ss': 'acero', 'cg-panel': 'pintado',
+  'cg-motor': 'pintado', 'cg-cast': 'fundicion', 'cg-spring': 'fundicion', 'cg-tube': 'acero', 'cg-ins': 'caucho',
+  'cg-bore': { fill: 'hueco.oscuro' }, 'cg-dark': { fill: 'hueco.oscuro' }, 'cg-gap': { fill: 'hueco.medio' },
+  'cg-fin': { stroke: 'acero.sombras.1' }, 'cg-frost': { stroke: 'vidrio.cara' },
+  'cg-bed-f': { fill: 'solido.sombras.0' }, 'cg-bed-t': { fill: 'solido.sombras.2' }, 'cg-pe': { fill: 'solido.cara' },
+  'cg-ph': { fill: 'solido.tapa' }, 'cg-pe-c': { stroke: 'solido.sombras.1' },
+  'cg-pea': { fill: 'solido.cara', stroke: 'solido.oscuro' }, 'cg-pea-t': { fill: 'solido.tapa', stroke: 'solido.oscuro' },
+  'cg-pea-h': { fill: 'blanco' }, 'cg-burb': { fill: 'blanco', stroke: 'solido.sombras.1' },
+  'cg-flujo': { stroke: 'azul' }, 'cg-flecha': { fill: 'azul' }, 'cg-det-fondo': { fill: 'blanco' },
+  'cg-det-marco': { stroke: 'tinta-2' }, 'cg-det-marca': { stroke: 'tinta-2' }, 'cg-det-linea': { stroke: 'tinta-2' },
   // válvula de control (capítulo 13)
   '.vc-cut,.vc-cut-tr,.vc-cut-gk,.vc-cut-pk,.vc-cut-rb': 'acero/corte', 'vc-cut-tr': 'acero/corte1', 'vc-cut-gk': 'caucho/corte',
   'vc-cut-pk': 'caucho/corte', 'vc-cut-rb': 'caucho/corte', 'vc-trim': 'acero', 'vc-paint': 'pintado', 'vc-pack': 'caucho',
@@ -225,6 +237,7 @@ export const VISTAS = {
     degradados: { mzJ: [0, 0.12], mzS: [0.14, 0.92] },
     roles: { B: ['cascara.sombras.2', 'agua.sombras.2'], T: ['cascara.tapa', 'agua.tapa'], S: ['cascara.sombras.0', 'agua.sombras.0'], E: ['acido.oscuro', 'agua.sombras.0'] },
   },
+  'particulas-en-un-fluido/_congelador': {},
   'particulas-en-un-fluido/_filtro-arena': {},
   'reduccion-de-tamano/_molino-bolas': { capa: true },
   'reduccion-de-tamano/_molino-disc': { capa: true, granos: { 'ds-grain': RAMPA_GRANO }, colores: { '#e3b23c': 'solido.cara', 'rgb(152,159,166)': 'metal.oscuro' } },
