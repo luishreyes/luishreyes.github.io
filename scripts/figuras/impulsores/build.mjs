@@ -608,7 +608,6 @@ function tanque(cx) {
   const { surface, toned, Ln, path3, pr, put, record } = cx;
   const FRONT = A.box([-9000, 0, -9000], [9000, 9000, 9000]);
   const ell = (rr, hh, a0, a1, n = 30) => Array.from({ length: n + 1 }, (_, i) => { const a = a0 + ((a1 - a0) * i) / n; return [-hh * Math.sin(a), rr * Math.cos(a)]; });
-  const SHELL = A.body(F0, [[0, Rt], [top, Rt], [top, Ro], [0, Ro]], { name: "stand.casco", owner: "tanque" });
   const HEAD = A.body(F0, [[-hd, 0], ...ell(Rt, hd, PI / 2, 0).map(([z, r]) => [z, r]), [0, Rt], [0, Ro], ...ell(Ro, hd + T.w, 0, PI / 2)], { name: "stand.fondo", owner: "tanque" });
   const cylP = (r, z0, z1) => (f, u) => [r * Math.cos(f), r * Math.sin(f), z0 + (z1 - z0) * u];
   const headP = (rr, hh) => (f, u) => { const a = (PI / 2) * u, r = rr * Math.cos(a); return [r * Math.cos(f), r * Math.sin(f), -hh * Math.sin(a)]; };
@@ -617,30 +616,38 @@ function tanque(cx) {
   // la envolvente por dentro, con la costura de la línea de tangencia, y el fondo por dentro. A la derecha, entre la
   // silueta del cilindro (ψs) y el corte, se ve la envolvente por fuera, y esa franja va delante de lo que hay adentro:
   // es otra pieza
-  const ps = (cx.P.azimuth - 90) * D2R + TAU, L = 9000;
-  const WEDGE = A.prism(F0, [[0, 0], [L, 0], [L * Math.cos(ps), L * Math.sin(ps)]].reverse(), -9000, 9000);
-  const NOTWEDGE = A.prism(F0, [[0, 0], [L * Math.cos(ps), L * Math.sin(ps)], [-L, -L], [-L, L], [L, L], [L, 0]], -9000, 9000);
+  const ps = (cx.P.azimuth - 90) * D2R + TAU;
+  // la envolvente se registra como prismas de sección de corona (sin cortes): de π a ψs y de ψs a 2π
+  const sector = (f0, f1, n = 48) => [...Array.from({ length: n + 1 }, (_, i) => { const t = f0 + ((f1 - f0) * i) / n; return [Ro * Math.cos(t), Ro * Math.sin(t)]; }),
+    ...Array.from({ length: n + 1 }, (_, i) => { const t = f1 - ((f1 - f0) * i) / n; return [Rt * Math.cos(t), Rt * Math.sin(t)]; })];
   const wall = toned((o) => surface(cylP(Rt, 0, top), (f) => [-Math.cos(f), -Math.sin(f), 0], PI, ps, 90, 1, o), "im-gh") +
     Ln(path3(arc(Rt - 0.5, 0, PI, ps)), { tone: "faint" });
-  put("stand.casco", [0, -Rt * 0.8, top / 2], wall, [record({ ...SHELL, cut: [FRONT, WEDGE] })]);
-  const outR = toned((o) => {
-    surface(cylP(Ro, 0, top), (f) => [Math.cos(f), Math.sin(f), 0], ps, TAU, 12, 1, o);
-    surface(headP(Ro, hd + T.w), (f, u) => mul3(headN(Ro, hd + T.w)(f, u), -1), ps, TAU, 12, 10, o);
-  }, "im-gh");
+  put("stand.casco", [0, -Rt * 0.8, top / 2], wall, [record(A.prism(F0, sector(PI, ps), 0, top, { name: "stand.casco", owner: "tanque" }))]);
+  const outR = toned((o) => surface(cylP(Ro, 0, top), (f) => [Math.cos(f), Math.sin(f), 0], ps, TAU, 12, 1, o), "im-gh");
   const silR = Ln(path3([[Ro * Math.cos(ps), Ro * Math.sin(ps), 0], [Ro * Math.cos(ps), Ro * Math.sin(ps), top]]), { tone: "mid" });
-  put("stand.casco.der", [Ro * Math.cos(ps / 2 + PI), 0, top / 2], outR + silR, [record({ ...SHELL, name: "stand.casco.der", cut: [FRONT, NOTWEDGE] })]);
+  put("stand.casco.der", [Ro * Math.cos(ps / 2 + PI), 0, top / 2], outR + silR, [record(A.prism(F0, sector(ps, TAU, 12), 0, top, { name: "stand.casco.der", owner: "tanque" }))]);
   const head = toned((o) => surface(headP(Rt, hd), headN(Rt, hd), PI, TAU, 90, 14, o), "im-gh");
-  put("stand.fondo", [0, -Rt * 0.5, -hd * 0.6], head, [record({ ...HEAD, cut: [FRONT] })]);
+  const ps0 = (cx.P.azimuth - 90) * D2R + TAU;
+  const headOut = toned((o) => surface(headP(Ro, hd + T.w), (f, u) => mul3(headN(Ro, hd + T.w)(f, u), -1), ps0, TAU, 12, 10, o), "im-gh");
+  put("stand.fondo", [0, -Rt * 0.5, -hd * 0.6], head + headOut, [record({ ...HEAD, cut: [FRONT] })]);
   // el borde de arriba de la mitad de atrás: media corona
   const rim = [...arc(Ro, top, PI, TAU, 80), ...arc(Rt, top, TAU, PI, 80)];
   put("stand.borde", [0, -Rt, top], `<g class="iso-solid im-gh"><path class="iso-top" d="${pth1(rim.map(pr))}"/></g>` + Ln(path3(arc(Ro, top, PI, TAU)) + path3(arc(Rt, top, PI, TAU)), { tone: "mid" }),
-    [record(A.ring(F0, top - 0.3, top, Rt, Ro, { name: "stand.borde", owner: "tanque", cut: [FRONT] }))]);
-  // la cara del corte en y = 0: la U de la envolvente y el fondo
+    [record(A.prism(F0, sector(PI, TAU, 96), top - 0.3, top, { name: "stand.borde", owner: "tanque" }))]);
+  // la cara del corte en y = 0, en tres piezas (la envolvente a la derecha, a la izquierda y el fondo), así cada una
+  // queda delante o detrás de lo que tiene cerca; la línea de tangencia queda como la soldadura que es
   const inner = ell(Rt, hd, 0, PI / 2, 40).map(([z, r]) => [r, z]), outer = ell(Ro, hd + T.w, 0, PI / 2, 40).map(([z, r]) => [r, z]);
-  const U = [[Ro, top], ...outer, ...outer.slice().reverse().map(([x, z]) => [-x, z]).slice(1), [-Ro, top], [-Rt, top], ...inner.map(([x, z]) => [-x, z]), ...inner.slice().reverse().slice(1), [Rt, top]];
-  const dU = pth1(U.map(([x, z]) => pr([x, 0, z])));
-  put("stand.corte", [0, 0, -hd], `<g class="iso-solid im-cut"><path class="iso-fill" d="${dU}"/><path class="iso-shade" data-shade="3" d="${dU}"/><path class="iso-line iso-edge" data-tone="mid" d="${dU}"/></g>`,
-    [record(A.prism({ o: [0, 0, 0], a: YD, u: XD, v: ZD }, U, -0.3, 0, { name: "stand.corte", owner: "tanque" }))]);
+  const piezas = {
+    der: [[Rt, 0], [Ro, 0], [Ro, top], [Rt, top]],
+    izq: [[-Ro, 0], [-Rt, 0], [-Rt, top], [-Ro, top]],
+    fondo: [...outer, ...outer.slice().reverse().map(([x, z]) => [-x, z]).slice(1), ...inner.map(([x, z]) => [-x, z]), ...inner.slice().reverse().slice(1)],
+  };
+  for (const [nm, U] of Object.entries(piezas)) {
+    const dU = pth1(U.map(([x, z]) => pr([x, 0, z])));
+    const c = U.reduce((q, p) => [q[0] + p[0] / U.length, q[1] + p[1] / U.length], [0, 0]);
+    put(`stand.corte.${nm}`, [c[0], 0, c[1]], `<g class="iso-solid im-cut"><path class="iso-fill" d="${dU}"/><path class="iso-shade" data-shade="3" d="${dU}"/><path class="iso-line iso-edge" data-tone="mid" d="${dU}"/></g>`,
+      [record(A.prism({ o: [0, 0, 0], a: YD, u: XD, v: ZD }, U, -0.3, 0, { name: `stand.corte.${nm}`, owner: "tanque" }))]);
+  }
   return { FRONT };
 }
 
@@ -869,7 +876,7 @@ for (const name of WHICH) {
       for (const it of R_.items) {
         if (it === me) continue;
         const o = A.overlapsOf([me, it], PA, { step: STEP });
-        for (const pp of o.pairs) console.log(nm, "|", it.name, "  ", pp.front.map((f) => f.area.toFixed(1)).join(" / "));
+        for (const pp of o.pairs) console.log(nm, "|", it.name, "  ", JSON.stringify(pp.front.map((f) => ({ area: +f.area.toFixed(1), depth: f.depth && +f.depth.toFixed(2), at: f.at && f.at.map((v) => +v.toFixed(1)) }))));
       }
     }
     process.exit(0);
@@ -877,6 +884,24 @@ for (const name of WHICH) {
   const ts = Date.now();
   if (!FAST) A.settle(R_, PA, { step: STEP });
   const tOrder = (Date.now() - ts) / 1000;
+  if (!FAST && process.env.IM_DROP) {
+    const { overlaps, solved } = R_.settled, nm = (i) => R_.items[i].name;
+    const edges = new Map();
+    for (const pair of overlaps.pairs) {
+      const aF = pair.front[0].area >= overlaps.least, bF = pair.front[1].area >= overlaps.least;
+      if (aF === bF) continue;
+      const [f, b] = aF ? [pair.a, pair.b] : [pair.b, pair.a];
+      if (!edges.has(f)) edges.set(f, []);
+      edges.get(f).push([b, pair.front[aF ? 0 : 1].area]);
+    }
+    for (const r of solved.dropped) {
+      console.log("dropped:", nm(r.front), ">", nm(r.back), r.weight.toFixed(1));
+      // un camino de back a front: back > … > front cierra el lazo
+      const prev = new Map([[r.back, -1]]), queue = [r.back];
+      while (queue.length) { const n = queue.shift(); if (n === r.front) break; for (const [m] of edges.get(n) || []) if (!prev.has(m)) { prev.set(m, n); queue.push(m); } }
+      if (prev.has(r.front)) { const path = []; let n = r.front; while (n !== -1) { path.push(nm(n)); n = prev.get(n); } console.log("   lazo:", path.reverse().join(" > ")); }
+    }
+  }
   R_.items.sort((a, b) => a.key - b.key);
   const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
   const svg = compact(k.figureSvg({ width: WD, height: HD, label: name, body: [`<style>${CSS}</style><defs>${cx.DEFS.join("")}</defs><g class="im-items">${groups.join("")}</g>`] }));
