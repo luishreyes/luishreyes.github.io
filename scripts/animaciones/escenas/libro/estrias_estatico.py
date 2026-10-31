@@ -2,7 +2,7 @@
 apila, así que las estrías se duplican hasta que son tan delgadas que la difusión las borra. Al lado, el coeficiente de
 variación que se mide a lo largo del mezclador.
 
-Para el capítulo 14 del libro de operaciones unitarias (Mezclado y escalado de tanques agitados). Dos corrientes
+Para el capítulo 15 del libro de operaciones unitarias (Mezclado y escalado de tanques agitados). Dos corrientes
 iguales, ácido y agua, entran lado a lado a un Kenics KMS de 12 elementos de 1,5 D. El corte de la corriente es el del
 mapa del panadero (Paul, cap. 3, fig. 3-2): una estría es un par de capas, una de cada líquido, y con n elementos hay
 2ⁿ estrías de espesor D/2ⁿ (Geankoplis 5.ª ed., ec. 7.2-22; Perry 18-36). El CoV sigue la ec. 7-20 de Paul,
