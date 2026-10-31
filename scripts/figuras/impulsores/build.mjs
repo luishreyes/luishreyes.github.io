@@ -148,14 +148,14 @@ function contexto(P, U, pre) {
       runs.forEach((run, r) => {
         if (run.band < 0) return;
         const pts = [...side(fa, e0[r], e0[r + 1]), ...side(fb, e1[r], e1[r + 1]).reverse()];
-        const d = pth1(pts.map(pr)); out.by[run.band].push(d);
+        out.by[run.band].push(pts.map(pr));
       });
     }
   }
   function toned(build, cls = "") {
     const out = { by: [[], [], [], [], []] };
     build(out);
-    return `<g class="iso-solid${cls ? " " + cls : ""}" data-seamless="">` + out.by.slice(0, 4).map((d, i) => (d.length ? `<path class="iso-shade" data-shade="${i}" d="${d.join("")}"/>` : "")).join("") + (out.by[4].length ? `<path class="iso-top" d="${out.by[4].join("")}"/>` : "") + "</g>";
+    return `<g class="iso-solid${cls ? " " + cls : ""}" data-seamless="">` + out.by.slice(0, 4).map((ps, i) => (ps.length ? `<path class="iso-shade" data-shade="${i}" d="${unionPath(ps)}"/>` : "")).join("") + (out.by[4].length ? `<path class="iso-top" d="${unionPath(out.by[4])}"/>` : "") + "</g>";
   }
   /* ---------- hojas en triángulos: cada triángulo se recorta a lo visible y a las franjas de tono (los bordes de
      las franjas son rectos dentro de cada triángulo, así no hay escalones), y se pinta de atrás hacia adelante por
@@ -210,48 +210,23 @@ function contexto(P, U, pre) {
     }
     return out;
   }
-  function paintTris(tris, { slabs = 1, cls = "" } = {}) {
+  // lines: tramos (pares de puntos 3D) que se pintan después de la capa de su profundidad, así las capas de adelante
+  // los tapan donde deben
+  function paintTris(tris, { slabs = 1, cls = "", lines = null, lineEps = 0 } = {}) {
     const list = tris.map((t) => ({ t, depth: t.p.reduce((q, p) => q + dot3(p, V3), 0) / t.p.length })).sort((a, b) => a.depth - b.depth);
     const out = [];
     const per = Math.ceil(list.length / slabs);
+    const tops = Array.from({ length: slabs }, (_, s) => { const last = list[Math.min(list.length, (s + 1) * per) - 1]; return last ? last.depth : Infinity; });
+    const lineSlab = Array.from({ length: slabs }, () => []);
+    for (const sg of lines || []) { const d = dot3(G.lerp3(sg[0], sg[1], 0.5), V3) - lineEps; let s = tops.findIndex((t) => t >= d); if (s < 0) s = slabs - 1; lineSlab[s].push(sg); }
     for (let s = 0; s < slabs; s++) {
       const by = [[], [], [], [], []];
       for (const { t } of list.slice(s * per, (s + 1) * per)) for (const pc of triPieces(t)) by[pc.band].push(pc.poly);
       by.slice(0, 4).forEach((ps, i) => ps.length && out.push(`<path class="iso-shade" data-shade="${i}" d="${unionPath(ps)}"/>`));
       if (by[4].length) out.push(`<path class="iso-top" d="${unionPath(by[4])}"/>`);
+      if (lineSlab[s].length) out.push(Ln(segPath(lineSlab[s]), { tone: "mid" }));
     }
     return { svg: `<g class="iso-solid${cls ? " " + cls : ""}" data-seamless="">${out.join("")}</g>`, list };
-  }
-  // los tramos de contorno donde la hoja da la vuelta (n·V = 0), en coordenadas de pantalla y con su profundidad
-  function contourOf(tris) {
-    const segs = [];
-    for (const t of tris) {
-      const v = t.n.map((n) => dot3(n, V3)), pts = [];
-      for (let i = 0; i < 3; i++) {
-        const j = (i + 1) % 3;
-        if ((v[i] > 0) !== (v[j] > 0)) { const f = v[i] / (v[i] - v[j]); pts.push(G.lerp3(t.p[i], t.p[j], f)); }
-      }
-      if (pts.length === 2) segs.push(pts);
-    }
-    return segs;
-  }
-  // un tramo de línea (3D) se esconde si un triángulo visible de la misma pieza lo tapa por delante
-  function hiddenBy(list, a, b, eps = 1.2) {
-    const m = G.lerp3(a, b, 0.5), sm = pr(m), dm = dot3(m, V3);
-    for (const { t } of list) {
-      if (!t.n.some((n) => dot3(n, V3) > 0)) continue;
-      const S0 = t.p.map(pr), D0 = t.p.map((p) => dot3(p, V3));
-      for (let q = 1; q + 1 < t.p.length; q++) {
-        const s = [S0[0], S0[q], S0[q + 1]], d = [D0[0], D0[q], D0[q + 1]];
-        const den = (s[1][1] - s[2][1]) * (s[0][0] - s[2][0]) + (s[2][0] - s[1][0]) * (s[0][1] - s[2][1]);
-        if (Math.abs(den) < 1e-9) continue;
-        const l0 = ((s[1][1] - s[2][1]) * (sm[0] - s[2][0]) + (s[2][0] - s[1][0]) * (sm[1] - s[2][1])) / den;
-        const l1 = ((s[2][1] - s[0][1]) * (sm[0] - s[2][0]) + (s[0][0] - s[2][0]) * (sm[1] - s[2][1])) / den, l2 = 1 - l0 - l1;
-        if (l0 < 0.01 || l1 < 0.01 || l2 < 0.01) continue;
-        if (l0 * d[0] + l1 * d[1] + l2 * d[2] > dm + eps) return true;
-      }
-    }
-    return false;
   }
   // una lista de tramos (pares de puntos 3D) en un solo trazo, uniendo los que siguen uno al otro
   function segPath(segs) {
@@ -282,7 +257,7 @@ function contexto(P, U, pre) {
     }
     return shapes;
   }
-  return { P, C, V3, L3, U, PA, R_, at, pr, S, Ln, path3, record, put, wrap, fp, turned, disc, setScrew, surface, toned, paintTris, contourOf, hiddenBy, segPath, sheetShapes, ANCLAS: {}, DEFS: [], pre };
+  return { P, C, V3, L3, U, PA, R_, at, pr, S, Ln, path3, record, put, wrap, fp, turned, disc, setScrew, surface, toned, paintTris, segPath, sheetShapes, ANCLAS: {}, DEFS: [], pre };
 }
 
 /* ====================================================================
@@ -417,16 +392,22 @@ function dibujaPala(cx, name, B, { nx = 18, nc = 14, tipCap = false, cls = "im-s
     for (const t of tris) { const poly = clip3(t.p.map((p, i) => ({ p, n: t.n[i] })), side, pos === 1); if (poly.length >= 3) part.push({ p: poly.map((v) => v.p), n: poly.map((v) => v.n), cap: t.cap }); }
     if (!part.length) return;
     const faces = part.filter((t) => !t.cap), caps = part.filter((t) => t.cap);
-    const { svg, list } = cx.paintTris(faces, { slabs: 6, cls });
+    // los tramos que cruzan el plano se parten en él, así las líneas de las dos piezas se tocan
+    const cut = [];
+    for (const [a, b] of segs) {
+      const fa = side(a), fb = side(b);
+      if ((fa >= 0) === (fb >= 0)) { if (keep(a)) cut.push([a, b]); continue; }
+      const m = G.lerp3(a, b, fa / (fa - fb));
+      cut.push(keep(a) ? [a, m] : [m, b]);
+    }
+    // las líneas van con la capa de su profundidad: lo que queda detrás de la pala misma lo tapan las capas de adelante
     const capSvg = caps.length ? cx.paintTris(caps, { cls }).svg : "";
-    const all = [...list, ...(caps.length ? caps.map((t) => ({ t })) : [])];
-    const mine = sinMigas(cx, segs.filter(([a, b]) => keep(G.lerp3(a, b, 0.5)) && !cx.hiddenBy(all, a, b, tmax)), 12);
-    const lines = cx.Ln(cx.segPath(mine), { tone: "mid" });
+    const { svg } = cx.paintTris(faces, { slabs: 6, cls, lines: sinMigas(cx, cut, 12), lineEps: tmax });
     // las formas: la rejilla de prismas planos, recortada al mismo lado del plano
     const shapes = cx.sheetShapes(B.mid, B.half, 10, 8, `${name}.${pos ? "frente" : "fondo"}`, owner || name, { clip: (poly) => clip3(poly, side, pos === 1) });
     shapes.forEach((sh) => cx.record(sh));
     const ref = mul3(faces.reduce((q, t) => add3(q, t.p[0]), [0, 0, 0]), 1 / faces.length);
-    cx.put(`${name}.${pos ? "frente" : "fondo"}`, ref, `<g>${svg}${capSvg}${lines}</g>`, shapes);
+    cx.put(`${name}.${pos ? "frente" : "fondo"}`, ref, `<g>${capSvg}${svg}</g>`, shapes);
   });
 }
 
@@ -504,7 +485,7 @@ function pbt(cx) {
     PALA: add3(add3(mul3(er(L1.t), 190), mul3(L1.d, 18)), mul3(L1.n, T.t)),
     PERNOS: add3(mul3(er(L1.t), T.bolts[0]), mul3(L1.n, T.t + BT.h)),
     OREJA: add3(add3(mul3(er(R1.t), 120), mul3(R1.d, 0)), mul3(R1.n, -LG.t)),
-    CUBO: add3(add3(mul3(er(faceL), hub.h), mul3(et(faceL), 26)), [0, 0, -44]),
+    CUBO: add3(add3(mul3(er(faceL), hub.h), mul3(et(faceL), Math.sin(AZ * D2R - faceL - PI / 2) < 0 ? 30 : -30)), [0, 0, 54]),
     PRISIONERO: add3(mul3(er(faceS), hub.h), [0, 0, 44]),
   });
 }
@@ -576,12 +557,7 @@ function rushton(cx) {
       T.bolts.forEach((rb, j) => {
         const Fb = { o: add3(mul3(er(t), rb), [0, 0, sg * (hz + CL.h / 2 + 1)]), a: et(t), u: er(t), v: ZD };
         cx.fp(`perno${q}.${nm}${j}`, Fb, HEX(BT.r, 0.4), ht + CL.t, ht + CL.t + BT.h, {}, { cls: "im-hw" });
-        const nut = A.prism(Fb, HEX(BT.r, 0.4), -ht - BT.nut, -ht, { name: `tuerca${q}.${nm}${j}`, owner: `tuerca${q}.${nm}${j}` });
-        const tail = A.disc(Fb, -ht - BT.nut - BT.tail, -ht - BT.nut, BT.tr, { name: `tuerca${q}.${nm}${j}`, owner: `tuerca${q}.${nm}${j}` });
-        cx.record(nut); cx.record(tail);
-        const m = Math.max(16, Math.round((BT.tr * G.scaleOf(cx.P)) / 1.2)), circ = Array.from({ length: m }, (_, i) => [BT.tr * Math.cos((i / m) * TAU), BT.tr * Math.sin((i / m) * TAU)]);
-        const svg = `<g class="im-hw">${X.prismSvg(cx.C, HEX(BT.r, 0.4), -ht - BT.nut, -ht, { F: Fb, tone: "mid" })}${X.prismSvg(cx.C, circ, -ht - BT.nut - BT.tail, -ht - BT.nut, { F: Fb, tone: "mid" })}</g>`;
-        cx.put(`tuerca${q}.${nm}${j}`, add3(Fb.o, mul3(Fb.a, -ht - BT.nut)), svg, [nut, tail]);
+        cx.fp(`tuerca${q}.${nm}${j}`, Fb, HEX(BT.r, 0.4), -ht - BT.nut, -ht, {}, { cls: "im-hw" });
       });
     });
   }
@@ -821,7 +797,6 @@ function cinta(cx) {
   });
   cx.turned("eje", F0, [[levels[2] + hc, N.sh.r], [N.sh.top - 3, N.sh.r], [N.sh.top, N.sh.r - 3]], {}, { cls: "im-sh", ground: true });
   cx.fp("perno.extremo", F0, HEX(N.cap.r, 0.2), levels[0] - hc - N.cap.h, levels[0] - hc, {}, { cls: "im-hw" });
-  const fFront = az, zA = z0 + kp * fFront, zB = z0 + kp * (fFront + PI);
   // las dos cintas, donde pasan por la izquierda del dibujo (ψ = AZ + 90°, a media altura la primera y arriba la segunda)
   const fl = az + PI / 2, onTop = (r, f, base) => add3([r * Math.cos(f), r * Math.sin(f), z0 + kp * (f - base)], mul3(ZD, ht));
   Object.assign(cx.ANCLAS, {
@@ -830,7 +805,6 @@ function cinta(cx) {
     BRAZO: [-(Ri + CO.r) / 2, 0, levels[2] + hv], COLLAR: G.pointOf(F0, levels[2] - 8, CO.r, az - 0.9),
     PARED: [Rt * Math.cos(-1.05), Rt * Math.sin(-1.05), 700],
   });
-  void zA; void zB;
 }
 
 /* ====================================================================

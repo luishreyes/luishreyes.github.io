@@ -55,7 +55,7 @@ export const RUSHTON = {
   n: 6, W: D / 5, L: D / 4, disc: { r: 0.375 * D, t: 8 }, t: 8,
   hub: { r: 45, h: 76 },
   clip: { t: 6, r0: 122, r1: 162, h: 30 },
-  bolts: [132, 152], bolt: { r: 7.5, h: 5.5, nut: 6.5, tail: 5, tr: 4 },
+  bolts: [132, 152], bolt: { r: 7.5, h: 5.5, nut: 6.5 },
   washer: { r: 30, h: 4 }, cap: { r: 13.9, h: 10 },
   phase: 10,
 };
@@ -68,7 +68,7 @@ export const PALETA = {
   lug: { t: 12, h: 76, r1: 142 },
   bolts: [[98, -22], [98, 22], [126, -22], [126, 22]], bolt: { r: 9.2, h: 7, nut: 8, tail: 6, tr: 5 },
   washer: { r: 32, h: 5 }, cap: { r: 13.9, h: 10 },
-  phase: 28,
+  phase: -13,
 };
 
 // el tanque de las dos de pared (medida del libro): T = 1200 mm, pared de 8 mm, fondo elíptico 2:1 como el del caso

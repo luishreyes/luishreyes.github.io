@@ -43,7 +43,7 @@ function contorno(svg) {
   }
   return { absol, minX: Math.min(...absol.map((p) => p[0])), maxX: Math.max(...absol.map((p) => p[0])), minY: Math.min(...absol.map((p) => p[1])), maxY: Math.max(...absol.map((p) => p[1])) };
 }
-const cuerpoDe = (svg) => svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/<style>[^<]*<\/style>/, '').replace(/<defs><\/defs>/, '');
+const cuerpoDe = (svg) => svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/<style>[^<]*<\/style>/, '').replace(/<defs><\/defs>/, '').replace(/<g class="it" data-name="[^"]*">/g, '<g>');
 
 if (process.argv.includes('--lamina')) await lamina();
 else libro();
@@ -107,7 +107,7 @@ function libro() {
   const vw = Math.ceil(Math.max(...vistas.map((v) => v.x1)) - vx), vh = Math.ceil(Math.max(...vistas.map((v) => v.y1)) - vy);
   const ids = IMPULSORES.map(({ id }) => id);
   const css = [
-    '.imp-sel{margin:0}',
+    '.imp-sel{margin:0;position:relative}',
     '.imp-sel .imp-radio{position:absolute;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}',
     '.imp-sel .imp-botones{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}',
     '.imp-sel .imp-botones label{border:2px solid #D3D9DF;background:transparent;color:#19222F;font-size:var(--t-s,15px);font-weight:600;line-height:1.2;padding:8px 14px;min-height:44px;display:flex;align-items:center;margin:0;cursor:pointer}',
