@@ -11,8 +11,10 @@ copia para no moverse cuando cambie el curso.
         --nombre planta-operaciones --titulo "la planta de aceite esencial en siete operaciones unitarias"
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
-MEC, CAL, MAS = AMARILLO, OLIVA, NAVY
+# las familias del capítulo 1, con sus rellenos de la paleta del libro (esquemas, familias)
+MEC, CAL, MAS = familia("mecanica"), familia("calor"), familia("masa")
 FAMILIAS = [(MEC, "Mecánicas"), (CAL, "Transferencia de calor"), (MAS, "Transferencia de masa")]
 
 # nombre (una línea por renglón), condición de operación y familias, la dominante primero

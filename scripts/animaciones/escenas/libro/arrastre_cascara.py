@@ -11,6 +11,7 @@ Fr = N²D/g = 0,036 (D/T)^-3,65 ((ρ − ρs)/ρ)^0,42. Los números son los de 
         --tema uniandes --fondo nieve --destino {libro}/figuras/agitacion
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 G = 9.81
 RHO, RHO_S, NP, T = 968.6, 950.0, 1.27, 2.5
@@ -80,7 +81,7 @@ class ArrastreCascara(Scene):
         n2 = leyenda("Con D/T mayor, la curva se empina (D⁵), pero la velocidad que pide Joosten",
                      "baja mucho más: la cáscara se hunde con menos vueltas y menos potencia.")
         r_j.add_updater(lambda m: m.next_to(ax.c2p(joosten_rpm(dt.get_value()), 7.7), LEFT, 0.12))
-        traza = TracedPath(p_j.get_center, stroke_color=AMARILLO, stroke_width=5, dissipating_time=None)
+        traza = TracedPath(p_j.get_center, stroke_color=OLIVA, stroke_width=5, dissipating_time=None)   # el amarillo no va de trazo
         lectura = always_redraw(lambda: VGroup(
             texto(f"D/T = {num(dt.get_value(), 2)}, D = {num(dt.get_value() * T, 2)} m", TAM_NOTA, TINTA_2),
             texto(f"{num(joosten_rpm(dt.get_value()), 0)} r/min, {num(potencia_kw(joosten_rpm(dt.get_value()), dt.get_value()), 2)} kW",

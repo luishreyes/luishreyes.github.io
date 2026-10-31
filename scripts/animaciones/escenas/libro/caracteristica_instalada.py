@@ -17,6 +17,7 @@ herramientas/control-linea-agua.py del libro.
         --tema uniandes --fondo nieve --destino {libro}/figuras/valvulas-tuberias-y-medicion-de-flujo
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 R = 30.0
 

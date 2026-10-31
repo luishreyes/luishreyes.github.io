@@ -16,6 +16,7 @@ queda a la izquierda, entre 0 y 6 %.
         --tema uniandes --fondo nieve --destino {libro}/figuras/ventiladores-compresores-y-vacio
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 # ── El caso ─────────────────────────────────────────────────────────────
 P1, P2 = 73.7, 773.7                     # kPa absolutos

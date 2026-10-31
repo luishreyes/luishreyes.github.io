@@ -28,10 +28,11 @@ unos milímetros). La tela, el lodo y las gotas también son esquemas.
 import math
 
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
-LODO, LODO_P = "#E6D9BC", "#A89464"                  # la suspensión y sus partículas
-TORTA, TORTA_P = "#CDBB92", "#7E6942"                # la torta y sus partículas
-FILTRADO, GOTA = "#E4EEF7", "#8FB0CF"                # el filtrado y las gotas
+LODO, LODO_P = mat("suspension"), mat("solido", "oscuro")           # la suspensión y sus partículas
+TORTA, TORTA_P = mat("suspension", "medio"), mat("solido", "oscuro")  # la torta, la capa honda, y sus partículas
+FILTRADO, GOTA = mat("agua"), mat("agua", "oscuro")                 # el filtrado y las gotas
 
 # ── el ensayo V de Ruth (McCabe, tabla 29.1) ────────────────────────────
 PSI = 6894.757

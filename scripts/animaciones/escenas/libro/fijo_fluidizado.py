@@ -13,12 +13,13 @@ la masa constante (ec. 11-15). Son las mismas cuentas de herramientas/filtro-are
         --tema uniandes --fondo nieve --destino {libro}/figuras/particulas-en-un-fluido
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 G = 9.80665
 RHO, MU = 997.05, 0.890e-3
 RHO_P, D, EPS0, L0, KV, KI = 2650.0, 0.5e-3, 0.42, 0.30, 112.0, 2.25
-ARENA, ARENA_P = "#E6DAB8", "#A89464"
-AGUA = "#E4EEF7"
+ARENA, ARENA_P = mat("solido"), mat("solido", "oscuro")    # la arena y sus granos
+AGUA = mat("agua")
 
 
 def hl_fijo(u):

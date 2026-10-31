@@ -11,6 +11,7 @@ razón √2, de 2,00 a 0,063 mm. El libro tiene su propia escena, con su notaci�
         --titulo "cómo se ajusta el modelo de Rosin-Rammler a un tamizado"
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 # Abertura del tamiz (mm) y porcentaje acumulado que la pasa
 D = np.array([2.00, 1.40, 1.00, 0.710, 0.500, 0.355, 0.250, 0.180, 0.125, 0.090, 0.063])

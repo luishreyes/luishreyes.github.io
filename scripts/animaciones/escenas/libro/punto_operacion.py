@@ -10,6 +10,7 @@ H = 40 − 0,0025·Q² y sistema H = 10 + 0,0015·Q², con Q en m³/h y H en m.
         --tema uniandes --fondo nieve --destino {libro}/figuras/bombas --nombre punto-operacion
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 H0, A = 40.0, 0.0025        # bomba a velocidad nominal: H = H0·(n/n0)² − A·Q²
 DZ, K0 = 10.0, 0.0015       # sistema con la válvula abierta: H = Δz + k·Q²

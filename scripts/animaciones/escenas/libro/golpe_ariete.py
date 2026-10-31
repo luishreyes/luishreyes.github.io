@@ -16,6 +16,7 @@ que en la realidad, para que se vea.
         --tema uniandes --fondo nieve --destino {libro}/figuras/flujo-de-fluidos-en-tuberias
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 # ── El caso ─────────────────────────────────────────────────────────────
 L_M, A_ONDA, V0, DH = 24.0, 1398.0, 2.25, 321.0
@@ -24,7 +25,8 @@ T_CRUCE = L_M / A_ONDA * 1000              # ms que tarda la onda en cruzar el t
 # ── El dibujo ───────────────────────────────────────────────────────────
 X0, X1, YP = -4.7, 4.1, -1.75              # el tubo, del tanque a la válvula
 RAD = {0: 0.24, 1: 0.33, -1: 0.17}         # medio alto del tubo según la presión (exagerado)
-RELLENO = {0: REJILLA, 1: NAVY, -1: AMARILLO}
+AGUA = mat("agua")                         # el agua del tanque y la del tubo a la presión inicial
+RELLENO = {0: AGUA, 1: NAVY, -1: AMARILLO}
 YB, AMP = 0.3, 1.1                         # la franja de presión: línea inicial y escalón
 XV = X1 + 0.28                             # la válvula
 
@@ -71,7 +73,7 @@ class GolpeAriete(Scene):
 
         # tanque y válvula, fijos
         tanque = VGroup(
-            Rectangle(width=1.5, height=2.0, stroke_width=0, fill_color=REJILLA, fill_opacity=1)
+            Rectangle(width=1.5, height=2.0, stroke_width=0, fill_color=AGUA, fill_opacity=1)
             .move_to([X0 - 0.75, YP + 0.45, 0]),
             VMobject(stroke_color=TINTA, stroke_width=4).set_points_as_corners(
                 [[X0 - 1.5, YP + 1.75, 0], [X0 - 1.5, YP - 0.55, 0], [X0, YP - 0.55, 0], [X0, YP + 1.75, 0]]),

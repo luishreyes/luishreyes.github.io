@@ -11,6 +11,7 @@ del capítulo, paso a paso.
         --titulo "la matriz dimensional de la gota, llevada a la identidad hasta leer Re y Ar"
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 COLS = [r"\rho", "d", r"\mu", "u", r"g\Delta\rho"]
 FILAS = ["M", "L", "T"]

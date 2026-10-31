@@ -14,6 +14,7 @@ KMS en laminar).
         --tema uniandes --fondo nieve --destino {libro}/figuras/mezclado
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 KIL = 0.87          # Paul, tabla 7-5: KMS en laminar
 L_EL = 1.5          # largo de un elemento, en diámetros del tubo
@@ -22,9 +23,9 @@ D_MM = 50           # tubo del ejemplo 7-8.4.2 de Paul, solo para poner el espes
 CV = 0.5            # mitad ácido, mitad agua
 COV0 = ((1 - CV) / CV) ** 0.5   # Paul, ec. 7-6: 1
 
-# El ácido va en el color cálido de estilo.py y el agua en el gris azulado claro del tema (el capítulo los pinta en
-# óxido y azul claro, que estilo.py no tiene); la mezcla es el promedio de los dos.
-ACIDO, AGUA = AMBAR, REJILLA
+# El ácido y el agua van con sus materiales de la paleta del libro, los dos en el tono medio: las estrías son capas
+# delgadas, y con el relleno el agua casi no se distingue del blanco. La mezcla es el promedio de los dos.
+ACIDO, AGUA = mat("acido", "medio"), mat("agua", "medio")
 MEZCLA = interpolate_color(ManimColor(ACIDO), ManimColor(AGUA), 0.5)
 
 S = 3.0                      # lado del corte de la corriente

@@ -19,9 +19,10 @@ franjas oscuras son capas de polvo teñido; cada franja la limitan dos
 líneas de material que el modelo arrastra punto por punto.
 
     uv run publicar.py escenas/libro/flujo_masico_embudo.py FlujoMasicoEmbudo \
-        --tema uniandes --fondo nieve --destino {libro}/figuras/almacenamiento-transporte-y-mezclado
+        --tema uniandes --fondo nieve --destino {libro}/figuras/premezcla
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 # ── El silo del caso (m) ───────────────────────────────────────────────
 R, r = 1.5, 0.15                          # radio del cilindro y de la salida
@@ -127,6 +128,7 @@ def sale(tipo, k):
 
 
 # ── El dibujo ───────────────────────────────────────────────────────────
+POLVO, POLVO_BORDE, TENIDO = mat("solido"), mat("solido", "medio"), mat("solido", "oscuro")  # el carbonato y el teñido
 ESC = 0.6                                 # unidades de Manim por metro
 Y_SALIDA = 2.0 - YS * ESC                 # la salida, con la superficie en 2,0
 
@@ -137,13 +139,13 @@ class Silo:
         self.p = lambda x, y: np.array([cx + ESC * x, Y_SALIDA + ESC * y, 0.0])
         alto = YS + 0.25
         contorno = [self.p(-R, alto), self.p(-R, YT), self.p(-r, 0), self.p(r, 0), self.p(R, YT), self.p(R, alto)]
-        self.lleno = Polygon(*contorno[:5], self.p(R, alto), stroke_width=0, fill_color=REJILLA, fill_opacity=1)
+        self.lleno = Polygon(*contorno[:5], self.p(R, alto), stroke_width=0, fill_color=POLVO, fill_opacity=1)
         self.vacio = VMobject(stroke_width=0, fill_color=FONDO, fill_opacity=1)
-        self.borde = VMobject(stroke_color=TINTA_3, stroke_width=2.5)        # la superficie libre
-        self.franjas = VGroup(*[VMobject(stroke_width=0, fill_color=TEAL, fill_opacity=1)
+        self.borde = VMobject(stroke_color=POLVO_BORDE, stroke_width=2.5)    # la superficie libre
+        self.franjas = VGroup(*[VMobject(stroke_width=0, fill_color=TENIDO, fill_opacity=1)
                                 for _ in range((len(ESTADOS[tipo][0]) - 1) // 2)])
         self.pared = VMobject(stroke_color=TINTA, stroke_width=5).set_points_as_corners(contorno)
-        self.chorro = Rectangle(width=2 * r * ESC, height=0.4, stroke_width=0, fill_color=REJILLA, fill_opacity=1)
+        self.chorro = Rectangle(width=2 * r * ESC, height=0.4, stroke_width=0, fill_color=POLVO, fill_opacity=1)
         self.chorro.next_to(self.p(0, 0), DOWN, buff=0)
         self.chorro.set_opacity(0)
         self.grupo = VGroup(self.lleno, self.vacio, self.franjas, self.borde, self.chorro, self.pared)

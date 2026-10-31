@@ -13,6 +13,7 @@ va en el gris de los ejes para no confundirlos.
         --tema uniandes --fondo nieve --destino {libro}/figuras/bombas
 """
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
 H0, A = 40.0, 0.0025        # centrífuga: H = H0 − A·Q²
 Q_TEO, DESLIZ = 60.0, 0.15  # desplazamiento positivo: Q = Q_TEO − DESLIZ·H

@@ -15,9 +15,10 @@ fondo a w = −dJ/dC, y después del quiebre t = H0·C0/[C·(v + w)] y h = w·t 
 import math
 
 from estilo import *
+from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
 
-LODO, LODO_OSC = "#E6D9BC", "#6B5333"           # el lodo de 5 g/L y el de 25 g/L
-AGUA = "#E4EEF7"
+LODO, LODO_OSC = mat("suspension"), mat("suspension", "oscuro")   # el lodo de 5 g/L y el de 25 g/L
+AGUA = mat("agua")
 
 # ── herramientas/decantadores.py (copia exacta) ─────────────────────────
 # MWH tabla 10-1 (de Tchobanoglous et al., 2003): velocidad inicial de la interfaz contra la concentración
