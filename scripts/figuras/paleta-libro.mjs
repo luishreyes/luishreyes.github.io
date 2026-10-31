@@ -8,7 +8,7 @@
 //
 //   import { aplicarPaleta, cssAnatomia, cssMolienda } from '../paleta-libro.mjs';   // en cada libro.mjs
 //
-//   node paleta-libro.mjs                 vuelve a pintar las 19 vistas del libro y los dos CSS, sin rehacer los
+//   node paleta-libro.mjs                 vuelve a pintar las 20 vistas del libro y los dos CSS, sin rehacer los
 //                                         dibujos (los rótulos y la geometría quedan como están)
 //   node paleta-libro.mjs --revisar       solo dice qué colores de las vistas no están en paleta.json
 //   node paleta-libro.mjs --libro RUTA    si el libro está en otra parte (también LIBRO_OU=RUTA)
@@ -135,6 +135,14 @@ export const CLASES = {
   ...corte('mz'), 'mz-cut-w': 'fundicion/corte', 'mz-cut-gk': 'caucho/corte', 'mz-ss': 'acero', 'mz-weld': 'fundicion',
   'mz-trim': 'acero', 'mz-sub': 'agua', 'mz-el': 'acero', 'mz-gasket': 'caucho', 'mz-lance': 'acero', 'mz-lance-sub': 'agua',
   'mz-bore': { fill: 'hueco.claro' }, 'mz-bore-dark': { fill: 'hueco.oscuro' }, 'mz-flujo': { stroke: 'azul' }, 'mz-flecha': { fill: 'azul' },
+  // homogeneizador (capítulo 15): el bloque y el cabezal de acero, sus piezas un paso más claras en el corte, el anillo
+  // de impacto de metal duro (fundición), la leche que moja los conductos (agua) y el aceite de los actuadores
+  'hm-cut': 'acero/corte', 'hm-cut1': 'acero/corte1', 'hm-cut-c': 'fundicion/corte', 'hm-cut-p': 'pintado/corte',
+  'hm-cut-gk': 'caucho/corte', 'hm-ss': 'acero', 'hm-trim': 'acero', 'hm-plunger': 'acero', 'hm-rod': 'pintado',
+  'hm-hard': 'fundicion', 'hm-cast': 'fundicion', 'hm-paint': 'pintado', 'hm-rubber': 'caucho', 'hm-sub': 'agua',
+  'hm-oil': 'aceite', 'hm-spring': 'acero', 'hm-pipe': 'acero', 'hm-oil-liq': { fill: 'aceite.sombras.0', 'fill-opacity': 0.55 },
+  'hm-flujo': { stroke: 'azul' }, 'hm-flecha': { fill: 'azul' }, 'hm-det-fondo': { fill: 'blanco' },
+  'hm-det-marco': { stroke: 'tinta-2' }, 'hm-det-marca': { stroke: 'tinta-2' }, 'hm-det-linea': { stroke: 'tinta-2' },
   // válvula de control (capítulo 13)
   '.vc-cut,.vc-cut-tr,.vc-cut-gk,.vc-cut-pk,.vc-cut-rb': 'acero/corte', 'vc-cut-tr': 'acero/corte1', 'vc-cut-gk': 'caucho/corte',
   'vc-cut-pk': 'caucho/corte', 'vc-cut-rb': 'caucho/corte', 'vc-trim': 'acero', 'vc-paint': 'pintado', 'vc-pack': 'caucho',
@@ -209,6 +217,7 @@ export const VISTAS = {
       '--fp-slurry': 'suspension.relleno', '--fp-slurry-edge': 'suspension.medio' },
   },
   'los-diagramas-de-ingenieria/_planta-iso': { piezas: PIEZAS.planta },
+  'mezclado/_homogeneizador': {},
   'mezclado/_mezclador-estatico': {
     // build.mjs mezcla el color del ácido con el del agua a lo largo del chorro (grads: mzJ de 0 a 0,12 y mzS de
     // 0,14 a 0,92); aquí cada degradado va del ácido puro al agua, con sus extremos donde la mezcla vale 0 y 1. El
