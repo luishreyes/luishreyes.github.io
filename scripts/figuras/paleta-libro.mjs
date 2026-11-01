@@ -198,6 +198,22 @@ export const CLASES = {
   'pt-oil-rip': { stroke: 'aceite.oscuro' }, 'pt-flujo': { stroke: 'solido.oscuro' }, 'pt-flecha': { fill: 'solido.oscuro' },
   'pt-flujo-a': { stroke: 'aceite.oscuro' }, 'pt-flecha-a': { fill: 'aceite.oscuro' }, 'pt-det-fondo': { fill: 'blanco' },
   'pt-det-marco': { stroke: 'tinta-2' }, 'pt-det-marca': { stroke: 'tinta-2' }, 'pt-det-linea': { stroke: 'tinta-2' },
+  // separadora de discos (capítulo 19): el tazón, los discos y lo fijo de arriba de acero, el bastidor de fundición, el
+  // motor pintado, la rueda de bronce (cobre) y el sello y los cojines de caucho; el liviano en los tonos del aceite y el
+  // pesado y el agua de maniobra en los del agua, casi opacos (la parte de atrás de la pila queda tapada, como en un corte
+  // en 2D); la mezcla en el tono claro del aceite con pintas de agua; el sólido en los tonos del sólido
+  'sd-cut': 'acero/corte', 'sd-cut1': 'acero/corte1', 'sd-cut-c': 'fundicion/corte', 'sd-cut-r': 'caucho/corte',
+  'sd-ss': 'acero', 'sd-pipe': 'acero', 'sd-cast': 'fundicion', 'sd-paint': 'pintado', 'sd-rubber': 'caucho', 'sd-bronze': 'cobre',
+  'sd-bore': { fill: 'hueco.oscuro' },
+  'sd-oil': { fill: 'aceite.sombras.0', 'fill-opacity': 0.85 }, 'sd-water': { fill: 'agua.sombras.0', 'fill-opacity': 0.85 },
+  'sd-opw': { fill: 'agua.sombras.0', 'fill-opacity': 0.85 }, 'sd-mix': { fill: 'aceite.cara', 'fill-opacity': 0.9 },
+  'sd-speck': { fill: 'agua.oscuro' }, 'sd-sed': { fill: 'solido.sombras.2' }, 'sd-grain': { fill: 'solido.oscuro' },
+  'sd-sed-line': { stroke: 'solido.oscuro' },
+  'sd-flujo-a': { stroke: 'aceite.oscuro' }, 'sd-flecha-a': { fill: 'aceite.oscuro' }, 'sd-flujo-w': { stroke: 'azul' }, 'sd-flecha-w': { fill: 'azul' },
+  'sd-flujo-m': { stroke: 'tinta-2' }, 'sd-flecha-m': { fill: 'tinta-2' }, 'sd-flujo-s': { stroke: 'solido.oscuro' }, 'sd-flecha-s': { fill: 'solido.oscuro' },
+  'sd-film-w': { fill: 'agua.oscuro' }, 'sd-film-w-line': { stroke: 'azul' }, 'sd-film-o': { fill: 'aceite.sombras.0' }, 'sd-film-o-line': { stroke: 'aceite.oscuro' },
+  'sd-drop-w': { fill: 'agua.oscuro', stroke: 'azul' }, 'sd-drop-o': { fill: 'aceite.cara', stroke: 'aceite.oscuro' }, 'sd-drop-s': { fill: 'solido.oscuro' },
+  'sd-det-fondo': { fill: 'blanco' }, 'sd-det-marco': { stroke: 'tinta-2' }, 'sd-det-marca': { stroke: 'tinta-2' }, 'sd-det-linea': { stroke: 'tinta-2' },
   // separador V-102 (edición inglesa, capítulo 2)
   'sv-cav': 'acero/fondo', 'sv-cutface': 'acero/corte', 'sv-mesh': 'acero', 'sv-concrete': 'concreto',
   'sv-tick': { stroke: 'guia' }, 'sv-needle': { stroke: 'tinta' }, 'sv-hub': { fill: 'tinta' },
@@ -272,6 +288,7 @@ export const VISTAS = {
   'reduccion-de-tamano/_molino-mart': { capa: true },
   'reduccion-de-tamano/_molino-rod': { capa: true },
   'sedimentacion-y-decantacion/_clarificador-placas': {},
+  'separacion-centrifuga/_separadora': {},
   'sedimentacion-y-decantacion/_florentino': {},
   'tamizado-y-analisis-granulometrico/_tamizadora': { granos: { 'tz-grain': RAMPA_GRANO } },
   'valvulas-tuberias-y-medicion-de-flujo/_tanque-llegada': {},
