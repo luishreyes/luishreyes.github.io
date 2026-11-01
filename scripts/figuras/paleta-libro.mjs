@@ -155,6 +155,17 @@ export const CLASES = {
   'cg-pea-h': { fill: 'blanco' }, 'cg-burb': { fill: 'blanco', stroke: 'solido.sombras.1' },
   'cg-flujo': { stroke: 'azul' }, 'cg-flecha': { fill: 'azul' }, 'cg-det-fondo': { fill: 'blanco' },
   'cg-det-marco': { stroke: 'tinta-2' }, 'cg-det-marca': { stroke: 'tinta-2' }, 'cg-det-linea': { stroke: 'tinta-2' },
+  // clarificador de placas (capítulo 17): tanque de concreto, placas y canaleta de acero inoxidable, barredor de
+  // fundición con paletas pintadas y zapatas de caucho; el lodo y el flóculo en los tonos del sólido, el agua más clara
+  // que en los demás cortes (es un tanque hondo y se mira a través de ella) y el detalle casi opaco, como un corte en 2D
+  'cp-cut': 'acero/corte', 'cp-cut1': 'acero/corte1', 'cp-cut-c': 'concreto/corte', 'cp-conc': 'concreto', 'cp-ss': 'acero',
+  'cp-pipe': 'acero', 'cp-paint': 'pintado', 'cp-frp': 'pintado', 'cp-cast': 'fundicion', 'cp-chain': 'fundicion',
+  'cp-rubber': 'caucho', 'cp-lodo': 'solido', 'cp-lodo-c': 'solido/corte', 'cp-bore': { fill: 'hueco.oscuro' },
+  'cp-agua-cara': { fill: 'agua.sombras.0', 'fill-opacity': 0.3 }, 'cp-agua-sup': { fill: 'agua.sombras.0', 'fill-opacity': LIQ_SUP },
+  'cp-agua-det': { fill: 'agua.sombras.0', 'fill-opacity': 0.8 }, '.cp-agua .iso-line[data-tone="lo"]': { stroke: 'agua.oscuro' },
+  'cp-lodo-pel': { fill: 'solido.sombras.0' }, 'cp-floc': { fill: 'solido.oscuro' },
+  'cp-flujo': { stroke: 'azul' }, 'cp-flecha': { fill: 'azul' }, 'cp-flujo-l': { stroke: 'solido.oscuro' }, 'cp-flecha-l': { fill: 'solido.oscuro' },
+  'cp-det-fondo': { fill: 'blanco' }, 'cp-det-marco': { stroke: 'tinta-2' }, 'cp-det-marca': { stroke: 'tinta-2' }, 'cp-det-linea': { stroke: 'tinta-2' },
   // válvula de control (capítulo 13)
   '.vc-cut,.vc-cut-tr,.vc-cut-gk,.vc-cut-pk,.vc-cut-rb': 'acero/corte', 'vc-cut-tr': 'acero/corte1', 'vc-cut-gk': 'caucho/corte',
   'vc-cut-pk': 'caucho/corte', 'vc-cut-rb': 'caucho/corte', 'vc-trim': 'acero', 'vc-paint': 'pintado', 'vc-pack': 'caucho',
@@ -244,6 +255,7 @@ export const VISTAS = {
   'reduccion-de-tamano/_molino-mand': { capa: true },
   'reduccion-de-tamano/_molino-mart': { capa: true },
   'reduccion-de-tamano/_molino-rod': { capa: true },
+  'sedimentacion-y-decantacion/_clarificador-placas': {},
   'sedimentacion-y-decantacion/_florentino': {},
   'tamizado-y-analisis-granulometrico/_tamizadora': { granos: { 'tz-grain': RAMPA_GRANO } },
   'valvulas-tuberias-y-medicion-de-flujo/_tanque-llegada': {},
