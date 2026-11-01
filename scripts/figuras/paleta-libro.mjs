@@ -183,6 +183,21 @@ export const CLASES = {
   '.fp-cake .iso-line': { stroke: 'solido.oscuro' }, '.fp-slurry .iso-fill,.fp-slurry .iso-shade': { fill: 'suspension.relleno' },
   '.fp-wash .iso-fill,.fp-wash .iso-shade': { fill: 'agua.sombras.0' }, 'fp-flow': { stroke: 'azul' }, 'fp-feed': { stroke: 'suspension.medio' },
   'fp-level': { stroke: 'azul' }, '.fp-over .fp-cake .iso-line': { stroke: 'alerta' }, 'fp-setpoint': { stroke: 'alerta' },
+  // prensa de tornillo (capítulo 18): la jaula, el tornillo y la capota de acero; la caja de la entrada, los bastidores,
+  // el anillo y el reductor de fundición; las hojuelas y la torta en los tonos del sólido (sueltas, con huecos, a la
+  // entrada; cada vez más oscuras hacia la salida); el aceite en los del aceite; la tuerca del husillo, de bronce
+  'pt-cut': 'acero/corte', 'pt-cut-c': 'fundicion/corte', 'pt-ss': 'acero', 'pt-bar': 'acero', 'pt-pipe': 'acero',
+  'pt-cast': 'fundicion', 'pt-paint': 'pintado', 'pt-bronze': 'cobre',
+  'pt-torta': 'solido', 'pt-torta-c': 'solido/corte', 'pt-heap': 'solido', 'pt-oil-slot': 'aceite', 'pt-bore': { fill: 'hueco.oscuro' },
+  'pt-glass': { fill: 'vidrio.sombras.0' }, 'pt-void': { fill: 'hueco.medio' }, 'pt-mat2': { fill: 'solido.sombras.2' },
+  'pt-mat1': { fill: 'solido.sombras.1' }, 'pt-mat0': { fill: 'solido.sombras.0' }, 'pt-lam': { fill: 'solido.sombras.2' },
+  'pt-hoj': { fill: 'solido.cara', stroke: 'solido.oscuro' }, 'pt-hoj-s': { fill: 'solido.tapa', stroke: 'solido.sombras.0' },
+  'pt-part': { fill: 'solido.cara', stroke: 'solido.oscuro' }, 'pt-mat-edge': { stroke: 'solido.oscuro' },
+  'pt-oil': { fill: 'aceite.sombras.0' }, 'pt-oil-drop': { fill: 'aceite.sombras.0', stroke: 'aceite.oscuro' },
+  'pt-oil-cara': { fill: 'aceite.sombras.0', 'fill-opacity': 0.7 }, 'pt-oil-sup': { fill: 'aceite.sombras.0', 'fill-opacity': 0.5 },
+  'pt-oil-rip': { stroke: 'aceite.oscuro' }, 'pt-flujo': { stroke: 'solido.oscuro' }, 'pt-flecha': { fill: 'solido.oscuro' },
+  'pt-flujo-a': { stroke: 'aceite.oscuro' }, 'pt-flecha-a': { fill: 'aceite.oscuro' }, 'pt-det-fondo': { fill: 'blanco' },
+  'pt-det-marco': { stroke: 'tinta-2' }, 'pt-det-marca': { stroke: 'tinta-2' }, 'pt-det-linea': { stroke: 'tinta-2' },
   // separador V-102 (edición inglesa, capítulo 2)
   'sv-cav': 'acero/fondo', 'sv-cutface': 'acero/corte', 'sv-mesh': 'acero', 'sv-concrete': 'concreto',
   'sv-tick': { stroke: 'guia' }, 'sv-needle': { stroke: 'tinta' }, 'sv-hub': { fill: 'tinta' },
@@ -234,6 +249,7 @@ export const VISTAS = {
   'bombas/_instalacion': {},
   'bombas/_por-dentro': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
+  'filtracion/_prensa-tornillo': {},
   'filtracion/_prensa': {
     variables: { '--fp-cake': 'solido.cara', '--fp-cake-0': 'solido.sombras.0', '--fp-cake-1': 'solido.sombras.1', '--fp-cake-2': 'solido.sombras.2',
       '--fp-cake-3': 'solido.sombras.3', '--fp-cake-top': 'solido.tapa', '--fp-cake-edge': 'solido.oscuro',
