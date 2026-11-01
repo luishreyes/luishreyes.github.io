@@ -30,13 +30,39 @@ de los canales y de la gráfica y el corte de la pila.
 
     uv run publicar.py escenas/libro/gota_entre_discos.py GotaEntreDiscos \
         --tema uniandes --fondo nieve --destino {libro}/figuras/separacion-centrifuga
+
+La edición impresa en inglés lleva el último cuadro quieto, con los mismos números y punto decimal: la variable
+ANIM_IDIOMA=en cambia los textos y el separador decimal (por defecto es «es», y el video en español no cambia). Desde
+scripts/animaciones, con -s (solo el último cuadro) y el doble de resolución para el papel:
+
+    ANIM_TEMA=uniandes ANIM_FONDO=nieve ANIM_IDIOMA=en PYTHONPATH=. uv run python -m manim render \
+        escenas/libro/gota_entre_discos.py GotaEntreDiscos -s -r 3840,2160
 """
 import json
 import math
+import os
 
 import paleta_libro
 from estilo import *
 from paleta_libro import *   # los colores salen de la paleta del libro (libro/estilo/paleta.json)
+
+# El idioma de los textos: «es» (el video del libro web) o «en» (el cuadro quieto de la edición impresa en inglés)
+IDIOMA = os.environ.get("ANIM_IDIOMA", "es")
+if IDIOMA not in ("es", "en"):
+    raise ValueError(f"ANIM_IDIOMA debe ser es o en, no {IDIOMA!r}")
+EN = IDIOMA == "en"
+
+
+def tr(es, en):
+    """El texto en el idioma de la escena."""
+    return en if EN else es
+
+
+if EN:
+    def num(x, dec=1):
+        """En inglés, con punto decimal: num(38.66) → '38.7'."""
+        return f"{x:.{dec}f}"
+PCT = "%" if EN else " %"                          # 50 % en español, 50% en inglés
 
 ACEITE = mat("aceite")
 GOTA, PELICULA = mat("agua", "oscuro"), mat("agua", "medio")
@@ -186,7 +212,7 @@ class GotaEntreDiscos(Scene):
     def construct(self):
         tt = ValueTracker(0.0)                         # tiempo real en el canal, s
 
-        titulo = rotulo("El canal entre dos discos").to_corner(UL, buff=0.35)
+        titulo = rotulo(tr("El canal entre dos discos", "The channel between two discs")).to_corner(UL, buff=0.35)
 
         def leyenda(*lineas):
             g = VGroup(*[l if isinstance(l, Mobject) else marcado(l) for l in lineas])
@@ -202,7 +228,7 @@ class GotaEntreDiscos(Scene):
                                  fill_color=DISCO, fill_opacity=1)
                        .move_to([(X0 + X1) / 2, arriba - DT / 2, 0]))
         discos.set_z_index(4)
-        r_disco = texto("disco", TAM_NOTA, TINTA_2).next_to(discos[0], LEFT, 0.15)
+        r_disco = texto(tr("disco", "disc"), TAM_NOTA, TINTA_2).next_to(discos[0], LEFT, 0.15)
 
         # el eje de los radios, abajo
         y_eje = PISO[2] - DT - 0.16
@@ -211,8 +237,8 @@ class GotaEntreDiscos(Scene):
             x = xr(r_mm / 1000)
             eje_r.add(Line([x, y_eje, 0], [x, y_eje - 0.08, 0], color=TINTA_2, stroke_width=3))
             eje_r.add(texto(str(r_mm), TAM_NOTA, TINTA_2).next_to([x, y_eje - 0.08, 0], DOWN, 0.1))
-        eje_r.add(texto("radio (mm)", TAM_NOTA, TINTA_2).next_to(eje_r, DOWN, 0.08).align_to([X0 - 0.15, 0, 0], LEFT))
-        eje_r.add(texto(f"espesor exagerado {EXAGERA} veces", TAM_NOTA, TINTA_2)
+        eje_r.add(texto(tr("radio (mm)", "radius (mm)"), TAM_NOTA, TINTA_2).next_to(eje_r, DOWN, 0.08).align_to([X0 - 0.15, 0, 0], LEFT))
+        eje_r.add(texto(tr(f"espesor exagerado {EXAGERA} veces", f"thickness exaggerated {EXAGERA} times"), TAM_NOTA, TINTA_2)
                   .match_y(eje_r[-1]).align_to([X1 + 0.15, 0, 0], RIGHT))
 
         # el espesor, a la derecha del canal de arriba
@@ -235,19 +261,25 @@ class GotaEntreDiscos(Scene):
                 perfil.add(Line([x, yc(j, 0.08), 0], [x, yc(j, 0.92), 0], color=FLUJO, stroke_width=2))
                 perfil.add(DashedLine([x + largo, yc(j, 0.08), 0], [x + largo, yc(j, 0.92), 0], color=FLUJO,
                                       stroke_width=2, dash_length=0.06))
-        r_aceite = texto("aceite", TAM_NOTA, FLUJO).move_to([xr(0.046), yc(1, 0.5), 0])
+        r_aceite = texto(tr("aceite", "oil"), TAM_NOTA, FLUJO).move_to([xr(0.046), yc(1, 0.5), 0])
 
         corte_pila = corte_de_la_pila()
 
         # 1 · el canal y el aceite
         self.next_section("canal")
-        nota = leyenda(
+        nota = leyenda(*tr((
             f"Purificadora del caso: {N} discos de {num(2 * RE * 1000, 0)} mm a 10 000 r/min, "
             f"a {PURIF['alfa_h']:.0f}° y separados {num(ESP * 1000, 1)} mm.",
             f"El aceite, {num(Q * 3.6e6, 1)} L/h en {CANALES} canales, corre hacia el eje en flujo pistón, "
             "como supone Σ:",
             f"{num(v_aceite(RE) * 1000, 1)} mm/s al entrar y {num(v_aceite(RI) * 1000, 1)} mm/s al salir, "
-            f"porque el paso se angosta. Tarda {num(T_CANAL, 1)} s.")
+            f"porque el paso se angosta. Tarda {num(T_CANAL, 1)} s."), (
+            f"The case purifier: {N} discs of {num(2 * RE * 1000, 0)} mm at 10 000 r/min, "
+            f"at {PURIF['alfa_h']:.0f}° and {num(ESP * 1000, 1)} mm apart.",
+            f"The oil, {num(Q * 3.6e6, 1)} L/h in {CANALES} channels, flows toward the axis in plug flow, "
+            "as Σ assumes:",
+            f"{num(v_aceite(RE) * 1000, 1)} mm/s at the inlet and {num(v_aceite(RI) * 1000, 1)} mm/s at the outlet, "
+            f"because the passage narrows. It takes {num(T_CANAL, 1)} s.")))
         self.add(titulo, nota)
         self.play(FadeIn(aceite), Create(discos), FadeIn(r_disco), run_time=1.2)
         self.play(FadeIn(eje_r), FadeIn(cota), FadeIn(corte_pila), run_time=0.8)
@@ -258,12 +290,16 @@ class GotaEntreDiscos(Scene):
 
         # 2 · tres tamaños de gota
         self.next_section("gotas")
-        t2 = rotulo("Tres tamaños de gota").move_to(titulo, aligned_edge=LEFT)
-        n2 = leyenda(
+        t2 = rotulo(tr("Tres tamaños de gota", "Three drop sizes")).move_to(titulo, aligned_edge=LEFT)
+        n2 = leyenda(*tr((
             f"Cada gota se aleja del eje, con {num(W ** 2 * RE / G, 0)} g en la entrada, y cruza hacia el disco de arriba.",
             f"Si lo toca antes de {num(RI * 1000, 0)} mm, se queda y resbala hacia afuera; si no, sale con el aceite.",
             f"Arriba, 2 µm, la gota más chica del agua libre; en el medio, la del 50 %; abajo, "
-            f"{num(GOTAS[2] * 1e6, 2)} µm.")
+            f"{num(GOTAS[2] * 1e6, 2)} µm."), (
+            f"Each drop moves away from the axis, with {num(W ** 2 * RE / G, 0)} g at the inlet, toward the disc above.",
+            f"If it touches that disc before {num(RI * 1000, 0)} mm, it stays and slides outward; if not, it leaves with the oil.",
+            f"Top, 2 µm, the smallest drop of the free water; middle, the 50% drop; bottom, "
+            f"{num(GOTAS[2] * 1e6, 2)} µm.")))
         tamanos = VGroup(*[texto(f"{num(d * 1e6, 2 if d < 1e-6 else 0)} µm", TAM_TEXTO, TINTA, peso=SEMIBOLD)
                            .next_to([X0 - 0.15, yc(j, 0.62), 0], LEFT, 0.12) for j, d in enumerate(GOTAS)])
 
@@ -308,7 +344,8 @@ class GotaEntreDiscos(Scene):
             l = (DashedLine if rayas else Line)([0, 0, 0], [0.5, 0, 0], color=c, stroke_width=4)
             return VGroup(l, texto(s, TAM_NOTA, TINTA_2).next_to(l, RIGHT, 0.15))
 
-        clave = VGroup(muestra(OLIVA, "llega al disco"), muestra(AMBAR, "sale con el aceite")) \
+        clave = VGroup(muestra(OLIVA, tr("llega al disco", "reaches the disc")),
+                       muestra(AMBAR, tr("sale con el aceite", "leaves with the oil"))) \
             .arrange(DOWN, buff=0.16, aligned_edge=LEFT).move_to([XK, 1.3, 0], aligned_edge=UL)
         reloj = always_redraw(lambda: texto(f"t = {num(min(tt.get_value(), TT_FIN), 1)} s", TAM_TEXTO, TINTA)
                               .move_to([XK, -0.05, 0], aligned_edge=UL))
@@ -325,12 +362,15 @@ class GotaEntreDiscos(Scene):
         pts_lim = [[xr(r), yc(1, 0.5 + 0.5 * avance(r)), 0] for r in np.linspace(RE, RI, 80)]
         limite = DashedVMobject(VMobject(color=TINTA, stroke_width=3).set_points_as_corners(pts_lim),
                                 num_dashes=40).set_z_index(2)
-        clave_lim = muestra(TINTA, "el límite del 50 %", rayas=True).next_to(clave, DOWN, 0.16,
+        clave_lim = muestra(TINTA, tr("el límite del 50 %", "the 50% limit"), rayas=True).next_to(clave, DOWN, 0.16,
                                                                                        aligned_edge=LEFT)
         se_queda_2, r_2 = destino(GOTAS[0], 0.0)
-        r_grande = VGroup(texto("la gota más chica del agua libre toca el disco", TAM_NOTA, TINTA_2),
-                          texto(f"en los primeros {num((RE - r_2) / math.cos(ALFA) * 1000, 1)} mm del canal, "
-                                f"en {num(t_de_r(r_2), 1)} s", TAM_NOTA, TINTA_2)) \
+        r_grande = VGroup(texto(tr("la gota más chica del agua libre toca el disco",
+                                   "the smallest free-water drop touches the disc"), TAM_NOTA, TINTA_2),
+                          texto(tr(f"en los primeros {num((RE - r_2) / math.cos(ALFA) * 1000, 1)} mm del canal, "
+                                   f"en {num(t_de_r(r_2), 1)} s",
+                                   f"in the first {num((RE - r_2) / math.cos(ALFA) * 1000, 1)} mm of the channel, "
+                                   f"in {num(t_de_r(r_2), 1)} s"), TAM_NOTA, TINTA_2)) \
             .arrange(DOWN, buff=0.08).move_to([(X0 + X1) / 2, yc(0, 0.5), 0])
         self.play(Create(limite), FadeIn(clave_lim), FadeIn(r_grande), run_time=1.2)
         self.wait(1.0)
@@ -338,16 +378,19 @@ class GotaEntreDiscos(Scene):
 
         # 3 · la fracción que se captura, Σ y la recuperación
         self.next_section("sigma")
-        t3 = rotulo("Lo que se captura y Σ").move_to(t2, aligned_edge=LEFT)
+        t3 = rotulo(tr("Lo que se captura y Σ", "What is captured, and Σ")).move_to(t2, aligned_edge=LEFT)
         f_sigma = MathTex(r"\Sigma = 2\pi\,\omega^2 (N-1)\left(r_e^3 - r_i^3\right)\tan\alpha\,/\,(3g) = ",
                           f"{SIGMA:.0f}" + r"\ \mathrm{m^2}", font_size=TAM_TEXTO, color=TINTA)
         f_sigma[1].set_color(FLUJO)
-        n3 = leyenda(
-            f_sigma,
+        n3 = leyenda(f_sigma, *tr((
             f"El canal captura u<sub>g</sub>Σ/Q de su espesor; la gota del 50 % es la de Q = 2u<sub>g</sub>Σ: "
             f"{num(D50 * 1e6, 2)} µm.",
             f"Con la eficiencia de {EF * 100:.0f} % del Perry quedan "
-            f"<span foreground='{OLIVA}'>{SIGMA_EF:.0f} m²</span> y el corte del caso, {num(D50_EF * 1e6, 2)} µm.")
+            f"<span foreground='{OLIVA}'>{SIGMA_EF:.0f} m²</span> y el corte del caso, {num(D50_EF * 1e6, 2)} µm."), (
+            f"The channel captures u<sub>g</sub>Σ/Q of its thickness; Q = 2u<sub>g</sub>Σ gives the 50% drop: "
+            f"{num(D50 * 1e6, 2)} µm.",
+            f"With Perry’s {EF * 100:.0f}% efficiency, "
+            f"<span foreground='{OLIVA}'>{SIGMA_EF:.0f} m²</span> remain, and the case cuts at {num(D50_EF * 1e6, 2)} µm.")))
 
         zonas, limites, barras, pcts = VGroup(), VGroup(), VGroup(), VGroup()
         for j, d in enumerate(GOTAS):
@@ -362,7 +405,7 @@ class GotaEntreDiscos(Scene):
                 limites.add(DashedVMobject(VMobject(color=TINTA, stroke_width=3).set_points_as_corners(curva),
                                            num_dashes=40).set_z_index(2))
             barras.add(Line([X0 - 0.07, yc(j, y_in), 0], [X0 - 0.07, TECHO[j], 0], color=OLIVA, stroke_width=7))
-            pcts.add(texto(f"{100 * min(1.0, f):.0f} %", TAM_TEXTO, OLIVA, peso=SEMIBOLD)
+            pcts.add(texto(f"{100 * min(1.0, f):.0f}{PCT}", TAM_TEXTO, OLIVA, peso=SEMIBOLD)
                      .next_to(tamanos[j], DOWN, 0.08, aligned_edge=RIGHT))
 
         grafica = grafica_recuperacion()
@@ -398,7 +441,7 @@ def corte_de_la_pila():
         g.add(Line([*p0, 0], [*p1, 0], color=DISCO_OSC, stroke_width=4))
     eje = DashedLine([XA, YB - 0.2, 0], [XA, YB + 3 * P + sube + 0.1, 0], color=TINTA_2, stroke_width=2,
                      dash_length=0.1)
-    g.add(eje, texto("eje", TAM_NOTA, TINTA_2).next_to(eje, UP, 0.06))
+    g.add(eje, texto(tr("eje", "axis"), TAM_NOTA, TINTA_2).next_to(eje, UP, 0.06))
     # el ángulo con la horizontal, en el pie del disco de abajo
     (p0, _) = lineas[0]
     g.add(DashedLine([p0[0] - 0.6, p0[1], 0], [p0[0], p0[1], 0], color=TINTA_3, stroke_width=2, dash_length=0.05))
@@ -415,7 +458,7 @@ def corte_de_la_pila():
     m1 = np.array([(a1[0] + b1[0]) / 2, (a1[1] + b1[1]) / 2, 0])
     g.add(Arrow(m0 + 0.15 * (m1 - m0), m0 + 0.85 * (m1 - m0), buff=0, color=FLUJO, stroke_width=4,
                 max_tip_length_to_length_ratio=0.2))
-    g.add(texto("el canal", TAM_NOTA, TINTA_2).next_to([xi, (a1[1] + b1[1]) / 2 - 0.25, 0], LEFT, 0.12))
+    g.add(texto(tr("el canal", "channel"), TAM_NOTA, TINTA_2).next_to([xi, (a1[1] + b1[1]) / 2 - 0.25, 0], LEFT, 0.12))
     return g
 
 
@@ -439,8 +482,8 @@ def grafica_recuperacion():
         ejes_.add(Line(q, q + LEFT * 0.07, color=TINTA_2, stroke_width=3))
         ejes_.add(texto(s, TAM_NOTA, TINTA_2).next_to(q + LEFT * 0.07, LEFT, 0.06))
     ejes_.add(DashedLine(p(0, 0.5), p(D_MAX, 0.5), color=REJILLA, stroke_width=2, dash_length=0.06))
-    ejes_.add(texto("gota (µm)", TAM_NOTA, TINTA_2).next_to(p(D_MAX / 2, 0), DOWN, 0.42))
-    ejes_.add(texto("recuperación (%)", TAM_NOTA, TINTA_2).next_to(p(0, 1.08), UP, 0.1).align_to([3.35, 0, 0], LEFT))
+    ejes_.add(texto(tr("gota (µm)", "drop (µm)"), TAM_NOTA, TINTA_2).next_to(p(D_MAX / 2, 0), DOWN, 0.42))
+    ejes_.add(texto(tr("recuperación (%)", "recovery (%)"), TAM_NOTA, TINTA_2).next_to(p(0, 1.08), UP, 0.1).align_to([3.35, 0, 0], LEFT))
 
     def curva(sigma, c):
         ds = np.linspace(0, D_MAX, 240)
