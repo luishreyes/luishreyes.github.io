@@ -58,6 +58,11 @@ FONDO = FONDOS[FONDO_NOMBRE]
 OSCURO = FONDO_NOMBRE == "oscuro"
 config.background_color = FONDO
 
+# Cuadro: 8 unidades de alto en cualquier formato. En 4:3 y 1:1 Manim conserva
+# el ancho de 16:9 y estira la altura, y la letra saldría más pequeña.
+config.frame_height = 8.0
+config.frame_width = 8.0 * config.pixel_width / config.pixel_height
+
 # ── Colores ─────────────────────────────────────────────────────────────
 AMBAR = "#E0922F"                                   # advertencia o pérdida, nunca decorativo
 if TEMA == "industry":                              # en oscuro, los de su bloque [data-theme=dark]

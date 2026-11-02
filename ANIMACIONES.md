@@ -58,6 +58,7 @@ class PuntoOperacion(Scene):
 - **Texto:** `texto()` (Barlow), `rotulo()` (título del paso, Barlow Condensed) y `formula()` / `MathTex` (LaTeX). Español con tildes. Los rótulos no se pasan a mayúsculas: las unidades cambian de sentido (m³/h no es M³/H).
 - **Números con coma decimal:** `num(38.66)` da `'38,7'`. En LaTeX la coma se escribe tal cual (`12,5`): la plantilla carga `icomma`, que no le deja espacio.
 - **Ejes:** `ejes(x_range, y_range, x_titulo=..., y_titulo=...)` pone números y títulos en Barlow y con coma.
+- **Cuadro:** `estilo.py` deja la altura en 8 unidades en cualquier formato (en 16:9 el ancho es 14,2; en 4:3, 10,7; en 1:1, 8). Primer uso de 4:3 y 1:1: `escenas/iqya-2031-2026-20/eficiencias.py`.
 - **Tamaño de la letra:** el texto más pequeño debe quedar en 24 px o más una vez puesto el video en su caja de la diapositiva (lienzo de 1920). Con `TAM_NOTA` (26) en un video de 1920 px, eso se cumple mientras el video ocupe al menos 1100 px de ancho; en una columna de un split, usar `--formato 4:3` o `1:1` y subir los tamaños.
 - **Nada de caricaturas ni imágenes de los PDF** (principio #9). Si hace falta una foto real, va en la diapositiva, no en el video.
 - **Una sola idea por video**, de 20 a 60 segundos. Lo que no cabe va en otra diapositiva.

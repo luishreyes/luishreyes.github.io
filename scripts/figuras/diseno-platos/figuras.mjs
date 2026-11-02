@@ -495,6 +495,11 @@ function altura() {
 }
 
 // ── Inserción en el HTML ──────────────────────────────────────────────────
+// Las piezas sirven también a otras presentaciones (Eficiencias en destilación).
+export { R, L, P, C, E, T, G, azar, flecha, ruta, cota, plato, serie, burbujas, espuma, gota, svg };
+
+// Solo se escribe el HTML cuando se corre este archivo, no cuando se importa.
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
 const FIG = {
   anatomia: anatomia(),
   'tipo-perf': tipoPlato('perf', 'perforado'),
@@ -526,3 +531,4 @@ for (const [k, v] of Object.entries(FIG)) {
 }
 fs.writeFileSync(HTML, html);
 console.log(`${n} figuras insertadas en ${path.basename(HTML)}`);
+}
