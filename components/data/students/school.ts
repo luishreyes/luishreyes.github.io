@@ -50,9 +50,9 @@ export const schoolFigures = {
     "destinations": [
       ["industry", 23],
       ["public", 1],
-      ["academia", 9],
+      ["academia", 8],
       ["phd", 2],
-      ["own", 3],
+      ["own", 4],
       ["school", 1]
     ]
   },
