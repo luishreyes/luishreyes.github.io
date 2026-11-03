@@ -5,7 +5,7 @@
    fondo); el fondo, la estructura, la escalera y la tubería de afuera van enteros.
    Del libro (@tbl-val-tanque): cilindro vertical de acero de 3,0 m de diámetro sobre una estructura; fondo a 9,0 m;
    nivel normal a 12,0 m; rebose a 12,4 m (aquí, la plantilla de la boca a 12,35 m: borde libre de 0,30 m hasta el
-   borde de la envolvente, el mínimo de la Resolución 0330 de 2017, art. 79); techo fijo a 12,8 m; LT‑101 de presión diferencial con la toma a 9,2 m;
+   borde de la envolvente, el mínimo de la Resolución 0330 de 2017, art. 79); techo fijo a 12,8 m; LT‑102 de presión diferencial con la toma a 9,2 m;
    respiradero de cuello de ganso de 2 in con malla; la descarga de 2½ in llega a 13 m y entrega 1 m bajo el nivel
    normal; la válvula de control de globo de 2 in va al final del tramo alto, antes del carrete y el codo de la
    bajada. El resto son medidas del libro (de la figura), típicas de un tanque así. */

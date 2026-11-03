@@ -50,7 +50,7 @@ export const ROTULOS = [
   ['TECHO', 'izq', 'Techo fijo de cono'],
   ['REBOSE', 'izq', 'Rebose'],
   ['BOCA', 'izq', 'Boca de inspección'],
-  ['LT', 'izq', 'Transmisor de nivel LT‑101'],
+  ['LT', 'izq', 'Transmisor de nivel LT‑102'],
   ['SALIDA', 'izq', 'Salida a la planta'],
   ['ESTRUCTURA', 'izq', 'Estructura'],
   ['BARANDA', 'der', 'Baranda'],
@@ -92,7 +92,7 @@ const etiqueta = 'El tanque de llegada del caso, en isométrico y en corte: un c
   'La descarga de la bomba llega por arriba, a 13 m, por un tubo de 2½ in; pasa por la válvula de control de globo, con su actuador de diafragma, por un carrete recto y por el codo de la bajada, y entra por una boquilla del techo. ' +
   'Adentro, el tubo baja hasta 1 m bajo el nivel normal y entrega el agua sumergido. ' +
   'En el techo están el respiradero de cuello de ganso de 2 in, con dos codos y la boca hacia abajo con su malla; la boca de inspección del techo, partida por el corte, con su tapa, su manija y su bisagra; el interruptor de muy alto nivel, cuya horquilla cuelga adentro entre el nivel normal y el rebose; y una baranda en el borde, junto a la escalera. ' +
-  'En la envolvente, a la izquierda: el rebose, que empieza a verter a 12,35 m, con su codo y el tubo que baja por fuera junto a una columna hasta un dado de concreto en el piso; la boca de inspección cerca del fondo, con su placa de refuerzo, su tapa empernada, dos manijas y la bisagra; y el transmisor de nivel LT‑101 en la toma de 9,2 m, con su válvula de bloqueo, una pierna de impulso corta y el lado de baja abierto al aire. ' +
+  'En la envolvente, a la izquierda: el rebose, que empieza a verter a 12,35 m, con su codo y el tubo que baja por fuera junto a una columna hasta un dado de concreto en el piso; la boca de inspección cerca del fondo, con su placa de refuerzo, su tapa empernada, dos manijas y la bisagra; y el transmisor de nivel LT‑102 en la toma de 9,2 m, con su válvula de bloqueo, una pierna de impulso corta y el lado de baja abierto al aire. ' +
   'A la derecha, la escalera con jaula sube del piso al techo. ' +
   'Abajo, del fondo salen la salida a la planta, con un tubo corto adentro que deja el sedimento en el fondo, su válvula de compuerta, el codo y el tubo que sale de la estructura, y el drenaje con su válvula.';
 const cuerpo = aplicarPaleta(svg
