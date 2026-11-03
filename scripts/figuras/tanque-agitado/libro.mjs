@@ -1,4 +1,4 @@
-// El tanque agitado con los nombres de sus piezas, para el capítulo 13 del libro de operaciones unitarias (Agitación):
+// El tanque agitado con los nombres de sus piezas, para el capítulo 14 del libro de operaciones unitarias (Agitación):
 //
 //   node build.mjs && node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro
 //
@@ -45,11 +45,12 @@ const RS = [
   ['FEED', 'izq', 'Entrada de cáscara'],
   ['WATER', 'izq', 'Entrada de agua'],
   ['TW', 'izq', 'Termopozo'],
-  ['TANQUE', 'izq', 'Tanque'],
+  ['TANQUE', 'izq', 'Tanque vidriado'],
   ['CHAQUETA', 'izq', 'Camisa'],
   ['NIVEL', 'izq', 'Nivel del líquido'],
   ['EJE', 'izq', 'Eje'],
-  ['IMPULSOR', 'izq', 'Impulsor de palas inclinadas'],
+  ['IMPULSOR2', 'izq', 'Turbina de arriba'],
+  ['IMPULSOR', 'izq', 'Turbina de abajo'],
   ['PATAS', 'izq', 'Patas'],
   ['VALVE', 'izq', 'Salida y válvula de fondo'],
   ['MOTOR', 'der', 'Motor'],
@@ -57,7 +58,7 @@ const RS = [
   ['LINTERNA', 'der', 'Linterna'],
   ['SELLO', 'der', 'Sello mecánico'],
   ['MH', 'der', 'Boca de hombre'],
-  ['DEFLECTOR', 'der', 'Bafle'],
+  ['DEFLECTOR', 'der', 'Bafle de aleta'],
   ['CHAQ_IN', 'der', 'Entrada de vapor a la camisa'],
   ['CHAQ_OUT', 'der', 'Salida de condensado'],
 ];
@@ -87,15 +88,15 @@ const trazos = lados.izq.map((r) => trazo(r, true)).join('') + lados.der.map((r)
 
 const izqAncho = Math.max(...lados.izq.map((r) => ancho(r.t))), derAncho = Math.max(...lados.der.map((r) => ancho(r.t)));
 const vx = Math.floor(xIzq - izqAncho - 10), vw = Math.ceil(xDer + derAncho + 10 - vx), vy = Math.floor(minY - 10), vh = Math.ceil(maxY + 12 - vy);
-const etiqueta = 'Tanque agitado de acero inoxidable para extraer pectina de la cáscara de cítricos, en isométrico y en corte. ' +
+const etiqueta = 'Reactor vidriado para extraer pectina de la cáscara de cítricos, en isométrico y en corte. ' +
   'El tanque, de 2,5 m de diámetro, tiene fondo y tapa elípticos y está lleno de agua con trozos de cáscara hasta 3 m sobre el fondo. ' +
   'Se le quitó la mitad que mira al lector por encima del fondo: se ven, cortadas, la pared del tanque, la camisa de calentamiento que la envuelve en la parte cilíndrica, la tapa y la boquilla del agitador. ' +
-  'Adentro, el eje baja por el centro hasta una turbina de cuatro palas inclinadas a 45 grados, de un tercio del diámetro del tanque y a un cuarto del diámetro sobre el fondo. ' +
-  'Cuatro bafles verticales de un décimo del diámetro, a 90 grados entre sí y separados un poco de la pared, rompen el giro del líquido: dos van cortados en el plano del corte, uno entero atrás y el cuarto se fue con la mitad quitada. ' +
-  'Flechas en el plano del corte muestran el patrón de flujo axial: el líquido baja por el centro empujado por la turbina, se abre por el fondo, sube junto a la pared y vuelve hacia el eje bajo la superficie. ' +
+  'Adentro, el eje baja por el centro y lleva dos turbinas vidriadas de cuatro palas inclinadas a 45 grados, de un tercio del diámetro del tanque: la de abajo a un cuarto del diámetro sobre el fondo y la de arriba un diámetro de turbina bajo la superficie. ' +
+  'Dos bafles de aleta cuelgan de boquillas de la tapa, uno a cada lado, cortados a lo largo en el plano del corte: cada uno es un tubo cerrado de punta redonda con una aleta plana hacia la pared en su parte de abajo, y rompen el giro del líquido. ' +
+  'Flechas en el plano del corte muestran el patrón de flujo axial: el líquido baja por el centro empujado por las turbinas, se abre por el fondo, sube junto a la pared y vuelve hacia el eje bajo la superficie. ' +
   'La superficie del líquido es plana y un termopozo baja desde la tapa hasta debajo del nivel. ' +
   'Arriba, sobre la boquilla del agitador, van la brida de montaje, el sello mecánico, la linterna de cuatro columnas con el acople rígido adentro, el reductor de ejes en ángulo y el motor eléctrico horizontal. ' +
-  'En la tapa están la boquilla de entrada de la cáscara, con un ramal para el agua, el termopozo y la boca de hombre con su tapa empernada. ' +
+  'En la tapa están la boquilla de entrada de la cáscara, con un ramal para el agua, el termopozo, la boca de hombre con su tapa empernada y las dos boquillas de los bafles con sus tapas ciegas. ' +
   'A la derecha, en la camisa, la entrada de vapor arriba y la salida de condensado abajo. ' +
   'El tanque se apoya en cuatro patas soldadas al fondo; en el centro del fondo sale la descarga con su válvula de bola y un tubo hacia un lado.';
 const cuerpo = aplicarPaleta(svg
