@@ -646,7 +646,7 @@ const FLD = { o: [0, 0, 0], a: ZD, u: LU, v: LTN };           // sección (radia
   ANCH.BOCA = G.pointOf(F, M.out + 40, 406, (AZ - TL.smh.th) * D2R + Math.PI / 2 + 0.6);
 }
 {
-  // el transmisor de nivel LT‑101 en la toma de 9,2 m: boquilla de 2 in, válvula de bola de bloqueo, brida ciega con
+  // el transmisor de nivel LT‑102 en la toma de 9,2 m: boquilla de 2 in, válvula de bola de bloqueo, brida ciega con
   // la toma de ½ in, la pierna de impulso corta y el transmisor de presión diferencial (lado de baja abierto al aire)
   const F = F_LT, own = "lt";
   saddle("lt.neck", F, 30.15, (t) => G.saddleStart(RO, 30.15, t), 1600, { tone: "mid" }, { owner: own, cls: "tl-ss", hosts: [A.disc(F0, 0, BIGZ, RO), A.disc(F, 0, 5000, 26.6)] });

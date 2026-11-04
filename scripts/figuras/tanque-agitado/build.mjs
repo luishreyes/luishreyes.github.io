@@ -1,12 +1,14 @@
 /* ====================================================================
    Tanque agitado en isométrico (skill anatomy), para el capítulo 13 del libro de operaciones unitarias (Agitación):
    el reactor de extracción de pectina de la cáscara de cítricos.
-   Concepto: el motor y el reductor, sobre la linterna, hacen girar el eje; la turbina de cuatro palas inclinadas
-   empuja la suspensión de cáscara hacia el fondo, que la devuelve por la pared hacia arriba; los cuatro deflectores
-   rompen el giro del líquido (sin ellos se formaría un vórtice) y la chaqueta calienta la pared.
+   Concepto: el motor y el reductor, sobre la linterna, hacen girar el eje; las dos turbinas vidriadas de cuatro palas
+   inclinadas empujan la suspensión de cáscara hacia el fondo, que la devuelve por la pared hacia arriba; los dos
+   bafles de aleta, colgados de la tapa, rompen el giro del líquido (sin ellos se formaría un vórtice) y la chaqueta
+   calienta la pared. El reactor es vidriado: por dentro, lo que queda sobre el nivel lleva el tono del vidrio.
    Corte: se quita lo que mira al lector por encima de la línea de tangencia del fondo (y > 0, z > zt). El fondo queda
    entero; la envolvente, la chaqueta, la tapa y la boquilla del agitador se ven cortadas por el plano y = 0. El
-   eje, la turbina, los deflectores de atrás, el accionamiento y las boquillas de la mitad de atrás van enteros. Lo
+   eje, las turbinas, el accionamiento y las boquillas de la mitad de atrás van enteros; los dos bafles y sus boquillas,
+   en el plano del corte, van cortados a lo largo. Lo
    que queda bajo el nivel del líquido lleva el tinte del agua (ta-sub) y la superficie es una lámina translúcida.
    Uso: node build.mjs [--audit] [--fast]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
@@ -34,7 +36,8 @@ const D2R = Math.PI / 180, PI = Math.PI, TAU = 2 * Math.PI;
 const pol = (r, deg, z = 0) => [r * Math.cos(deg * D2R), r * Math.sin(deg * D2R), z];
 
 /* ---------- posiciones de las boquillas ---------- */
-const FEED = pol(850, 210), TWL = pol(1050, 195), MH = pol(820, 280);
+// el termopozo, a 258° y no en el plano del corte, para que no quede detrás del tubo de un bafle
+const FEED = pol(850, 210), TWL = pol(1080, 258), MH = pol(820, 280);
 const JN = -20;                                         // ángulo de las boquillas de la chaqueta
 const JK = TQ.jk, RJi = RO + JK.gap, RJ = RJi + JK.t;   // chaqueta: radio interior y exterior
 const MOT = TQ.mot, GB = TQ.gb;
@@ -255,7 +258,8 @@ const zInH = GEO.zInTop(NOZ.ro), zOutH = GEO.zOutTop(NOZ.ro);
 // la envolvente y la tapa (con el agujero de la boquilla del agitador), [z, r]
 const SHELL_POLY = [[zt, R], ...ellPts(R, hd, zt2, 1, 0, aIn), [zOutH, NOZ.ro], ...ellPts(RO, hd + tw, zt2, 1, aOut, 0), [zt, RO]];
 // los agujeros de las boquillas de la tapa
-const HOLES = [[FEED, 136.5], [TWL, 30.15], [MH, 254]].map(([c, r]) => A.disc(FZ(c[0], c[1], 0), 4400, 5100, r));
+const FN = TQ.fin, FNZ = TQ.finNoz;
+const HOLES = [[FEED, 136.5], [TWL, 30.15], [MH, 254], [[FN.rc, 0], FNZ.ro], [[-FN.rc, 0], FNZ.ro]].map(([c, r]) => A.disc(FZ(c[0], c[1], 0), 4400, 5100, r));
 const CYL = A.body(F0, [[zt, R], [zt2, R], [zt2, RO], [zt, RO]], { name: "shell.cyl", owner: "shell" });
 const FONDO = A.body(F0, [[zb, 0], ...ellPts(R, hd, zt, -1, Math.PI / 2, 0), [zt, R], [zt, RO], ...ellPts(RO, hd + tw, zt, -1, 0, Math.PI / 2), [zb - tw, 0]], { name: "fondo", owner: "fondo" });
 const JACKET_POLY = [[JK.z0, RO], [JK.z0, RJ], [JK.z1, RJ], [JK.z1, RO], [JK.z1 - JK.cl, RO], [JK.z1 - JK.cl, RJi], [JK.z0 + JK.cl, RJi], [JK.z0 + JK.cl, RO]];
@@ -288,7 +292,7 @@ const mirror = (poly) => poly.map(([x, z]) => [-x, z]).reverse();
   const dry = toned((o) => {
     surface(cylP(R, zL, zt2), cylN(-1), PI, TAU, 120, 1, o);
     surface(headP(R, hd, zt2, 1, 0, aIn), headN(R, hd, 1, -1, 0, aIn), PI, TAU, 72, 14, o);
-  }, "ta-ss");
+  }, "ta-glass");
   const vs = 1.5 * PI + 0.42;
   const seams = Ln(path3(arcPts(R - 0.5, zt + 1500, PI, TAU)) + path3(arcPts(R - 0.5, zt2, PI, TAU)) + path3([[R * Math.cos(vs), R * Math.sin(vs), zt], [R * Math.cos(vs), R * Math.sin(vs), zt2]]), { tone: "faint" });
   const weld = Ln(path3(arcPts(R - 0.5, zt, PI, TAU)), { tone: "lo" });
@@ -298,7 +302,8 @@ const mirror = (poly) => poly.map(([x, z]) => [-x, z]).reverse();
   const rr = (z) => RO * Math.sqrt(Math.max(0, 1 - ((z - zt2) / (hd + tw)) ** 2)), dr = (z) => (-(RO * RO) * (z - zt2)) / ((hd + tw) ** 2 * Math.max(1e-6, rr(z)));
   const svg = toned((o) => surface(headP(RO, hd + tw, zt2, 1, 0, aOut), headN(RO, hd + tw, 1, 1, 0, aOut), PI, TAU, 90, 16, o), "ta-ss") +
     Ln(silhouette(F0, zt2, zOutH, rr, dr, PI, TAU, 120), { tone: "mid" });
-  put("shell.dome", [0, -RO * 0.6, zt2 + 400], svg, [record({ ...HEAD, name: "shell.dome", cut: [FRONT, ...HOLES, WINP] })]);
+  // sin el agujero del termopozo: su vaina llega solo a la cara de adentro de la tapa y el cuello lo tapa por fuera
+  put("shell.dome", [0, -RO * 0.6, zt2 + 400], svg, [record({ ...HEAD, name: "shell.dome", cut: [FRONT, ...HOLES.filter((_, i) => i !== 1), WINP] })]);
 }
 {
   // la franja de la derecha de la envolvente por fuera (la chaqueta la tapa en el medio)
@@ -352,54 +357,100 @@ const mirror = (poly) => poly.map(([x, z]) => [-x, z]).reverse();
    4 · las caras del corte de la envolvente, la tapa, la chaqueta y la boquilla del agitador
    ==================================================================== */
 {
-  const right = [[R, zt], [RO, zt], ...Array.from({ length: 41 }, (_, i) => { const x = RO - ((RO - NOZ.ro) * i) / 40; return [x, GEO.zOutTop(x)]; }), [NOZ.ro, zInH], ...Array.from({ length: 41 }, (_, i) => { const x = NOZ.ro + ((R - NOZ.ro) * i) / 40; return [x, GEO.zInTop(x)]; })];
-  cutStore.push({ owner: "shell", poly: right, cls: "ta-cut" }, { owner: "shell", poly: mirror(right), cls: "ta-cut" });
+  // de la pared a la boquilla del bafle y de la boquilla del bafle a la del agitador
+  const run = (x0, x1, f, n) => Array.from({ length: n + 1 }, (_, i) => { const x = x0 + ((x1 - x0) * i) / n; return [x, f(x)]; });
+  const hb = FN.rc + FNZ.ro, ha = FN.rc - FNZ.ro;
+  const outerPart = [[R, zt], [RO, zt], ...run(RO, hb, GEO.zOutTop, 24), ...run(hb, R, GEO.zInTop, 24)];
+  const innerPart = [...run(ha, NOZ.ro, GEO.zOutTop, 30), [NOZ.ro, zInH], ...run(NOZ.ro, ha, GEO.zInTop, 30)];
+  [outerPart, innerPart].forEach((right) => cutStore.push({ owner: "shell", poly: right, cls: "ta-cut" }, { owner: "shell", poly: mirror(right), cls: "ta-cut" }));
   const jr = JACKET_POLY.map(([z, r]) => [r, z]);
   cutStore.push({ owner: "jacket", poly: jr, cls: "ta-cut" }, { owner: "jacket", poly: mirror(jr), cls: "ta-cut" });
 }
 
 /* ====================================================================
-   5 · los deflectores: el de atrás entero (partido en el nivel) y los dos del plano del corte, cortados
+   5 · los dos bafles de aleta, colgados de boquillas de la tapa en el plano del corte (0° y 180°), cortados a lo largo:
+   el tubo cerrado (media caña, con su punta redonda), la aleta hacia la pared (media placa) y la boquilla con su brida
+   y la tapa ciega de la que cuelga el tubo
    ==================================================================== */
-const BF = TQ.baf, BO = R - BF.gap, BI = BO - BF.w, BT = BF.t / 2;
+const FX0 = FN.rc + Math.sqrt(FN.ro * FN.ro - (FN.t / 2) ** 2) + 0.5, FX1 = FX0 + FN.w;   // la aleta, junto al tubo y hacia la pared
+const FZC = FN.zb + FN.ro;                                                            // el centro de la punta redonda
+const ZCOV = FNZ.z1 + FNZ.ft;                                                         // la cara de abajo de la tapa ciega
 {
-  const plate = [[-BT, -BO], [BT, -BO], [BT, -BI], [-BT, -BI]];
-  fp("baf.back.sub", F0, plate, BF.z0, zL, { tone: "mid" }, { owner: "baf.back", cls: "ta-sub" });
-  fp("baf.back.dry", F0, plate, zL, BF.z1, { tone: "mid" }, { owner: "baf.back", cls: "ta-ss" });
-  BF.clips.forEach((zc, i) => fp(`baf.back.clip${i}`, F0, [[-BT, -R], [BT, -R], [BT, -BO], [-BT, -BO]], zc - BF.clip / 2, zc + BF.clip / 2, { tone: "mid" }, { owner: "baf.back", cls: "ta-sub" }));
-  // los del plano del corte: media placa (y de −t/2 a 0) con su cara cortada al frente
+  const half = (r0, r1) => GEO.halfRing(r0, r1, 32);
+  const arcXZ = (cx, cz, r, a0, a1, n) => Array.from({ length: n + 1 }, (_, i) => { const t = a0 + ((a1 - a0) * i) / n; return [cx + r * Math.cos(t), cz + r * Math.sin(t)]; });
+  // la aleta: borde de abajo inclinado (sube hacia la pared) y las esquinas de afuera redondeadas, como pide el vidrio
+  const finPoly = (sg) => {
+    const rr = FN.rr, zo0 = FN.zf0 + FN.slope;
+    const pts = [[FX0, FN.zf0], ...arcXZ(FX1 - rr, zo0 + rr, rr, -PI / 2 - 0.2, 0, 6), ...arcXZ(FX1 - rr, FN.zf1 - rr, rr, 0, PI / 2, 6), [FX0, FN.zf1]];
+    return sg > 0 ? pts : mirror(pts);
+  };
   [1, -1].forEach((sg) => {
-    const nm = sg > 0 ? "baf.der" : "baf.izq";
-    const poly = sg > 0 ? [[BI, BF.z0], [BO, BF.z0], [BO, BF.z1], [BI, BF.z1]] : [[-BO, BF.z0], [-BI, BF.z0], [-BI, BF.z1], [-BO, BF.z1]];
-    fp(nm, FY0, poly, -BT, 0, { tone: "mid" }, { owner: nm, cls: "ta-cut" });
-    BF.clips.forEach((zc, i) => {
-      const cp = sg > 0 ? [[BO, zc - BF.clip / 2], [R, zc - BF.clip / 2], [R, zc + BF.clip / 2], [BO, zc + BF.clip / 2]] : [[-R, zc - BF.clip / 2], [-BO, zc - BF.clip / 2], [-BO, zc + BF.clip / 2], [-R, zc + BF.clip / 2]];
-      fp(`${nm}.clip${i}`, FY0, cp, -BT, 0, { tone: "mid" }, { owner: nm, cls: "ta-cut" });
-    });
+    const nm = sg > 0 ? "fin.der" : "fin.izq", cx = sg * FN.rc, FF = FZ(cx, 0, 0);
+    // la aleta, toda bajo el nivel: media placa (y de −t/2 a 0) con su cara cortada al frente
+    fp(`${nm}.plate`, FY0, finPoly(sg), -FN.t / 2, 0, { tone: "mid" }, { owner: nm, cls: "ta-cut" });
+    // el tubo: media caña bajo el nivel y sobre él, hasta la tapa ciega
+    fp(`${nm}.stem.sub`, FF, half(FN.ri, FN.ro), FZC, zL, { tone: "mid" }, { owner: nm, cls: "ta-sub" });
+    fp(`${nm}.stem.dry`, FF, half(FN.ri, FN.ro), zL, ZCOV, { tone: "mid" }, { owner: nm, cls: "ta-glass" });
+    // la punta redonda: media cáscara esférica por fuera y por dentro
+    const sph = (r, sgn) => [(f, u) => { const a = (PI / 2) * u; return [cx + r * Math.cos(a) * Math.cos(f), r * Math.cos(a) * Math.sin(f), FZC - r * Math.sin(a)]; },
+      (f, u) => { const a = (PI / 2) * u; return G.mul3([Math.cos(a) * Math.cos(f), Math.cos(a) * Math.sin(f), -Math.sin(a)], sgn); }];
+    const capSvg = toned((o) => { const [p1, n1] = sph(FN.ro, 1), [p2, n2] = sph(FN.ri, -1); surface(p1, n1, PI, TAU, 24, 8, o); surface(p2, n2, PI, TAU, 24, 8, o); }, "ta-sub");
+    const capShape = record(A.ball([cx, 0, FZC], FN.ro, { name: `${nm}.cap`, owner: nm, cut: [A.box([-9000, 0, -9000], [9000, 9000, 9000]), A.box([-9000, -9000, FZC], [9000, 9000, 9000]), A.ball([cx, 0, FZC], FN.ri)] }));
+    put(`${nm}.cap`, [cx, -FN.ro / 2, FZC - FN.ro / 2], capSvg, [capShape]);
+    // las caras cortadas del tubo y de su punta
+    const wall = (x0, x1) => [[x0, FZC], [x1, FZC], [x1, ZCOV], [x0, ZCOV]];
+    cutStore.push({ owner: nm, poly: wall(cx - FN.ro, cx - FN.ri), cls: "ta-cut" }, { owner: nm, poly: wall(cx + FN.ri, cx + FN.ro), cls: "ta-cut" });
+    cutStore.push({ owner: nm, poly: [...arcXZ(cx, FZC, FN.ro, PI, TAU, 24), ...arcXZ(cx, FZC, FN.ri, TAU, PI, 24)], cls: "ta-cut" });
+    // la boquilla DN 150: el cuello desde la superficie curva de la tapa, por fuera (acero) y por dentro (vidrio)
+    const zOut = (f, r) => GEO.zOutTop(Math.hypot(cx + r * Math.cos(f), r * Math.sin(f))), zIn = (f, r) => GEO.zInTop(Math.hypot(cx + r * Math.cos(f), r * Math.sin(f)));
+    const neckOut = toned((o) => surface((f, u) => { const z0 = zOut(f, FNZ.ro); return [cx + FNZ.ro * Math.cos(f), FNZ.ro * Math.sin(f), z0 + (FNZ.z1 - z0) * u]; }, (f) => [Math.cos(f), Math.sin(f), 0], PI, TAU, 32, 1, o), "ta-ss");
+    const neckIn = toned((o) => surface((f, u) => { const z0 = zIn(f, FNZ.ri); return [cx + FNZ.ri * Math.cos(f), FNZ.ri * Math.sin(f), z0 + (FNZ.z1 - z0) * u]; }, (f) => [-Math.cos(f), -Math.sin(f), 0], PI, TAU, 32, 1, o), "ta-glass");
+    const neckShape = record(A.disc(FF, 4500, FNZ.z1, FNZ.ro, { name: `${nm}.neck`, owner: `${nm}.noz`, cut: [FRONT, UNDER_TOP, A.disc(FF, 4400, FNZ.z1 + 1, FNZ.ri)] }));
+    put(`${nm}.neck`, [cx, -FNZ.ro / 2, FNZ.z1 - 80], neckIn + neckOut, [neckShape]);
+    fp(`${nm}.flange`, FF, half(FNZ.ri, FNZ.fl), FNZ.z1, FNZ.z1 + FNZ.ft, { tone: "mid" }, { owner: `${nm}.noz`, cls: "ta-ss" });
+    const bolts = Array.from({ length: FNZ.nb / 2 }, (_, i) => pr(G.pointOf(FF, ZCOV + FNZ.ft, FNZ.bc, PI + (PI * (i + 0.5)) / (FNZ.nb / 2))));
+    fp(`${nm}.cover`, FF, half(0, FNZ.fl), ZCOV, ZCOV + FNZ.ft, { tone: "mid" }, { owner: `${nm}.noz`, cls: "ta-ss", extra: Dots(bolts, { size: 0.6 }) });
+    // las caras cortadas del cuello, la brida y la tapa ciega
+    const neckCut = (x0, x1) => [[x0, GEO.zInTop(Math.abs(x0))], [x1, GEO.zInTop(Math.abs(x1))], [x1, FNZ.z1], [x0, FNZ.z1]];
+    cutStore.push({ owner: `${nm}.noz`, poly: neckCut(cx - FNZ.ro, cx - FNZ.ri), cls: "ta-cut" }, { owner: `${nm}.noz`, poly: neckCut(cx + FNZ.ri, cx + FNZ.ro), cls: "ta-cut" });
+    cutStore.push({ owner: `${nm}.noz`, poly: [[cx - FNZ.fl, FNZ.z1], [cx - FNZ.ri, FNZ.z1], [cx - FNZ.ri, ZCOV], [cx - FNZ.fl, ZCOV]], cls: "ta-cut" },
+      { owner: `${nm}.noz`, poly: [[cx + FNZ.ri, FNZ.z1], [cx + FNZ.fl, FNZ.z1], [cx + FNZ.fl, ZCOV], [cx + FNZ.ri, ZCOV]], cls: "ta-cut" },
+      { owner: `${nm}.noz`, poly: [[cx - FNZ.fl, ZCOV], [cx + FNZ.fl, ZCOV], [cx + FNZ.fl, ZCOV + FNZ.ft], [cx - FNZ.fl, ZCOV + FNZ.ft]], cls: "ta-cut" });
   });
 }
 
 /* ====================================================================
-   6 · la turbina de cuatro palas inclinadas y el eje
+   6 · las dos turbinas vidriadas de cuatro palas inclinadas y el eje: cubo redondo, palas de bordes redondos (el
+   vidrio no admite aristas vivas) y, abajo, la punta redonda del eje
    ==================================================================== */
-const IM = TQ.imp, ZI = zb + IM.C, SH = TQ.sh;
-{
-  const ph = IM.phase * D2R;
-  const FH = { o: [0, 0, 0], a: ZD, u: [Math.cos(ph), Math.sin(ph), 0], v: [-Math.sin(ph), Math.cos(ph), 0] };
-  fp("imp.hub", FH, GEO.roundSquare(IM.hub, IM.hubR), ZI - IM.hubH, ZI + IM.hubH, { tone: "mid" }, { owner: "imp", cls: "ta-sub" });
-  disc("imp.collar", F0, ZI + IM.hubH, ZI + IM.hubH + 22, 60, { tone: "mid" }, { owner: "imp", cls: "ta-sub" });
-  disc("imp.washer", F0, ZI - IM.hubH - 12, ZI - IM.hubH, 52, { tone: "mid" }, { owner: "imp", cls: "ta-sub" });
-  fp("imp.bolt", F0, HEX(26), ZI - IM.hubH - 32, ZI - IM.hubH - 12, { tone: "mid" }, { owner: "imp", cls: "ta-sub" });
-  // las palas: placa de W × t inclinada 45° (el borde de ataque arriba, bombea hacia abajo), de la cara del cubo a D/2
-  const c45 = Math.SQRT1_2, hw = IM.W / 2, ht = IM.t / 2;
-  const sec = [[hw * c45 - ht * c45, hw * c45 + ht * c45], [-hw * c45 - ht * c45, -hw * c45 + ht * c45], [-hw * c45 + ht * c45, -hw * c45 - ht * c45], [hw * c45 + ht * c45, hw * c45 - ht * c45]];
+const IM = TQ.imp, ZI = zb + IM.C, ZI2 = zL - IM.sub, SH = TQ.sh;
+function turbine(tag, zc, phase) {
+  const ph = phase * D2R, hh = IM.hubH, hr = IM.hub;
+  turned(`${tag}.hub`, F0, [[zc - hh, hr - 12], [zc - hh + 3, hr - 3, 1], [zc - hh + 9, hr], [zc + hh - 9, hr], [zc + hh - 3, hr - 3, 1], [zc + hh, hr - 12]], { tone: "mid" }, { owner: tag, cls: "ta-sub" });
+  // la sección de la pala: un rectángulo de W × t de bordes redondos, inclinado 45° (el borde de ataque arriba)
+  const c45 = Math.SQRT1_2, hw = IM.W / 2, ht = IM.t / 2, d = [c45, c45], nrm = [-c45, c45], sec = [];
+  for (const sgn of [1, -1]) for (let i = 0; i <= 8; i++) {
+    const t = -PI / 2 + (PI * i) / 8, cx = sgn * (hw - ht);
+    const p = [d[0] * cx + ht * (sgn * Math.cos(t) * d[0] + Math.sin(t) * nrm[0]), d[1] * cx + ht * (sgn * Math.cos(t) * d[1] + Math.sin(t) * nrm[1])];
+    sec.push(p);
+  }
   for (let q = 0; q < 4; q++) {
     const t = ph + (q * Math.PI) / 2, rad = [Math.cos(t), Math.sin(t), 0], tan = [-Math.sin(t), Math.cos(t), 0];
-    fp(`imp.blade${q}`, { o: [0, 0, ZI], a: rad, u: tan, v: ZD }, sec, IM.hub, IM.D / 2, { tone: "mid" }, { owner: "imp", cls: "ta-sub" });
+    fp(`${tag}.blade${q}`, { o: [0, 0, zc], a: rad, u: tan, v: ZD }, sec, hr - 4, IM.D / 2, { tone: "mid" }, { owner: tag, cls: "ta-sub" });
   }
 }
-disc("shaft.sub", F0, ZI + IM.hubH + 22, zL, SH.r, { tone: "mid" }, { owner: "shaft", cls: "ta-sub" });
-disc("shaft.dry", F0, zL, TQ.mf.z0, SH.r, { tone: "mid" }, { owner: "shaft", cls: "ta-ss" });
+turbine("imp", ZI, IM.phase);
+turbine("imp2", ZI2, IM.phase2);
+{
+  // la punta del eje bajo el cubo de abajo, redonda
+  const nose = [];
+  for (let i = 0; i <= 8; i++) { const a = (PI / 2) * (i / 8); nose.push([ZI - IM.hubH - SH.r + SH.r - SH.r * Math.cos(a), Math.max(0.01, SH.r * Math.sin(a)), i > 0 && i < 8 ? 1 : 0]); }
+  turned("shaft.nose", F0, [...nose, [ZI - IM.hubH, SH.r]], { tone: "mid" }, { owner: "shaft.nose", cls: "ta-sub" });
+}
+disc("shaft.sub0", F0, ZI + IM.hubH, ZI2 - IM.hubH, SH.r, { tone: "mid" }, { owner: "shaft", cls: "ta-sub" });
+disc("shaft.sub", F0, ZI2 + IM.hubH, zL, SH.r, { tone: "mid" }, { owner: "shaft", cls: "ta-sub" });
+disc("shaft.glass", F0, zL, zInH, SH.r, { tone: "mid" }, { owner: "shaft", cls: "ta-glass" });
+disc("shaft.dry", F0, zInH, TQ.mf.z0, SH.r, { tone: "mid" }, { owner: "shaft", cls: "ta-ss" });
 
 /* ====================================================================
    7 · la boquilla del agitador (cortada), la brida de montaje, el sello, la linterna, el acople
@@ -511,7 +562,7 @@ const hostsTop = [UNDER_TOP];
 }
 {
   // termopozo: cuello DN 50, brida, brida ciega con la vaina, cabezal de conexión; la vaina baja dentro del líquido
-  const F = FZ(TWL[0], TWL[1], GEO.zOutTop(1050));
+  const F = FZ(TWL[0], TWL[1], GEO.zOutTop(Math.hypot(TWL[0], TWL[1])));
   const nk = saddle("tw.neck", F, 30.15, vStart(F, 30.15, GEO.zOutTop), 142, { tone: "mid" }, { owner: "tw", cls: "ta-ss", hosts: hostsTop });
   const z1 = nk.face[2], FF = FZ(TWL[0], TWL[1], 0);
   disc("tw.fl0", FF, z1, z1 + 18, 76, { tone: "mid" }, { owner: "tw", cls: "ta-ss" });
@@ -524,7 +575,8 @@ const hostsTop = [UNDER_TOP];
   const tip = 2800, rw = 17, prof = [];
   for (let i = 0; i <= 8; i++) { const a = (Math.PI / 2) * (i / 8); prof.push([tip + rw - rw * Math.cos(a), Math.max(0.01, rw * Math.sin(a)), i > 0 && i < 8 ? 1 : 0]); }
   turned("tw.sub", FF, [...prof, [zL, rw]], { tone: "mid" }, { owner: "tw", cls: "ta-sub" });
-  disc("tw.dry", FF, zL, nk.face[2], rw, { tone: "mid" }, { owner: "tw", cls: "ta-ss" });
+  // sobre el nivel, hasta poco antes de la cara de adentro de la tapa: lo de arriba queda detrás del corte de la tapa
+  disc("tw.dry", FF, zL, GEO.zInTop(Math.hypot(TWL[0], TWL[1]) + rw) - 60, rw, { tone: "mid" }, { owner: "tw", cls: "ta-glass" });
   ANCH_PRE.TW = [TWL[0] + rw * HV[0], TWL[1] + rw * HV[1], 3300];
 }
 {
@@ -585,7 +637,7 @@ const LG = TQ.legs, hostsBot = [UNDER_BOT];
 {
   const half = arcPts(R, zL, PI, TAU, 120).map(([x, y]) => [x, y]);
   const holes = [A.disc(F0, zL - 6, zL + 6, SH.r + 0.4), A.disc(FZ(TWL[0], TWL[1], 0), zL - 6, zL + 6, 17.4),
-    A.box([-BT - 0.4, -BO - 0.4, zL - 6], [BT + 0.4, -BI + 0.4, zL + 6]), A.box([BI - 0.4, -BT - 0.4, zL - 6], [BO + 0.4, 0.4, zL + 6]), A.box([-BO - 0.4, -BT - 0.4, zL - 6], [-BI + 0.4, 0.4, zL + 6])];
+    A.disc(FZ(FN.rc, 0, 0), zL - 6, zL + 6, FN.ro + 0.4), A.disc(FZ(-FN.rc, 0, 0), zL - 6, zL + 6, FN.ro + 0.4)];
   const d = pth1(half.map(([x, y]) => pr([x, y, zL])));
   // la lámina solo se ve por la abertura del corte: el dibujo va recortado a ella y la forma registrada también
   const svg = `<g clip-path="url(#taWin)"><path class="ta-liq" d="${d}"/>` + Ln(path3(arcPts(R - 0.5, zL, PI, TAU, 120)), { tone: "mid" }) + Ln(path3([[-R, 0, zL], [R, 0, zL]]), { tone: "lo" }) + "</g>";
@@ -604,8 +656,8 @@ const LG = TQ.legs, hostsBot = [UNDER_BOT];
     const r = 160 + rnd() * (R - 300), th = PI + 0.12 + rnd() * (PI - 0.24), z = zt + 140 + rnd() * (zL - 120 - zt - 140);
     const x = r * Math.cos(th), y = r * Math.sin(th);
     if (y > -110) continue;
-    if (r < 540 && z < ZI + 330) continue;                                         // la turbina
-    if (Math.abs(x) < 90 && y < -BI + 90) continue;                                  // el deflector de atrás
+    if (r < 540 && z < ZI + 330) continue;                                         // la turbina de abajo
+    if (r < 540 && Math.abs(z - ZI2) < 200) continue;                              // la de arriba
     if (Math.hypot(x - TWL[0], y - TWL[1]) < 110 && z > 2650) continue;              // la vaina del termopozo
     if (placed.some((q) => Math.hypot(q[0] - x, q[1] - y, (q[2] - z) * 0.8) < 300)) continue;
     placed.push([x, y, z]);
@@ -623,10 +675,15 @@ const LG = TQ.legs, hostsBot = [UNDER_BOT];
 const FLOW = [];             // las flechas del flujo, en (x, z) sobre el plano y = −60
 {
   const YF = -60, rf = 8;
+  // dos lazos, uno por turbina, como dan dos turbinas inclinadas en un tanque alto (Hemrajani y Tatterson, p. 367):
+  // cada una empuja hacia abajo y afuera, el líquido sube por la pared y vuelve al eje sobre ella
   const right = [
     [[470, 1255], [560, 1150], [720, 1105], [860, 1185]],
-    [[790, 1420], [800, 2300], [795, 3280]],
-    [[730, 3500], [540, 3440], [370, 3150], [300, 2500], [300, 1760]],
+    [[800, 1420], [805, 1800], [740, 2090], [570, 2190]],
+    [[400, 2120], [320, 1850], [305, 1560]],
+    [[380, 2740], [520, 2580], [700, 2500]],
+    [[800, 2620], [805, 3050], [790, 3330]],
+    [[730, 3500], [540, 3440], [380, 3220], [335, 3010]],
   ];
   const smooth = (ctl, n = 40) => {   // Catmull-Rom por los puntos de control
     const out = [];
@@ -696,6 +753,7 @@ R_.items.sort((a, b) => a.key - b.key);
 const CSS = `.ta-cut{--anatomy-paper:#c9ced3;--anatomy-face:#c9ced3;--anatomy-top:#c9ced3;--anatomy-shade-0:#c9ced3;--anatomy-shade-1:#c9ced3;--anatomy-shade-2:#c9ced3;--anatomy-shade-3:#c9ced3}
 .ta-ss{--anatomy-paper:#eef0f2;--anatomy-face:#eef0f2;--anatomy-top:#f7f8f9;--anatomy-shade-0:#ccd1d6;--anatomy-shade-1:#d5d9dd;--anatomy-shade-2:#dde1e4;--anatomy-shade-3:#e5e8ea}
 .ta-trim{--anatomy-paper:#f4f5f6;--anatomy-face:#f4f5f6;--anatomy-top:#fbfbfc;--anatomy-shade-0:#d6d9dc;--anatomy-shade-1:#dfe2e4;--anatomy-shade-2:#e7e9eb;--anatomy-shade-3:#eef0f1}
+.ta-glass{--anatomy-paper:#e8eef3;--anatomy-face:#e8eef3;--anatomy-top:#f2f6f9;--anatomy-shade-0:#c6d1da;--anatomy-shade-1:#cfd9e1;--anatomy-shade-2:#d8e0e7;--anatomy-shade-3:#e0e7ed}
 .ta-sub{--anatomy-paper:#dbe5ec;--anatomy-face:#dfe8ee;--anatomy-top:#e1eaf0;--anatomy-shade-0:#bccbd5;--anatomy-shade-1:#c5d3dc;--anatomy-shade-2:#cdd9e1;--anatomy-shade-3:#d5e0e7}
 .ta-drive{--anatomy-paper:#e2e6ea;--anatomy-face:#e2e6ea;--anatomy-top:#edf0f2;--anatomy-shade-0:#b9c1c8;--anatomy-shade-1:#c3cad0;--anatomy-shade-2:#ccd2d7;--anatomy-shade-3:#d5dadf}
 .ta-cast{--anatomy-paper:#e3e6e9;--anatomy-face:#e3e6e9;--anatomy-top:#eceef0;--anatomy-shade-0:#c4c9ce;--anatomy-shade-1:#cdd1d5;--anatomy-shade-2:#d5d9dc;--anatomy-shade-3:#dde0e3}
@@ -747,10 +805,11 @@ writeFileSync(process.env.TA_OUT ? join(OUT, "preview.html") : join(HERE, "previ
 console.log("items", R_.items.length, "scale", G.scaleOf(P).toFixed(4), "svg", Math.round(svgOut.length / 1024), "KB");
 {
   const az = AZ * D2R, face = (r, z, d = 0) => [r * Math.cos(az + d), r * Math.sin(az + d), z];
-  const ph = TQ.imp.phase * D2R + Math.PI / 2;
+  const ph = TQ.imp.phase * D2R + Math.PI / 2, ph2 = TQ.imp.phase2 * D2R + Math.PI / 2;
   Object.assign(ANCH_PRE, {
     TANQUE: [-(R + tw / 2), 0, 4150], CHAQUETA: [-(RJi + JK.t / 2), 0, 3000], NIVEL: [-760, 0, zL],
-    DEFLECTOR: [BT, -(BI + BO) / 2, 3880], EJE: face(SH.r, 4250, -0.6), IMPULSOR: [(IM.D / 2 - 30) * Math.cos(ph), (IM.D / 2 - 30) * Math.sin(ph), ZI + 20],
+    DEFLECTOR: [(FX0 + FX1) / 2, 0, 2500], EJE: face(SH.r, 4250, -0.6), IMPULSOR: [(IM.D / 2 - 30) * Math.cos(ph), (IM.D / 2 - 30) * Math.sin(ph), ZI + 20],
+    IMPULSOR2: [(IM.D / 2 - 30) * Math.cos(ph2), (IM.D / 2 - 30) * Math.sin(ph2), ZI2 + 20],
     SELLO: face(SE.r, 5230, 0.15), LINTERNA: [Math.cos(45 * D2R) * LA.rout, Math.sin(45 * D2R) * LA.rout, 5480], ACOPLE: face(CP.fl, 5480, 0.5),
     REDUCTOR: [60, GB.y, 5930], MOTOR: [470, 0, MOT.z + MOT.r * 0.0].map((v, i) => v + [0, MOT.r * Math.sin(az) * 0.9, MOT.r * 0.42][i]),
     CHAQ_IN: G.add3(pol(RJ + 130, JN), [0, 0, 3720 + 60]), CHAQ_OUT: G.add3(pol(RJ + 130, JN), [0, 0, 1530 - 60]),

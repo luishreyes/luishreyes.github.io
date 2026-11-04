@@ -101,7 +101,7 @@ const LIQ_SUP = 0.32;      // su superficie, vista desde arriba
 const corte = (pref) => ({ [`${pref}-cut`]: 'acero/corte' });
 export const CLASES = {
   // tanque agitado (capítulo 14): la cáscara flota en el agua de la extracción
-  ...corte('ta'), 'ta-ss': 'acero', 'ta-trim': 'acero', 'ta-sub': 'agua', 'ta-drive': 'pintado', 'ta-cast': 'fundicion',
+  ...corte('ta'), 'ta-ss': 'acero', 'ta-glass': 'vidrio', 'ta-trim': 'acero', 'ta-sub': 'agua', 'ta-drive': 'pintado', 'ta-cast': 'fundicion',
   'ta-lever': 'fundicion', 'ta-peel': 'cascara', 'ta-bore': { fill: 'hueco.claro' },
   'ta-liq': { fill: 'agua.sombras.0', 'fill-opacity': LIQ }, 'ta-flujo': { stroke: 'azul' }, 'ta-flecha': { fill: 'azul' },
   // tanque de llegada (capítulo 13)
