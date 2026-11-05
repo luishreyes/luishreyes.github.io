@@ -1054,7 +1054,7 @@ export const pou202620Course: Course = {
       title: 'Comunicación visual',
       sessionNumber: 2,
       description:
-        'Cómo lograr que una figura de proceso diga lo que usted quiere decir, y cómo usar la IA generativa para acelerar ese trabajo sin delegarle el criterio. Primera mitad: explorar frente a explicar, la ficha de contexto, el título como tesis, la elección del gráfico por tarea, la razón de tinta y la jerarquía visual, con las cuatro trampas frecuentes. Segunda mitad: las cinco piezas de un prompt útil y cuatro prompts listos para criticar figuras, simular la prueba de los cinco segundos, reescribir títulos y recomendar visualizaciones con restricciones explícitas. Incluye un selector de audiencia que reconstruye la misma figura para tres lectores distintos y una prueba de los cinco segundos cronometrada en vivo.',
+        'Cómo lograr que una figura de proceso diga lo que usted quiere decir. Abre con una galería de errores reales, recogidos por Eleken, en tres familias (la que engaña, la que confunde con el color y la que abruma): cada lámina muestra la figura y un botón revela el diagnóstico y el arreglo. Las mismas trampas se repiten con datos del curso, interactivas: el eje cortado, el doble eje y el color como recurso escaso, y cierran los ejemplos de antes y después. Después, el criterio (explorar frente a explicar, la ficha de contexto, el mismo dato para tres audiencias, el título como tesis y la elección del gráfico por la pregunta) y la IA como acelerador, con las cinco piezas de un prompt y cuatro prompts listos para usar. Incluye la prueba de los cinco segundos cronometrada en vivo.',
       file: 'Comunicacion_Visual/Presentacion_Comunicacion_Visual.html',
     },
     {
