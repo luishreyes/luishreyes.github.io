@@ -69,7 +69,7 @@ const RS = [
   ['HIDROLATO', 'Salida del\nhidrolato', 480, 470, 'der'],
   ['MIRILLA', 'Mirilla', 356, 292, 'der'],
   ['TIERRA', 'Puesta\na tierra', 335, 512, 'der'],
-  ['CALDERA', 'A la caldera\n(cohobación)', 520, 738, 'der'],
+  ['CALDERA', 'Al alambique\n(cohobación)', 520, 738, 'der'],
   ['DESAGUE', 'Al desagüe', 440, 760, 'izq'],
 ];
 let trazos = '', bx0 = minX, bx1 = maxX, by0 = minY, by1 = maxY;
@@ -86,11 +86,11 @@ for (const [a, t, tx, ty, lado] of RS) {
 }
 const vx = Math.floor(bx0 - 10), vw = Math.ceil(bx1 + 10 - vx), vy = Math.floor(by0 - 8), vh = Math.ceil(by1 + 10 - vy);
 const etiqueta = 'Florentino de la planta de aceite esencial de cáscara de cítricos, en isométrico y en corte. ' +
-  'Un recipiente vertical de acero inoxidable de 0,55 m de diámetro y 1,1 m de alto, con fondo plano sobre tres patas y una tapa plana empernada; se le quitó la mitad que mira al lector por encima del fondo, que queda entero. ' +
-  'El condensado del arrastre de vapor llega por un tubo desde el condensador y entra por la tapa a un tubo de calma más ancho que baja hasta unos 500 mm del fondo; bajo su boca, un platillo deflector abre el chorro hacia los lados, debajo de la capa de aceite. ' +
+  'Un recipiente vertical de acero inoxidable de 0,60 m de diámetro y 1,2 m de alto, con fondo plano sobre tres patas y una tapa plana empernada; se le quitó la mitad que mira al lector por encima del fondo, que queda entero. ' +
+  'El condensado del arrastre de vapor llega por un tubo desde el condensador y entra por la tapa a un tubo de calma más ancho que baja hasta unos 550 mm del fondo; bajo su boca, un platillo deflector abre el chorro hacia los lados, debajo de la capa de aceite. ' +
   'Adentro hay tres capas: abajo el agua, un poco turbia, con gotas de aceite que suben y se juntan bajo la interfase; encima una capa de aceite ámbar de 100 mm entre la interfase y el rebose; y arriba el espacio de cabeza. Dentro del tubo de calma solo hay agua, con su nivel un poco más bajo que el aceite. ' +
   'A la izquierda, el rebose del aceite: una boquilla cuyo agujero empieza justo en la superficie del aceite, con su válvula hacia el recibo; debajo, a la altura de la interfase, la purga de la capa sucia, con su válvula. ' +
-  'A la derecha, la pierna del agua: un tubo que sale cerca del fondo, baja, da la vuelta en U y sube por fuera hasta un codo un poco más bajo que el rebose del aceite, que fija la interfase; tiene un tramo ajustable con prensaestopas. Del codo sube el rompe-sifón, que entra al espacio de cabeza, y el hidrolato baja a dos válvulas: hacia la caldera y hacia el desagüe. ' +
+  'A la derecha, la pierna del agua: un tubo que sale cerca del fondo, baja, da la vuelta en U y sube por fuera hasta un codo un poco más bajo que el rebose del aceite, que fija la interfase; tiene un tramo ajustable con prensaestopas. Del codo sube el rompe-sifón, que entra al espacio de cabeza, y el hidrolato baja a dos válvulas: hacia el alambique y hacia el desagüe. ' +
   'También a la derecha, una mirilla de tubo de vidrio muestra el agua abajo y el aceite arriba, y cerca del fondo un borne con un cable de puesta a tierra que baja a una varilla. En la tapa, el venteo con el codo hacia abajo; en el centro del fondo, el drenaje con su válvula. ' +
   'Unas flechas muestran el condensado que baja por el tubo de calma y sale bajo el deflector, el agua que va hacia la pierna, las gotas que suben y el aceite que va hacia el rebose.';
 const cuerpo = aplicarPaleta(svg

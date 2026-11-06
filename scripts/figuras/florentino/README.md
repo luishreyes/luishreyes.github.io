@@ -7,21 +7,21 @@ Sinnott y la forma del vaso florentino de Başer y Buchbauer: un cilindro cerrad
 baja hasta cerca de media altura, el aceite arriba y una pierna exterior que toma el agua del fondo y sube por fuera.
 Todo va a escala real, en milímetros (`geo.mjs`), con las alturas medidas desde la cara de adentro del fondo:
 
-- **el recipiente**: acero inoxidable, diámetro interior de 550 mm, pared de 3 mm, fondo plano de 8 mm (sobresale
-  12 mm de la envolvente, con el agujero del drenaje en el centro) y 1140 mm del fondo a la tapa: la altura de diseño
-  H = 2D = 1100 mm más 40 mm, así quedan unos 150 mm de espacio de cabeza sobre el rebose del aceite. Arriba, una brida
+- **el recipiente**: acero inoxidable, diámetro interior de 600 mm, pared de 3 mm, fondo plano de 8 mm (sobresale
+  12 mm de la envolvente, con el agujero del drenaje en el centro) y 1240 mm del fondo a la tapa: la altura de diseño
+  H = 2D = 1200 mm más 40 mm, así quedan unos 160 mm de espacio de cabeza sobre el rebose del aceite. Arriba, una brida
   soldada de 16 mm y la tapa plana de 12 mm, con la empaquetadura y 16 pernos (se ven las tuercas de la mitad de atrás
   y, en la franja de la derecha, dos cabezas bajo la brida). El fondo queda a 420 mm del piso, sobre tres patas;
-- **las tres capas**: el agua (el hidrolato) del fondo a la interfase, a z₃ = 890 mm; la capa de aceite, de 100 mm,
-  entre la interfase y el rebose del aceite, a z₁ = 990 mm; y el espacio de cabeza encima. El agua va un poco turbia y
+- **las tres capas**: el agua (el hidrolato) del fondo a la interfase, a z₃ = 980 mm; la capa de aceite, de 100 mm,
+  entre la interfase y el rebose del aceite, a z₁ = 1080 mm; y el espacio de cabeza encima. El agua va un poco turbia y
   el aceite ámbar claro, los dos translúcidos: se dibujan en sus caras (la del corte, la interfase y la superficie del
   aceite, vistas desde arriba) y se ve a través de ellos lo que hay detrás;
 - **la entrada**: el condensado llega por un tubo DN 32 desde el condensador (brida a la izquierda, codo y tramo
-  vertical) y entra por una brida ciega al tubo de calma DN 80, que atraviesa la tapa y baja hasta 500 mm del fondo,
+  vertical) y entra por una brida ciega al tubo de calma DN 80, que atraviesa la tapa y baja hasta 550 mm del fondo,
   bajo la interfase. Debajo de su boca, a 60 mm, un deflector de Ø 200 × 6 mm colgado de dos pletinas (la tercera se
   fue con el corte) abre el chorro hacia los lados sin revolver la capa de aceite. En lo alto del tubo, en el espacio
   de cabeza, dos agujeros de 12 mm igualan la presión;
-- **dentro del tubo de calma** solo hay agua del condensado que baja, y su columna equilibra la de afuera (890 mm de
+- **dentro del tubo de calma** solo hay agua del condensado que baja, y su columna equilibra la de afuera (980 mm de
   agua y 100 de aceite): su nivel queda unos 15 mm bajo el rebose del aceite, a la altura del codo de la pierna;
 - **las gotas**: en la cara del corte del agua, gotas de aceite que suben, más grandes y más juntas hacia la interfase
   (la banda de dispersión), y algunas que bajan con el condensado dentro del tubo. Van dibujadas de 5 a 13 mm, mucho
@@ -33,15 +33,15 @@ Todo va a escala real, en milímetros (`geo.mjs`), con las alturas medidas desde
   dentro sobre la línea entre las capas), con su válvula de bola cerrada; por ahí se saca la capa sucia;
 - **la pierna del agua (cuello de cisne)**: el agua sale por una boquilla DN 32 a 50 mm del fondo, en la franja de la
   derecha, con su par de bridas; baja, da la vuelta en U y sube por fuera hasta una te cuyo paso de afuera tiene el
-  fondo por dentro a z₂ = 975 mm, 15 mm bajo el rebose del aceite: es lo que fija la interfase. Sobre el codo de la U,
+  fondo por dentro a z₂ = 1065 mm, 15 mm bajo el rebose del aceite: es lo que fija la interfase. Sobre el codo de la U,
   el tramo ajustable: un manguito con prensaestopas en el que se desliza el tubo de arriba, para subir o bajar la te y
   corregir la interfase. De la te, el hidrolato va hacia afuera y baja a una te con dos válvulas de bola: hacia afuera,
-  abierta, a la caldera (la cohobación); hacia abajo, cerrada, al desagüe;
+  abierta, al alambique (la cohobación); hacia abajo, cerrada, al desagüe;
 - **el rompe-sifón**: del paso de arriba de la te sube un tubo DN 25, con una unión para desmontarlo, que dobla y entra
   al espacio de cabeza por una boquilla de la envolvente. Así la te queda a la presión del recipiente y la pierna no
   puede vaciarlo por sifón;
-- **la mirilla**: un tubo de vidrio de Ø 18 mm entre dos llaves en la franja de la derecha, una en el agua (a 780 mm)
-  y otra en el aceite (a 960 mm). Adentro se ve el agua abajo y el aceite arriba, con la interfase a la misma altura
+- **la mirilla**: un tubo de vidrio de Ø 18 mm entre dos llaves en la franja de la derecha, una en el agua (a 870 mm)
+  y otra en el aceite (a 1050 mm). Adentro se ve el agua abajo y el aceite arriba, con la interfase a la misma altura
   que en el recipiente;
 - **el venteo**: en la tapa, un cuello DN 25 con su par de bridas y un tubo que sube y dobla hacia abajo, con una malla
   en la punta. El limoneno es inflamable: en Bogotá, a 35 °C, el espacio de cabeza saturado tiene 0,66 % de limoneno
@@ -66,7 +66,7 @@ filtro de arena.
 
 | Dato | Fuente |
 |---|---|
-| Diámetro interior de 0,55 m, H = 2D = 1,10 m, la interfase a z₃ = 890 mm, el rebose del aceite a z₁ = 990 mm y el codo de la pierna a z₂ = 975 mm (15 mm bajo el rebose), con 1600 L/h de condensado y la gota de diseño de 150 µm | El caso del capítulo (`herramientas/decantadores.py` del libro) |
+| Diámetro interior de 0,60 m (la regla del área con el 20 % del Perry), H = 2D = 1,20 m, el rebose del aceite a z₁ = 1080 mm (90 % de H), la interfase a z₃ = 980 mm y el codo de la pierna a z₂ = 1065 mm (15 mm bajo el rebose), con 1600 L/h de condensado y la gota de diseño de 150 µm | El caso del capítulo (`herramientas/decantadores.py` del libro) |
 | Densidades del agua y del limoneno a 20 °C (998,1 y 844,8 kg/m³): el nivel dentro del tubo de calma, 15 mm bajo el rebose del aceite | El caso del capítulo |
 | Cilindro cerrado, entrada por un tubo central que baja hasta cerca de media altura, aceite arriba, pierna exterior que toma el agua del fondo y sube por fuera | Başer y Buchbauer (2010), fig. 4.17, p. 106 |
 | La pierna del agua y la altura de su codo por el balance hidrostático; la regla H = 2D para un decantador vertical | Towler y Sinnott (2022), §16.4.1, pp. 605–608 |
@@ -74,7 +74,7 @@ filtro de arena.
 | El tramo ajustable de la pierna | McCabe et al., 7.ª ed. en español, p. 40: «la parte superior del brazo con frecuencia es móvil» |
 | 0,66 % de limoneno en el espacio de cabeza saturado a 35 °C en Bogotá, contra un límite inferior de 0,7 %; la carga estática del limoneno | El caso del capítulo (sección 6 y 9) |
 | Tubos de acero inoxidable cédula 10S y bridas ASME B16.5 clase 150 (DN 15, 25, 32, 40, 50 y 80) | ASME B16.5 y ASME B36.19 |
-| Pared de 3 mm, fondo plano de 8 mm, brida de la envolvente y tapa plana con 16 pernos, 1140 mm del fondo a la tapa, tubo de calma DN 80 que baja a 500 mm del fondo, deflector de Ø 200 a 60 mm con dos pletinas, agujeros del venteo del tubo, entrada DN 32, venteo DN 25 con su malla, boquilla del rebose DN 40, purga DN 15, pierna DN 32 con su U, el manguito con prensaestopas, las tes y las válvulas de bola, rompe-sifón DN 25 con su unión, mirilla de vidrio con sus llaves, oreja y cable de tierra con la varilla, drenaje DN 25, patas de 2 in con sus placas, altura sobre el piso (fondo a 420 mm) y posición de cada boquilla | Dibujo: plausible para un florentino de 0,55 m; las fuentes no lo dan |
+| Pared de 3 mm, fondo plano de 8 mm, brida de la envolvente y tapa plana con 16 pernos, 1240 mm del fondo a la tapa, tubo de calma DN 80 que baja a 550 mm del fondo, deflector de Ø 200 a 60 mm con dos pletinas, agujeros del venteo del tubo, entrada DN 32, venteo DN 25 con su malla, boquilla del rebose DN 40, purga DN 15, pierna DN 32 con su U, el manguito con prensaestopas, las tes y las válvulas de bola, rompe-sifón DN 25 con su unión, mirilla de vidrio con sus llaves, oreja y cable de tierra con la varilla, drenaje DN 25, patas de 2 in con sus placas, altura sobre el piso (fondo a 420 mm) y posición de cada boquilla | Dibujo: plausible para un florentino de 0,60 m; las fuentes no lo dan |
 | El tamaño de las gotas y la banda de dispersión | Dibujo: textura, no a escala |
 | Las flechas del flujo | Esquemáticas |
 
