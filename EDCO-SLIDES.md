@@ -425,3 +425,4 @@ Las presentaciones se registran en `components/data/classroom/edu-pro.ts` dentro
 | `public/classroom/edu-pro/slides/m2-1-fundamentos-modelos-generativos.html` | Ejemplo con divisores de sección y componentes custom |
 | `public/classroom/edu-pro/slides/assets/img/uniandes-escudo.png` | Escudo institucional |
 | `public/classroom/edu-pro/slides/assets/fonts/` | Fuentes Dax autoalojadas |
+| `public/classroom/edu-pro/talleres/` | Guías de taller para los participantes: HTML autocontenido con la identidad EDCO (Dax, amarillo y papel), que arma los prompts con lo que escribe cada uno y deja lista la bitácora. Se enlazan desde la diapositiva del taller con un QR (`slides/img/*-taller-qr.svg`). Primera: `m3-2-narrativa-visual.html`. |
