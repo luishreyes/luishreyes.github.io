@@ -16,7 +16,8 @@ y/a = (u_g·Σ/Q)·(r_e³ − r³)/(r_e³ − r_i³), con Σ = 2πω²(N − 1)(
 del capítulo), así que la fracción del espesor que se captura es u_g·Σ/Q y la gota del 50 % es la de Q = 2·u_g·Σ:
 0,19 µm. La posición en el tiempo sale de la misma velocidad del aceite: r² = r_e² − t·Q·cos α/[(N − 1)·π·a], y el
 aceite tarda 20,7 s en cruzar el canal (cálculo del libro con esa ecuación; el capítulo no lo da). Con la eficiencia de
-las de discos del Perry, 55 %, quedan 558 m² y el corte del caso, 0,26 µm (el del capítulo).
+diseño de las de discos, el 45 % de Morris (el «menos de 55 %» del Perry es el tope), quedan 457 m² y el corte del caso,
+0,29 µm (el del capítulo).
 
 Lo que es del dibujo: el espesor del canal va 9 veces más ancho que el largo (a lo largo del canal, no del radio); los
 discos, más delgados de lo que son; las gotas, de un tamaño que se vea (una de 2 µm en un canal de 0,5 mm no se vería),
@@ -385,11 +386,11 @@ class GotaEntreDiscos(Scene):
         n3 = leyenda(f_sigma, *tr((
             f"El canal captura u<sub>g</sub>Σ/Q de su espesor; la gota del 50 % es la de Q = 2u<sub>g</sub>Σ: "
             f"{num(D50 * 1e6, 2)} µm.",
-            f"Con la eficiencia de {EF * 100:.0f} % del Perry quedan "
+            f"Con la eficiencia de diseño, {EF * 100:.0f} %, quedan "
             f"<span foreground='{OLIVA}'>{SIGMA_EF:.0f} m²</span> y el corte del caso, {num(D50_EF * 1e6, 2)} µm."), (
             f"The channel captures u<sub>g</sub>Σ/Q of its thickness; Q = 2u<sub>g</sub>Σ gives the 50% drop: "
             f"{num(D50 * 1e6, 2)} µm.",
-            f"With Perry’s {EF * 100:.0f}% efficiency, "
+            f"With the {EF * 100:.0f}% design efficiency, "
             f"<span foreground='{OLIVA}'>{SIGMA_EF:.0f} m²</span> remain, and the case cuts at {num(D50_EF * 1e6, 2)} µm.")))
 
         zonas, limites, barras, pcts = VGroup(), VGroup(), VGroup(), VGroup()
