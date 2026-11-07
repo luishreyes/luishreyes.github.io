@@ -347,7 +347,7 @@ const XB_0 = LV.xv - VA.term - VA.over, XB_1 = LV.xv + VA.term + VA.over, XC_0 =
 const JACKET_RUNS = [[LV.x0, CU.xa], [CU.xb, XB_0], [XB_1, XC_0], [XC_1, LV.x1]];
 // los traslapos circunferenciales (la hoja de aguas arriba va por fuera) y las bandas cada 300 mm
 const LAPS = [-1650, -750, 150, 1000, 1550];
-const BANDS = [-2250, -1650, -1350, -1050, -750, -450, 150, 400, 700, 1000, 1550];
+const BANDS = [-2250, -1950, -1650, -1350, -1050, -750, -450, -150, 150, 400, 700, 1000, 1550];
 const bandOk = (x) => !(x > LV.xs - SH.len / 2 - 20 && x < LV.xs + SH.len / 2 + 20) && !(x > LV.xd - RJ - 30 && x < LV.xd + RJ + 30);
 const inRun = (x, pad = 0) => JACKET_RUNS.some(([a, b]) => x > a + pad && x < b - pad);
 {
@@ -659,7 +659,7 @@ const seg = (a, b, n = 12) => Array.from({ length: n + 1 }, (_, i) => G.lerp3(a,
   ANCH.VAPOR = [XS_ + 300, -20, 14];
 }
 // el perfil de temperatura (solo en el detalle): en el plano del corte y = 0 (un poco delante), la temperatura a lo
-// largo de x y el radio hacia arriba; un eje arriba con las marcas de 20, 39 y 152 °C
+// largo de x y el radio hacia arriba; un eje arriba con las marcas de 20, 41 y 152 °C
 const XT0 = CDET[0] - 66, SX = 118 / (LV.T.vapor - LV.T.aire), ZAX = 168, RAIR = RJ + 40;
 const xOfT = (T) => XT0 + (T - LV.T.aire) * SX;
 if (DET) {
@@ -672,8 +672,8 @@ if (DET) {
   let ticks = "";
   for (const t of [T.aire, T.chaqueta, T.vapor]) ticks += pthO([at([xOfT(t), y, ZAX]), at([xOfT(t), y, ZAX - 5])]);
   // las guías: de cada marca, hacia abajo, hasta el punto del perfil
-  const PTS = [[T.vapor, RO], [T.chaqueta, RJ], [temperatura(RAIR), RAIR]];
-  const gl = [[T.chaqueta, RJ], [T.vapor, RO]].map(([t, r]) => [[xOfT(t), y, ZAX - 5], [xOfT(t), y, r + 2]]);
+  const PTS = [[T.acero, RO], [T.chaqueta, RJ], [temperatura(RAIR), RAIR]];
+  const gl = [[T.chaqueta, RJ], [T.acero, RO]].map(([t, r]) => [[xOfT(t), y, ZAX - 5], [xOfT(t), y, r + 2]]);
   const guides = gl.map((q) => pthO(q.map(at))).join("");
   const dots = PTS.map(([t, r]) => circ2(at([xOfT(t), y, r]), 3)).join("");
   put("perfil.eje", [CDET[0], y + 1, ZAX], `<path class="lv-guia" d="${guides}"/><path class="lv-eje" d="${pthO([a0, hb])}${ticks}"/><path class="lv-eje-p" d="M${r10(a1[0])} ${r10(a1[1])}L${r10(hb[0] - uy * 4)} ${r10(hb[1] + ux * 4)}L${r10(hb[0] + uy * 4)} ${r10(hb[1] - ux * 4)}Z"/><path class="lv-perfil-p" d="${dots}"/>`,
@@ -689,8 +689,8 @@ if (DET) {
   ANCH.D_LANA = [CDET[0] - 60, 0, 84];
   ANCH.D_CHAQUETA = [CDET[0] - 75, 0, RJ - 0.3];
   ANCH.D_AIRE = [CDET[0] - 30, -60, RJ + 40];
-  ANCH.D_T152 = [xOfT(T.vapor), y, RO];
-  ANCH.D_T39 = [xOfT(T.chaqueta), y, RJ];
+  ANCH.D_T152 = [xOfT(T.acero), y, RO];
+  ANCH.D_T41 = [xOfT(T.chaqueta), y, RJ];
   ANCH.D_T20 = [xOfT(temperatura(RAIR)), y, RAIR];
   ANCH.D_PERFIL = [xOfT(temperatura(80)), y, 80];
   ANCH.D_EJE = [xOfT(T.aire) - 4, y, ZAX];

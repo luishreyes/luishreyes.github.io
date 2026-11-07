@@ -7,8 +7,9 @@ forrado con 50 mm de lana mineral y una chaqueta de aluminio. Todo va a escala r
 que dice «Lo que va exagerado»; un círculo amplía la pared cinco veces, con el perfil de temperatura.
 
 - **El soporte**: un tramo de la viga del soporte de tubería (una W de 200 × 150, cortada adelante, con su sección en
-  I), dos guías de ángulo atornilladas al ala y la zapata: una T soldada al fondo del tubo, de 125 mm, que baja por el
-  aislante y se desliza sobre la viga entre las guías. El aislante y la chaqueta pasan por encima de la zapata.
+  I), dos guías de ángulo atornilladas al ala y la zapata: una T soldada al fondo del tubo, de 125 mm de alto y 250 mm
+  de largo, que baja por el aislante y se desliza sobre la viga entre las guías. El aislante y la chaqueta pasan por
+  encima de la zapata.
 - **La chaqueta de aluminio**, en hojas: en cada traslapo circunferencial, de 50 mm, la hoja de aguas arriba va por
   fuera (el vapor corre hacia +x y la línea baja en ese sentido); el traslapo a lo largo va a las dos, con el borde de
   la hoja de afuera hacia abajo. Bandas de acero inoxidable de 13 mm cada 300 mm, una sobre cada traslapo, cada una con
@@ -36,8 +37,8 @@ que dice «Lo que va exagerado»; un círculo amplía la pared cinco veces, con 
   la chaqueta y, por el agujero, el tubo por dentro.
 - **El detalle** (`node build.mjs --detalle`): la cara del corte vertical (φ = 90°) cinco veces más grande, con el
   vapor, la pared de acero, la lana, la chaqueta y el aire de arriba, y el perfil de temperatura dibujado sobre ella: el
-  radio hacia arriba y la temperatura a lo largo del tubo, con un eje arriba y sus marcas en 20, 39 y 152 °C. 152 °C en
-  el vapor y en el acero, la caída logarítmica por la lana hasta 39 °C en la chaqueta, en aire quieto, y el aire que
+  radio hacia arriba y la temperatura a lo largo del tubo, con un eje arriba y sus marcas en 20, 41 y 152 °C. 152 °C en
+  el vapor y en el acero, la caída logarítmica por la lana hasta 41 °C en la chaqueta, en aire quieto, y el aire que
   baja a 20 °C.
 
 **Ningún nombre de fabricante.**
@@ -58,7 +59,7 @@ Las páginas son las impresas (las fichas de `fuentes/` del libro dicen cómo pa
 | Los soportes no deben estorbar la dilatación del tubo, son de acero y no deben dejar que la línea se combe donde tiene que drenar; las guías dirigen el movimiento | Perry (2008), pp. 10-122 y 10-123 |
 | Las bridas de 4 in clase 150: 230 mm de diámetro, 22,3 mm de espesor mínimo, cuello de 135 mm y 75 mm de largo por el cuello, cara realzada de 157,2 mm y 2 mm; ocho espárragos de 5/8 in en un círculo de 190,5 mm | ASME B16.5-2013, tablas 4, 7 y 8, pp. 64, 71 y 73 |
 | La línea de vapor va con una pendiente hacia los puntos donde se recoge el condensado, y ahí van las trampas | Bylund (1995), p. 179 |
-| El vapor: 1600 kg/h saturado a 5 bara, 151,83 °C; la lana, k ≈ 0,045 W/(m·K); 39 °C en la chaqueta con 50 mm de lana, en aire quieto, con el aire a 20 °C y 73,7 kPa (51 W/m, `cuentas()`) | El caso del capítulo (cálculo del esquema, `notas/calor-en-equipos/esquema.md`, §2.1, con el vapor del capítulo 12) |
+| El vapor: 1600 kg/h saturado a 5 bara, 151,83 °C; con 50 mm de lana (k = 0,0499 W/(m·K) a su temperatura media, 96,6 °C) y chaqueta de aluminio (ε = 0,055), en aire quieto a 20 °C y 73,7 kPa: 151,80 °C por fuera del acero, 41,33 °C en la chaqueta y 55,1 W/m (`cuentas()` da lo mismo con el perfil logarítmico) | El modelo del capítulo (`herramientas/calor.py`; `notas/calor-en-equipos/modelo.md`, §3), con el vapor del capítulo 12. El esquema daba 39 °C y 51 W/m con una k de 0,045; el capítulo usa la de la API |
 | Las flechas del vapor y del condensado | Esquemáticas |
 
 Perry 8.ª: pp. 10-78, 10-122, 10-123, 11-71, 11-72 y 11-76; ASHRAE Handbook, Refrigeration (SI), 2014, cap. 10 (es de
@@ -69,10 +70,10 @@ B16.5-2013; Bylund, *Dairy Processing Handbook* (1995). Todas están en `referen
 **Medida del libro** (típica de una línea así, escogida para el dibujo; de `fuentes/` no se copió nada: se leyeron las
 páginas y se tomaron los números):
 
-- **la zapata**: la T de 125 mm de alto bajo el tubo (alma de 10 mm, placa de 150 × 300 × 12 mm); ninguna fuente de
+- **la zapata**: la T de 125 mm de alto bajo el tubo (alma de 10 mm, placa de 150 × 250 × 12 mm, entre dos bandas); ninguna fuente de
   `fuentes/` describe la zapata de una línea caliente (la ASHRAE habla de soportes por fuera del aislamiento, que es lo
   de las líneas frías). La viga W de 200 × 150 y las guías de ángulo de 50 × 50 × 6;
-- **la chaqueta**: las hojas de unos 900 mm, el traslapo a lo largo a las dos (la ASHRAE lo da para el PVC; aquí, con el
+- **la chaqueta**: las hojas de hasta unos 900 mm, el traslapo a lo largo a las dos (la ASHRAE lo da para el PVC; aquí, con el
   borde de afuera hacia abajo, para el aluminio) y el sello de cada banda;
 - **las medias cañas**: el plano en que se parten (φ = 50° y 230°) y el alambre;
 - **la pierna de goteo**: del mismo diámetro que el tubo, forrada hasta 520 mm bajo el eje, el bolsillo hasta 760 mm y
@@ -84,7 +85,7 @@ páginas y se tomaron los números):
 - **la unión de bridas**: la empaquetadura de 3 mm, las tuercas de 27 mm entre caras y 16 mm de alto, el remate del
   aislante a 130 mm de la junta (deja sacar los espárragos), la chaqueta desmontable de 160 mm de radio;
 - **el corte**: dónde va la cuña, sus escalones de 150 mm y dónde se toma el detalle (en x = −700 mm);
-- **el aire**: el espesor de la capa donde la temperatura baja de 39 a 20 °C (esquemático, ver abajo).
+- **el aire**: el espesor de la capa donde la temperatura baja de 41 a 20 °C (esquemático, ver abajo).
 
 **La pendiente** de la línea (Bylund, p. 179) no se dibuja: una de pocos milímetros por metro no se vería.
 
@@ -92,9 +93,9 @@ páginas y se tomaron los números):
 
 - **La chaqueta**: 1 mm; la de verdad, de 0,4 a 0,6 mm (0,41 como mínimo, ASHRAE, p. 10.7).
 - **Las bandas**: 0,8 mm de espesor (0,50 de verdad).
-- **La película de condensado**: 3 mm; con 51 W/m, la línea condensa unos 87 g/h por metro (`cuentas()`), una película
+- **La película de condensado**: 3 mm; con 55,1 W/m, la línea condensa unos 94 g/h por metro (`cuentas()`), una película
   mucho más delgada.
-- **La capa de aire** del perfil: la temperatura baja de 39 a 20 °C con una exponencial de 9 mm; su forma y su espesor
+- **La capa de aire** del perfil: la temperatura baja de 41 a 20 °C con una exponencial de 9 mm; su forma y su espesor
   no salen de ningún cálculo del capítulo. El perfil va dibujado 2 mm delante de la cara del corte.
 
 ## Cómo está armado

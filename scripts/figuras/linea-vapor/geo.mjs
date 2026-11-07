@@ -40,14 +40,14 @@ export const LV = {
   /* el tramo dibujado */
   x0: -2300, x1: 1700,
   /* el soporte: la viga del soporte de tubería y la zapata soldada al tubo */
-  xs: -2000,
-  shoe: { h: 125, len: 300, web: 10, base: 150, tb: 12 },     // 125 mm bajo el tubo: el aislante de 50 mm pasa por encima
+  xs: -2100,
+  shoe: { h: 125, len: 250, web: 10, base: 150, tb: 12 },     // 125 mm bajo el tubo: el aislante de 50 mm pasa por encima
   beam: { d: 200, bf: 150, tf: 10, tw: 7, y0: -260, y1: 420 },
   guide: { leg: 50, t: 6, len: 120, gap: 4 },
   /* el corte del tubo: la cuña φ ∈ [315°, 450°] (de las cuatro y media a las doce, del lado del lector) */
   cut: { a0: 315, a1: 450, xa: -1500, step: 150, xb: -500 },
   /* la pierna de goteo, la trampa */
-  xd: -150,
+  xd: 0,
   drip: { zj: -520, zb: -760, cap: 40, zt: -640, nip: 26.7 / 2 },
   /* la válvula de compuerta con su chaqueta desmontable */
   xv: 550,
@@ -55,8 +55,9 @@ export const LV = {
   /* la unión de bridas con su chaqueta desmontable, en corte */
   xf: 1250,
   flange: { r: 115, tf: 22.3, rf: 157.2 / 2, rft: 2, hubX: 135 / 2, Y: 75, gasket: 3, bolts: 8, rbc: 190.5 / 2, stud: 15.9 / 2, nutF: 27, nutT: 16, term: 130, over: 50 },
-  /* las temperaturas del caso (el cálculo del esquema del capítulo: 50 mm de lana, aire quieto, Bogotá) */
-  T: { vapor: 151.83, chaqueta: 39, aire: 20, k: 0.045 },
+  /* las temperaturas del caso (el modelo del capítulo, notas/calor-en-equipos/modelo.md, §3: 50 mm de lana con la k de
+     la API a la temperatura media, chaqueta de aluminio con ε = 0,055, aire quieto a 20 °C y 73,7 kPa) */
+  T: { vapor: 151.83, acero: 151.80, chaqueta: 41.33, aire: 20, k: 0.0499 },
 };
 
 export const G0 = (() => {
@@ -65,20 +66,22 @@ export const G0 = (() => {
 })();
 
 /* El perfil de temperatura a través de la pared, en estado estacionario: el vapor y el acero a la temperatura de
-   saturación (la condensación por dentro y el acero casi no oponen resistencia), la lana con el perfil logarítmico de
-   un cilindro, la chaqueta a la temperatura de su superficie y el aire que baja a 20 °C en una capa delgada
+   saturación (la condensación por dentro y el acero casi no oponen resistencia: 0,03 K), la lana con el perfil
+   logarítmico de un cilindro con la k de su temperatura media, la chaqueta a la temperatura de su superficie y el aire que baja a 20 °C en una capa delgada
    (esquemática: su espesor no sale de ningún cálculo del capítulo). */
 export function temperatura(r) {
   const { RO, RW, RJ } = G0, T = LV.T;
-  if (r <= RO) return T.vapor;
-  if (r <= RW) return T.vapor - ((T.vapor - T.chaqueta) * Math.log(r / RO)) / Math.log(RW / RO);
+  if (r <= RO - LV.t) return T.vapor;
+  if (r <= RO) return T.vapor + ((T.acero - T.vapor) * (r - RO + LV.t)) / LV.t;
+  if (r <= RW) return T.acero - ((T.acero - T.chaqueta) * Math.log(r / RO)) / Math.log(RW / RO);
   if (r <= RJ) return T.chaqueta;
   return T.aire + (T.chaqueta - T.aire) * Math.exp(-(r - RJ) / 9);
 }
 
-/* Las cuentas del dibujo: la pérdida por metro con la lana de 50 mm (la del caso) y las medidas que se citan. */
+/* Las cuentas del dibujo: la pérdida por metro con la lana de 50 mm (la del caso: 55,1 W/m en el modelo) y las medidas
+   que se citan. */
 export function cuentas() {
   const { RO, RI, RW } = G0, T = LV.T;
-  const q = (2 * Math.PI * T.k * (T.vapor - T.chaqueta)) / Math.log(RW / RO);
-  return { DO: 2 * RO, DI: 2 * RI, Daislado: 2 * (RW + 0.5), q_W_m: q, condensado_g_h_m: (q / 2108.0e3) * 3600 * 1000 };
+  const q = (2 * Math.PI * T.k * (T.acero - T.chaqueta)) / Math.log(RW / RO);
+  return { DO: 2 * RO, DI: 2 * RI, Daislado: 2 * RW, q_W_m: q, condensado_g_h_m: (q / 2108.0e3) * 3600 * 1000 };
 }
