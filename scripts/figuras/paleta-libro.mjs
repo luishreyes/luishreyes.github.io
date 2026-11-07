@@ -214,6 +214,17 @@ export const CLASES = {
   'sd-film-w': { fill: 'agua.oscuro' }, 'sd-film-w-line': { stroke: 'azul' }, 'sd-film-o': { fill: 'aceite.sombras.0' }, 'sd-film-o-line': { stroke: 'aceite.oscuro' },
   'sd-drop-w': { fill: 'agua.oscuro', stroke: 'azul' }, 'sd-drop-o': { fill: 'aceite.cara', stroke: 'aceite.oscuro' }, 'sd-drop-s': { fill: 'solido.oscuro' },
   'sd-det-fondo': { fill: 'blanco' }, 'sd-det-marco': { stroke: 'tinta-2' }, 'sd-det-marca': { stroke: 'tinta-2' }, 'sd-det-linea': { stroke: 'tinta-2' },
+  // ciclón de Stairmand (capítulo 20): el ciclón, la tolva y los ductos de acero inoxidable, el adentro del ducto de
+  // entrada (lo que se ve por la boca) con el fondo seco del acero, la válvula rotativa y su caja de fundición, el
+  // motorreductor y las patas pintados, los pedestales de concreto; el polvo y las partículas en los tonos del sólido
+  // (las gruesas, el oscuro; las finas, la sombra más honda); el gas en el azul y el polvo que baja en el sólido oscuro
+  'ci-cut': 'acero/corte', 'ci-cut1': 'acero/corte1', 'ci-cut-c': 'fundicion/corte', 'ci-ss': 'acero', 'ci-plate': 'acero',
+  'ci-in': 'acero/fondo', 'ci-cast': 'fundicion', 'ci-paint': 'pintado', 'ci-conc': 'concreto', 'ci-polvo': 'solido',
+  'ci-bore': { fill: 'hueco.oscuro' }, 'ci-polvo-c': { fill: 'solido.sombras.2' }, 'ci-grano': { fill: 'solido.oscuro' },
+  'ci-polvo-line': { stroke: 'solido.oscuro' }, 'ci-grueso': { fill: 'solido.oscuro' }, 'ci-fino': { fill: 'solido.sombras.0' },
+  'ci-flujo': { stroke: 'azul' }, 'ci-flecha': { fill: 'azul' }, 'ci-flujo-s': { stroke: 'solido.oscuro' }, 'ci-flecha-s': { fill: 'solido.oscuro' },
+  'ci-giro': { stroke: 'tinta-2' }, 'ci-giro-p': { fill: 'tinta-2' }, 'ci-det-fondo': { fill: 'blanco' },
+  'ci-det-marco': { stroke: 'tinta-2' }, 'ci-det-marca': { stroke: 'tinta-2' }, 'ci-det-linea': { stroke: 'tinta-2' },
   // separador V-102 (edición inglesa, capítulo 2)
   'sv-cav': 'acero/fondo', 'sv-cutface': 'acero/corte', 'sv-mesh': 'acero', 'sv-concrete': 'concreto',
   'sv-tick': { stroke: 'guia' }, 'sv-needle': { stroke: 'tinta' }, 'sv-hub': { fill: 'tinta' },
@@ -282,6 +293,7 @@ export const VISTAS = {
   },
   'particulas-en-un-fluido/_congelador': {},
   'particulas-en-un-fluido/_filtro-arena': {},
+  'particulas-y-gotas-en-gases/_ciclon': {},
   'reduccion-de-tamano/_molino-bolas': { capa: true },
   'reduccion-de-tamano/_molino-disc': { capa: true, granos: { 'ds-grain': RAMPA_GRANO }, colores: { '#e3b23c': 'solido.cara', 'rgb(152,159,166)': 'metal.oscuro' } },
   'reduccion-de-tamano/_molino-mand': { capa: true },
