@@ -10,10 +10,10 @@ números se leen de lo que escribe herramientas/centrifugas.py --json del libro:
 radios de 52 y 30 mm, 50° con la horizontal, 0,5 mm entre discos, 10 000 r/min, en datos.js) y el aceite a 20 °C
 (844,9 kg/m³ y 0,929 mPa·s; Δρ = 153,3 kg/m³) con 24,6 L/h (caso.json). La trayectoria es la del ej. 11.2 de Coulson y
 Richardson (Chhabra y Basavaraj, 2019, pp. 636–638), la misma que integra trayectoria_discos() del modelo: flujo pistón
-en los N − 1 canales, v = Q/[(N − 1)·2πr·a]; la gota cruza el canal a u·sen α, con u = u_g·ω²r/g (ec. de la velocidad
+en los n_d − 1 canales, v = Q/[(n_d − 1)·2πr·a]; la gota cruza el canal a v_r·sen θ, con v_r = v_t·ω²r/g (ec. de la velocidad
 en el campo), y se desprecia lo que la gota se atrasa a lo largo del canal. Integrada, la altura que gana la gota es
-y/a = (u_g·Σ/Q)·(r_e³ − r³)/(r_e³ − r_i³), con Σ = 2πω²(N − 1)(r_e³ − r_i³)·tan α/(3g) = 1015 m² (la ecuación de discos
-del capítulo), así que la fracción del espesor que se captura es u_g·Σ/Q y la gota del 50 % es la de Q = 2·u_g·Σ:
+y/a = (v_t·Σ/Q)·(r_e³ − r³)/(r_e³ − r_i³), con Σ = 2πω²(n_d − 1)(r_e³ − r_i³)·tan θ/(3g) = 1015 m² (la ecuación de discos
+del capítulo), así que la fracción del espesor que se captura es v_t·Σ/Q y la gota del 50 % es la de Q = 2·v_t·Σ:
 0,19 µm. La posición en el tiempo sale de la misma velocidad del aceite: r² = r_e² − t·Q·cos α/[(N − 1)·π·a], y el
 aceite tarda 20,7 s en cruzar el canal (cálculo del libro con esa ecuación; el capítulo no lo da). Con la eficiencia de
 diseño de las de discos, el 45 % de Morris (el «menos de 55 %» del Perry es el tope), quedan 457 m² y el corte del caso,
@@ -380,15 +380,15 @@ class GotaEntreDiscos(Scene):
         # 3 · la fracción que se captura, Σ y la recuperación
         self.next_section("sigma")
         t3 = rotulo(tr("Lo que se captura y Σ", "What is captured, and Σ")).move_to(t2, aligned_edge=LEFT)
-        f_sigma = MathTex(r"\Sigma = 2\pi\,\omega^2 (N-1)\left(r_e^3 - r_i^3\right)\tan\alpha\,/\,(3g) = ",
+        f_sigma = MathTex(r"\Sigma = 2\pi\,\omega^2 (n_d-1)\left(r_e^3 - r_i^3\right)\tan\theta\,/\,(3g) = ",
                           f"{SIGMA:.0f}" + r"\ \mathrm{m^2}", font_size=TAM_TEXTO, color=TINTA)
         f_sigma[1].set_color(FLUJO)
         n3 = leyenda(f_sigma, *tr((
-            f"El canal captura u<sub>g</sub>Σ/Q de su espesor; la gota del 50 % es la de Q = 2u<sub>g</sub>Σ: "
+            f"El canal captura v<sub>t</sub>Σ/Q de su espesor; la gota del 50 % es la de Q = 2v<sub>t</sub>Σ: "
             f"{num(D50 * 1e6, 2)} µm.",
             f"Con la eficiencia de diseño, {EF * 100:.0f} %, quedan "
             f"<span foreground='{OLIVA}'>{SIGMA_EF:.0f} m²</span> y el corte del caso, {num(D50_EF * 1e6, 2)} µm."), (
-            f"The channel captures u<sub>g</sub>Σ/Q of its thickness; Q = 2u<sub>g</sub>Σ gives the 50% drop: "
+            f"The channel captures v<sub>t</sub>Σ/Q of its thickness; Q = 2v<sub>t</sub>Σ gives the 50% drop: "
             f"{num(D50 * 1e6, 2)} µm.",
             f"With the {EF * 100:.0f}% design efficiency, "
             f"<span foreground='{OLIVA}'>{SIGMA_EF:.0f} m²</span> remain, and the case cuts at {num(D50_EF * 1e6, 2)} µm.")))
