@@ -225,6 +225,19 @@ export const CLASES = {
   'ci-flujo': { stroke: 'azul' }, 'ci-flecha': { fill: 'azul' }, 'ci-flujo-s': { stroke: 'solido.oscuro' }, 'ci-flecha-s': { fill: 'solido.oscuro' },
   'ci-giro': { stroke: 'tinta-2' }, 'ci-giro-p': { fill: 'tinta-2' }, 'ci-det-fondo': { fill: 'blanco' },
   'ci-det-marco': { stroke: 'tinta-2' }, 'ci-det-marca': { stroke: 'tinta-2' }, 'ci-det-linea': { stroke: 'tinta-2' },
+  // línea de vapor (capítulo 21): el tubo, las bridas, la zapata y la trampa de acero al carbono (fundición), el tubo por
+  // dentro con el fondo seco del acero; la chaqueta de aluminio, sus bandas, los espárragos y el vástago en el acero; la
+  // lana mineral (y el relleno de las chaquetas desmontables) en el amarillo de los aislantes, como el poliuretano del
+  // congelador; las chaquetas desmontables de tela en el caucho; la viga, las guías, las correas y el volante pintados; el
+  // condensado en el agua; el vapor y el condensado en el azul; el perfil de temperatura en el naranja del calor
+  'lv-cs-cut': 'fundicion/corte', 'lv-al-cut': 'acero/corte', 'lv-wool-cut': 'amarillo/corte1', 'lv-fill-cut': 'amarillo/corte1',
+  'lv-paint-cut': 'pintado/corte', 'lv-cs': 'fundicion', 'lv-cast': 'fundicion', 'lv-in': 'acero/fondo', 'lv-al': 'acero',
+  'lv-band': 'acero', 'lv-bolt': 'acero', 'lv-stem': 'acero', 'lv-paint': 'pintado', 'lv-strap': 'pintado', 'lv-wool': 'amarillo',
+  'lv-blanket': 'caucho', 'lv-gasket': 'caucho', 'lv-agua': 'agua',
+  'lv-flujo': { stroke: 'azul' }, 'lv-flecha': { fill: 'azul' }, 'lv-cond': { stroke: 'azul' }, 'lv-cond-p': { fill: 'azul' },
+  'lv-perfil': { stroke: 'naranja' }, 'lv-perfil-p': { fill: 'naranja' }, 'lv-eje': { stroke: 'tinta-2' }, 'lv-eje-p': { fill: 'tinta-2' },
+  'lv-guia': { stroke: 'guia' }, 'lv-det-fondo': { fill: 'blanco' }, 'lv-det-marco': { stroke: 'tinta-2' },
+  'lv-det-marca': { stroke: 'tinta-2' }, 'lv-det-linea': { stroke: 'tinta-2' },
   // separador V-102 (edición inglesa, capítulo 2)
   'sv-cav': 'acero/fondo', 'sv-cutface': 'acero/corte', 'sv-mesh': 'acero', 'sv-concrete': 'concreto',
   'sv-tick': { stroke: 'guia' }, 'sv-needle': { stroke: 'tinta' }, 'sv-hub': { fill: 'tinta' },
@@ -275,6 +288,7 @@ export const VISTAS = {
   'bombas/_impulsores': {},
   'bombas/_instalacion': {},
   'bombas/_por-dentro': {},
+  'calor-en-equipos/_linea-vapor': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
   'filtracion/_prensa-tornillo': {},
   'filtracion/_prensa': {
