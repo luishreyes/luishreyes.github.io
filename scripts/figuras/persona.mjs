@@ -50,8 +50,12 @@
    190 mm y la mano en el borde de otro; debe terminar en «audit passed», en un par de minutos; PERSONA_CASOS=borde
    corre solo uno; escribe la vista en el directorio temporal, o en PERSONA_OUT).
 
-   Dónde va hoy: la línea de vapor del capítulo 21 (linea-vapor/, la persona) y los impulsores de bomba del capítulo 11
-   (impulsores-bomba/, la mano en el borde). Los simuladores no la llevan.
+   Dónde va la mano en el borde: los impulsores de bomba (impulsores-bomba/) y la bomba por dentro (bomba/, solo la
+   vista del libro) del capítulo 11, la válvula de control del 13 (valvula-control/), los siete impulsores del 14
+   (impulsores/) y el mezclador estático del 15 (mezclador-estatico/). Con un apoyo delgado (el canto de una pala, un
+   tubo, el borde de un tanque) se le pasa `apoyo`: la distancia a las formas ya registradas de la figura, así los
+   dedos tocan el dibujo mismo. La persona de pie va en las figuras grandes (la línea de vapor, el ciclón, el
+   clarificador, las prensas…). Los simuladores no la llevan.
    ==================================================================== */
 import { fileURLToPath } from "node:url";
 import { writeFileSync } from "node:fs";
@@ -421,9 +425,10 @@ function unir(nombre, partes, ctx) {
    cada dedo y el pulgar se doblan lo justo para tocarla; abrePulgar: cuánto se separa el pulgar (0 a 1)
    ==================================================================== */
 // el grosor a lo largo de un dedo (once puntos: el nudillo, su arranque y tres por falange), relativo a la recta de la
-// base a la punta: abultado en el nudillo y en las dos articulaciones, un poco más delgado a mitad de cada falange
+// base a la punta: abultado en el nudillo (las articulaciones de las falanges se ven en el doblez; abultarlas también
+// deja rayas cortas de silueta cuando el dedo se mira de punta)
 // (solo en la mano en el borde: la persona de pie y la mano apoyada quedan como estaban)
-const PERFIL_DEDO = [1.13, 1.07, 0.99, 0.97, 1.03, 0.97, 0.96, 1.02, 0.98, 1.0, 1.0];
+const PERFIL_DEDO = [1.1, 1.05, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
 function partesMano(ctx, { muneca, dedos, dorso, lado = "der", dobla = 1, antebrazo = 0, alza = 8, brazo = null, abre = 1, plano = null, abrePulgar = null, nombre = "mano", ground = false }) {
   const mm = ctx.mm, C = CUERPO;
   const d = unit3(dedos), n0 = unit3(sub3(dorso, mul3(d, dot3(dorso, d)))), n = n0;
@@ -434,12 +439,21 @@ function partesMano(ctx, { muneca, dedos, dorso, lado = "der", dobla = 1, antebr
   partes.push(pieza(`${nombre}.palma`, C.palma.map(([s, a, b, tc = 0]) => ({ c: W(s, tc, 0), X: t, Y: n, a: a * mm, b: b * mm, e: 2.8 })), ctx, { ground }));
   const rot = (v, ax, ang) => { const c = Math.cos(ang), s = Math.sin(ang); return add3(add3(mul3(v, c), mul3(cross3(ax, v), s)), mul3(ax, dot3(ax, v) * (1 - c))); };
   // lo que le falta a la pieza para tocar el plano (negativo: lo atraviesa)
-  const holgura = (pts, radios) => Math.min(...pts.map((p, i) => dot3(sub3(p, plano.o), plano.n) - radios[i]));
+  // (plano.apoyo, si se da, es la distancia con signo de un punto a la superficie de apoyo: un canto, una barra)
+  const sobre = (p) => (plano.apoyo ? plano.apoyo(p) : dot3(sub3(p, plano.o), plano.n));
+  // (con un margen: las formas del audit de un dedo son un poco más gruesas que su espina, por la sección achatada)
+  const holgura = (pts, radios) => Math.min(...pts.map((p, i) => sobre(p) - radios[i] * (plano.apoyo ? 1.12 : 1)));
   // el doblez que deja la pieza tocando el plano: entre 0 y 8 veces el doblez de la mano apoyada, por bisección
   const ajusta = (gen) => {
-    const hueco = 0.4 * mm, g = (kf) => { const [p, r] = gen(kf); return holgura(p, r) - hueco; };
-    if (g(0) <= 0) return 0;
-    if (g(8) >= 0) return 8;
+    const hueco = (plano.apoyo ? 1.5 : 0.4) * mm, g = (kf) => { const [p, r] = gen(kf); return holgura(p, r) - hueco; };
+    if (g(0) <= 0) {
+      // ya lo atraviesa derecha: con un apoyo delgado, se levanta (se dobla hacia el dorso) hasta que no lo toque
+      if (!plano.apoyo) return 0;
+      for (let kk = -0.5; kk >= -4; kk -= 0.5) if (g(kk) > 0) return kk;
+      return 0;
+    }
+    // la pieza no alcanza el apoyo (un dedo que pasa al lado de un canto): queda suelta, un poco doblada
+    if (g(8) >= 0) return plano.apoyo ? null : 8;
     let lo = 0, hi = 8;
     for (let it = 0; it < 32; it++) { const m = (lo + hi) / 2; if (g(m) > 0) lo = m; else hi = m; }
     return (lo + hi) / 2;
@@ -462,10 +476,13 @@ function partesMano(ctx, { muneca, dedos, dorso, lado = "der", dobla = 1, antebr
     const radios = pts.map((_, i) => lerp(rb, rt, i / (pts.length - 1)) * (plano ? PERFIL_DEDO[i] ?? 1 : 1) * mm);
     return [pts, radios];
   };
+  // con un apoyo delgado, el dedo que no lo alcanza se dobla como los que sí (o un poco, si ninguno lo alcanza)
+  const kfs = C.dedos.map((_, q) => (plano ? ajusta((k2) => dedo(q, k2)) : dobla));
+  const tocan = kfs.filter((v) => v !== null), kMedio = tocan.length ? tocan.reduce((a, b) => a + b, 0) / tocan.length : 1.6;
   C.dedos.forEach((_, q) => {
-    const kf = plano ? ajusta((k2) => dedo(q, k2)) : dobla;
+    const kf = kfs[q] ?? kMedio;
     const [pts, radios] = dedo(q, kf);
-    partes.push(tubo(`${nombre}.dedo${q + 1}`, pts, radios, ctx, { ref: t, achata: 1.08, ground, ...(plano ? { funde: 1 } : {}) }));
+    partes.push(tubo(`${nombre}.dedo${q + 1}`, pts, radios, ctx, { ref: t, achata: 1.08, ground, ...(plano ? { funde: 2 } : {}) }));
   });
   // el pulgar: sale de la base de la palma, abierto hacia su lado y un poco hacia la palma
   const T = C.pulgar, ap = abrePulgar ?? (0.2 + 0.24 * abre) / 0.44;
@@ -480,11 +497,11 @@ function partesMano(ctx, { muneca, dedos, dorso, lado = "der", dobla = 1, antebr
       else dir = unit3(add3(mul3(dir, 1), add3(mul3(d, 0.22), mul3(n, -0.1 * kf))));
     });
     // grueso en la base (la eminencia de la palma), con las articulaciones marcadas
-    const radios = pts.map((_, i) => { const u = (i / (pts.length - 1)) * 3, m = Math.min(2, Math.floor(u)); return lerp(T.radios[m], T.radios[m + 1], u - m) * (plano ? [1.08, 1.02, 0.98, 1.04, 0.98, 0.97, 1.03, 0.99, 1, 1][i] ?? 1 : 1) * mm; });
+    const radios = pts.map((_, i) => { const u = (i / (pts.length - 1)) * 3, m = Math.min(2, Math.floor(u)); return lerp(T.radios[m], T.radios[m + 1], u - m) * (plano ? [1.08, 1.03, 1, 1, 1, 1, 1, 1, 1, 1][i] ?? 1 : 1) * mm; });
     return [pts, radios];
   };
   {
-    const kf = plano ? ajusta(pulgar) : dobla;
+    const kf = (plano ? ajusta(pulgar) : dobla) ?? kMedio;
     const [pts, radios] = pulgar(kf);
     partes.push(tubo(`${nombre}.pulgar`, pts, radios, ctx, { ref: n, achata: 1.05, ground }));
   }
@@ -533,9 +550,12 @@ export function mano({ P, muneca, dedos, dorso = [0, 0, 1], lado = "der", mm = 1
    doblan más); adentro: cuánto entra el nudillo del medio desde el canto, en mm (negativo, afuera: los dedos llegan
    menos adentro, para un equipo chico o una pieza alta cerca del borde); inclina: grados que baja el dorso desde los nudillos hacia la muñeca (por defecto, según la cámara: 40°
    menos que la elevación, y nunca menos de 0); antebrazo: el largo que se dibuja, en mm (no más que la palma, para que no asome).
+   apoyo: en lugar del plano de la superficie, la distancia con signo de un punto (en unidades de la figura) a lo que
+   tocan los dedos, para un canto delgado (el borde de una pala, una barra): cada dedo se dobla hasta tocarlo, y el que
+   no lo alcanza queda suelto, un poco doblado. `canto(a, b, r)` arma la de un canto recto de a a b con radio r.
    Devuelve también `pts` (puntos de su superficie, para la cámara) y `anclas` (MANO, el dorso; MUNECA; YEMA).
    ==================================================================== */
-export function manoEnBorde({ P, borde, hacia, sube = [0, 0, 1], lado = "der", mm = 1, gira = 40, alto = 38, adentro = 0, inclina = null, antebrazo = 50, abrePulgar = 1.2, nombre = "mano", owner = "mano" }) {
+export function manoEnBorde({ P, borde, hacia, sube = [0, 0, 1], lado = "der", mm = 1, gira = 40, alto = 38, adentro = 0, inclina = null, antebrazo = 50, abrePulgar = 1.2, apoyo = null, antebrazoAparte = false, nombre = "mano", owner = "mano" }) {
   const ctx = contexto(P, mm, owner), V = ctx.V;
   const up = unit3(sube), h0 = unit3(sub3(hacia, mul3(up, dot3(hacia, up))));
   // girada sobre la normal, con el pulgar hacia adentro del equipo
@@ -549,10 +569,23 @@ export function manoEnBorde({ P, borde, hacia, sube = [0, 0, 1], lado = "der", m
   // el antebrazo: el reflejo de la palma en el plano de la pantalla (mismo trazo en el dibujo, hacia el fondo)
   let brazo = unit3(sub3(p, mul3(V, 2 * dot3(p, V))));
   if (dot3(p, V) <= 0.05) brazo = unit3(add3(mul3(V, -1), mul3(up, -0.3)));
-  const partes = partesMano(ctx, { muneca, dedos: p, dorso: n, lado, antebrazo, brazo, plano: { o: borde, n: up }, abre: 0.6, abrePulgar, nombre });
+  const partes = partesMano(ctx, { muneca, dedos: p, dorso: n, lado, antebrazo, brazo, plano: { o: borde, n: up, apoyo }, abre: 0.6, abrePulgar, nombre });
+  // antebrazoAparte: el antebrazo sale como pieza aparte (u.aparte), para que la figura lo ordene por su cuenta cuando
+  // queda detrás de lo que la mano agarra (el canto de un tanque: los dedos van delante de la pared y el antebrazo atrás)
+  const ab = antebrazoAparte ? partes.findIndex((q) => q.name === `${nombre}.antebrazo`) : -1;
+  const aparte = ab >= 0 ? partes.splice(ab, 1) : [];
   const u = unir(nombre, partes, ctx);
+  u.aparte = aparte.map((q) => ({ name: q.name, svg: q.svg, shapes: q.shapes, ref: q.ref }));
+  if (aparte.length) u.pts.push(...aparte.flatMap((q) => q.pts || []));
   u.anclas = { MANO: add3(muneca, mul3(add3(mul3(p, 50), mul3(n, 17)), mm)), MUNECA: muneca, YEMA: add3(borde, mul3(h, 55 * mm)) };
   return u;
+}
+
+/* la distancia con signo a un canto recto (un cilindro de radio r de a a b): el apoyo de una mano sobre el borde de una
+   pala o de una placa */
+export function canto(a, b, r = 0) {
+  const ab = sub3(b, a), L2 = dot3(ab, ab);
+  return (p) => { const t = Math.max(0, Math.min(1, dot3(sub3(p, a), ab) / L2)); return len3(sub3(p, add3(a, mul3(ab, t)))) - r; };
 }
 
 /* ====================================================================
