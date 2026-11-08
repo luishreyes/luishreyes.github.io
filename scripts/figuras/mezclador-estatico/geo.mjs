@@ -35,6 +35,11 @@ export const MZ = {
   /* los elementos KMS */
   el: { x0: 220, n: 7, LD: 1.5, t: 2.4, gap: 0.1 },  // espesor de la cinta y holgura a la pared: dibujo
   tipGap: 0.5,                                        // la punta de la lanza, medio D antes del primer elemento (dibujo)
+  /* la mano de referencia (medida del libro): una mano derecha de adulto (../persona.mjs, manoEnBorde) que llega desde
+     atrás y apoya los dedos en el canto de arriba de la brida de salida, cruzándolo hacia el lector. dx, corrimiento a
+     lo largo del tubo desde el medio de la brida; adentro, el nudillo desde el canto (negativo: atrás); alto, el nudillo
+     sobre el canto; inclina, cuánto baja el dorso hacia la muñeca; gira, cuánto se gira la mano sobre el canto. */
+  mano: { dx: 0, adentro: -14, alto: 24, inclina: 12, gira: 10 },
 };
 export const LE = MZ.el.LD * MZ.D;                    // largo de un elemento: 1,5 D = 94,1 mm
 export const XE = (i) => MZ.el.x0 + i * LE;           // dónde empieza el elemento i

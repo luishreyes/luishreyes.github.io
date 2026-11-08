@@ -57,8 +57,9 @@ const VISTAS = {
       { pieza: 'imp', fx: 0.62, fy: 0.42, x: 386, y: 332, texto: 'Impulsor' },
       { pieza: 'suc.noz', fx: 0.7, fy: 0.8, x: 386, y: 356, texto: 'Boquilla de succión' },
       { pieza: 'cas.foot', fx: 0.5, fy: 0.9, x: 386, y: 378, texto: 'Pata de la carcasa' },
-      { pieza: 'brg.frame', fx: 0.5, fy: 0.45, x: 268, y: 304, texto: 'Caja de rodamientos', fin: true },
+      { pieza: 'brg.frame', fx: 0.3, fy: 0.5, x: 268, y: 312, texto: 'Caja de rodamientos', fin: true },
       { pieza: 'brg.sight', fx: 0.5, fy: 0.6, x: 268, y: 346, texto: 'Mirilla del aceite', fin: true },
+      { pieza: 'mano', fx: 0.55, fy: 0.25, x: 262, y: 292, texto: 'Mano', fin: true },
     ],
   },
 };
@@ -77,10 +78,11 @@ const { svg, svgSin, cajas } = await pagina.evaluate(() => {
   }
   const copia = raiz.cloneNode(true);
   copia.querySelectorAll('circle.pb-p').forEach(c => c.remove());
-  // la vista de cerca no lleva la persona: queda fuera de su recorte
+  // la vista de cerca no lleva la persona (queda fuera de su recorte) sino la mano, en la caja de rodamientos; la de
+  // la instalación lleva la persona y no la mano
   const sin = copia.cloneNode(true);
   sin.querySelectorAll('[data-name="persona"]').forEach(g => g.remove());
-  sin.querySelectorAll('style').forEach(st => { if (/ps-persona/.test(st.textContent)) st.remove(); });
+  copia.querySelectorAll('[data-name="mano"]').forEach(g => g.remove());
   return { svg: copia.outerHTML, svgSin: sin.outerHTML, cajas };
 });
 await navegador.close();
@@ -100,7 +102,7 @@ for (const [nombre, vista] of Object.entries(VISTAS)) {
   }).join('');
   const etiqueta = nombre === 'instalacion'
     ? 'Dibujo isométrico de una instalación de bombeo: tanque de succión, línea de succión con válvula de compuerta, bomba centrífuga en corte, acople, motor sobre su base y descarga con válvula de retención y válvula de globo. Junto al motor, una persona de 1,75 m de pie en el piso da la escala.'
-    : 'Dibujo isométrico de cerca de una bomba centrífuga de succión axial con la mitad de arriba de la tapa de succión quitada: se ven el impulsor, la voluta, el sello, la caja de rodamientos y el acople.';
+    : 'Dibujo isométrico de cerca de una bomba centrífuga de succión axial con la mitad de arriba de la tapa de succión quitada: se ven el impulsor, la voluta, el sello, la caja de rodamientos y el acople. Una mano apoyada en la caja de rodamientos da la escala.';
   const cuerpo = (nombre === 'instalacion' ? svg : svgSin)
     .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
     .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);

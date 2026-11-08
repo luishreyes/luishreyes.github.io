@@ -30,7 +30,8 @@ const CLASES = (() => { const m = readFileSync(join(AQUI, 'out/cerrado.svg'), 'u
 // el contorno del dibujo, de las coordenadas absolutas de sus trazos
 function contorno(svg) {
   const absol = [];
-  for (const m of svg.matchAll(/ d="M(-?[\d.]+)[ ,]?(-?\.?[\d.]+)((?:[lmz][^"]*)?)"/g)) {
+  // (el primer punto puede venir pegado, «M116.8.9»: 116,8 y 0,9)
+  for (const m of svg.matchAll(/ d="M(-?\d*\.?\d+)[ ,]?(-?\d*\.?\d+)((?:[lmz][^"]*)?)"/g)) {
     let x = Number(m[1]), y = Number(m[2]);
     absol.push([x, y]);
     const rest = m[3].match(/[lmz]|-?\d*\.?\d+/g) || [];

@@ -47,7 +47,9 @@ node splice.mjs
 `geo.mjs`, que también corre en la página; medida del libro), y escribe aparte `out/bomba-inundada-libro.svg` y
 `out/preview-libro.html`, que es lo que abre `libro.mjs`. Sin `--libro` el SVG del explorador sale idéntico y
 `splice.mjs` no la ve. La vista de la instalación la rotula («Persona de 1,75 m») y sube su recorte para que quepa la
-cabeza; la de cerca la quita.
+cabeza; la de cerca la quita. La vista de cerca lleva en cambio **una mano** (`manoEnBorde`, `MANO` en `build.mjs`, también
+solo con `--libro`): llega desde atrás y apoya los dedos en lo alto de la caja de rodamientos, junto a la carcasa, con
+el antebrazo oculto detrás del dorso; lleva el rótulo «Mano» y la instalación la quita.
 
 Lo vivo se registra con la forma del volumen que ocupa. La pared de arriba de la voluta, el canal y la boquilla de
 succión se parten por el plano que mira al lector (el tramo cercano va delante del líquido y del impulsor, el lejano

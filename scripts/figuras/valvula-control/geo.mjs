@@ -40,6 +40,11 @@ export const VC = {
   act: { z0: 377, hub: 46, hubh: 12, rf: 146, rin: 128, zf: 424, ft: 4, wall: 3, top: 514, rstem: 9.5, bc: 138, nb: 16 },
   dia: { rplate: 96, t: 3 },
   spring: { r: 56, wire: 5.6, turns: 5.5 },
+  /* la mano de referencia (medida del libro): una mano derecha de adulto (../persona.mjs, manoEnBorde) que llega desde
+     atrás y apoya los dedos en el tubo de entrada, junto a la brida izquierda, cruzándolo hacia el lector: x, dónde va
+     el nudillo del medio a lo largo del tubo; adentro, el nudillo desde lo alto del tubo (negativo: atrás); alto, el
+     nudillo sobre él; inclina, cuánto baja el dorso hacia la muñeca; gira, cuánto se gira la mano sobre el tubo. */
+  mano: { x: -212, adentro: -18, alto: 30, inclina: 10, gira: 10 },
 };
 /* el globo: radio del esferoide a lo largo de x */
 export const rOuter = (x) => VC.body.b * Math.sqrt(Math.max(0, 1 - (x * x) / (VC.body.ax * VC.body.ax)));

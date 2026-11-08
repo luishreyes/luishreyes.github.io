@@ -34,8 +34,7 @@ const R = [
   ['POSICIONADOR', 'izq', 'Posicionador'],
   ['AIR', 'izq', 'Aire al actuador'],
   ['EMPAQUETADURA', 'izq', 'Empaquetadura'],
-  ['BONETE', 'izq', 'Bonete'],
-  ['BRIDA_IN', 'izq', 'Brida de entrada'],
+  ['MANO', 'izq', 'Mano'],
   ['RESORTE', 'der', 'Resorte'],
   ['DIAFRAGMA', 'der', 'Diafragma'],
   ['INDICADOR', 'der', 'Indicador de carrera'],
@@ -43,6 +42,8 @@ const R = [
   ['VASTAGO', 'der', 'Vástago'],
   ['OBTURADOR', 'der', 'Obturador'],
   ['ASIENTO', 'der', 'Asiento'],
+  ['BONETE', 'der', 'Bonete'],
+  ['BRIDA_IN', 'der', 'Brida de entrada'],
   ['BRIDA_OUT', 'der', 'Brida de salida'],
   ['CUERPO', 'der', 'Cuerpo'],
 ];
@@ -89,7 +90,8 @@ const etiqueta = 'Válvula de control de globo de 2 pulgadas, clase 150, en isom
   'La arcada, de dos columnas, sostiene el actuador; entre ellas, el conector que une el vástago del obturador con el del actuador, con la aguja del indicador de carrera frente a su escala en la columna derecha. ' +
   'Arriba, el actuador neumático de diafragma y resorte, con un cuarto de la caja quitado: el aire entra debajo del diafragma y lo levanta (aire para abrir); el resorte, sobre el plato del diafragma, empuja el obturador contra el asiento si falta el aire (falla cerrada). ' +
   'Las dos tapas de la caja se unen por sus bridas con pernos. En la columna izquierda, el posicionador, con su palanca de realimentación enganchada a un pasador del conector y el tubo que lleva el aire a la tapa de abajo del actuador. ' +
-  'A cada lado, un tramo corto de tubo con su brida de cuello soldable, el empaque y los espárragos.';
+  'A cada lado, un tramo corto de tubo con su brida de cuello soldable, el empaque y los espárragos. ' +
+  'Una mano de adulto apoyada en el tubo de entrada da la escala.';
 const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
   .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'valvulas-tuberias-y-medicion-de-flujo/_valvula-control');

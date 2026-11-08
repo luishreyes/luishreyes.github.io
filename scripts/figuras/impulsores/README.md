@@ -12,6 +12,14 @@ pernos, para que el lector vea cómo es cada uno. Todo va a escala real, en mil�
   dentro, la franja de la envolvente que se ve por fuera a la derecha, el borde de arriba y la cara del corte. Van a
   otra escala que las turbinas.
 
+Junto a cada uno va **una mano de adulto** (`manoEnBorde` de `../persona.mjs`: 190 mm de la muñeca a la punta del dedo
+medio) que llega desde atrás y apoya los dedos en el canto de una pala, como quien la toca, cruzándolo hacia el lector:
+la pala de adelante a la derecha en la hélice y la de palas inclinadas, la de atrás a la derecha en el hidrofoil y la
+Rushton, la izquierda en la paleta; en el ancla y la cinta, en el borde de arriba del tanque, atrás a la derecha, con
+los dedos por dentro. Lo que tocan los dedos es el dibujo mismo: el apoyo es la distancia a las formas ya registradas
+(`manoDe` en `build.mjs`; el lugar, en `MANO` de `geo.mjs`, medida del libro). El antebrazo baja por detrás, oculto por
+la mano. Las turbinas conservan su cámara común (la mano cabe en ella); en las de pared la cámara la incluye.
+
 Las proporciones que dan las fuentes del capítulo van con su página; las demás son **medida del libro**: típicas de un
 impulsor así, escogidas para la figura. De `fuentes/` no se copió nada: se leyeron las páginas y se tomaron los números.
 

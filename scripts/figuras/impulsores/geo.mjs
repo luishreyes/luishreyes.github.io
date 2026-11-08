@@ -92,3 +92,21 @@ export const CINTA = {
   sh: { r: 40, top: 1440 }, collar: { r: 60, h: 64 }, arm: { w: 36 },
   cap: { r: 22, h: 14 },
 };
+
+/* ---------- la mano de referencia (medida del libro) ----------
+   Una mano derecha de adulto (190 mm de la muñeca a la punta del dedo medio, 85 mm de palma; manoEnBorde de
+   ../persona.mjs) que llega desde atrás y apoya las yemas en el borde, como quien toca el impulsor: th, en grados desde
+   el punto de atrás (el más lejano del lector) hacia la derecha (en las turbinas, la pala más cercana a ese ángulo; el
+   build busca su punta y su cara de arriba); atras, cuánto antes de la punta va el canto bajo el nudillo; en las de
+   pared, r y z del borde de arriba del tanque; adentro, cuánto entra el nudillo desde ese punto (negativo: afuera);
+   alto, el nudillo sobre él; inclina, cuánto baja el dorso hacia la muñeca; gira, cuánto se gira la mano para que el
+   pulgar quede hacia adentro. */
+export const MANO = {
+  helice: { th: 140, atras: 70, adentro: -12, alto: 26, inclina: 15, gira: 15 },
+  pbt: { th: 140, atras: 70, adentro: -12, alto: 26, inclina: 15, gira: 15 },
+  hidrofoil: { th: 30, atras: 4, adentro: -12, alto: 26, inclina: 15, gira: -10 },
+  rushton: { th: 70, adentro: -12, alto: 26, inclina: 15, gira: 15 },
+  paleta: { th: -70, atras: 22, adentro: -12, alto: 26, inclina: 15, gira: 15 },
+  ancla: { th: 35, r: TANQUE.Rt + TANQUE.w / 2, z: TANQUE.top, adentro: -6, alto: 50, inclina: 5, gira: 0 },
+  cinta: { th: 35, r: TANQUE.Rt + TANQUE.w / 2, z: TANQUE.top, adentro: -6, alto: 50, inclina: 5, gira: 0 },
+};

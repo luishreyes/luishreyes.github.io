@@ -23,7 +23,7 @@ const G = await import(KIT + "/kit/lathe.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
-const { mano, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
+const { manoEnBorde, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 
 export const IMPS = ["cerrado", "semiabierto", "abierto", "axial"];
 const argImp = (process.argv.find((a) => a.startsWith("--imp=")) || "--imp=all").slice(6);
@@ -46,32 +46,40 @@ const BANDS = [0, 0.2, 0.42, 0.62];
 const BAND = (s) => { let t = 0; while (t < BANDS.length && s >= BANDS[t]) t++; return t; };
 const lerp = (a, b, t) => a + (b - a) * t;
 
-/* ---------- la mano de referencia: dónde va (geo.mjs, MANO) ---------- */
-function manoDe(ax) {
-  const M = ax ? GEO.MANO.axial : GEO.MANO.rad, az = (ax ? GEO.AX.AZ : GEO.RAD.AZ) * D2R;
-  const Rs = [Math.sin(az), -Math.cos(az), 0], Vh = [Math.cos(az), Math.sin(az), 0], g = M.gira * D2R;
-  const muneca = [Rs[0] * M.der + Vh[0] * M.frente, Rs[1] * M.der + Vh[1] * M.frente, M.z];
-  const dedos = unit3(add3(mul3(Vh, -Math.cos(g)), mul3(Rs, -Math.sin(g))));
-  // lo que ocupa en el suelo, para la cámara: la punta de los dedos, el corte del antebrazo y los dos lados de la palma
-  const t = [-dedos[1], dedos[0], 0];
-  const ext = [add3(muneca, mul3(dedos, 195)), add3(muneca, mul3(dedos, -M.antebrazo - 5)), add3(add3(muneca, mul3(dedos, 60)), mul3(t, 50)), add3(add3(muneca, mul3(dedos, 60)), mul3(t, -50)), add3(muneca, [0, 0, -25])];
-  return { muneca, dedos, ext, antebrazo: M.antebrazo };
+/* ---------- la mano de referencia: dónde va (geo.mjs, MANO) ----------
+   Llega desde atrás y apoya las yemas en el borde (manoEnBorde). Su antebrazo depende de la cámara, así que se arma con
+   la cámara definitiva; para ajustar la cámara a lo que ocupa se arma antes con la provisional (sin la mano). */
+function manoDe(name, P, cx = null) {
+  const ax = name === "axial", M = GEO.MANO[name] || GEO.MANO.rad, az = (ax ? GEO.AX.AZ : GEO.RAD.AZ) * D2R, th = M.th * D2R;
+  const Rs = [Math.sin(az), -Math.cos(az), 0], Vh = [Math.cos(az), Math.sin(az), 0];
+  const dir = add3(mul3(Vh, -Math.cos(th)), mul3(Rs, Math.sin(th)));
+  // con la figura ya armada, lo que tocan los dedos es el dibujo mismo (la distancia a sus formas del audit): la tapa,
+  // el canto de los álabes o la brida; para la cámara basta el plano de z
+  let apoyo = null;
+  if (cx && !M.plano) {
+    const U = cx.U, formas = cx.R_.items.flatMap((it) => it.shapes || []);
+    apoyo = (p) => { const q = p.map((v) => v * U); let d = Infinity; for (const sh of formas) { const v = A.sdf(sh, q); if (v < d) d = v; } return d / U; };
+  }
+  return manoEnBorde({ P, borde: [M.r * dir[0], M.r * dir[1], M.z], hacia: mul3(dir, -1), lado: M.lado || "der", mm: 1, adentro: M.adentro, alto: M.alto, inclina: M.inclina, gira: M.gira ?? 40, apoyo });
 }
 
 /* ---------- las dos cámaras: la de los radiales y la del axial ---------- */
 const WD = 600, HD = 500;               // el área del dibujo; libro.mjs le agrega los rótulos a los lados
-function camRad() {
+function camRad(name) {
   const R = GEO.RAD, ext = [];
   for (let d = 0; d < 360; d += 10) for (const z of [-R.rs.t, R.fs.zTop]) ext.push([R.r2 * Math.cos(d * D2R), R.r2 * Math.sin(d * D2R), z]);
-  ext.push([0, 0, R.shaft.top + 2], [R.shaft.r, 0, R.shaft.bottom], [-R.shaft.r, 0, R.shaft.bottom], [0, R.shaft.r, R.shaft.bottom], ...manoDe(false).ext);
-  return k.fitProjection(ext, WD, HD, { pad: 8, azimuth: R.AZ, elevation: R.EL });
+  ext.push([0, 0, R.shaft.top + 2], [R.shaft.r, 0, R.shaft.bottom], [-R.shaft.r, 0, R.shaft.bottom], [0, R.shaft.r, R.shaft.bottom]);
+  const cam = { pad: 8, azimuth: R.AZ, elevation: R.EL };
+  if (process.env.IB_ESCALA) console.log(name, "sin mano", k.fitProjection(ext, WD, HD, cam).scale.toFixed(3));
+  return k.fitProjection([...ext, ...manoDe(name, k.fitProjection(ext, WD, HD, cam)).pts], WD, HD, cam);
 }
 function camAx() {
   const X_ = GEO.AX, C = X_.casing, ext = [], az = X_.AZ * D2R;
   for (let d = 90; d <= 270; d += 10) for (const z of [C.z0, C.z1]) ext.push([C.fl.r * Math.cos(az + d * D2R), C.fl.r * Math.sin(az + d * D2R), z]);
   for (let d = -90; d <= 90; d += 10) for (const z of [-30, 30]) ext.push([X_.R * Math.cos(az + d * D2R), X_.R * Math.sin(az + d * D2R), z]);
-  ext.push([0, 0, X_.hub.z1 + X_.cone.h], [X_.shaft.r, 0, X_.shaft.bottom], [-X_.shaft.r, 0, X_.shaft.bottom], ...manoDe(true).ext);
-  return k.fitProjection(ext, WD, HD, { pad: 8, azimuth: X_.AZ, elevation: X_.EL });
+  ext.push([0, 0, X_.hub.z1 + X_.cone.h], [X_.shaft.r, 0, X_.shaft.bottom], [-X_.shaft.r, 0, X_.shaft.bottom]);
+  const cam = { pad: 8, azimuth: X_.AZ, elevation: X_.EL };
+  return k.fitProjection([...ext, ...manoDe("axial", k.fitProjection(ext, WD, HD, cam)).pts], WD, HD, cam);
 }
 
 /* ====================================================================
@@ -1098,13 +1106,13 @@ const results = [];
 for (const name of WHICH) {
   const t0 = Date.now();
   const ax = name === "axial";
-  const P = ax ? camAx() : camRad();
+  const P = ax ? camAx() : camRad(name);
+  if (process.env.IB_ESCALA) console.log(name, "escala", P.scale.toFixed(3));
   const cx = contexto(P, ax ? 0.2 : 0.4, name);
   BUILD[name](cx);
-  // la mano de referencia, apoyada al lado (../persona.mjs): una sola pieza, en su lugar del orden
+  // la mano de referencia, con las yemas en el borde (../persona.mjs): una sola pieza, en su lugar del orden
   {
-    const { muneca, dedos, antebrazo } = manoDe(ax);
-    const m = mano({ P, muneca, dedos, dorso: [0, 0, 1], lado: "der", mm: 1, antebrazo, alza: 12 });
+    const m = manoDe(name, P, cx);
     m.shapes.forEach((sh) => cx.record(sh));
     cx.put("mano", m.ref, m.svg, m.shapes);
     cx.ANCLAS.MANO = m.anclas.MANO;

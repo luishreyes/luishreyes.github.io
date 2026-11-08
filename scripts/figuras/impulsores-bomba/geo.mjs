@@ -67,12 +67,18 @@ export const AX = {
 };
 
 /* ---------- la mano de referencia (medida del libro) ----------
-   Una mano derecha de adulto (190 mm de la muñeca a la punta del dedo medio, 85 mm de palma; ../persona.mjs), apoyada
-   con la palma hacia abajo al lado del impulsor, a la derecha y un poco hacia el lector, con los dedos hacia el fondo y
-   un poco hacia el impulsor y un trozo de antebrazo cortado. Su posición en el plano del suelo va en la base de la cámara:
-   der, a la derecha en pantalla; frente, hacia el lector; z, la altura del centro de la muñeca; gira, cuántos grados se
-   vuelven los dedos hacia el impulsor. Nada de la mano tapa el ojo, los álabes ni lo que se rotula. */
+   Una mano derecha de adulto (190 mm de la muñeca a la punta del dedo medio, 85 mm de palma; manoEnBorde de
+   ../persona.mjs) que llega desde atrás y apoya las yemas en el borde del impulsor, como quien lo sostiene: th, dónde
+   va en el borde, en grados desde el punto de atrás (el más lejano del lector) hacia la derecha; r, el radio del canto;
+   z, la altura de la superficie donde se apoyan los dedos (en los radiales, la cara de la tapa delantera a r = 60, o el
+   canto de los álabes, que suben hacia el ojo); adentro, cuánto entra el nudillo desde el canto (negativo: afuera);
+   alto, el nudillo sobre esa superficie; plano, que los dedos se apoyen en el plano de z y no en el dibujo (en el
+   semiabierto y el abierto, para que no bajen entre los álabes). El antebrazo baja por detrás del impulsor, oculto por la mano, y la cara del
+   corte no se ve. En el axial la mano se apoya en la brida de arriba de la carcasa. Nada de la mano tapa el ojo, los
+   álabes ni lo que se rotula. */
 export const MANO = {
-  rad: { der: 182, frente: 142, z: -46, gira: 24, antebrazo: 30 },
-  axial: { der: 300, frente: 140, z: -112, gira: 30, antebrazo: 30 },
+  rad: { th: -55, lado: "izq", r: 95, z: 17.6, adentro: -32, alto: 30, inclina: 25, gira: 45 },
+  semiabierto: { th: -55, lado: "izq", plano: true, r: 95, z: 13.6, adentro: -32, alto: 30, inclina: 25, gira: 45 },
+  abierto: { th: -55, lado: "izq", plano: true, r: 95, z: 13.6, adentro: -32, alto: 30, inclina: 25, gira: 45 },
+  axial: { th: 50, r: 205, z: 96, adentro: -30, alto: 32, inclina: 12, gira: 50 },
 };

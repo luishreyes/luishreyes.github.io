@@ -543,6 +543,17 @@ if (LIBRO) {
   const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 0.1, adelante: "der" });
   per.shapes.forEach(record);
   put("persona", per.ref, per.svg, per.shapes);
+  /* la mano de referencia, para la vista de cerca («por dentro», que no alcanza a mostrar la persona): llega desde atrás
+     y apoya los dedos en lo alto de la caja de rodamientos, cruzándola hacia el lector, entre el respiradero y la
+     carcasa; los dedos se apoyan en el dibujo mismo. libro.mjs la quita de la vista de la instalación. MANO: x del
+     nudillo del medio a lo largo del eje; adentro, alto (mm) como en manoEnBorde. Medida del libro. */
+  const { manoEnBorde } = await import(join(HERE, "../persona.mjs"));
+  const MANO = { x: -13, adentro: -12, alto: 24, inclina: 10, gira: 10 };
+  const formas = R_.items.flatMap((it) => it.shapes || []);
+  const m = manoEnBorde({ P, borde: [MANO.x, 0, ZA + 8.6], hacia: [0, 1, 0], lado: "der", mm: 0.1, adentro: MANO.adentro, alto: MANO.alto, inclina: MANO.inclina, gira: MANO.gira,
+    apoyo: (p) => { let d = Infinity; for (const sh of formas) { if (sh.name && sh.name.startsWith("persona")) continue; const v = A.sdf(sh, p); if (v < d) d = v; } return d; } });
+  m.shapes.forEach(record);
+  put("mano", m.ref, m.svg, m.shapes);
 }
 
 /* ---------- orden y salida ---------- */

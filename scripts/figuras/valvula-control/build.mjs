@@ -23,6 +23,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { manoEnBorde, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const argNum = (flag, d) => { const i = process.argv.indexOf(flag); return i > 0 ? Number(process.argv[i + 1]) : d; };
 const VC = GEO.VC;
@@ -32,7 +33,12 @@ const LIFT = GEO.lift(), ZP = GEO.zPlug(), DZ = VC.dz;   // DZ: lo que sube todo
 const W = 760, H = 900;
 const EXT = [[-VC.pipe.end, -VC.fl.r, -VC.fl.r], [VC.pipe.end, -VC.fl.r, -VC.fl.r], [-VC.pipe.end, 0, VC.fl.r], [VC.pipe.end, 0, VC.fl.r],
   [-VC.act.rf, -VC.act.rf, VC.act.zf], [VC.act.rf, -VC.act.rf, VC.act.zf], [-VC.act.rf, VC.act.rf, VC.act.zf], [0, 0, VC.act.top + 24], [0, -90, VC.act.top], [-64, -64, VC.act.top], [64, -64, VC.act.top], [-90, 0, VC.act.top], [-150, 40, 200 + DZ]];
-const P = k.fitProjection(EXT, W, H, { pad: 16, azimuth: VC.AZ, elevation: VC.EL });
+/* la mano de referencia (geo.mjs, VC.mano; ../persona.mjs): llega desde atrás y apoya los dedos en el tubo de entrada,
+   junto a la brida, cruzándolo hacia el lector; la cámara la incluye (con el plano de arriba del tubo como apoyo, que
+   basta para saber lo que ocupa) y después los dedos se apoyan en el dibujo mismo */
+const manoVC = (Pm, apoyo = null) => manoEnBorde({ P: Pm, borde: [VC.mano.x, 0, VC.pipe.ro], hacia: [0, 1, 0], lado: "der", mm: 1, adentro: VC.mano.adentro, alto: VC.mano.alto, inclina: VC.mano.inclina, gira: VC.mano.gira, apoyo });
+const CAMV = { pad: 16, azimuth: VC.AZ, elevation: VC.EL };
+const P = k.fitProjection([...EXT, ...manoVC(k.fitProjection(EXT, W, H, CAMV)).pts], W, H, CAMV);
 const C = X.xCam(P);
 const at = (p) => k.iso(p, P);
 const S = (paths, style) => k.solidSvg(paths, style);
@@ -849,6 +855,14 @@ if (process.env.VC_PAIRS) {
   }
   process.exit(0);
 }
+/* la mano de referencia, con los dedos en el tubo de entrada */
+{
+  const formas = R_.items.flatMap((it) => it.shapes || []);
+  const m = manoVC(P, (p) => { let d = Infinity; for (const sh of formas) { const v = A.sdf(sh, p); if (v < d) d = v; } return d; });
+  m.shapes.forEach(record);
+  put("mano", m.ref, m.svg, m.shapes);
+  ANCH.MANO = m.anclas.MANO;
+}
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
 const CSS = `.vc-cut,.vc-cut-tr,.vc-cut-gk,.vc-cut-pk,.vc-cut-rb{--anatomy-paper:#c9ced3;--anatomy-shade-3:#c9ced3;--anatomy-top:#c9ced3}
@@ -863,7 +877,8 @@ const CSS = `.vc-cut,.vc-cut-tr,.vc-cut-gk,.vc-cut-pk,.vc-cut-rb{--anatomy-paper
 .vc-cut-pk{--anatomy-paper:#7b8086;--anatomy-shade-3:#7b8086;--anatomy-top:#7b8086}
 .vc-cut-rb{--anatomy-paper:#5f646a;--anatomy-shade-3:#5f646a;--anatomy-top:#5f646a}
 .vc-cast{--anatomy-paper:#e3e6e9;--anatomy-face:#e3e6e9;--anatomy-top:#eceef0;--anatomy-shade-0:#c4c9ce;--anatomy-shade-1:#cdd1d5;--anatomy-shade-2:#d5d9dc;--anatomy-shade-3:#dde0e3}
-.vc-gasket{--anatomy-paper:#9aa0a6;--anatomy-face:#9aa0a6;--anatomy-top:#a6abb0;--anatomy-shade-0:#7f858b;--anatomy-shade-1:#878d93;--anatomy-shade-2:#90969c;--anatomy-shade-3:#979da3}`;
+.vc-gasket{--anatomy-paper:#9aa0a6;--anatomy-face:#9aa0a6;--anatomy-top:#a6abb0;--anatomy-shade-0:#7f858b;--anatomy-shade-1:#878d93;--anatomy-shade-2:#90969c;--anatomy-shade-3:#979da3}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG publicado va en la página del libro: cada trazo de M, L y Z se reescribe con coordenadas relativas en décimas
    (redondeando primero cada punto absoluto, así no se acumula error) y sin ceros sobrantes */

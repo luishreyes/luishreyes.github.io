@@ -12,11 +12,15 @@ milímetros (`geo.mjs`), con el ojo (la entrada) arriba y el eje abajo.
 - **El axial** es el de una bomba de hélice pequeña, de 300 mm, dentro de la mitad de atrás de su carcasa, a otra
   escala. Se mira desde 30°.
 
-Junto a cada uno va **una mano derecha de adulto** (`../persona.mjs`: 190 mm de la muñeca a la punta del dedo medio,
-85 mm de palma), apoyada con la palma hacia abajo a la derecha del impulsor y un poco hacia el lector, con los dedos
-hacia el fondo y un trozo de antebrazo cortado (`MANO` en `geo.mjs`, medida del libro). Va a escala real: en los radiales
-mide lo que el impulsor; en el axial, que va a otra escala, se ve más chica. La cámara la incluye, así que los dibujos
-salieron un poco más chicos que antes. No tapa el ojo, los álabes ni lo que se rotula.
+Junto a cada uno va **una mano de adulto** (`manoEnBorde` de `../persona.mjs`: 190 mm de la muñeca a la punta del dedo
+medio, 85 mm de palma) que llega desde atrás y apoya los dedos en el borde del impulsor, como quien lo sostiene: en los
+radiales, la izquierda, atrás a la izquierda (los dedos en la tapa delantera del cerrado; en el semiabierto y el
+abierto, sobre el canto de los álabes, en el plano de z para que no bajen entre ellos); en el axial, la derecha, en la
+brida de arriba de la carcasa. El antebrazo baja por detrás del impulsor, oculto por la mano, y la cara del corte no se
+ve (`MANO` en `geo.mjs`, medida del libro). Va a escala real: en los radiales mide lo que el impulsor; en el axial, que
+va a otra escala, se ve más chica. La cámara la incluye: los radiales quedan a 1,89 px/mm (sin mano serían 2,28; con
+la mano de antes, junto al impulsor y con el corte a la vista, quedaban a 1,52). No tapa el ojo, los álabes ni lo que
+se rotula.
 
 Las proporciones que dan las fuentes del capítulo o el caso van con su página; las demás son **medida del libro**:
 típicas de un impulsor así, escogidas para la figura. De `fuentes/` no se copió nada: se leyeron las páginas y se
