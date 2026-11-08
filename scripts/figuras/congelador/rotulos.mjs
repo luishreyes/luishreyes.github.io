@@ -25,6 +25,7 @@ export const ROTULOS = [
   ['LECHO2', 'fig', 'Segunda etapa: capa quieta\nde 10 cm', 906, 342, 'der'],
   ['TAMBOR', 'fig', 'Tambor de la banda', 906, 414, 'der'],
   ['SALIDA', 'fig', 'Arvejas congeladas (IQF)', 906, 470, 'der'],
+  ['PERSONA', 'fig', 'Persona de 1,75 m', 906, 590, 'der'],
   // abajo
   ['MOTOR', 'fig', 'Motor del ventilador', 600, 630, 'der'],
   ['SUMIDERO', 'fig', 'Sumidero del deshielo', 600, 666, 'der'],
@@ -56,6 +57,7 @@ export const ROTULOS_EN = [
   ['AIRE', 'fig', 'Air at −30 °C', 906, 280, 'der'],
   ['LECHO2', 'fig', 'Stage 2: 10 cm\nfixed bed', 906, 340, 'der'],
   ['SALIDA', 'fig', 'IQF peas out', 906, 470, 'der'],
+  ['PERSONA', 'fig', '1.75 m person', 906, 590, 'der'],
   ['D_BURBUJA', 'd1', 'Bubble', -16, 568, 'izq'],
   ['D_ARVEJA', 'd1', '6 mm pea', -16, 620, 'izq'],
   ['D_CAPA', 'd2', '10 cm of\nresting peas', 560, 728, 'der'],

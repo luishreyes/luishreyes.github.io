@@ -60,6 +60,9 @@ export const CG = {
   defrost: { y: -1580, z: 2700, r: 24, noz: 9 },         // el rociador del deshielo
   hdr: { liq: { y: -1800, z: 2620, r: 22 }, suc: { y: -1350, z: 2850, r: 32, ins: 22 } },   // las líneas del refrigerante
   drain: { x: 2200, y: -450, r: 90 },
+  /* la persona de referencia (../persona.mjs, 1,75 m; medida del libro): de pie en el piso de la planta, a la derecha
+     del congelador y hacia el lector, frente a la salida de las arvejas, mirando hacia el equipo */
+  persona: { x: 6700, y: 1150, rumbo: 200 },
 };
 
 // El aire y la arveja del ejemplo 16.6
