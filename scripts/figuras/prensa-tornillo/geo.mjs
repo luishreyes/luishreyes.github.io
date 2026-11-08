@@ -69,6 +69,9 @@ export const PT = {
   hood: { x0: 50, x1: 990, yb: -265, zb: 742, r: 210, ztop: 1200 },
   /* la base de perfiles */
   base: { x0: -1470, x1: 1650, y: 320, h: 180 },
+  /* la persona de referencia (../persona.mjs, 1,75 m): de pie en el piso, pasado el extremo de la base y un poco atrás
+     del volante, mirándolo. Medida del libro. */
+  persona: { x: 1820, y: -580, rumbo: 115 },
 };
 
 /* Las cuentas del dibujo: la compresión del tornillo (volumen de un paso a la entrada y a la salida), la rendija entre

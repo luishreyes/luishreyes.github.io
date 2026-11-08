@@ -28,6 +28,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const PT = GEO.PT;
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const DET = process.argv.includes("--detalle");
 const STEP = Number(process.env.PT_STEP || (DET ? 2 : 0.25));
@@ -839,6 +840,14 @@ ANCH.TORTA_ANILLO = [SEAT.x0 + 30, 0, ZE + (rSeat(SEAT.x0 + 30) + rCone(SEAT.x0 
   fp("aguja.punta", FXs, [[sy1 + 2, ZE + 94], [sy1 + 10, ZE + 94], [sy1 + 6, sz1 + 4]], ax - 3, ax + 3, { cls: "pt-ss", owner: "cono" });
   ANCH.ESCALA = [sx0 + 140, sy1, sz1 - 10];
 }
+// la persona de referencia: 1,75 m, de pie en el piso junto al volante, mirándolo (no va en el detalle)
+if (!DET) {
+  const PS = PT.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.CABEZA;
+}
 
 /* ====================================================================
    9 · la bandeja del aceite (la mitad de atrás) con el aceite, el tubo de salida, y la capota (la mitad de atrás)
@@ -1115,7 +1124,8 @@ const CSS = `.pt-cut{${flat("#C9CED3")}}.pt-cut-c{${flat("#C1C6CB")}}
 .pt-flecha{fill:#7A5634;stroke:none;opacity:.9}
 .pt-flujo-a{fill:none;stroke:#B08A1E;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
 .pt-flecha-a{fill:#B08A1E;stroke:none;opacity:.9}.pt-fino{stroke-width:1.1px}
-.pt-det-fondo{fill:#FFFFFF;stroke:none}.pt-det-marco{fill:none;stroke:#525C64;stroke-width:1px}`;
+.pt-det-fondo{fill:#FFFFFF;stroke:none}.pt-det-marco{fill:none;stroke:#525C64;stroke-width:1px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

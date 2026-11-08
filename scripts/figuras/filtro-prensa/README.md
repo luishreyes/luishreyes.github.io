@@ -18,12 +18,20 @@ el mismo que replica el audit) y cada torta cae a la banda.
 | `drive_test.js` | Ciclo sintético para `preview.html` (`?t=18.5` congela un instante). |
 | `fp.css`, `fp-theme.css` | Colores de torta, suspensión y agua (en la vista del libro, los de la paleta del libro); tema papel y blueprint del explorador. |
 | `splice.mjs` | Reinserta `out/` en el HTML publicado, entre los marcadores `FPRESS_*_START/END`. |
-| `libro.mjs` | La vista quieta del libro (capítulo 18, Filtración): congela la figura a mitad de la filtración (`ESTADO`) y escribe `figuras/filtracion/_prensa.qmd` del libro con los nombres de las piezas, y `out/libro-preview.html` para revisarla. Corre después de `node build.mjs --audit`. |
+| `libro.mjs` | La vista quieta del libro (capítulo 18, Filtración): congela la figura a mitad de la filtración (`ESTADO`) y escribe `figuras/filtracion/_prensa.qmd` del libro con los nombres de las piezas, y `out/libro-preview.html` para revisarla. Corre después de `node build.mjs --libro --audit`. |
 | `isozoom.js` | Pellizco, arrastre, doble toque y botones + − «todo» para acercar la figura. Copia de referencia: el explorador lo lleva en su propio script (no está en `out/`), y sirve igual para la figura del tambor. |
+
+**La persona de referencia** (`../persona.mjs`, solo en el libro): `node build.mjs --libro --audit` agrega un maniquí de
+1,75 m de pie en el piso a la derecha del cilindro y de la central hidráulica, donde se abre y se cierra la prensa,
+mirando hacia ella (`PERSONA` en `build.mjs`), con la misma cámara, y escribe solo en `out/libro/` (`preview.html` y
+`press_data.json`, que lee `libro.mjs`). Sin `--libro`, lo del explorador sale igual que antes, sin persona; `splice.mjs`
+no cambia. La lámina de la edición en inglés (`en/figuras/18/filter-press.pdf`) la saca `en/herramientas/figuras-18.mjs`
+del libro web ya generado.
 
 ```sh
 node build.mjs --fast      # geometría y salidas, sin ordenar (segundos)
 node build.mjs --audit     # settle + audit completo (unos 4 min); debe terminar en «audit passed»
+node build.mjs --libro --audit   # la vista del libro, con la persona, en out/libro/ (unos 7 min)
 node build.mjs --js        # solo el código en vivo y el CSS, con los datos de la última salida ordenada
 node splice.mjs            # mete la figura nueva en public/.../Explorador_Filtracion.html
 ```

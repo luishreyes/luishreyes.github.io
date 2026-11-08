@@ -41,6 +41,9 @@ amplía dieciséis veces dos barras de la jaula cortadas de través.
   bandeja (bajo la capota), el aceite en la bandeja con las ondas de las gotas, y el tubo que lo saca hacia el lector.
 - **Las flechas**: las hojuelas entran a la tolva (café), el aceite sale por el tubo (ocre) y la torta cae por la
   canaleta (café).
+- **La persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie en el piso, pasado el extremo de la base
+  y un poco detrás del volante, mirándolo, con una sombra corta (`PT.persona` en `geo.mjs`, medida del libro). Los
+  rótulos de la salida van debajo de ella, y el círculo más abajo. El detalle no la lleva.
 - **El detalle** (`node build.mjs --detalle`): dos barras del cuarto de abajo, cortadas de través en x = 520 (el tramo
   del medio), dieciséis veces más grandes. Adentro, la torta: partículas aplastadas contra las barras, con aceite en los
   poros; las que no caben en la rendija se quedan atravesadas en su boca. El aceite llena las rendijas, sale por la boca
@@ -144,7 +147,7 @@ va delante y dónde. La posición del círculo se cambia con `PT_DX` y `PT_DY` a
 
 En el capítulo se incluye con `{{< include figuras/filtracion/_prensa-tornillo.qmd >}}` dentro de un bloque
 `::: {#fig-…}`, como la prensa de cámaras. El CSS de las piezas es el de siempre (`estilo/anatomia.css`) y los colores
-propios de la figura van en un `<style>` dentro del SVG. Con la letra de 22 unidades, los rótulos quedan en 10,5 px en la
+propios de la figura van en un `<style>` dentro del SVG. Con la letra de 22 unidades, los rótulos quedan en 10,3 px en la
 columna de 620 px.
 
 **La lámina impresa** (`--lamina`): la misma vista con el detalle, con pocos rótulos en inglés (Archivo de 7,5 pt),
@@ -156,7 +159,7 @@ columna de 620 px.
 `pt-pipe` (el tornillo, las barras, la capota, la bandeja, la tolva, los tubos) son acero, y `pt-cut`, su corte;
 `pt-cast` (la caja de la entrada, los bastidores, el anillo, el reductor) es fundición, y `pt-cut-c`, su corte;
 `pt-paint` (la base, el motor, la guarda de las correas, el soporte del cono), pintado;
-`pt-bronze` (la tuerca del husillo), cobre; `pt-torta` y `pt-heap`, sólido, y `pt-torta-c`, su corte; las hojuelas y la
+`pt-bronze` (la tuerca del husillo), cobre; `ps-persona`, el material «persona»; `pt-torta` y `pt-heap`, sólido, y `pt-torta-c`, su corte; las hojuelas y la
 torta en las caras del corte, los tonos del sólido, del más claro (sueltas, con los huecos en `hueco.medio`) al más
 oscuro (la torta compacta); el aceite (`pt-oil*`), los tonos del aceite; las flechas, el oscuro del sólido y del aceite.
 Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar la vista sin rehacer el dibujo.
