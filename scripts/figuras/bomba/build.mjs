@@ -8,8 +8,11 @@
    (el impulsor que gira con su diámetro, el líquido, las burbujas de
    cavitación, las agujas de los manómetros, el nivel del tanque y el
    vástago de la válvula) lo pinta la página con el modelo del explorador.
-   Uso: node build.mjs [--lift] [--audit] [--fast] · --js
+   Uso: node build.mjs [--lift] [--libro] [--audit] [--fast] · --js
    --lift: succión con elevación (el tanque abajo, en un foso).
+   --libro: la vista del libro, con la persona de referencia de 1,75 m (../persona.mjs) de pie junto al motor;
+   escribe out/bomba-{tag}-libro.svg y .json y out/preview-libro.html, que lee libro.mjs. Sin --libro el SVG del
+   explorador sale igual que siempre (los simuladores no llevan la persona).
    Unidades: 1 = 1 cm. z hacia arriba; el eje de la bomba a lo largo de x.
    ==================================================================== */
 import { writeFileSync, readFileSync, mkdirSync } from "node:fs";
@@ -24,6 +27,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const FAST = process.argv.includes("--fast"), LIFT = process.argv.includes("--lift"), TAG = LIFT ? "elevacion" : "inundada";
+const LIBRO = process.argv.includes("--libro"), SUF = LIBRO ? "-libro" : "";
 const strip = (n) => readFileSync(join(HERE, n), "utf8").replace(/^export /gm, "");
 mkdirSync(join(HERE, "out"), { recursive: true });
 const writeJs = () => {
@@ -527,6 +531,20 @@ ENDS.motor = [-141, 0, ZA + 4];
   TANKD.lg = { x: lx, y: ly, z0: TK.z0 + 6 + 2.6, z1: TK.z1 - 6 - 2.6 };
 }
 
+/* ====================================================================
+   la persona de referencia (solo en la vista del libro, --libro): 1,75 m, de pie en el piso junto al motor
+   ==================================================================== */
+// dónde va (en cm, z = 0 el piso; rumbo: hacia dónde mira, en grados desde +x hacia +y). Va aquí y no en geo.mjs,
+// que también corre en la página del explorador. Medida del libro.
+const PERSONA = { x: -180, y: -10, rumbo: 0 };
+if (LIBRO) {
+  const { personaDePie } = await import(join(HERE, "../persona.mjs"));
+  const PS = process.env.PB_PER ? Object.fromEntries(["x", "y", "rumbo"].map((kk, i) => [kk, Number(process.env.PB_PER.split(",")[i])])) : PERSONA;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 0.1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+}
+
 /* ---------- orden y salida ---------- */
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
@@ -538,11 +556,12 @@ after("lg.glass", `<g data-live="lcol"></g>`);
 after("cpl.sp", `<g data-live="cpl"></g>`);
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 const label = "Instalación de bombeo en isométrico: una bomba centrífuga de succión axial sobre su base, con la caja de rodamientos, el acople con su guarda y el motor; a la carcasa le falta la mitad de arriba de la tapa de succión para ver el impulsor";
-const svg = k.figureSvg({ width: W, height: H, label, body: [`<g class="pb-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="pbSvg" `);
+const cssPersona = LIBRO ? `<style>${(await import(join(HERE, "../persona.mjs"))).CSS_PERSONA}</style>` : "";
+const svg = k.figureSvg({ width: W, height: H, label, body: [`${cssPersona}<g class="pb-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="pbSvg" `);
 const DATA = { P, W, H, sc: G.scaleOf(P), lift: LIFT, zA: ZA, ends: ENDS, tank: TK, lg: TANKD.lg, gv: { c: GV, dir: GDIR } };
-writeFileSync(join(HERE, "out", `bomba-${TAG}.svg`), svg);
-writeFileSync(join(HERE, "out", `bomba-${TAG}.json`), JSON.stringify(DATA));
+writeFileSync(join(HERE, "out", `bomba-${TAG}${SUF}.svg`), svg);
+writeFileSync(join(HERE, "out", `bomba-${TAG}${SUF}.json`), JSON.stringify(DATA));
 writeJs();
-writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Bomba", theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "pb.css"), "utf8")}</style><div class="iso-stage" id="pbFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar PB_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
+writeFileSync(LIBRO ? join(HERE, "out", "preview-libro.html") : join(HERE, "preview.html"), k.pageHtml({ title: "Bomba", theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "pb.css"), "utf8")}</style><div class="iso-stage" id="pbFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar PB_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
 console.log("bomba", TAG, "items", R_.items.length, "scale", G.scaleOf(P).toFixed(3), "svg", svg.length);
 if (!FAST) A.auditOrExit(R_, P, {});

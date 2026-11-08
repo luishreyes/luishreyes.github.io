@@ -42,6 +42,13 @@ node build.mjs --audit && node build.mjs --lift --audit   # medio minuto cada un
 node splice.mjs
 ```
 
+**La persona de referencia, solo en el libro** (`../persona.mjs`): `node build.mjs --libro --audit` agrega un maniquí de
+1,75 m de pie en el piso junto al ventilador del motor, mirando hacia la bomba (`PERSONA` en `build.mjs`, no en
+`geo.mjs`, que también corre en la página; medida del libro), y escribe aparte `out/bomba-inundada-libro.svg` y
+`out/preview-libro.html`, que es lo que abre `libro.mjs`. Sin `--libro` el SVG del explorador sale idéntico y
+`splice.mjs` no la ve. La vista de la instalación la rotula («Persona de 1,75 m») y sube su recorte para que quepa la
+cabeza; la de cerca la quita.
+
 Lo vivo se registra con la forma del volumen que ocupa. La pared de arriba de la voluta, el canal y la boquilla de
 succión se parten por el plano que mira al lector (el tramo cercano va delante del líquido y del impulsor, el lejano
 detrás), para que el orden de pintura no haga ciclos.

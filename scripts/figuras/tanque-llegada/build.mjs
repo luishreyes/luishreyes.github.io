@@ -24,6 +24,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const STEP = Number(process.env.TL_STEP || 0.25);
 const TL = GEO.TL, RO = GEO.RO, D2R = GEO.D2R, pol = GEO.pol;
@@ -616,6 +617,17 @@ const FLD = { o: [0, 0, 0], a: ZD, u: LU, v: LTN };           // sección (radia
   bars.forEach((poly, j) => fp(`cage.bar${j}`, FLD, poly, TL.brk.top, zc1 + CG.h / 2, { tone: "mid" }, { owner: own, cls: "tl-yel" }));
   ANCH.ESCALERA = G.add3(G.add3(G.mul3(LU, sc + rho), [0, 0, 0]), [0, 0, 11400 - 120]);
 }
+/* la persona de referencia (../persona.mjs, 1,75 m): de pie en el piso, al pie de la escalera, en el tramo de abajo
+   del dibujo (subido SHIFT, como el piso); se mide en el sistema de la escalera (radial y tangente). La cabeza pasa
+   del corte de la estructura: se pone donde arriba no hay nada (fuera de la jaula y de las columnas). */
+{
+  const PS = process.env.TL_PER ? Object.fromEntries(["s", "t", "rumbo"].map((kk, i) => [kk, Number(process.env.TL_PER.split(",")[i])])) : TL.persona;
+  const pie = G.add3(G.add3(G.mul3(LU, PS.s), G.mul3(LTN, PS.t)), [0, 0, GRADE]);
+  const per = personaDePie({ P, pie, rumbo: TL.lad.th + PS.rumbo, mm: 1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.PECHO;
+}
 
 /* ====================================================================
    8 · en la envolvente: boca de inspección con su placa de refuerzo, transmitor de nivel y rebose
@@ -822,7 +834,8 @@ const CSS = `.tl-cut{--anatomy-paper:#c9ced3;--anatomy-face:#c9ced3;--anatomy-to
 .tl-lever{--anatomy-paper:#d9dde1;--anatomy-face:#d9dde1;--anatomy-top:#e6e9ec;--anatomy-shade-0:#aeb5bc;--anatomy-shade-1:#b8bfc5;--anatomy-shade-2:#c2c8ce;--anatomy-shade-3:#ccd1d6}
 .tl-liq{fill:#c4d7e3;fill-opacity:.55;stroke:none}
 .tl-bore{fill:#a9b1b9;stroke:none}
-.tl-mesh{fill:none;stroke:#8d969f;stroke-width:.45px}`;
+.tl-mesh{fill:none;stroke:#8d969f;stroke-width:.45px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {
