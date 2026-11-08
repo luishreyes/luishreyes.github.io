@@ -23,6 +23,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const { LV, G0, temperatura } = GEO;
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const DET = process.argv.includes("--detalle");
 const STEP = Number(process.env.LV_STEP || (DET ? 2 : 0.5));
@@ -658,6 +659,16 @@ const seg = (a, b, n = 12) => Array.from({ length: n + 1 }, (_, i) => G.lerp3(a,
   line("condensado.sale", seg([xd + 160 + 48 + 28 + 16, 0, yE - 175], [xd + 160 + 48 + 28 + 16, 0, yE - 270]), { cls: "lv-cond", hcls: "lv-cond-p" });
   ANCH.VAPOR = [XS_ + 300, -20, 14];
 }
+/* ====================================================================
+   7 · la persona de referencia: 1,75 m, de pie en el piso junto al soporte (no va en el detalle)
+   ==================================================================== */
+if (!DET) {
+  const PS = LV.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, PS.piso], rumbo: PS.rumbo, mm: 1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.CABEZA;
+}
 // el perfil de temperatura (solo en el detalle): en el plano del corte y = 0 (un poco delante), la temperatura a lo
 // largo de x y el radio hacia arriba; un eje arriba con las marcas de 20, 41 y 152 °C
 const XT0 = CDET[0] - 66, SX = 118 / (LV.T.vapor - LV.T.aire), ZAX = 168, RAIR = RJ + 40;
@@ -750,7 +761,8 @@ const CSS = `.lv-cs-cut{${flat("#C1C6CB")}}.lv-al-cut{${flat("#C9CED3")}}.lv-woo
 .lv-cond{fill:none;stroke:#2E5E9E;stroke-width:1.1px;stroke-linecap:round;stroke-linejoin:round}.lv-cond-p{fill:#2E5E9E;stroke:none}
 .lv-perfil{fill:none;stroke:#C2410C;stroke-width:1.6px;stroke-linecap:round;stroke-linejoin:round}.lv-perfil-p{fill:#C2410C;stroke:none}
 .lv-eje{fill:none;stroke:#525C64;stroke-width:.9px;stroke-linecap:round}.lv-eje-p{fill:#525C64;stroke:none}.lv-guia{fill:none;stroke:#8A96A3;stroke-width:.6px}
-.lv-det-fondo{fill:#FFFFFF;stroke:none}.lv-det-marco{fill:none;stroke:#525C64;stroke-width:1px}`;
+.lv-det-fondo{fill:#FFFFFF;stroke:none}.lv-det-marco{fill:none;stroke:#525C64;stroke-width:1px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 function compact(svgText) {
   const num = (v) => { let t = (Math.round(v * 10) / 10).toFixed(1).replace(/\.0$/, ""); if (t === "-0") t = "0"; return t.replace(/^(-?)0\./, "$1."); };

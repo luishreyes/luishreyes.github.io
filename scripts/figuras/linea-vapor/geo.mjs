@@ -55,6 +55,10 @@ export const LV = {
   /* la unión de bridas con su chaqueta desmontable, en corte */
   xf: 1250,
   flange: { r: 115, tf: 22.3, rf: 157.2 / 2, rft: 2, hubX: 135 / 2, Y: 75, gasket: 3, bolts: 8, rbc: 190.5 / 2, stud: 15.9 / 2, nutF: 27, nutT: 16, term: 130, over: 50 },
+  /* la persona de referencia (../persona.mjs, 1,75 m): de pie sobre el piso, a la izquierda del soporte y un poco hacia el
+     lector, mirando hacia la línea. El dibujo no tiene piso: el eje del tubo va a 1,20 m de él (la viga del soporte, a
+     1,02 m), y la persona lleva una sombra corta. Medida del libro. */
+  persona: { x: -2570, y: 260, piso: -1200, rumbo: 0 },
   /* las temperaturas del caso (el modelo del capítulo, notas/calor-en-equipos/modelo.md, §3: 50 mm de lana con la k de
      la API a la temperatura media, chaqueta de aluminio con ε = 0,055, aire quieto a 20 °C y 73,7 kPa) */
   T: { vapor: 151.83, acero: 151.80, chaqueta: 41.33, aire: 20, k: 0.0499 },

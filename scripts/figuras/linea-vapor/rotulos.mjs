@@ -26,6 +26,8 @@ export const ROTULOS = [
   ['CONDENSADO_SALE', 'fig', 'Condensado al retorno', 684, 700, 'der'],
   ['TRAMPA', 'fig', 'Cuerpo de la trampa (capítulo 28)', 660, 752, 'der'],
   ['PIERNA', 'fig', 'Pierna de goteo en un punto bajo,\ncon bolsillo para la mugre', 631, 810, 'der'],
+  // a la izquierda: la persona de referencia
+  ['PERSONA', 'fig', 'Persona\nde 1,75 m', -62, 28, 'izq'],
   // en medio: el soporte
   ['ZAPATA', 'fig', 'Zapata soldada al\ntubo: el aislante\npasa por encima', 200, 330, 'der'],
   ['VIGA', 'fig', 'Viga del soporte\nde tubería', 200, 438, 'der'],
@@ -57,6 +59,7 @@ export const ROTULOS_EN = [
   ['PIERNA', 'fig', 'Drip leg', 631, 770, 'der'],
   ['ZAPATA', 'fig', 'Welded\nshoe', 200, 340, 'der'],
   ['VIGA', 'fig', 'Rack beam', 200, 438, 'der'],
+  ['PERSONA', 'fig', '1.75 m\nperson', -62, 28, 'izq'],
   ['D_T20', 'd', 'Air, 20 °C', 228, 610, 'izq'],
   ['D_CHAQUETA', 'd', 'Jacket, 41 °C', 228, 656, 'izq'],
   ['D_LANA', 'd', 'Wool', 228, 702, 'izq'],

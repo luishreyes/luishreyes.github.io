@@ -12,6 +12,12 @@ milímetros (`geo.mjs`), con el ojo (la entrada) arriba y el eje abajo.
 - **El axial** es el de una bomba de hélice pequeña, de 300 mm, dentro de la mitad de atrás de su carcasa, a otra
   escala. Se mira desde 30°.
 
+Junto a cada uno va **una mano derecha de adulto** (`../persona.mjs`: 190 mm de la muñeca a la punta del dedo medio,
+85 mm de palma), apoyada con la palma hacia abajo a la derecha del impulsor y un poco hacia el lector, con los dedos
+hacia el fondo y un trozo de antebrazo cortado (`MANO` en `geo.mjs`, medida del libro). Va a escala real: en los radiales
+mide lo que el impulsor; en el axial, que va a otra escala, se ve más chica. La cámara la incluye, así que los dibujos
+salieron un poco más chicos que antes. No tapa el ojo, los álabes ni lo que se rotula.
+
 Las proporciones que dan las fuentes del capítulo o el caso van con su página; las demás son **medida del libro**:
 típicas de un impulsor así, escogidas para la figura. De `fuentes/` no se copió nada: se leyeron las páginas y se
 tomaron los números.
@@ -129,6 +135,6 @@ Después, `node herramientas/svg-a-pdf.mjs figuras/11/pump-impellers.svg` desde 
 **Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro
 (`estilo/paleta.json`, sección `isometricas`): `libro.mjs` la pasa por `../paleta-libro.mjs`. `ib-ss` (el impulsor)
 es acero; `ib-sh` (el eje), pintado; `ib-hw` (tuerca, arandela, chaveta), fundición; `ib-ring` (el anillo de
-desgaste), cobre; `ib-cast` (la carcasa del axial), fundición; `ib-cut` y `ib-cut-c`, el corte del acero y el de la
+desgaste), cobre; `ib-cast` (la carcasa del axial), fundición; `ps-persona` (la mano), el material «persona»; `ib-cut` y `ib-cut-c`, el corte del acero y el de la
 fundición; los agujeros, hueco. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar la
 vista sin rehacer el dibujo.

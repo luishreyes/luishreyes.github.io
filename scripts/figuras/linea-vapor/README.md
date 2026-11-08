@@ -41,6 +41,10 @@ que dice «Lo que va exagerado»; un círculo amplía la pared cinco veces, con 
   el vapor y en el acero, la caída logarítmica por la lana hasta 41 °C en la chaqueta, en aire quieto, y el aire que
   baja a 20 °C.
 
+- **La persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie sobre el piso, a la izquierda del
+  soporte y un poco hacia el lector, mirando hacia la línea, con una sombra corta. El dibujo no tiene piso: va 1,20 m
+  bajo el eje del tubo (`LV.persona` en `geo.mjs`, medida del libro). El detalle no la lleva.
+
 **Ningún nombre de fabricante.**
 
 ## Qué sale de dónde
@@ -155,5 +159,5 @@ poliuretano del congelador, y `lv-wool-cut` y `lv-fill-cut` (el relleno de las c
 `lv-blanket` y `lv-gasket` (la tela de las chaquetas desmontables y la empaquetadura), caucho; `lv-paint` y `lv-strap`
 (la viga, las guías, el volante y las correas), pintado, y `lv-paint-cut`, la sección de la viga; `lv-agua` (el
 condensado), agua; el vapor y el condensado en el azul; el perfil de temperatura en el naranja del calor, y su eje en
-la tinta 2. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar la vista sin rehacer el
+la tinta 2; `ps-persona`, el material «persona». Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar la vista sin rehacer el
 dibujo.

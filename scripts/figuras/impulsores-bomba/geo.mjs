@@ -65,3 +65,14 @@ export const AX = {
   washer: { r: 38, h: 4 }, nut: { af: 55, h: 30 },
   casing: { rIn: 150.6, t: 12, z0: -118, z1: 96, fl: { r: 205, t: 18 }, bolts: 12, boltR: 182, hole: 9 },
 };
+
+/* ---------- la mano de referencia (medida del libro) ----------
+   Una mano derecha de adulto (190 mm de la muñeca a la punta del dedo medio, 85 mm de palma; ../persona.mjs), apoyada
+   con la palma hacia abajo al lado del impulsor, a la derecha y un poco hacia el lector, con los dedos hacia el fondo y
+   un poco hacia el impulsor y un trozo de antebrazo cortado. Su posición en el plano del suelo va en la base de la cámara:
+   der, a la derecha en pantalla; frente, hacia el lector; z, la altura del centro de la muñeca; gira, cuántos grados se
+   vuelven los dedos hacia el impulsor. Nada de la mano tapa el ojo, los álabes ni lo que se rotula. */
+export const MANO = {
+  rad: { der: 182, frente: 142, z: -46, gira: 24, antebrazo: 30 },
+  axial: { der: 300, frente: 140, z: -112, gira: 30, antebrazo: 30 },
+};

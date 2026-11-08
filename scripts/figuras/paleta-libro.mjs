@@ -176,6 +176,9 @@ export const CLASES = {
   // impulsores de bomba (capítulo 11): el anillo de desgaste es de bronce; la carcasa del axial, de fundición
   'ib-ss': 'acero', 'ib-sh': 'pintado', 'ib-hw': 'fundicion', 'ib-ring': 'cobre', 'ib-cast': 'fundicion',
   'ib-cut': 'acero/corte', 'ib-cut-c': 'fundicion/corte', 'ib-bore': { fill: 'hueco.medio', stroke: 'hueco.oscuro' },
+  // la figura humana de referencia (persona.mjs): la persona de 1,75 m o la mano, el corte del antebrazo y la sombra en
+  // el piso; las usan la línea de vapor (capítulo 21) y los impulsores de bomba (capítulo 11)
+  'ps-persona': 'persona', 'ps-persona-corte': 'persona/corte', 'ps-sombra': { fill: 'persona.sombras.0', 'fill-opacity': 0.35 },
   // filtro prensa (capítulo 18): la torta, la suspensión y el agua del lavado
   '.fp-cake .iso-fill,.fp-cake .iso-top': { fill: 'solido.cara' }, '.fp-cake .iso-top': { fill: 'solido.tapa' },
   '.fp-cake .iso-shade[data-shade="0"]': { fill: 'solido.sombras.0' }, '.fp-cake .iso-shade[data-shade="1"]': { fill: 'solido.sombras.1' },

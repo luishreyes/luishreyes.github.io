@@ -23,6 +23,7 @@ const G = await import(KIT + "/kit/lathe.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { mano, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 
 export const IMPS = ["cerrado", "semiabierto", "abierto", "axial"];
 const argImp = (process.argv.find((a) => a.startsWith("--imp=")) || "--imp=all").slice(6);
@@ -45,19 +46,31 @@ const BANDS = [0, 0.2, 0.42, 0.62];
 const BAND = (s) => { let t = 0; while (t < BANDS.length && s >= BANDS[t]) t++; return t; };
 const lerp = (a, b, t) => a + (b - a) * t;
 
+/* ---------- la mano de referencia: dónde va (geo.mjs, MANO) ---------- */
+function manoDe(ax) {
+  const M = ax ? GEO.MANO.axial : GEO.MANO.rad, az = (ax ? GEO.AX.AZ : GEO.RAD.AZ) * D2R;
+  const Rs = [Math.sin(az), -Math.cos(az), 0], Vh = [Math.cos(az), Math.sin(az), 0], g = M.gira * D2R;
+  const muneca = [Rs[0] * M.der + Vh[0] * M.frente, Rs[1] * M.der + Vh[1] * M.frente, M.z];
+  const dedos = unit3(add3(mul3(Vh, -Math.cos(g)), mul3(Rs, -Math.sin(g))));
+  // lo que ocupa en el suelo, para la cámara: la punta de los dedos, el corte del antebrazo y los dos lados de la palma
+  const t = [-dedos[1], dedos[0], 0];
+  const ext = [add3(muneca, mul3(dedos, 195)), add3(muneca, mul3(dedos, -M.antebrazo - 5)), add3(add3(muneca, mul3(dedos, 60)), mul3(t, 50)), add3(add3(muneca, mul3(dedos, 60)), mul3(t, -50)), add3(muneca, [0, 0, -25])];
+  return { muneca, dedos, ext, antebrazo: M.antebrazo };
+}
+
 /* ---------- las dos cámaras: la de los radiales y la del axial ---------- */
 const WD = 600, HD = 500;               // el área del dibujo; libro.mjs le agrega los rótulos a los lados
 function camRad() {
   const R = GEO.RAD, ext = [];
   for (let d = 0; d < 360; d += 10) for (const z of [-R.rs.t, R.fs.zTop]) ext.push([R.r2 * Math.cos(d * D2R), R.r2 * Math.sin(d * D2R), z]);
-  ext.push([0, 0, R.shaft.top + 2], [R.shaft.r, 0, R.shaft.bottom], [-R.shaft.r, 0, R.shaft.bottom], [0, R.shaft.r, R.shaft.bottom]);
+  ext.push([0, 0, R.shaft.top + 2], [R.shaft.r, 0, R.shaft.bottom], [-R.shaft.r, 0, R.shaft.bottom], [0, R.shaft.r, R.shaft.bottom], ...manoDe(false).ext);
   return k.fitProjection(ext, WD, HD, { pad: 8, azimuth: R.AZ, elevation: R.EL });
 }
 function camAx() {
   const X_ = GEO.AX, C = X_.casing, ext = [], az = X_.AZ * D2R;
   for (let d = 90; d <= 270; d += 10) for (const z of [C.z0, C.z1]) ext.push([C.fl.r * Math.cos(az + d * D2R), C.fl.r * Math.sin(az + d * D2R), z]);
   for (let d = -90; d <= 90; d += 10) for (const z of [-30, 30]) ext.push([X_.R * Math.cos(az + d * D2R), X_.R * Math.sin(az + d * D2R), z]);
-  ext.push([0, 0, X_.hub.z1 + X_.cone.h], [X_.shaft.r, 0, X_.shaft.bottom], [-X_.shaft.r, 0, X_.shaft.bottom]);
+  ext.push([0, 0, X_.hub.z1 + X_.cone.h], [X_.shaft.r, 0, X_.shaft.bottom], [-X_.shaft.r, 0, X_.shaft.bottom], ...manoDe(true).ext);
   return k.fitProjection(ext, WD, HD, { pad: 8, azimuth: X_.AZ, elevation: X_.EL });
 }
 
@@ -1046,7 +1059,8 @@ const CSS = `.ib-ss{--anatomy-paper:#eef0f2;--anatomy-face:#eef0f2;--anatomy-top
 .ib-cast{--anatomy-paper:#dfe2e5;--anatomy-face:#dfe2e5;--anatomy-top:#e9ebed;--anatomy-shade-0:#c1c6cb;--anatomy-shade-1:#cacfd3;--anatomy-shade-2:#d3d7da;--anatomy-shade-3:#dadde0}
 .ib-cut{--anatomy-paper:#c9ced3;--anatomy-face:#c9ced3;--anatomy-top:#c9ced3;--anatomy-shade-0:#c9ced3;--anatomy-shade-1:#c9ced3;--anatomy-shade-2:#c9ced3;--anatomy-shade-3:#c9ced3}
 .ib-cut-c{--anatomy-paper:#c1c6cb;--anatomy-face:#c1c6cb;--anatomy-top:#c1c6cb;--anatomy-shade-0:#c1c6cb;--anatomy-shade-1:#c1c6cb;--anatomy-shade-2:#c1c6cb;--anatomy-shade-3:#c1c6cb}
-.ib-bore{fill:#8f99a3;stroke:#6f7880;stroke-width:.4px}`;
+.ib-bore{fill:#8f99a3;stroke:#6f7880;stroke-width:.4px}
+${CSS_PERSONA}`;
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {
   const num = (v) => { let t = (Math.round(v * 10) / 10).toFixed(1).replace(/\.0$/, ""); if (t === "-0") t = "0"; return t.replace(/^(-?)0\./, "$1."); };
@@ -1087,6 +1101,14 @@ for (const name of WHICH) {
   const P = ax ? camAx() : camRad();
   const cx = contexto(P, ax ? 0.2 : 0.4, name);
   BUILD[name](cx);
+  // la mano de referencia, apoyada al lado (../persona.mjs): una sola pieza, en su lugar del orden
+  {
+    const { muneca, dedos, antebrazo } = manoDe(ax);
+    const m = mano({ P, muneca, dedos, dorso: [0, 0, 1], lado: "der", mm: 1, antebrazo, alza: 12 });
+    m.shapes.forEach((sh) => cx.record(sh));
+    cx.put("mano", m.ref, m.svg, m.shapes);
+    cx.ANCLAS.MANO = m.anclas.MANO;
+  }
   const R_ = cx.R_, PA = cx.PA;
   if (process.env.IB_PIX) {
     const [px, py] = process.env.IB_PIX.split(",").map(Number), cam = A.cameraBasis(PA);
