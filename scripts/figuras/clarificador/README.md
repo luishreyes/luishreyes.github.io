@@ -40,6 +40,10 @@ z = 0; un círculo amplía catorce veces dos canales entre placas.
 - **Las flechas**: el agua (azul) entra, pasa los orificios, baja bajo la pantalla, corre bajo el paquete, sube por tres
   canales y sale arriba hacia la canaleta y por el tubo al filtro; el lodo (café) resbala por las placas, el barredor lo
   arrastra por el piso a la tolva y sale por la purga.
+- **La persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie en el piso de afuera (al nivel de la
+  cara de abajo de la losa), detrás de la válvula de purga y junto al muro de la entrada, mirando hacia la válvula, con
+  una sombra corta (`CL.persona` en `geo.mjs`, medida del libro). La corona del muro, de 250 mm, no da para los pies.
+  El detalle no la lleva.
 - **El detalle** (`node build.mjs --detalle`): dos canales en el plano del corte, catorce veces más grandes, con las
   placas de 1,5 mm, el agua que sube por el centro de cada canal, flóculos de 2 a 4 mm (dentro de los 1 a 4 mm de los de
   alumbre de Kawamura) que caen a la placa de abajo, y la película de lodo pegada a la cara de arriba de cada placa, más gruesa
@@ -165,7 +169,8 @@ columna de 620 px.
 (`estilo/paleta.json`, sección `isometricas`): `libro.mjs` la pasa por `../paleta-libro.mjs`. `cp-conc` es concreto y
 `cp-cut-c`, su corte; `cp-ss` y `cp-pipe` (las placas, la pantalla, la canaleta, la caja, los tubos), acero, y `cp-cut`,
 `cp-cut1`, su corte; `cp-cast` y `cp-chain` (las ruedas, las cadenas, las chumaceras, la válvula), fundición;
-`cp-paint` y `cp-frp` (el motorreductor, el actuador, las paletas), pintado; `cp-rubber` (las zapatas), caucho; el lodo
+`cp-paint` y `cp-frp` (el motorreductor, el actuador, las paletas), pintado; `cp-rubber` (las zapatas), caucho;
+`ps-persona`, el material «persona»; el lodo
 (`cp-lodo`, `cp-lodo-c`, `cp-lodo-pel`) y el flóculo (`cp-floc`), los tonos del sólido; las bocas, hueco; el agua, la
 sombra honda del agua, más clara en la cara del corte (0,3) que en los demás cortes, porque se mira a través de un tanque
 hondo, y casi opaca en el detalle (0,8), que se lee como un corte; las flechas, el azul de la base y el oscuro del sólido.

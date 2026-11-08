@@ -27,6 +27,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const CL = GEO.CL;
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const DET = process.argv.includes("--detalle");
 const STEP = Number(process.env.CL_STEP || (DET ? 2 : 0.25));
@@ -348,6 +349,14 @@ const BX = CL.box;
   ANCH.VALVULA = [xv + 26, PU.y + 125, ZPU + 300];
   ANCH.ACTUADOR = [xv, PU.y + 82, zc0 + 200];
   ANCH.PURGA = [PU.xe + 100, PU.y, ZPU + PU.ro];
+}
+// la persona de referencia: 1,75 m, de pie en el piso junto a la purga (no va en el detalle)
+if (!DET) {
+  const PS = CL.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, PS.piso], rumbo: PS.rumbo, mm: 1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.CABEZA;
 }
 
 /* ====================================================================
@@ -772,7 +781,8 @@ const CSS = `.cp-cut{${flat("#c9ced3")}}.cp-cut1{${flat("#d6dade")}}.cp-cut-c{${
 .cp-flecha{fill:#2e5e9e;stroke:none;opacity:.85}
 .cp-flujo-l{fill:none;stroke:#7a5634;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
 .cp-flecha-l{fill:#7a5634;stroke:none;opacity:.9}.cp-fino{stroke-width:1.1px}
-.cp-det-fondo{fill:#ffffff;stroke:none}.cp-det-marco{fill:none;stroke:#525c64;stroke-width:1px}`;
+.cp-det-fondo{fill:#ffffff;stroke:none}.cp-det-marco{fill:none;stroke:#525c64;stroke-width:1px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

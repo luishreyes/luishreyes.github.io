@@ -54,6 +54,10 @@ export const CL = {
   col: { r: 223, sp: [[900, 413], [900, 933], [4650, 933], [4650, 413]], cy: [-1150, -150], cw: 30, flight: { t: 76, h: 152, off: 15, y0: -1250, y1: -50 }, n: 6, shaft: 30, rail: { w: 50, t: 10, ys: [-1200, -100] } },
   /* el motorreductor del barredor, sobre la corona del muro de atrás, y la cadena de transmisión */
   drv: { x: 900, rTop: 120, rBot: 150, y: -1228, zTop: 4330 },
+  /* la persona de referencia (../persona.mjs, 1,75 m): de pie en el piso de afuera, al nivel de la cara de abajo de la
+     losa, entre la válvula de purga y el muro de la entrada, mirando hacia la válvula. La corona del muro, de 250 mm y
+     a 4,2 m, no es un lugar para estar de pie. Medida del libro. */
+  persona: { x: -1100, y: -1050, piso: -600, rumbo: 76 },
 };
 
 // El caso (herramientas/decantadores.py del libro)
