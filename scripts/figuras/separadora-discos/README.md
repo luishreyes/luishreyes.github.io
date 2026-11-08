@@ -42,9 +42,10 @@ entre dos discos.
   resbala; el aceite va hacia el eje por la cara de arriba del disco de abajo (Perry, p. 18-121; Coulson y Richardson,
   p. 646). Las gotas van mucho más grandes que las reales.
 - **La persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie en el piso (z = 0, donde apoyan los
-  cojines), del lado del motor, a la izquierda del bastidor y adelante, de perfil y mirando hacia la máquina, con una
-  sombra corta (`SD.persona` en `geo.mjs`, medida del libro). Queda a la izquierda de la columna de rótulos, sin tapar
-  el corte. El detalle no la lleva.
+  cojines), detrás del bastidor y a la derecha, entre la capota y el ciclón, de perfil y mirando hacia la izquierda,
+  con una sombra corta (`SD.persona` en `geo.mjs`, medida del libro). La capota y el ciclón la tapan en parte de la cintura para
+  abajo y la cabeza asoma sobre la caja de salidas; los rótulos de arriba a la derecha van corridos a su derecha y el de
+  la entrada de la mezcla, a la izquierda del tubo. La vista no se ensancha. El detalle no la lleva.
 
 **Ningún nombre de fabricante.** Las fuentes muestran máquinas comerciales; el dibujo sigue la disposición que
 describen, no una máquina en particular.

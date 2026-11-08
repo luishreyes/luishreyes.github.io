@@ -782,7 +782,7 @@ const CY = SD.cyclone;
    ==================================================================== */
 if (!DET) {
   const PS = SD.persona;
-  const per = personaDePie({ P, pie: [PS.x, PS.y, PS.piso], rumbo: PS.rumbo, mm: 1, adelante: "der" });
+  const per = personaDePie({ P, pie: [PS.x, PS.y, PS.piso], rumbo: PS.rumbo, mm: 1 });
   per.shapes.forEach(record);
   put("persona", per.ref, per.svg, per.shapes);
   ANCH.PERSONA = per.anclas.CABEZA;
