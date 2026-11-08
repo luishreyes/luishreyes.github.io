@@ -4,6 +4,7 @@
 // build.mjs (out/homogeneizador_data.json y out/detalle_data.json); x, y van en las unidades de la vista del libro.
 export const ROTULOS = [
   ['CARTER', 'fig', 'Cárter', -8, 420, 'izq'],
+  ['MANO', 'fig', 'Mano', 150, 70, 'izq'],
   ['ACOPLE', 'fig', 'Acoples de los pistones,\na 120° uno del otro', 10, 700, 'der'],
   ['PISTON', 'fig', 'Pistón', 205, 612, 'izq'],
   ['SELLOS', 'fig', 'Doble sello del pistón', 268, 650, 'izq'],
@@ -28,6 +29,7 @@ export const ROTULOS = [
 // unidades del dibujo, más grande que la de la vista del libro
 export const ROTULOS_EN = [
   ['ACOPLE', 'fig', 'Plungers, 120° apart', 10, 700, 'der'],
+  ['MANO', 'fig', 'Hand', 150, 70, 'izq'],
   ['VDES', 'fig', 'Discharge valve', 445, 40, 'izq'],
   ['VSUC', 'fig', 'Suction valve', 478, 650, 'der'],
   ['ENTRADA', 'fig', 'Milk in', 672, 606, 'izq'],
