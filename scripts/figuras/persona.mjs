@@ -1,12 +1,17 @@
 /* ====================================================================
    La figura humana de referencia de las isométricas del libro de operaciones unitarias (skill anatomy): un maniquí
-   neutro, sin cara, sin pelo y sin ropa, que da la escala de un equipo. Una sola figura para todo el libro, en dos
+   neutro, sin cara, sin pelo y sin ropa, que da la escala de un equipo. Una sola figura para todo el libro, en tres
    poses:
 
    - personaDePie(): una persona de 1,75 m de pie, con los brazos a los lados (uno puede ir un poco adelante), donde
      trabajaría junto al equipo: sobre el piso o la plataforma, con una sombra corta bajo los pies;
-   - mano(): la mano sola, de la muñeca a la punta del dedo medio 190 mm y 85 mm de ancho de palma, abierta y
-     apoyada (la palma hacia abajo, los dedos un poco doblados), con un trozo de antebrazo cortado limpio.
+   - manoEnBorde(): la mano sola (de la muñeca a la punta del dedo medio 190 mm, 85 mm de ancho de palma) que llega
+     desde atrás del equipo y apoya las yemas en su borde, como quien lo sostiene o lo toca: los nudillos sobre el canto,
+     cada dedo doblado lo justo para tocar la superficie, el pulgar abierto y apoyado, y el antebrazo doblado hacia el
+     fondo, oculto detrás del dorso, con la cara del corte mirando hacia atrás. Es la que va junto a un equipo chico
+     (pedido del profesor, 8 nov 2026: que el corte no se vea y que la mano ocupe poco);
+   - mano(): la primera pose, la mano apoyada sobre el plano de la muñeca con un trozo de antebrazo cortado limpio.
+     Si el antebrazo mira al lector se ve la cara del corte, que pesa más que el equipo: no se usa para la escala.
 
    La regla del libro (pedido del profesor, 8 nov 2026): una persona de 1,75 m donde trabajaría; si el equipo es más
    chico que una persona, la mano; en los círculos de detalle, nada. Los simuladores no la llevan.
@@ -26,22 +31,27 @@
 
    Uso, en el build.mjs de una figura:
 
-     import { personaDePie, mano } from "../persona.mjs";
+     import { personaDePie, manoEnBorde } from "../persona.mjs";
      const per = personaDePie({ P, pie: [x, y, zPiso], rumbo: 0, mm: 1 });   // rumbo: hacia dónde mira (grados desde +x hacia +y)
      per.shapes.forEach(record);                                              // las formas ya van en unidades de la figura
      put("persona", per.ref, per.svg, per.shapes);
-     const m = mano({ P, muneca: [x, y, z], dedos: [dx, dy, dz], dorso: [0, 0, 1], lado: "der", mm: 1 });
+     // la mano: borde, el punto del canto bajo el nudillo del medio; hacia, hacia adentro del equipo
+     const m = manoEnBorde({ P, borde: [x, y, zCara], hacia: [dx, dy, 0], lado: "der", mm: 1 });
      m.shapes.forEach(record); put("mano", m.ref, m.svg, m.shapes);
 
-   Las dos devuelven también `anclas` (CABEZA, PECHO, MANO, …) para los rótulos. La clase del material es `ps-persona`
+   La mano en el borde se pone atrás del equipo (lejos del lector), unos 30° a 50° hacia un lado, donde no tape nada
+   rotulado. Como el antebrazo sale de la cámara, se arma con la P definitiva; para ajustar la cámara a la mano se arma
+   una vez con una P provisional (la misma elevación y el mismo azimut) y se suman sus `pts` a los puntos de la cámara.
+   Todas devuelven también `anclas` (CABEZA, PECHO, MANO, …) para los rótulos. La clase del material es `ps-persona`
    (la paleta del libro la pinta con el material «persona» de estilo/paleta.json), la del corte del antebrazo
    `ps-persona-corte` y la de la sombra `ps-sombra`; `CSS_PERSONA` trae los tonos para la vista de la figura.
 
-   Prueba aparte: node persona.mjs --audit (una escena mínima con la persona de pie y la mano junto a un disco de
-   190 mm; debe terminar en «audit passed», en un minuto; escribe la vista en el directorio temporal, o en PERSONA_OUT).
+   Prueba aparte: node persona.mjs --audit (una escena mínima con la persona de pie, la mano apoyada junto a un disco de
+   190 mm y la mano en el borde de otro; debe terminar en «audit passed», en un par de minutos; PERSONA_CASOS=borde
+   corre solo uno; escribe la vista en el directorio temporal, o en PERSONA_OUT).
 
    Dónde va hoy: la línea de vapor del capítulo 21 (linea-vapor/, la persona) y los impulsores de bomba del capítulo 11
-   (impulsores-bomba/, la mano). Los simuladores no la llevan.
+   (impulsores-bomba/, la mano en el borde). Los simuladores no la llevan.
    ==================================================================== */
 import { fileURLToPath } from "node:url";
 import { writeFileSync } from "node:fs";
@@ -168,11 +178,12 @@ const deVec = (v) => {
 };
 
 /* Una pieza: llaves (secciones) → secciones densas (Catmull-Rom) → caras → SVG; y sus formas para el audit. */
-function pieza(nombre, llaves, ctx, { cls = "ps-persona", corte = null, ground = false } = {}) {
+function pieza(nombre, llaves, ctx, { cls = "ps-persona", corte = null, ground = false, funde = 0 } = {}) {
   const { P, V, L, KS } = ctx;
   // las secciones densas: cada tramo, en pasos de unos 3,5 px de pantalla
-  const vs = llaves.map(vec), dense = [];
+  const vs = llaves.map(vec), dense = [], llaveEn = [];
   for (let i = 0; i < vs.length - 1; i++) {
+    llaveEn[i] = dense.length;
     const p0 = vs[Math.max(0, i - 1)], p1 = vs[i], p2 = vs[i + 1], p3 = vs[Math.min(vs.length - 1, i + 2)];
     const dl = Math.max(len3(sub3(llaves[i + 1].c, llaves[i].c)), Math.abs(llaves[i + 1].a - llaves[i].a), Math.abs(llaves[i + 1].b - llaves[i].b));
     const q = Math.max(1, Math.ceil((dl * KS) / 5));
@@ -209,8 +220,10 @@ function pieza(nombre, llaves, ctx, { cls = "ps-persona", corte = null, ground =
      abierto (el corte del antebrazo). */
   const tapa = tapas.find((x) => x.vis);
   const sil = [];
-  for (let i = 0; i < M - 1; i++) for (let j = 0; j < N; j++) if (vis(F(i, j - 1)) !== vis(F(i, j))) sil.push([R[i][j], R[i + 1][j]]);
-  for (let i = 0; i < M; i++) for (let j = 0; j < N; j++) {
+  // funde: las primeras llaves van sin silueta (el arranque de un dedo dentro de la palma se funde con ella)
+  const i0 = funde ? llaveEn[funde] ?? 0 : 0;
+  for (let i = i0; i < M - 1; i++) for (let j = 0; j < N; j++) if (vis(F(i, j - 1)) !== vis(F(i, j))) sil.push([R[i][j], R[i + 1][j]]);
+  for (let i = i0; i < M; i++) for (let j = 0; j < N; j++) {
     const e = [R[i][j], R[i][(j + 1) % N]];
     if (i === 0 || i === M - 1) {
       const pole = llaves[i === 0 ? 0 : llaves.length - 1].a < 1e-6;
@@ -342,7 +355,11 @@ function pieza(nombre, llaves, ctx, { cls = "ps-persona", corte = null, ground =
     }
   }
   const centro = mul3(llaves.reduce((s, st) => add3(s, st.c), [0, 0, 0]), 1 / llaves.length);
-  return { name: nombre, svg: out.join(""), shapes, ref: centro };
+  // unos puntos de la superficie, para que la figura ajuste su cámara a lo que ocupa la pieza
+  const pts = [];
+  for (let i = 0; i < M; i += Math.max(1, Math.floor(M / 8))) for (let j = 0; j < N; j += Math.max(1, Math.floor(N / 12))) pts.push(R[i][j]);
+  for (let j = 0; j < N; j += Math.max(1, Math.floor(N / 12))) pts.push(R[M - 1][j]);
+  return { name: nombre, svg: out.join(""), shapes, ref: centro, pts };
 }
 
 /* Un segmento redondo (brazo, dedo) a lo largo de una espina, con los extremos redondeados: puntos y radios. */
@@ -360,7 +377,8 @@ function tubo(nombre, puntos, radios, ctx, opts = {}) {
   llaves.push(...tapa(0, -1).reverse());
   for (let i = 0; i < n; i++) { const { X, Y } = marco(i); llaves.push({ c: puntos[i], X, Y, a: radios[i] * ell, b: radios[i] / ell, e: 2 }); }
   llaves.push(...tapa(n - 1, 1));
-  return pieza(nombre, llaves, ctx, opts);
+  // funde se da en puntos de la espina; la tapa del arranque suma seis llaves
+  return pieza(nombre, llaves, ctx, opts.funde ? { ...opts, funde: 6 + opts.funde } : opts);
 }
 
 /* el contexto de dibujo: la cámara de la figura y las unidades */
@@ -378,16 +396,22 @@ function unir(nombre, partes, ctx) {
   partes.forEach((p) => { for (const otro of p.encima || []) { const a = orden.findIndex((it) => it.name === p.name), b = orden.findIndex((it) => it.name === otro); if (a >= 0 && b > a) { const [it] = orden.splice(a, 1); orden.splice(b, 0, it); } } });
   const shapes = partes.flatMap((p) => p.shapes);
   const ref = mul3(partes.reduce((s, p) => add3(s, p.ref), [0, 0, 0]), 1 / partes.length);
-  return { name: nombre, svg: orden.map((it) => it.svg).join(""), shapes, ref, ciclos: sol.cycles.length };
+  return { name: nombre, svg: orden.map((it) => it.svg).join(""), shapes, ref, ciclos: sol.cycles.length, pts: partes.flatMap((p) => p.pts || []) };
 }
 
 /* ====================================================================
    la mano: la palma, cuatro dedos, el pulgar y (si se pide) un trozo de antebrazo cortado
    muneca: el centro de la muñeca; dedos: hacia dónde apuntan los dedos; dorso: la normal del dorso de la mano;
    lado: "der" o "izq"; dobla: cuánto se doblan los dedos (1, apoyada; 1,4, colgando); antebrazo: largo en mm (0, sin
-   antebrazo); alza: grados que sube el antebrazo sobre el plano de la mano
+   antebrazo); alza: grados que sube el antebrazo sobre el plano de la mano; brazo: la dirección del antebrazo, de la
+   muñeca hacia el codo (si se da, manda sobre alza); plano: {o, n}, una superficie sobre la que se apoyan las yemas:
+   cada dedo y el pulgar se doblan lo justo para tocarla; abrePulgar: cuánto se separa el pulgar (0 a 1)
    ==================================================================== */
-function partesMano(ctx, { muneca, dedos, dorso, lado = "der", dobla = 1, antebrazo = 0, alza = 8, abre = 1, nombre = "mano", ground = false }) {
+// el grosor a lo largo de un dedo (once puntos: el nudillo, su arranque y tres por falange), relativo a la recta de la
+// base a la punta: abultado en el nudillo y en las dos articulaciones, un poco más delgado a mitad de cada falange
+// (solo en la mano en el borde: la persona de pie y la mano apoyada quedan como estaban)
+const PERFIL_DEDO = [1.13, 1.07, 0.99, 0.97, 1.03, 0.97, 0.96, 1.02, 0.98, 1.0, 1.0];
+function partesMano(ctx, { muneca, dedos, dorso, lado = "der", dobla = 1, antebrazo = 0, alza = 8, brazo = null, abre = 1, plano = null, abrePulgar = null, nombre = "mano", ground = false }) {
   const mm = ctx.mm, C = CUERPO;
   const d = unit3(dedos), n0 = unit3(sub3(dorso, mul3(d, dot3(dorso, d)))), n = n0;
   const t = lado === "der" ? cross3(n, d) : cross3(d, n);      // hacia el pulgar
@@ -395,57 +419,125 @@ function partesMano(ctx, { muneca, dedos, dorso, lado = "der", dobla = 1, antebr
   const partes = [];
   // la palma: secciones achatadas (superelipse de exponente 2,8)
   partes.push(pieza(`${nombre}.palma`, C.palma.map(([s, a, b, tc = 0]) => ({ c: W(s, tc, 0), X: t, Y: n, a: a * mm, b: b * mm, e: 2.8 })), ctx, { ground }));
-  // los dedos: tres falanges que se doblan hacia la palma
   const rot = (v, ax, ang) => { const c = Math.cos(ang), s = Math.sin(ang); return add3(add3(mul3(v, c), mul3(cross3(ax, v), s)), mul3(ax, dot3(ax, v) * (1 - c))); };
-  C.dedos.forEach(([s0, t0, Lf, rb, rt, ab], q) => {
+  // lo que le falta a la pieza para tocar el plano (negativo: lo atraviesa)
+  const holgura = (pts, radios) => Math.min(...pts.map((p, i) => dot3(sub3(p, plano.o), plano.n) - radios[i]));
+  // el doblez que deja la pieza tocando el plano: entre 0 y 8 veces el doblez de la mano apoyada, por bisección
+  const ajusta = (gen) => {
+    const hueco = 0.4 * mm, g = (kf) => { const [p, r] = gen(kf); return holgura(p, r) - hueco; };
+    if (g(0) <= 0) return 0;
+    if (g(8) >= 0) return 8;
+    let lo = 0, hi = 8;
+    for (let it = 0; it < 32; it++) { const m = (lo + hi) / 2; if (g(m) > 0) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  };
+  // los dedos: tres falanges que se doblan hacia la palma, con el nudillo un poco por encima del plano de la palma
+  const nud = plano ? 0 : -1;
+  const dedo = (q, kf) => {
+    const [s0, t0, Lf, rb, rt, ab] = C.dedos[q];
     let dir = rot(d, n, (lado === "der" ? 1 : -1) * ab * abre * D2R);
-    const flex = [10, 14, 9].map((g) => g * dobla * D2R), largos = [0.46, 0.3, 0.24].map((f) => f * Lf);
-    const nudo = W(s0 - 8, t0, -1);
+    const flex = [10, 14, 9].map((g) => g * kf * D2R), largos = [0.46, 0.3, 0.24].map((f) => f * Lf);
+    const nudo = W(s0 - (plano ? 16 : 8), t0, nud);
     const pts = [nudo, add3(nudo, mul3(dir, 8 * mm))];
     let p = pts[1];
     largos.forEach((Lg, m) => {
       const eje = unit3(cross3(dir, n));                         // doblar hacia la palma (−n)
       dir = rot(dir, eje, -flex[m]);
-      const pasos = 3;
-      for (let s = 1; s <= pasos; s++) pts.push(add3(p, mul3(dir, (Lg * mm * s) / pasos)));
-      p = pts[pts.length - 1];
-    });
-    const radios = pts.map((_, i) => lerp(rb, rt, i / (pts.length - 1)) * mm);
-    partes.push(tubo(`${nombre}.dedo${q + 1}`, pts, radios, ctx, { ref: t, achata: 1.08, ground }));
-  });
-  // el pulgar
-  {
-    const T = C.pulgar;
-    let dir = unit3(add3(add3(mul3(d, 0.84), mul3(t, 0.2 + 0.24 * abre)), mul3(n, -0.34)));
-    const pts = [W(T.s, T.t, T.n)];
-    let p = pts[0];
-    T.largos.forEach((Lg, m) => {
       for (let s = 1; s <= 3; s++) pts.push(add3(p, mul3(dir, (Lg * mm * s) / 3)));
       p = pts[pts.length - 1];
-      dir = unit3(add3(mul3(dir, 1), add3(mul3(d, 0.22), mul3(n, -0.1 * dobla))));
-      void m;
     });
-    const radios = pts.map((_, i) => { const u = (i / (pts.length - 1)) * 3, m = Math.min(2, Math.floor(u)); return lerp(T.radios[m], T.radios[m + 1], u - m) * mm; });
+    const radios = pts.map((_, i) => lerp(rb, rt, i / (pts.length - 1)) * (plano ? PERFIL_DEDO[i] ?? 1 : 1) * mm);
+    return [pts, radios];
+  };
+  C.dedos.forEach((_, q) => {
+    const kf = plano ? ajusta((k2) => dedo(q, k2)) : dobla;
+    const [pts, radios] = dedo(q, kf);
+    partes.push(tubo(`${nombre}.dedo${q + 1}`, pts, radios, ctx, { ref: t, achata: 1.08, ground, ...(plano ? { funde: 1 } : {}) }));
+  });
+  // el pulgar: sale de la base de la palma, abierto hacia su lado y un poco hacia la palma
+  const T = C.pulgar, ap = abrePulgar ?? (0.2 + 0.24 * abre) / 0.44;
+  const pulgar = (kf) => {
+    let dir = unit3(add3(add3(mul3(d, 0.84 - 0.3 * Math.max(0, ap - 1)), mul3(t, 0.44 * ap)), mul3(n, plano ? -0.12 : -0.34)));
+    const pts = [W(T.s, T.t, plano ? T.n + 3 : T.n)];
+    let p = pts[0];
+    T.largos.forEach((Lg) => {
+      for (let s = 1; s <= 3; s++) pts.push(add3(p, mul3(dir, (Lg * mm * s) / 3)));
+      p = pts[pts.length - 1];
+      if (plano) dir = rot(unit3(add3(dir, mul3(d, 0.12))), unit3(cross3(dir, n)), -12 * kf * D2R);
+      else dir = unit3(add3(mul3(dir, 1), add3(mul3(d, 0.22), mul3(n, -0.1 * kf))));
+    });
+    // grueso en la base (la eminencia de la palma), con las articulaciones marcadas
+    const radios = pts.map((_, i) => { const u = (i / (pts.length - 1)) * 3, m = Math.min(2, Math.floor(u)); return lerp(T.radios[m], T.radios[m + 1], u - m) * (plano ? [1.08, 1.02, 0.98, 1.04, 0.98, 0.97, 1.03, 0.99, 1, 1][i] ?? 1 : 1) * mm; });
+    return [pts, radios];
+  };
+  {
+    const kf = plano ? ajusta(pulgar) : dobla;
+    const [pts, radios] = pulgar(kf);
     partes.push(tubo(`${nombre}.pulgar`, pts, radios, ctx, { ref: n, achata: 1.05, ground }));
   }
   // el antebrazo, cortado limpio
   if (antebrazo > 0) {
-    const back = unit3(add3(mul3(d, -Math.cos(alza * D2R)), mul3(n, Math.sin(alza * D2R))));
+    const back = brazo ? unit3(brazo) : unit3(add3(mul3(d, -Math.cos(alza * D2R)), mul3(n, Math.sin(alza * D2R))));
     const up = unit3(cross3(t, back)), nn = dot3(up, n) < 0 ? mul3(up, -1) : up;
     const llaves = [];
-    const cortes = [[antebrazo, 34, 24], [antebrazo * 0.6, 32, 22], [antebrazo * 0.25, 30, 20], [0, 28, 18], [-10, 25, 16], [-16, 0, 0]];
+    // doblado en la muñeca (brazo dado), un poco más delgado y con el arranque corto, para que no asome por el dorso ni a
+    // los lados de la muñeca
+    const cortes = brazo ? [[antebrazo, 29, 21], [antebrazo * 0.6, 27, 19], [antebrazo * 0.25, 25, 17], [0, 24, 15], [-4, 21, 12], [-7, 0, 0]] : [[antebrazo, 34, 24], [antebrazo * 0.6, 32, 22], [antebrazo * 0.25, 30, 20], [0, 28, 18], [-10, 25, 16], [-16, 0, 0]];
     for (const [s, a, b] of cortes) llaves.push({ c: add3(muneca, mul3(back, s * mm)), X: t, Y: nn, a: a * mm, b: b * mm, e: 2.3 });
     partes.push(pieza(`${nombre}.antebrazo`, llaves, ctx, { corte: "inicio", ground: true }));
   }
+  /* en la mano en el borde cada dedo arranca dentro de la palma, sin silueta en ese tramo (funde), y se pinta encima de
+     ella: el dorso pasa al dedo sin una tapa redonda dibujada, y el abultamiento del arranque hace de nudillo */
+  if (plano) partes.slice(1, 5).forEach((p2) => (p2.encima = [partes[0].name]));
   return partes;
 }
 
+/* La mano apoyada (la primera pose): la palma hacia abajo sobre el plano de la muñeca, los dedos un poco doblados y un
+   trozo de antebrazo cortado limpio. Ojo: si el antebrazo mira al lector, se ve la cara del corte; para dar la escala
+   de un equipo chico va mejor manoEnBorde. */
 export function mano({ P, muneca, dedos, dorso = [0, 0, 1], lado = "der", mm = 1, dobla = 1, antebrazo = 65, alza = 8, nombre = "mano", owner = "mano" }) {
   const ctx = contexto(P, mm, owner);
   const partes = partesMano(ctx, { muneca, dedos, dorso, lado, dobla, antebrazo, alza, nombre });
   const u = unir(nombre, partes, ctx);
   const d = unit3(dedos), nn = unit3(dorso);
   u.anclas = { MANO: add3(muneca, mul3(add3(mul3(d, 55), mul3(nn, 15)), mm)), MUNECA: muneca };
+  return u;
+}
+
+/* ====================================================================
+   la mano en el borde: la que da la escala de un equipo chico
+   La mano llega desde atrás del equipo y apoya las yemas en su borde, como quien lo sostiene o lo toca: los nudillos
+   justo sobre el borde, los dedos doblados hasta tocar la superficie (cada uno lo justo, así tocan todos aunque sean de
+   largos distintos), el pulgar abierto y apoyado también, el dorso inclinado hacia afuera y abajo, y el antebrazo
+   doblado en la muñeca hacia el fondo. La dirección del antebrazo sale de la cámara: es el reflejo de la palma en el
+   plano de la pantalla, así en el dibujo queda justo detrás del dorso, oculto por la mano, y la cara del corte mira
+   hacia el fondo (no se ve). Sirve para cualquier borde: una tapa, una brida, el canto de un disco.
+
+   borde: el punto del canto bajo el nudillo del dedo medio; hacia: hacia adentro del equipo, perpendicular al canto (se
+   proyecta sobre la superficie); gira: grados que se gira la mano sobre la superficie para que el pulgar quede hacia
+   adentro y se apoye también (con 0 los dedos van perpendiculares al canto y el pulgar queda en el aire, junto al canto);
+   sube: la normal de la superficie; alto: el centro del nudillo sobre la superficie, en mm (con más alto los dedos se
+   doblan más); inclina: grados que baja el dorso desde los nudillos hacia la muñeca (por defecto, según la cámara: 40°
+   menos que la elevación, y nunca menos de 0); antebrazo: el largo que se dibuja, en mm (no más que la palma, para que no asome).
+   Devuelve también `pts` (puntos de su superficie, para la cámara) y `anclas` (MANO, el dorso; MUNECA; YEMA).
+   ==================================================================== */
+export function manoEnBorde({ P, borde, hacia, sube = [0, 0, 1], lado = "der", mm = 1, gira = 40, alto = 38, inclina = null, antebrazo = 50, abrePulgar = 1.2, nombre = "mano", owner = "mano" }) {
+  const ctx = contexto(P, mm, owner), V = ctx.V;
+  const up = unit3(sube), h0 = unit3(sub3(hacia, mul3(up, dot3(hacia, up))));
+  // girada sobre la normal, con el pulgar hacia adentro del equipo
+  const ga = (lado === "der" ? -gira : gira) * D2R, h = unit3(add3(mul3(h0, Math.cos(ga)), mul3(cross3(up, h0), Math.sin(ga))));
+  const elev = Math.asin(Math.max(-1, Math.min(1, dot3(V, up)))) / D2R;
+  const g = (inclina ?? Math.max(0, Math.min(25, elev - 40))) * D2R;
+  // la palma sube de la muñeca a los nudillos; el dorso, perpendicular, hacia arriba y afuera
+  const p = add3(mul3(h, Math.cos(g)), mul3(up, Math.sin(g))), n = add3(mul3(up, Math.cos(g)), mul3(h, -Math.sin(g)));
+  const nudillo = add3(borde, mul3(up, alto * mm));
+  const muneca = sub3(sub3(nudillo, mul3(p, 90 * mm)), mul3(n, 2 * mm));
+  // el antebrazo: el reflejo de la palma en el plano de la pantalla (mismo trazo en el dibujo, hacia el fondo)
+  let brazo = unit3(sub3(p, mul3(V, 2 * dot3(p, V))));
+  if (dot3(p, V) <= 0.05) brazo = unit3(add3(mul3(V, -1), mul3(up, -0.3)));
+  const partes = partesMano(ctx, { muneca, dedos: p, dorso: n, lado, antebrazo, brazo, plano: { o: borde, n: up }, abre: 0.6, abrePulgar, nombre });
+  const u = unir(nombre, partes, ctx);
+  u.anclas = { MANO: add3(muneca, mul3(add3(mul3(p, 50), mul3(n, 17)), mm)), MUNECA: muneca, YEMA: add3(borde, mul3(h, 55 * mm)) };
   return u;
 }
 
@@ -507,16 +599,35 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const salida = join(process.env.PERSONA_OUT || tmpdir(), "persona-prueba.html");
   const vistas = [];
   let fallas = 0;
-  for (const caso of ["persona", "mano"]) {
+  const casos = (process.env.PERSONA_CASOS || "persona,mano,borde").split(",");
+  for (const caso of casos) {
     const W = 600, H = 600;
-    const ext = caso === "persona" ? [[-500, -500, 0], [500, 500, 0], [0, 0, 1750], [-500, 500, 0], [500, -500, 0]] : [[-200, -200, -60], [200, 260, 60], [0, 0, 60]];
-    const P = k.fitProjection(ext, W, H, { pad: 20, azimuth: 50, elevation: caso === "persona" ? 24 : 40 });
+    const ext = caso === "persona" ? [[-500, -500, 0], [500, 500, 0], [0, 0, 1750], [-500, 500, 0], [500, -500, 0]] : caso === "mano" ? [[-200, -200, -60], [200, 260, 60], [0, 0, 60]] : [[-170, -170, -40], [170, 170, 40]];
+    const cam = { pad: 20, azimuth: caso === "borde" ? 40 : 50, elevation: caso === "persona" ? 24 : caso === "mano" ? 40 : 45 };
+    let P = k.fitProjection(ext, W, H, cam);
+    // la mano en el borde: la cámara se ajusta también a lo que ocupa la mano (sus pts), como en una figura
+    const az = 40 * D2R, th = (Number(process.env.PERSONA_TH) || 50) * D2R;
+    const dir = [-Math.cos(az) * Math.cos(th) + Math.sin(az) * Math.sin(th), -Math.sin(az) * Math.cos(th) - Math.cos(az) * Math.sin(th), 0];
+    const hacia = mul3(dir, -1);
+    const opMano = () => ({ P, borde: [95 * dir[0], 95 * dir[1], 0], hacia, lado: process.env.PERSONA_LADO || "der", ...(process.env.PERSONA_AP ? { abrePulgar: Number(process.env.PERSONA_AP) } : {}), ...(process.env.PERSONA_ALTO ? { alto: Number(process.env.PERSONA_ALTO) } : {}) });
+    if (caso === "borde") P = k.fitProjection([...ext, ...manoEnBorde(opMano()).pts], W, H, cam);
     const R = A.recorder(P, { order: [], spring: {} });
     const put = (it) => { for (const sh of it.shapes) R.solid(sh); R.put({ piece: "frame", ride: "frame", name: it.name, at: it.ref, svg: it.svg, shapes: it.shapes, move: [0, 0, 0] }); };
     if (caso === "persona") {
       const per = personaDePie({ P, pie: [0, 0, 0], rumbo: 20, adelante: "izq" });
       put(per);
       console.log("persona:", per.shapes.length, "formas,", per.ciclos, "parejas sin orden claro");
+    } else if (caso === "borde") {
+      // el mismo disco de 190 mm y la mano derecha que llega desde atrás y apoya las yemas en su canto, atrás a la derecha
+      const Fd = { o: [0, 0, -10], a: [0, 0, 1], u: [1, 0, 0], v: [0, 1, 0] };
+      const sh = A.disc(Fd, 0, 10, 95, { name: "disco", owner: "disco", ground: true });
+      R.solid(sh);
+      const pts = []; for (let j = 0; j < 64; j++) { const a = (TAU * j) / 64; pts.push([95 * Math.cos(a), 95 * Math.sin(a)]); }
+      const svgD = k.solidSvg(k.extrude(pts, -10, 0, P), { tone: "mid" });
+      R.put({ piece: "frame", ride: "frame", name: "disco", at: [0, 0, -5], svg: svgD, shapes: [sh], move: [0, 0, 0] });
+      const m = manoEnBorde(opMano());
+      put(m);
+      console.log("mano en el borde:", m.shapes.length, "formas,", m.ciclos, "parejas sin orden claro");
     } else {
       // un disco de 190 mm (el impulsor del capítulo 11) y la mano derecha apoyada a su lado
       const Fd = { o: [0, 0, -10], a: [0, 0, 1], u: [1, 0, 0], v: [0, 1, 0] };
@@ -535,7 +646,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     vistas.push(`<div class="iso-stage">${svg}</div>`);
     if (AUD) { const res = A.audit(R, P, {}); console.log(A.report(res)); const n = A.failures(res); fallas += n; console.log(caso + ":", n ? `audit failed: ${n}` : "audit passed"); }
   }
-  writeFileSync(salida, k.pageHtml({ title: "Persona", theme: "light", width: 1240, body: `<div style="display:flex">${vistas.join("")}</div>`, script: "" }));
+  writeFileSync(salida, k.pageHtml({ title: "Persona", theme: "light", width: 1840, body: `<div style="display:flex">${vistas.join("")}</div>`, script: "" }));
   console.log(salida);
   if (AUD) { console.log(fallas ? `audit failed: ${fallas}` : "audit passed"); if (fallas) process.exitCode = 1; }
 }
