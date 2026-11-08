@@ -4,6 +4,8 @@
 // Las anclas son puntos de build.mjs (out/fig_data.json y out/detalle_data.json); x, y van en las unidades de la vista
 // del libro (las de la vista entera; el círculo va abajo a la izquierda, en la posición de libro.mjs).
 export const ROTULOS = [
+  // a la izquierda, arriba: la persona de referencia
+  ['PERSONA', 'fig', 'Persona\nde 1,75 m', -215, -262, 'der'],
   // arriba
   ['ALIMENTACION', 'fig', 'Entra la mezcla (aceite con agua,\no leche entera), por gravedad', 530, -44, 'der'],
   // a la izquierda, arriba (sobre el motor)
@@ -76,6 +78,7 @@ export const ROTULOS_EN = [
   ['LUMBRERA', 'fig', 'Discharge port', 60, 500, 'izq'],
   ['CICLON', 'fig', 'Sediment\ncyclone', 905, 600, 'der'],
   ['SINFIN', 'fig', 'Worm gear', 600, 990, 'der'],
+  ['PERSONA', 'fig', '1.75 m\nperson', -215, -262, 'der'],
   ['D_ACEITE', 'd', 'Light phase\nmoves in', 290, 840, 'der'],
   ['D_AGUA', 'd', 'Heavy phase and\nsolids move out', 15, 820, 'izq'],
 ];

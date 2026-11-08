@@ -82,6 +82,10 @@ export const SD = {
   spindle: { r0: 24, r: 30, journal: 34, bot: 95, lower: [80, 124], neck: [360, 462], cone: [490, 560] },
   cyclone: { x: 470, y: -170, r: 85, z0: 470, z1: 640, cone: 150, out: 30, foot: 250 },
   water: { phi: 195, z: 426 },
+  /* la persona de referencia (../persona.mjs, 1,75 m): de pie en el piso (z = 0, donde apoyan los cojines), del lado
+     del motor, adelante y a la izquierda del bastidor, mirando hacia la máquina. Solo en la vista entera; el detalle
+     no la lleva. Medida del libro. */
+  persona: { x: -1118, y: 550, piso: 0, rumbo: -30 },
   /* las densidades del caso (para la zona neutra): el aceite de cítricos y el agua a 20 °C (capítulo 16) */
   rho: { liviano: 842, pesado: 998 },
 };

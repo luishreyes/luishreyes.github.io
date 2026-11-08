@@ -41,6 +41,10 @@ entre dos discos.
   aceite. El agua y el sólido van hacia afuera por la cara de abajo del disco de arriba, donde forman una película que
   resbala; el aceite va hacia el eje por la cara de arriba del disco de abajo (Perry, p. 18-121; Coulson y Richardson,
   p. 646). Las gotas van mucho más grandes que las reales.
+- **La persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie en el piso (z = 0, donde apoyan los
+  cojines), del lado del motor, a la izquierda del bastidor y adelante, de perfil y mirando hacia la máquina, con una
+  sombra corta (`SD.persona` en `geo.mjs`, medida del libro). Queda a la izquierda de la columna de rótulos, sin tapar
+  el corte. El detalle no la lleva.
 
 **Ningún nombre de fabricante.** Las fuentes muestran máquinas comerciales; el dibujo sigue la disposición que
 describen, no una máquina en particular.
@@ -164,7 +168,7 @@ tazón, los discos, lo fijo de arriba, los tubos) son acero, y `sd-cut` y `sd-cu
 claro, para las piezas que van dentro de otras); `sd-cast` (el bastidor, las cajas de los rodamientos, la linterna, el tambor del freno, la válvula) es
 fundición, y `sd-cut-c`, su corte; `sd-paint` (el motor, la caja de bornes, el solenoide, las patas del ciclón),
 pintado; `sd-bronze` (la rueda), cobre; `sd-rubber` (los cojines, la zapata del freno), caucho, y `sd-cut-r` (el anillo
-de sello), su corte; el liviano (`sd-oil`) en los tonos del aceite y el pesado y el agua de maniobra (`sd-water`,
+de sello), su corte; `ps-persona`, el material «persona»; el liviano (`sd-oil`) en los tonos del aceite y el pesado y el agua de maniobra (`sd-water`,
 `sd-opw`) en los del agua, al 85 %; la mezcla (`sd-mix`) en la cara del aceite, con pintas del agua oscura; el sólido en los tonos del
 sólido; las flechas: la mezcla en la tinta 2, el liviano en el aceite oscuro, el pesado en el azul y el sólido en el
 sólido oscuro. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar la vista sin rehacer el
