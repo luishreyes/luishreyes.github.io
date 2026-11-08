@@ -778,7 +778,7 @@ const CY = SD.cyclone;
 }
 
 /* ====================================================================
-   8b · la persona de referencia: 1,75 m, de pie en el piso del lado del motor (no va en el detalle)
+   8b · la persona de referencia: 1,75 m, de pie en el piso detrás del bastidor, a la derecha (no va en el detalle)
    ==================================================================== */
 if (!DET) {
   const PS = SD.persona;
