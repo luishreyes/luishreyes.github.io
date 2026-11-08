@@ -25,6 +25,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const { CI, G0, rWall } = GEO;
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const DET = process.argv.includes("--detalle");
 const CHECK = process.argv.includes("--check");
@@ -601,6 +602,16 @@ const vanePoly = (al) => { const c = Math.cos(al * D2R), s = Math.sin(al * D2R),
 }
 
 /* ====================================================================
+   6b · la persona de referencia: 1,75 m, de pie en el piso de los pedestales junto a la válvula (no va en el detalle)
+   ==================================================================== */
+if (!DET) {
+  const PS = CI.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, PS.piso], rumbo: PS.rumbo, mm: 1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.HOMBRO;   // el hombro que mira a la derecha del dibujo
+}
+/* ====================================================================
    7 · el polvo: el montón de la tolva con la columna que baja a la válvula, las celdas del rotor que bajan llenas y
    el que cae por el bajante
    ==================================================================== */
@@ -878,7 +889,8 @@ const CSS = `.ci-cut{${flat("#C9CED3")}}.ci-cut1{${flat("#D6DADE")}}.ci-cut-c{${
 .ci-flujo{fill:none;stroke:#2E5E9E;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round}.ci-flecha{fill:#2E5E9E;stroke:none}
 .ci-giro{fill:none;stroke:#525C64;stroke-width:1.2px;stroke-linecap:round}.ci-giro-p{fill:#525C64;stroke:none}
 .ci-det-fondo{fill:#FFFFFF;stroke:none}.ci-det-marco{fill:none;stroke:#525C64;stroke-width:1px}
-.ci-flujo-s{fill:none;stroke:#7A5634;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round}.ci-flecha-s{fill:#7A5634;stroke:none}`;
+.ci-flujo-s{fill:none;stroke:#7A5634;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round}.ci-flecha-s{fill:#7A5634;stroke:none}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 function compact(svgText) {
   const num = (v) => { let t = (Math.round(v * 10) / 10).toFixed(1).replace(/\.0$/, ""); if (t === "-0") t = "0"; return t.replace(/^(-?)0\./, "$1."); };

@@ -38,6 +38,10 @@ y la holgura de las paletas (ver «Lo que va exagerado»); un círculo amplía l
 - **El detalle** (`node build.mjs --detalle`): la válvula rotativa en el plano del corte, 2,7 veces más grande: el
   polvo de la tolva en la garganta, el rotor con la flecha de su giro, las celdas que bajan llenas a la derecha y las que
   suben vacías a la izquierda (se ve la tapa de atrás), las paletas casi contra la carcasa y el polvo que sale.
+- **La persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie en el piso de los pedestales (z = 0),
+  adelante y a la izquierda de la válvula rotativa, de espaldas al lector y mirando hacia ella, con una sombra corta
+  (`CI.persona` en `geo.mjs`, medida del libro). El dibujo no tiene piso: la persona apoya donde apoyan los pedestales.
+  Se ve pequeña junto al ciclón, que es lo que muestra. El detalle no la lleva.
 
 **Ningún nombre de fabricante.**
 
@@ -135,7 +139,7 @@ alto. Después, `node herramientas/svg-a-pdf.mjs figuras/20/cyclone.svg` desde `
 ciclón, la tolva, los ductos, el rotor) son acero, y `ci-cut`, su corte; `ci-in` (el adentro del ducto de entrada, que
 se ve por la boca) es el fondo seco del acero; `ci-cast` (la carcasa de la válvula, la tapa, el rodamiento, la
 linterna) es fundición, y `ci-cut-c`, su corte; `ci-paint` (el motorreductor, las patas, los puntales, el interruptor de
-nivel), pintado; `ci-conc` (los pedestales), concreto; el polvo en los tonos del sólido (`ci-polvo`, `ci-polvo-c`), con
+nivel), pintado; `ci-conc` (los pedestales), concreto; `ps-persona`, el material «persona»; el polvo en los tonos del sólido (`ci-polvo`, `ci-polvo-c`), con
 las gruesas en el sólido oscuro y las finas en su sombra más honda; el gas en el azul y el polvo que baja en el sólido
 oscuro; el giro del rotor en la tinta 2. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a
 pintar la vista sin rehacer el dibujo.

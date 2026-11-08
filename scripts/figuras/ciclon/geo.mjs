@@ -48,6 +48,10 @@ export const CI = {
   turns: 5,                      // vueltas del vórtice de afuera (Darby, p. 373)
   rCore: 0.6,                    // el radio del vórtice de adentro, en radios del tubo de salida (Perry, p. 17-29: 0,4 a 0,8)
   heap: 1480,                    // el nivel del polvo en la tolva (el pie del montón, contra la pared)
+  /* la persona de referencia (../persona.mjs, 1,75 m): de pie en el piso de los pedestales (z = 0), adelante y a la
+     derecha de la válvula rotativa, donde se trabaja, mirando hacia ella. Solo en la vista entera; el detalle no la
+     lleva. Medida del libro. */
+  persona: { x: 1000, y: 2500, piso: 0, rumbo: 240 },
 };
 
 /* las medidas que salen de D */
