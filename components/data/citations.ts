@@ -29,15 +29,15 @@ export const webOfScience = {
  *  tema que es más del otro. Artículos de investigación y de revisión desde 2018, contados uno por uno. */
 export const authorship = {
   since: 2018,
-  articles: 72,
+  articles: 73,
   last: 20,
-  secondToLast: 22,
+  secondToLast: 23,
 };
 
 export const scholar = {
   /** Fecha de la foto del perfil (AAAA-MM-DD). */
-  asOf: '2026-10-21',
-  citations: 3268,
+  asOf: '2026-11-10',
+  citations: 3314,
   hIndex: 32,
   i10Index: 64,
   /** Citas que recibió cada año, según las barras del perfil al 21 de octubre de 2026.
