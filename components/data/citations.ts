@@ -72,22 +72,22 @@ export const publicationsPerYear: Record<number, Record<ClasePublicacion, number
   2023: { articles: 11, chapters: 0, books: 1, other: 2 },
   2024: { articles: 13, chapters: 2, books: 1, other: 4 },
   2025: { articles: 8, chapters: 14, books: 1, other: 1 },
-  2026: { articles: 4, chapters: 1, books: 1, other: 2 },
+  2026: { articles: 5, chapters: 1, books: 1, other: 2 },
 };
 
 export const publications = {
   /** Fecha del registro del que salen las cifras. */
-  asOf: '2026-11-04',
+  asOf: '2026-11-10',
   since: 2007,
-  total: 118,
+  total: 119,
   patents: 2,
   /** Artículos en revistas (de investigación y de revisión) y su cuartil Scimago en el
    *  año de publicación (los de 2026, con la tabla de 2025, la última publicada). */
-  articles: 82,
-  q1: 58,
+  articles: 83,
+  q1: 59,
   q2: 21,
   /** Artículos desde julio de 2017, cuando el profesor llegó a la Universidad de los Andes. */
-  articlesSince2017: 73,
+  articlesSince2017: 74,
   /** Ponencias en congresos desde 2017, y cuántas en el AIChE Annual Meeting. */
   talksSince2017: 42,
   talksAiche: 10,
