@@ -16,8 +16,8 @@ export const awardsData: Recognition[] = [
     authors: ["Luis H. Reyes"],
     summary: [
       {
-        en: "The Education Division of the American Institute of Chemical Engineers named me the 2026 recipient of its Award for Innovation in Chemical Engineering Education. The award page lists it as «Integrating generative AI into chemical engineering education through project-based unit operations».",
-        es: "La División de Educación del American Institute of Chemical Engineers me otorgó su Award for Innovation in Chemical Engineering Education de 2026. La página del premio lo registra como «Integrating generative AI into chemical engineering education through project-based unit operations» (la integración de la IA generativa en la educación en ingeniería química mediante operaciones unitarias basadas en proyectos)."
+        en: "The Education Division of the American Institute of Chemical Engineers named me the 2026 recipient of its Award for Innovation in Chemical Engineering Education. The plaque reads: «For integrating generative AI into chemical engineering education through the Cognitive-AI Synergy Framework and a project-based unit operations model with measurable impact on student learning».",
+        es: "La División de Educación del American Institute of Chemical Engineers me otorgó su Award for Innovation in Chemical Engineering Education de 2026. La placa dice que lo otorga por integrar la IA generativa en la educación en ingeniería química mediante el Cognitive-AI Synergy Framework y un modelo de operaciones unitarias basado en proyectos, con un efecto medible en el aprendizaje de los estudiantes."
       },
       {
         en: "The recognized innovation is the redesign of Project of Unit Operations (POU) at Universidad de los Andes: a course where students carry a design problem through the whole semester, and where generative AI enters under explicit cognitive boundaries instead of as a shortcut. Refined over seven years and documented in peer-reviewed work, the model improved students' written communication and the rigor of their research with statistical significance, while technical performance held steady.",
@@ -28,8 +28,8 @@ export const awardsData: Recognition[] = [
         es: "La distinción reconoce una innovación pedagógica específica, creada o implementada en un curso real y juzgada por su impacto documentado en la efectividad de la enseñanza y en el aprendizaje de los estudiantes."
       },
       {
-        en: "It will be presented at the Education Division dinner during the AIChE Annual Meeting in Minneapolis on November 10, 2026.",
-        es: "Se entregará en la cena de la División de Educación durante el AIChE Annual Meeting en Minneapolis el 10 de noviembre de 2026."
+        en: "It was presented at the AIChE Annual Meeting in Minneapolis in November 2026.",
+        es: "Lo recibí en el AIChE Annual Meeting, en Minneapolis, en noviembre de 2026."
       }
     ],
     url: "https://www.aiche.org/community/awards/award-innovation-chemical-engineering-education",
