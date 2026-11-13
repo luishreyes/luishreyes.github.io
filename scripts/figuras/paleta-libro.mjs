@@ -267,6 +267,25 @@ export const CLASES = {
   'tz-slot': { fill: 'hueco.oscuro', stroke: 'guia' }, 'tz-lcdwin': { fill: 'tinta', stroke: 'tinta' }, 'tz-seg': { fill: 'blanco' },
   '.tz-seg.off': { fill: 'tinta-2' }, 'tz-runled': { fill: 'tinta-2', stroke: 'tinta' }, '.tz-runled.on': { fill: 'alerta' },
   'tz-wire': { stroke: 'tinta-2' }, 'tz-grain': { stroke: 'solido.oscuro' },
+  // intercambiadores de calor (capítulo 22): los cuatro del explorador (tubos y coraza, placas, doble tubo y
+  // aeroenfriador). La coraza y el tubo exterior por dentro con el fondo seco del acero y su corte en la sombra más
+  // honda; los cabezales de retorno y los de tapones de fundición; el bastidor de las placas y la cámara del
+  // aeroenfriador pintados; las juntas de caucho; los tubos, los canales y el tubo interior en la rampa de temperatura
+  // (ic-s, trazo; ic-f, relleno; ic-c, parada de degradado; de 0, frío, a 4, caliente) y las aspas en los grises del acero
+  'hx-cav': 'acero/fondo', 'hx-cutface': 'acero/corte', 'hx-tbo': { stroke: 'tinta' }, 'hx-tbs': { stroke: 'blanco' },
+  'hx-flow': { stroke: 'blanco' }, 'hx-plate': { fill: 'acero.cara', stroke: 'tinta' }, 'hx-plate-e': { fill: 'acero.sombras.0', stroke: 'tinta' },
+  'hx-sp': { stroke: 'tinta' },
+  'pl-gasket': 'caucho', 'pl-frame': 'pintado', 'pl-plate': 'acero/corte', 'pl-dot': { stroke: 'tinta' }, 'pl-drop': { fill: 'agua.oscuro', stroke: 'azul' },
+  'dp-cast': 'fundicion', 'dp-tbd': { stroke: 'tinta' }, 'dp-tbs': { stroke: 'blanco' }, 'dp-flow': { stroke: 'blanco' },
+  'dp-dot': { stroke: 'tinta' }, 'dp-drop': { fill: 'agua.oscuro', stroke: 'azul' }, 'dp-film': { fill: 'agua.oscuro' },
+  'ac-sheet': 'pintado', 'ac-hdr': 'fundicion', 'ac-to': { stroke: 'tinta' }, 'ac-tx': { stroke: 'tinta' }, 'ac-th': { stroke: 'blanco' },
+  'ac-flow': { stroke: 'blanco' }, 'ac-bl': { stroke: 'tinta' },
+  'ic-s0': { stroke: 'azul' }, 'ic-s1': { stroke: 'agua.oscuro' }, 'ic-s2': { stroke: 'caliente.relleno' }, 'ic-s3': { stroke: 'caliente.medio' }, 'ic-s4': { stroke: 'caliente.oscuro' },
+  'ic-f0': { fill: 'azul' }, 'ic-f1': { fill: 'agua.oscuro' }, 'ic-f2': { fill: 'caliente.relleno' }, 'ic-f3': { fill: 'caliente.medio' }, 'ic-f4': { fill: 'caliente.oscuro' },
+  'ic-c0': { 'stop-color': 'azul' }, 'ic-c1': { 'stop-color': 'agua.oscuro' }, 'ic-c2': { 'stop-color': 'caliente.relleno' }, 'ic-c3': { 'stop-color': 'caliente.medio' }, 'ic-c4': { 'stop-color': 'caliente.oscuro' },
+  'ic-l0': { fill: 'acero.sombras.0' }, 'ic-l1': { fill: 'acero.sombras.2' }, 'ic-l2': { fill: 'acero.cara' },
+  // las flechas del aire del aeroenfriador: el frío que entra en el azul y el caliente que sale en el naranja
+  'ic-aire-f': { stroke: 'azul' }, 'ic-aire-f-p': { fill: 'azul' }, 'ic-aire-c': { stroke: 'naranja' }, 'ic-aire-c-p': { fill: 'naranja' },
 };
 
 // Las piezas que los dibujos dejan en el tema del kit (el acero) y que son de otro material: el nombre de la pieza
@@ -294,6 +313,10 @@ export const VISTAS = {
   'calor-en-equipos/_linea-vapor': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
   'filtracion/_prensa-tornillo': {},
+  'intercambiadores-de-calor/_aeroenfriador': {},
+  'intercambiadores-de-calor/_doble-tubo': {},
+  'intercambiadores-de-calor/_placas': {},
+  'intercambiadores-de-calor/_tubos-coraza': {},
   'filtracion/_prensa': {
     variables: { '--fp-cake': 'solido.cara', '--fp-cake-0': 'solido.sombras.0', '--fp-cake-1': 'solido.sombras.1', '--fp-cake-2': 'solido.sombras.2',
       '--fp-cake-3': 'solido.sombras.3', '--fp-cake-top': 'solido.tapa', '--fp-cake-edge': 'solido.oscuro',

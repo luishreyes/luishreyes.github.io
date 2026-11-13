@@ -7,7 +7,10 @@
    eje (x = 0): se ven las placas en corte, el empaque arriba y abajo de
    cada canal y, en vivo, los canales alternos del caliente y del frío
    con su temperatura (la página los pinta con el perfil del explorador).
-   Uso: node build.mjs [--audit] [--fast] · --js
+   Uso: node build.mjs [--audit] [--fast] [--libro] · --js
+   --libro: la vista del libro (capítulo 22), con la persona de referencia de 1,75 m (../persona.mjs) de pie junto a la
+   columna de apoyo, y las anclas de los rótulos; escribe aparte out/placas-libro.svg y .json, que lee libro.mjs. Sin
+   --libro el SVG del explorador sale igual que siempre (los simuladores no llevan la persona).
    Unidades: 1 = 1 cm. z hacia arriba; el paquete a lo largo de y.
    ==================================================================== */
 import { writeFileSync, readFileSync, mkdirSync } from "node:fs";
@@ -20,7 +23,7 @@ const G = await import(KIT + "/kit/lathe.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
-const FAST = process.argv.includes("--fast");
+const FAST = process.argv.includes("--fast"), LIBRO = process.argv.includes("--libro"), SUF = LIBRO ? "-libro" : "";
 const strip = (n) => readFileSync(join(HERE, n), "utf8").replace(/^export /gm, "");
 mkdirSync(join(HERE, "out"), { recursive: true });
 const writeJs = () => {
@@ -128,17 +131,50 @@ const NOZ = {};
 box("tag", [24, FR.y1, 112], [37, FR.y1 + 0.4, 124], { tone: "hi" }, { r: 0.1, owner: "frame",
   extra: Ln([0, 1, 2].map((i) => path3([[25.5, FR.y1 + 0.4, 121 - 3 * i], [35.5, FR.y1 + 0.4, 121 - 3 * i]])).join(""), { tone: "faint" }) + Dots([at([24.8, FR.y1 + 0.4, 123.2]), at([36.2, FR.y1 + 0.4, 112.8])], { size: 0.35 }) });
 
+/* ====================================================================
+   3 · solo en la vista del libro (--libro): la persona de referencia y las anclas de los rótulos
+   ==================================================================== */
+// la persona: 1,75 m, de pie en el piso más allá de la columna de apoyo, donde se trabaja para correr la placa de presión
+// y abrir el paquete; mira hacia el bastidor (rumbo en grados desde +x hacia +y). Va aquí y no en geo.mjs, que también
+// corre en la página del explorador. Medida del libro.
+const PERSONA = { x: 8, y: CO.y0 - 42, rumbo: 95 };
+let ANCLAS = null;
+if (LIBRO) {
+  const { personaDePie } = await import(join(HERE, "../persona.mjs"));
+  const PS = process.env.PL_PER ? Object.fromEntries(["x", "y", "rumbo"].map((kk, i) => [kk, Number(process.env.PL_PER.split(",")[i])])) : PERSONA;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 0.1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  // las anclas, en cm (la vista del libro las proyecta con P)
+  const pm = PL[2], cm = CH[Math.floor(CH.length / 2)], ch = CH.find((c) => c.hot), cf = CH.find((c) => !c.hot);
+  ANCLAS = {
+    PERSONA: per.anclas.PECHO, CABEZA: per.anclas.CABEZA,
+    PLACA_FIJA: [-FR.x + 8, FR.y1, FR.z1 - 30],
+    PRESION: [PR.x - 6, PR.y0, PR.z1 - 20],
+    BARRA_SUP: [0, (CO.y1 + PR.y0) / 2, BAR.top[1]],
+    BARRA_INF: [BAR.w / 2, (CO.y1 + PR.y0) / 2 - 10, (BAR.bot[0] + BAR.bot[1]) / 2],
+    COLUMNA: [CO.x, (CO.y0 + CO.y1) / 2, BAR.top[0] - 30],
+    TORNILLO: [BO.x, BO.y1 - 0.4, BO.z[1]],
+    PLACAS: [-1.5, (pm.y0 + pm.y1) / 2, Z1 + 3],
+    JUNTA: [0, (cm.y0 + cm.y1) / 2, Z1 - PX.GK / 2],
+    CANAL_C: [0, (ch.y0 + ch.y1) / 2, Z0 + PX.H * 0.55],
+    CANAL_F: [0, (cf.y0 + cf.y1) / 2, Z0 + PX.GK + 14],
+    C_ENT: NOZ.hIn, C_SAL: NOZ.hOut, F_ENT: NOZ.cIn, F_SAL: NOZ.cOut,
+  };
+}
+
 /* ---------- orden y salida ---------- */
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
 R_.items.forEach((it) => { if (it.live) it.svg = `<g data-live="${it.name}"></g>`; });
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 const label = "Intercambiador de placas con empaques en isométrico, con el paquete abierto por el plano de su eje: la placa fija con sus cuatro boquillas, la barra portadora y la barra guía, la columna de apoyo, la placa de presión, los tornillos tensores y las placas con los canales alternos del caliente y del frío";
-const svg = k.figureSvg({ width: W, height: H, label, body: [`<g class="pl-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="plSvg" `);
-const DATA = { P, W, H, AZ, EL, Z0, Z1, GK: PX.GK, ch: CH, noz: NOZ };
-writeFileSync(join(HERE, "out", "placas.svg"), svg);
-writeFileSync(join(HERE, "out", "placas.json"), JSON.stringify(DATA));
+const cssPersona = LIBRO ? `<style>${(await import(join(HERE, "../persona.mjs"))).CSS_PERSONA}</style>` : "";
+const svg = k.figureSvg({ width: W, height: H, label, body: [`${cssPersona}<g class="pl-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="plSvg" `);
+const DATA = { P, W, H, AZ, EL, Z0, Z1, GK: PX.GK, ch: CH, noz: NOZ, ...(LIBRO ? { anclas: ANCLAS } : {}) };
+writeFileSync(join(HERE, "out", `placas${SUF}.svg`), svg);
+writeFileSync(join(HERE, "out", `placas${SUF}.json`), JSON.stringify(DATA));
 writeJs();
-writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Intercambiador de placas", theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "pl.css"), "utf8")}</style><div class="iso-stage" id="plFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar PL_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
+writeFileSync(LIBRO ? join(HERE, "out", "preview-libro.html") : join(HERE, "preview.html"), k.pageHtml({ title: "Intercambiador de placas", theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "pl.css"), "utf8")}</style><div class="iso-stage" id="plFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar PL_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
 console.log("placas items", R_.items.length, "scale", G.scaleOf(P).toFixed(3), "svg", svg.length);
 if (!FAST) A.auditOrExit(R_, P, {});
