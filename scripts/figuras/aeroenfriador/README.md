@@ -27,6 +27,7 @@ abajo del de atrás). La mueve el perfil del explorador (`profileAll`: el proces
 | `live.js` | `FAir`: los tubos aleteados, las aspas y el aire. |
 | `ac.css` | Chapa, cabezales y lo vivo. El tema blueprint va en el explorador. |
 | `drive_test.js` | Perfil sintético para `preview.html` (`?np=1…4`, `&v=m/s`, `&t=s`, `&snap=1`). |
+| `libro.mjs`, `rotulos.mjs` | La vista del libro (capítulo 22, 22.10) con los nombres de las piezas, en español y en inglés; lo común está en `../intercambiador/libro-comun.mjs`. |
 
 ```sh
 node build.mjs --audit && node build.mjs --odd --audit   # medio minuto cada una; deben terminar en «audit passed»
@@ -36,3 +37,13 @@ node ../intercambiador/splice.mjs                        # al explorador publica
 Lo vivo se registra con la forma del volumen que ocupa: el haz como una caja, las aspas y el aire de la boca en dos
 mitades partidas por el plano vertical del eje que mira al lector (la de atrás queda detrás del cubo y del eje), y el
 anillo en dos mitades por el mismo plano (la lejana detrás de las aspas, la cercana delante).
+
+**La vista del libro** (capítulo 22, «Doble tubo, aeroenfriadores y superficie raspada»): `node build.mjs --libro --audit`
+agrega la persona de referencia de 1,75 m (`../persona.mjs`) de pie en el piso junto a la columna de atrás, por fuera de
+la estructura (bajo la cámara no cabe: los anillos bajan a 1,26 m; `PERSONA` en `build.mjs`), y las anclas de los
+rótulos, y escribe aparte `out/aero-par-libro.svg` y `.json`; sin `--libro` los SVG del explorador salen idénticos. `node
+libro.mjs` la abre con el código vivo (un paso, el haz en un tono de lo caliente, las aspas quietas en los grises del
+acero), quita el aire que sube, que solo se lee en movimiento, y pone flechas en su lugar (azules bajo los anillos,
+naranjas sobre el haz), y escribe `figuras/intercambiadores-de-calor/_aeroenfriador.qmd` del libro.
+`CHROME_PATH=/opt/pw-browsers/chromium node libro.mjs --lamina` escribe la lámina inglesa, `en/figuras/22/air-cooler.svg`,
+y `node herramientas/svg-a-pdf.mjs figuras/22/air-cooler.svg` desde `en/` la pasa a PDF.
