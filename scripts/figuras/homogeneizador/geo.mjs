@@ -62,12 +62,13 @@ export const HM = {
   oil: { r: 4, rise: 31, run: 70, union: { af: 16, len: 24 } },
   /* la salida de la leche homogeneizada: tubo sanitario de 1½ in (Ø 38,1 × 1,65) */
   out: { ro: 19.05, ri: 17.4, rf: 50, tf: 16, z1: 515, te: 16 },
-  /* la mano de referencia (../persona.mjs; medida del libro): lo dibujado mide menos de un metro, así que la escala la da
-     una mano derecha de adulto (190 mm de la muñeca a la punta del dedo medio) apoyada sobre la cara de arriba del
-     bloque, en la parte libre de la izquierda, con los dedos hacia el fondo y un poco hacia el cabezal y un trozo de
-     antebrazo cortado. muneca: el centro de la muñeca, 47 mm sobre la cara (blk.z1 = 380), lo justo para que la yema del
-     pulgar, lo más bajo de la mano, toque el bloque; dedos: hacia dónde van, en el plano. */
-  mano: { muneca: [15, -45, 427], dedos: [0.4, -1, 0], antebrazo: 30, alza: 12 },
+  /* la mano de referencia (../persona.mjs, manoEnBorde; medida del libro): lo dibujado mide menos de un metro, así que
+     la escala la da una mano derecha de adulto que llega desde atrás y apoya los dedos en el canto de atrás de la cara
+     de arriba del bloque (y = blk.y0, z = blk.z1), en la parte libre de la izquierda, cruzándolo hacia el lector; el
+     antebrazo baja por detrás del bloque, oculto. x, dónde va el nudillo del medio a lo largo del canto; adentro, el
+     nudillo desde el canto (negativo: atrás); alto, el nudillo sobre la cara; inclina, cuánto baja el dorso hacia la
+     muñeca; gira, cuánto se gira la mano sobre el canto. */
+  mano: { y: -120, adentro: -14, alto: 24, inclina: 12, gira: 10 },
 };
 
 /* El avance del pistón i a partir del punto muerto de atrás, con la manivela en theta (movimiento armónico simple:

@@ -26,10 +26,12 @@ Todo va a escala real, en milímetros (`geo.mjs`), salvo la rendija, que va exag
 - **El detalle** (`node build.mjs --detalle`): la primera etapa ampliada 3,2 veces en un círculo, con el camino de la
   leche por la rendija dibujado a los dos lados del eje. En el libro va a la derecha, abajo, unido por una línea al
   círculo chico que marca la primera etapa en la vista entera.
-- **La mano de referencia** (`../persona.mjs`): lo dibujado mide menos de un metro, así que la escala la da una mano
-  derecha de adulto apoyada sobre la cara de arriba del bloque, en la parte libre de la izquierda, con los dedos hacia
-  el fondo y un trozo de antebrazo cortado (`HM.mano` en `geo.mjs`, medida del libro). No cambia la cámara, así que el
-  detalle queda igual y no la lleva.
+- **La mano de referencia** (`manoEnBorde` de `../persona.mjs`; `HM.mano` en `geo.mjs`, medida del libro): lo dibujado
+  mide menos de un metro, así que la escala la da una mano derecha de adulto que llega desde el lado del cárter y apoya
+  los dedos en el canto izquierdo de la cara de arriba del bloque, cerca de atrás, cruzándolo hacia el cabezal, sin tapar
+  el cabezal ni las líneas de los rótulos. Los dedos se apoyan en la cara de arriba y el antebrazo baja por detrás del
+  bloque, oculto. La cámara no la incluye, así que el detalle queda igual y no la lleva. Rótulo «Mano» en la vista del
+  libro y en la lámina.
 
 El corte quita la mitad que mira al lector (y > 0) del bloque, de sus pies, de los asientos, del tapón, del cartucho,
 de los sellos, del cabezal, de los anillos, de los forzadores, de los émbolos, de los actuadores y de los tubos de la

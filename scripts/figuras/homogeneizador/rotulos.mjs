@@ -48,7 +48,8 @@ export const DESCRIPCION = 'Homogeneizador de alta presión de una máquina de l
   'Al fondo del cilindro sube la columna de válvulas: abajo, el colector de succión, que viene de la entrada de la leche por la derecha; encima, la válvula de succión, de disco, cerrada sobre su asiento; arriba, la válvula de descarga, abierta, cada una con su resorte, y el tapón que cierra la columna. Los tapones de los otros dos cilindros asoman en la cara de arriba del bloque. ' +
   'De la cámara de descarga sale un conducto al cabezal de homogeneización, atornillado a la derecha del bloque. En la primera etapa, de eje vertical, la leche sube por el asiento, pasa por la rendija entre el asiento y el forzador, choca con el anillo de impacto y sigue a la segunda etapa, horizontal, que es igual pero trabaja a menor presión. De ahí sale hacia arriba, por un tubo con bridas. ' +
   'Cada forzador lo empuja un émbolo hidráulico; el aceite a presión, encima del émbolo, fija la fuerza. ' +
-  'Un círculo amplía la primera etapa: el asiento, el forzador, el anillo de impacto y la rendija, dibujada mucho más ancha de lo que es, con el camino de la leche.';
+  'Un círculo amplía la primera etapa: el asiento, el forzador, el anillo de impacto y la rendija, dibujada mucho más ancha de lo que es, con el camino de la leche. ' +
+  'Una mano de adulto, con los dedos apoyados en el canto de la cara de arriba del bloque, da la escala.';
 
 export const DESCRIPCION_EN = 'A high-pressure milk homogenizer, in isometric, with the half that faces the reader removed. ' +
   'On the left, the crankcase face, from which three 50 mm plungers come out; the couplings of the three sit at different points of the stroke because the cranks are 120 degrees apart. ' +
@@ -56,4 +57,5 @@ export const DESCRIPCION_EN = 'A high-pressure milk homogenizer, in isometric, w
   'At the end of the cylinder stands the valve stack: the suction manifold at the bottom, fed by the milk inlet on the right; the suction valve, a spring-loaded disc, closed on its seat; the discharge valve above it, open; and the plug that closes the stack. ' +
   'From the discharge chamber a passage leads to the homogenizing head, bolted to the right of the block. In the first stage, vertical, the milk rises through the seat, passes the gap between the seat and the forcer, hits the impact ring and goes on to the second stage, horizontal, which is the same but works at a lower pressure, and leaves upward. ' +
   'Each forcer is pushed by a hydraulic piston; the oil pressure above the piston sets the force. ' +
-  'A circle enlarges the first stage: seat, forcer, impact ring and the gap, drawn much wider than it is, with the path of the milk.';
+  'A circle enlarges the first stage: seat, forcer, impact ring and the gap, drawn much wider than it is, with the path of the milk. ' +
+  'An adult hand resting its fingers on the top edge of the block gives the scale.';

@@ -27,7 +27,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
-const { mano, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
+const { manoEnBorde, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 // la rejilla del orden: 0,25 unidades de la vista entera; en el detalle, la misma medida en milímetros (3,2 veces más)
 const STEP = Number(process.env.HM_STEP || (process.argv.includes("--detalle") ? 0.8 : 0.25));
@@ -647,11 +647,12 @@ arrow("flujo.salida", [HM.xo, -3, HD.z1 + 20], [HM.xo, -3, OUT.z1 - 8]);
 ANCH.LECHE = [INL.x1 - 20, -3, HM.zs];
 
 /* ====================================================================
-   9 · la mano de referencia, apoyada sobre el bloque (../persona.mjs; no va en el detalle)
+   9 · la mano de referencia, con los dedos en el canto de atrás del bloque (../persona.mjs, manoEnBorde; no va en el
+   detalle). La cámara no la incluye, así el detalle queda igual; los dedos se apoyan en la cara de arriba del bloque.
    ==================================================================== */
 if (!DET) {
   const MN = HM.mano;
-  const m = mano({ P, muneca: MN.muneca, dedos: MN.dedos, dorso: [0, 0, 1], lado: "der", mm: 1, antebrazo: MN.antebrazo, alza: MN.alza });
+  const m = manoEnBorde({ P, borde: [B.x0, MN.y, B.z1], hacia: [1, 0, 0], lado: "der", mm: 1, adentro: MN.adentro, alto: MN.alto, inclina: MN.inclina, gira: MN.gira });
   m.shapes.forEach(record);
   put("mano", m.ref, m.svg, m.shapes);
   ANCH.MANO = m.anclas.MANO;
