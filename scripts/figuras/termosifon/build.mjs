@@ -5,7 +5,7 @@
    del nivel. Lo mueve la columna de líquido: el nivel del fondo queda a la altura del espejo de arriba, y la diferencia
    con la entrada de los tubos es la cabeza estática, que la figura marca.
    Corte: todo lo que está en el plano y = 0 (la columna, el rehervidor, las dos líneas y el cimiento) va abierto por ese
-   plano, sin la mitad que mira al lector; lo de atrás (las patas, el lado del vapor, la vinaza) va entero.
+   plano, sin la mitad que mira al lector; lo de atrás (las patas, el lado del vapor, la salida del fondo) va entero.
    Uso: node build.mjs [--audit] [--fast]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */
@@ -39,7 +39,7 @@ const tang = (phi) => [-Math.sin(phi * D2R), Math.cos(phi * D2R), 0];
 
 /* ---------- la cámara ---------- */
 const W_ = 1000, H_ = 1500;
-const VP = TS.vapor, CD = TS.condensado, VI = TS.vinaza, PT = TS.patas;
+const VP = TS.vapor, CD = TS.condensado, VI = TS.fondo, PT = TS.patas;
 const EXT = [
   [-Rco, 0, Z.arriba], [Rco, 0, Z.arriba], [0, -Rco, Z.arriba], [-Rco, 0, Z.arriba - 300],
   [-FA.cimiento.lado / 2, -FA.cimiento.lado / 2, 0], [-FA.cimiento.lado / 2, 0, 0], [FA.cimiento.lado / 2, 0, 0],
@@ -216,7 +216,7 @@ const FZ = { o: [0, 0, 0], a: ZD, u: XD, v: YD };
 const SECT = [[180, 255], [255, 330], [330, 360]];
 
 /* una pieza de revolución alrededor de un eje vertical, en su mitad de atrás (φ ∈ [180°, 360°]): prof en (r, z) */
-function revV(name, xa, prof, { cls = "ts-ss", owner = name, sectors = SECT, skip = [], smooth = [], rec = true, ref = null, extras = null, cut = [], ya = 0, steps0 = 5, noEdge = [] } = {}) {
+function revV(name, xa, prof, { cls = "ts-ss", owner = name, sectors = SECT, skip = [], smooth = [], rec = true, ref = null, extras = null, cut = [], ya = 0, steps0 = 6, noEdge = [] } = {}) {
   const F = FV(xa, ya);
   const profile = prof.map(([r, z]) => [z, r]);
   const rmax = Math.max(...prof.map((q) => q[0])), zc = prof.reduce((q, p) => q + p[1], 0) / prof.length;
@@ -277,12 +277,12 @@ const arcXZ = (c, r, a0, a1, n = 0) => { const m = n || Math.max(6, Math.round(M
 const annXZ = (c, r0, r1, a0, a1) => [...arcXZ(c, r1, a0, a1), ...arcXZ(c, r0, a0, a1).reverse()];
 function elbow(name, c, Rb, ri, ro, a0, a1, { cls = "ts-ss", cutCls = "ts-cut", owner = name, rec = true } = {}) {
   const F = { o: [c[0], 0, c[1]], a: YB, u: XD, v: ZD };
-  const N = 12, prof = [];
+  const N = 9, prof = [];
   for (let i = 0; i <= N; i++) { const t = (PI * i) / N; prof.push([ro * Math.sin(t), Rb + ro * Math.cos(t)]); }
   for (let i = N; i >= 0; i--) { const t = (PI * i) / N; prof.push([ri * Math.sin(t), Rb + ri * Math.cos(t)]); }
   const smooth = [...Array.from({ length: N - 1 }, (_, i) => i + 1), ...Array.from({ length: N - 1 }, (_, i) => N + 2 + i)];
   const skip = [N, 2 * N + 1];
-  const n = Math.max(6, Math.round(Math.abs(a1 - a0) / 5));
+  const n = Math.max(6, Math.round(Math.abs(a1 - a0) / 6.5));
   // las facetas del toro, en dos mitades (la de adentro y la de afuera de la curva), para que cada una se ordene sola
   const am = (a0 + a1) / 2;
   for (const [b0, b1, tag] of [[a0, am, "a"], [am, a1, "b"]]) {
@@ -304,7 +304,7 @@ function liq(name, polyXZ, { cls = "ts-liq", extra = "", y0 = -0.4, line = "" } 
 }
 const rectXZ = (x0, x1, z0, z1) => [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
 
-/* ---------- los tubos de afuera (vapor, condensado, venteo, vinaza): tubos del kit con sus codos ---------- */
+/* ---------- los tubos de afuera (vapor, condensado, venteo, salida del fondo): tubos del kit con sus codos ---------- */
 // la forma de un trozo, sin los puntos casi repetidos (un tramo de una fracción de milímetro, con su tapa plana torcida,
 // sobresale del trozo tanto como su radio)
 function tubeShape(part) {
@@ -339,11 +339,11 @@ const ZSK = Z.tanCol;                                         // el faldón lleg
 const SLV = TS.manga;
 // la cara de arriba del faldón sigue la cabeza: por dentro llega a la cara de afuera de la cabeza, por fuera a la tangente
 const zSkIn = Z.tanCol - (CO.R / 2 + CO.t) * Math.sqrt(1 - (RS0 / Rco) ** 2);
-// los huecos del faldón: la manga de la entrada (en el plano del corte), la de la vinaza y la boca de acceso
-const vinXw = -Math.sqrt(RS1 * RS1 - VI.y * VI.y);
-const VS1 = -625;                                              // la cara de adentro de la manga de la vinaza
+// los huecos del faldón: la manga de la entrada (en el plano del corte), la de la salida del fondo y la boca de acceso
+const fonXw = -Math.sqrt(RS1 * RS1 - VI.y * VI.y);
+const VS1 = -625;                                              // la cara de adentro de la manga de la salida del fondo
 const holeEntrada = A.disc({ o: [0, 0, ZE], a: XD, u: YD, v: ZD }, RS0 - 200, RS1 + 200, SLV.r + SLV.t, { name: "hueco" });
-const holeVinaza = A.disc({ o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, vinXw - 450, -300, VI.ro + 66, { name: "hueco" });
+const holeFondo = A.disc({ o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, fonXw - 450, -300, VI.ro + 66, { name: "hueco" });
 const AC = FA.acceso;
 const FAC = { o: [0, 0, AC.z], a: radial(AC.phi), u: tang(AC.phi), v: ZD };
 const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
@@ -369,8 +369,8 @@ const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
   const zs0 = ZF + AN.t;
   // en dos tramos (uno solo sería tan esbelto que el audit lo tomaría por una varilla)
   const ZSM = 1950;
-  vert("faldon", 0, ringRZ(RS0, RS1, zs0, ZSM), { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, cut: [holeEntrada, holeVinaza, holeAcceso], noCaps: true, skip: [0, 2], noEdge: [2, 3] });
-  vert("faldon.arriba", 0, [[RS0, ZSM], [RS1, ZSM], [RS1, ZSK], [RS0, zSkIn]], { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, cut: [holeEntrada, holeVinaza, holeAcceso], noCaps: true, skip: [0, 2], noEdge: [0, 1] });
+  vert("faldon", 0, ringRZ(RS0, RS1, zs0, ZSM), { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, cut: [holeEntrada, holeFondo, holeAcceso], noCaps: true, skip: [0, 2], noEdge: [2, 3] });
+  vert("faldon.arriba", 0, [[RS0, ZSM], [RS1, ZSM], [RS1, ZSK], [RS0, zSkIn]], { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, cut: [holeEntrada, holeFondo, holeAcceso], noCaps: true, skip: [0, 2], noEdge: [0, 1] });
   // las caras del corte del faldón: la de la izquierda entera; la de la derecha, partida por la manga de la entrada
   const zh0 = ZE - SLV.r - SLV.t, zh1 = ZE + SLV.r + SLV.t;
   cap("faldon.corte.izq", [[-RS1, zs0], [-RS0, zs0], [-RS0, zSkIn], [-RS1, ZSK]], { cls: "ts-paint-cut", owner: own });
@@ -378,7 +378,7 @@ const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
   cap("faldon.corte.der-arriba", [[RS0, zh1], [RS1, zh1], [RS1, ZSK], [RS0, zSkIn]], { cls: "ts-paint-cut", owner: own });
   // la soldadura del faldón con la cabeza: un cordón por dentro
   ANCH.FALDON = [-RS0 * Math.cos(30 * D2R), -RS0 * Math.sin(30 * D2R), 1900];
-  // la manga de la línea de entrada (en el corte) y la de la vinaza (entera)
+  // la manga de la línea de entrada (en el corte) y la de la salida del fondo (entera)
   horiz("manga.entrada", RS1 - 4, RS1 + 50, ZE, SLV.r, SLV.r + SLV.t, { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, skip: [3] });
   /* una manga que entra por la pared del faldón: arranca en la cara de adentro de la pared (un asiento sobre el cilindro)
      y llega hasta s1; F.a apunta hacia adentro y la pared queda en s = −√(RS0² − t²), t el desvío de cada generatriz a lo
@@ -395,8 +395,8 @@ const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
     const shapes = tubo ? [A.disc(F, s1 - 2, s1, ro, {}), A.ring(F, -RS1 - 20, s1, ri, ro, { cut: [OUTSIDE, halfSpaceAt([0, -1, 0], F.o)] })] : [sh];
     put(name, ref || G.pointOf(F, s1, 0, 0), wrap(svg, "ts-paint") + `<path class="${afuera ? "ts-afuera" : "ts-hueco"}" d="${pth1(bore)}"/>`, shapes);
   }
-  // la manga de la vinaza: a lo largo de x (F.u = y, así el desvío es el de la y)
-  sleeve("manga.vinaza", { o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, VI.ro + 66, VI.ro + 58, VS1, { tubo: true });
+  // la manga de la salida del fondo: a lo largo de x (F.u = y, así el desvío es el de la y)
+  sleeve("manga.fondo", { o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, VI.ro + 66, VI.ro + 58, VS1, { tubo: true });
   // la boca de acceso: hacia adentro, en φ = 240°; por ella se ve afuera
   sleeve("boca-acceso", { o: [0, 0, AC.z], a: G.mul3(radial(AC.phi), -1), u: tang(AC.phi), v: ZD }, AC.r + 8, AC.r, -RS0 + 110, { afuera: true });
   ANCH.ACCESO = G.add3([0, 0, AC.z], G.add3(G.mul3(radial(AC.phi), RS0 - 110), [0, 0, -AC.r - 8]));
@@ -423,14 +423,14 @@ const ZN0 = Z.fondoCol - BF.cuello;                           // la cara de arri
   for (let i = N; i >= 0; i--) { const t = (i / N) * (PI / 2); const r = Eo + (Rco - Eo) * Math.sin(t); outer.push([r, zHeadOut(r)]); }
   const prof = [...inner.map(([r, z]) => [r, z]), ...outer];
   const smooth = []; for (let i = 1; i < N; i++) smooth.push(i); for (let i = 1; i < N; i++) smooth.push(N + 1 + i);
-  // la boca de la vinaza en la cabeza, por dentro: el agujero que se ve bajo el líquido
-  const vpts = []; for (let i = 0; i < 28; i++) { const t = (i / 28) * TAU; const x = TS.vinaza.x + (TS.vinaza.ro - 7) * Math.cos(t), y = TS.vinaza.y + (TS.vinaza.ro - 7) * Math.sin(t); vpts.push(pr([x, y, zHeadIn(Math.hypot(x, y)) + 0.6])); }
-  const aV = (Math.atan2(TS.vinaza.y, TS.vinaza.x) / D2R + 360) % 360;
+  // la boca de la salida del fondo en la cabeza, por dentro: el agujero que se ve bajo el líquido
+  const vpts = []; for (let i = 0; i < 28; i++) { const t = (i / 28) * TAU; const x = TS.fondo.x + (TS.fondo.ro - 7) * Math.cos(t), y = TS.fondo.y + (TS.fondo.ro - 7) * Math.sin(t); vpts.push(pr([x, y, zHeadIn(Math.hypot(x, y)) + 0.6])); }
+  const aV = (Math.atan2(TS.fondo.y, TS.fondo.x) / D2R + 360) % 360;
   CABEZA.push(...vert("cabeza", 0, prof, { owner: own, smooth, skip: [N, 2 * N + 1], extras: (a0, a1) => (aV >= a0 && aV < a1 ? `<path class="ts-boca-tubo" d="${pth1(vpts)}"/>` : "") }));
   // el cuello de la boquilla del fondo, su brida y la junta
   vert("boca-fondo.cuello", 0, [[Ei, ZN0], [Eo, ZN0], [Eo, zHeadOut(Eo)], [Ei, zHeadIn(Ei)]], { owner: own, skip: [0, 2] });
   vert("boca-fondo.brida", 0, ringRZ(Ei, EN.bridaR, ZN0 - EN.bridaT, ZN0), { owner: own });
-  ANCH.CABEZA = [Rc * 0.55 * Math.cos(250 * D2R), Rc * 0.55 * Math.sin(250 * D2R), zHeadIn(Rc * 0.55)];
+  ANCH.CABEZA = [Rc * 0.84 * Math.cos(236 * D2R), Rc * 0.84 * Math.sin(236 * D2R), zHeadIn(Rc * 0.84)];
   ANCH.BOCA_FONDO = [EN.bridaR, 0, ZN0 - EN.bridaT / 2];
 }
 // el cuerpo, en bandas: abajo del retorno, la banda del retorno (con el hueco de la boquilla, por escalones) y arriba
@@ -539,7 +539,7 @@ const ZSP = Z.plato1 - 560;                                   // el fondo del se
   for (const [tray, zt, side] of [[1, Z.plato1, -1], [2, Z.plato2, 1]]) {
     const nm = `plato${tray}`;
     // el anillo de apoyo bajo la cubierta, soldado a la pared
-    const aD = 180 + Math.acos((XDC + 5) / (Rc - PL.anillo)) / D2R;     // donde la cuerda del bajante corta el anillo
+    const aD = 180 + Math.acos((XDC - 2) / Rc) / D2R;                 // el anillo acaba antes de la cuerda del bajante
     const ringProf = ringRZ(Rc - PL.anillo, Rc, zt - PL.t - 10, zt - PL.t);
     if (side < 0) {
       revV(`${nm}.anillo`, 0, ringProf, { owner: own, sectors: [[aD, 255], [255, 330], [330, 360]] });
@@ -739,7 +739,7 @@ const MEZ = [0.0, 0.17, 0.32, 0.47, 0.62, 0.78, 1.0];
   {
     let holesD = "";
     const T = RH.tubos;
-    for (let j = -1; j >= -40; j--) { const y = j * T.paso; for (let i = -40; i <= 40; i++) { const x = i * T.paso; if (Math.hypot(x, y) > T.R - tro) continue; const pts = []; for (let q = 0; q < 14; q++) { const t = (q / 14) * TAU; pts.push(pr([Xr + x + tri * Math.cos(t), y + tri * Math.sin(t), ZL + 0.3])); } holesD += pth1(pts); } }
+    for (let j = -1; j >= -40; j--) { const y = j * T.paso; for (let i = -40; i <= 40; i++) { const x = i * T.paso; if (Math.hypot(x, y) > T.R - tro) continue; const pts = []; for (let q = 0; q < 9; q++) { const t = (q / 9) * TAU; pts.push(pr([Xr + x + tri * Math.cos(t), y + tri * Math.sin(t), ZL + 0.3])); } holesD += pth1(pts); } }
     put("reh.espejo-arriba.bocas", [Xr, -Rr / 2, ZL + 0.3], `<path class="ts-boca-tubo" d="${holesD}"/>`, [A.prism(FZ, [[Xr - Rr + 20, -20], [Xr + Rr - 20, -20], [Xr + Rr - 60, -Rr + 60], [Xr - Rr + 60, -Rr + 60]], ZL, ZL + 0.3, {})]);
   }
   // la coraza: de espejo a espejo, en su mitad de atrás, con sus caras del corte
@@ -780,7 +780,7 @@ const MEZ = [0.0, 0.17, 0.32, 0.47, 0.62, 0.78, 1.0];
     const x = Xr + x0, F = FV(x);
     const prof = [[ZT1, tri], [ZT2, tri], [ZT2, tro], [ZT1, tro]];
     let svg = "";
-    for (const [a0, a1] of [[180, 330], [330, 360]]) svg += sweepSvg({ F, profile: prof, a0: a0 * D2R, a1: a1 * D2R, cls: "ts-ss", capA: "none", capB: "none", skip: [1, 3], steps: a0 === 180 ? 10 : 3 });
+    for (const [a0, a1] of [[180, 330], [330, 360]]) svg += sweepSvg({ F, profile: prof, a0: a0 * D2R, a1: a1 * D2R, cls: "ts-ss", capA: "none", capB: "none", skip: [1, 3], steps: a0 === 180 ? 6 : 2 });
     svg += mezBands(x);
     const caps = [rectXZ(x + tri, x + tro, ZT1, ZT2), rectXZ(x - tro, x - tri, ZT1, ZT2)];
     for (const c of caps) svg += faceSvg(pth1(c.map(([xx, zz]) => pr([xx, 0, zz]))), "ts-cut");
@@ -791,7 +791,7 @@ const MEZ = [0.0, 0.17, 0.32, 0.47, 0.62, 0.78, 1.0];
   // la fila de atrás: tubos enteros
   tz.atras.forEach(([x0, y0], i) => {
     const x = Xr + x0, F = FV(x, y0);
-    const svg = sweepSvg({ F, profile: [[ZT1, tri], [ZT2, tri], [ZT2, tro], [ZT1, tro]], a0: 0, a1: TAU, cls: "ts-ss", capA: "none", capB: "none", skip: [0, 1, 3], steps: 24 });
+    const svg = sweepSvg({ F, profile: [[ZT1, tri], [ZT2, tri], [ZT2, tro], [ZT1, tro]], a0: 0, a1: TAU, cls: "ts-ss", capA: "none", capB: "none", skip: [0, 1, 3], steps: 16 });
     const sh = record(A.disc(F, ZT1, ZT2, tro, { name: `tubo-atras${i}`, owner: own }));
     put(`tubo-atras${i}`, [x, y0, (ZT1 + ZT2) / 2], svg, [sh]);
   });
@@ -830,7 +830,7 @@ const MEZ = [0.0, 0.17, 0.32, 0.47, 0.62, 0.78, 1.0];
   ANCH.BONETE_ARRIBA = [Xr + Rro * Math.cos(345 * D2R), Rro * Math.sin(345 * D2R), (Z.cilArriba + Z.tanArriba) / 2];
   ANCH.ESPEJO_ABAJO = [Xr + RH.bridaR * Math.cos(340 * D2R), RH.bridaR * Math.sin(340 * D2R), ZT1];
   ANCH.ESPEJO_ARRIBA = [Xr + RH.bridaR * Math.cos(340 * D2R), RH.bridaR * Math.sin(340 * D2R), ZL - 25];
-  ANCH.CORAZA = [Xr + Rro * Math.cos(350 * D2R), Rro * Math.sin(350 * D2R), ZB + 1500];
+  ANCH.CORAZA = [Xr + Rro * Math.cos(350 * D2R), Rro * Math.sin(350 * D2R), ZB + 850];
   ANCH.TUBOS = [Xr + tz.corte[4][0], -2, ZT1 + (ZT2 - ZT1) * 0.55];
   ANCH.ENTRADA_TUBOS = [Xr - 250, 0, ZB];
   ANCH.SALIDA_TUBOS = [Xr - 250, 0, ZL];
@@ -966,32 +966,31 @@ function nozzle(name, phi, zc, a, len, flangeR, flangeT, { cls = "ts-cs", owner 
 }
 
 /* ====================================================================
-   9 · la vinaza: una boquilla en la cabeza, fuera del eje, que baja dentro del faldón y sale por él hacia el
-   intercambiador que calienta la cerveza
+   9 · la salida del fondo: una boquilla en la cabeza, fuera del eje, que baja dentro del faldón y sale por él
    ==================================================================== */
 {
-  const own = "vinaza";
+  const own = "fondo";
   const F = { o: [VI.x, VI.y, Z.tanCol], a: [0, 0, -1], u: XD, v: YD };
   const start = (t) => { const x = VI.x + VI.ro * Math.cos(t), y = VI.y + VI.ro * Math.sin(t); return hOut * Math.sqrt(Math.max(0, 1 - (x * x + y * y) / (Rco * Rco))); };
   const s1 = Z.tanCol - 3060;
   const sNeck = start(0);
-  put("vinaza.cuello", [VI.x, VI.y, (Z.tanCol - sNeck + 3060) / 2], wrap(S(G.saddleOf(F, VI.ro, start, s1, P), { tone: "mid" }), "ts-ss"), [record(A.disc(F, sNeck - 12, s1, VI.ro, { name: "vinaza.cuello", owner: own, seated: true, cut: [...CABEZA, A.lathe(FV(0), [[Z.tanCol + 5, 0], [Z.tanCol + 5, Rco], ...Array.from({ length: 23 }, (_, i) => { const t = ((i + 1) / 24) * (PI / 2); return [Z.tanCol - hOut * Math.sin(t), Rco * Math.cos(t)]; }), [Z.tanCol - hOut, 0]], { name: "cabeza.adentro", piece: "frame", ride: "frame" })] }))]);
+  put("fondo.cuello", [VI.x, VI.y, (Z.tanCol - sNeck + 3060) / 2], wrap(S(G.saddleOf(F, VI.ro, start, s1, P), { tone: "mid" }), "ts-ss"), [record(A.disc(F, sNeck - 12, s1, VI.ro, { name: "fondo.cuello", owner: own, seated: true, cut: [...CABEZA, A.lathe(FV(0), [[Z.tanCol + 5, 0], [Z.tanCol + 5, Rco], ...Array.from({ length: 23 }, (_, i) => { const t = ((i + 1) / 24) * (PI / 2); return [Z.tanCol - hOut * Math.sin(t), Rco * Math.cos(t)]; }), [Z.tanCol - hOut, 0]], { name: "cabeza.adentro", piece: "frame", ride: "frame" })] }))]);
   const Fz = FV(VI.x, VI.y);
-  disc("vinaza.brida-boca", Fz, 3060 - VI.bridaT, 3060, VI.bridaR, { cls: "ts-ss", owner: own });
-  disc("vinaza.junta", Fz, 3060 - VI.bridaT - 3, 3060 - VI.bridaT, VI.bridaR - 25, { cls: "ts-gasket", owner: own });
-  disc("vinaza.brida", Fz, 3060 - 2 * VI.bridaT - 3, 3060 - VI.bridaT - 3, VI.bridaR, { cls: "ts-ss", owner: own });
+  disc("fondo.brida-boca", Fz, 3060 - VI.bridaT, 3060, VI.bridaR, { cls: "ts-ss", owner: own });
+  disc("fondo.junta", Fz, 3060 - VI.bridaT - 3, 3060 - VI.bridaT, VI.bridaR - 25, { cls: "ts-gasket", owner: own });
+  disc("fondo.brida", Fz, 3060 - 2 * VI.bridaT - 3, 3060 - VI.bridaT - 3, VI.bridaR, { cls: "ts-ss", owner: own });
   const p0 = [VI.x, VI.y, 3060 - 2 * VI.bridaT - 3], c1 = [VI.x, VI.y, VI.z], p1 = [VI.x1, VI.y, VI.z];
   // el codo, de radio 1,5 D, a mano: así el tubo llega recto a la manga, y el trozo se corta en su cara
   const RBv = 1.5 * VI.ro, arcV = Array.from({ length: 11 }, (_, i) => { const t = (i / 10) * (PI / 2); return [VI.x - RBv + RBv * Math.cos(t), VI.y, VI.z + RBv - RBv * Math.sin(t)]; });
   const lineV = [p0, ...arcV, p1];
   const brk = (fn) => { let walked = 0; for (let i = 1; i < lineV.length; i++) { const a = fn(lineV[i - 1]), b = fn(lineV[i]); const L = G.len3(G.sub3(lineV[i], lineV[i - 1])); if (Math.sign(a) !== Math.sign(b)) return walked + (L * a) / (a - b); walked += L; } return null; };
-  tubeItems("vinaza.tubo", lineV, VI.ro, { cls: "ts-ss", owner: own, spacing: 3, breaks: [brk((p) => p[0] - VS1), brk((p) => Math.hypot(p[0], p[1]) - RS1 - 40)] });
+  tubeItems("fondo.tubo", lineV, VI.ro, { cls: "ts-ss", owner: own, spacing: 3, breaks: [brk((p) => p[0] - VS1), brk((p) => Math.hypot(p[0], p[1]) - RS1 - 40)] });
   void c1;
   void 0;
-  disc("vinaza.brida-sale", { o: p1, a: XD, u: YD, v: ZD }, -VI.bridaT, 0, VI.bridaR, { cls: "ts-ss", owner: own });
-  TS._vinSale = [VI.x1 - 20, VI.y, VI.z];
-  ANCH.VINAZA = [(VI.x1 + vinXw) / 2 - 150, VI.y, VI.z + VI.ro];
-  ANCH.VINAZA_BOCA = [VI.x + VI.ro, VI.y, 2900];
+  disc("fondo.brida-sale", { o: p1, a: XD, u: YD, v: ZD }, -VI.bridaT, 0, VI.bridaR, { cls: "ts-ss", owner: own });
+  TS._fondoSale = [VI.x1 - 20, VI.y, VI.z];
+  ANCH.FONDO = [(VI.x1 + fonXw) / 2 - 150, VI.y, VI.z + VI.ro];
+  ANCH.FONDO_BOCA = [VI.x + VI.ro, VI.y, 2900];
 }
 
 /* ====================================================================
@@ -1070,9 +1069,9 @@ const arcPath = (c, r, a0, a1, n = 12) => arcXZ(c, r, a0, a1, n);
   arrow("flujo.plato1", [[Rc - 140, Z.plato1 + 190], [-XDC + 140, Z.plato1 + 190]], { w: 4.5, head: 10, r: 2.5 });
   arrow("flujo.plato2", [[-Rc + 140, Z.plato2 + 190], [XDC - 140, Z.plato2 + 190]], { w: 4.5, head: 10, r: 2.5 });
   arrow("flujo.bajante1", [[-Rc + 115, Z.plato1 - 120], [-Rc + 115, ZSP + 200]], { w: 4.5, head: 10, r: 2.5 });
-  // la vinaza que sale, después de su brida
-  const vs = TS._vinSale;
-  arrow("flujo.vinaza", [[vs[0] - 40, vs[2]], [vs[0] - 330, vs[2]]], { y: vs[1] });
+  // lo que sale del fondo, después de su brida
+  const vs = TS._fondoSale;
+  arrow("flujo.fondo", [[vs[0] - 40, vs[2]], [vs[0] - 330, vs[2]]], { y: vs[1] });
   // el vapor que llega de arriba y el condensado que sale de la trampa (naranja)
   const vt = TS._vaporTop;
   ANCH.FLUJO_TUBOS = [Xr + 330, 4, ZT1 + (ZT2 - ZT1) * 0.4];
@@ -1170,8 +1169,8 @@ const CSS = `.ts-cut{${flat("#C9CED3")}}.ts-cs-cut{${flat("#C1C6CB")}}.ts-paint-
 .ts-liq{fill:#BCD0E6;fill-opacity:.45}.ts-liq-sup{fill:#BCD0E6;fill-opacity:.32}.ts-cond{fill:#BCD0E6;fill-opacity:.55}.ts-espuma{fill:#BCD0E6;fill-opacity:.24}
 .ts-mez-0{fill:#BCD0E6;fill-opacity:.5}.ts-mez-1{fill:#BCD0E6;fill-opacity:.42}.ts-mez-2{fill:#BCD0E6;fill-opacity:.34}.ts-mez-3{fill:#BCD0E6;fill-opacity:.26}.ts-mez-4{fill:#BCD0E6;fill-opacity:.18}.ts-mez-5{fill:#BCD0E6;fill-opacity:.12}
 .ts-burbuja{fill:#FFFFFF}.ts-gota{fill:#7FA3C9}.ts-onda{fill:none;stroke:#7FA3C9;stroke-width:.6px}
-.ts-agujero{fill:#AEB8C2}.ts-liq-agujero{fill:#BCD0E6;fill-opacity:.45}.ts-mez-agujero{fill:#BCD0E6;fill-opacity:.15}.ts-boca-tubo{fill:#8A96A3}.ts-haz-fondo{fill:#AEB8C2}.ts-afuera{fill:#FFFFFF}
-.ts-flujo,.ts-flujo-v{fill:none;stroke:#2E5E9E;stroke-width:1.8px;stroke-linecap:round;stroke-linejoin:round}.ts-flecha,.ts-flecha-v{fill:#2E5E9E;stroke:none}.ts-flujo-v{stroke-dasharray:0}
+.ts-agujero{fill:#AEB8C2}.ts-liq-agujero{fill:#BCD0E6;fill-opacity:.45}.ts-mez-agujero{fill:#BCD0E6;fill-opacity:.15}.ts-boca-tubo{fill:#8A96A3}.ts-haz-fondo{fill:#AEB8C2}.ts-afuera{fill:#FFFFFF}.ts-hueco{fill:#8A96A3}
+.ts-flujo,.ts-flujo-v{fill:none;stroke:#2E5E9E;stroke-width:1.8px;stroke-linecap:round;stroke-linejoin:round}.ts-flecha,.ts-flecha-v{fill:#2E5E9E;stroke:none}
 .ts-vapor{fill:none;stroke:#C2410C;stroke-width:1.8px;stroke-linecap:round;stroke-linejoin:round}.ts-vapor-p{fill:#C2410C;stroke:none}
 .ts-cota{fill:none;stroke:#19222F;stroke-width:1.1px}.ts-cota-p{fill:#19222F;stroke:none}.ts-guia{fill:none;stroke:#525C64;stroke-width:.8px;stroke-dasharray:5 3}
 ${CSS_PERSONA}`;

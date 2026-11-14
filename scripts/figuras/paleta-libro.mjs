@@ -131,6 +131,23 @@ export const CLASES = {
   // el círculo del detalle: la película de condensado, las gotas de aceite, el agua de la coraza de fondo y el marco
   'ca-pelicula': { fill: 'agua.sombras.0', 'fill-opacity': 0.55 }, 'ca-gota-aceite': { fill: 'aceite.oscuro' }, 'ca-brillo': { fill: 'aceite.tapa' },
   'ca-det-fondo': { fill: 'agua.cara' }, 'ca-det-marco': { stroke: 'tinta-2' }, 'ca-det-marca': { stroke: 'tinta-2' }, 'ca-det-linea': { stroke: 'tinta-2' },
+  // termosifón vertical y fondo de la columna: los equipos y las líneas del proceso de acero inoxidable (el corte en la
+  // sombra más honda); el vapor, el condensado, la trampa y las válvulas de fundición; el faldón, las patas y la palanca
+  // pintados; los cimientos de concreto; las juntas de caucho; el líquido en el corte con la opacidad de siempre, la mezcla
+  // de los tubos en bandas cada vez más claras hacia arriba, con burbujas blancas; la circulación en el azul, el vapor de
+  // calentamiento en el naranja y la cota de la cabeza estática en la tinta
+  'ts-cut': 'acero/corte', 'ts-cs-cut': 'fundicion/corte', 'ts-paint-cut': 'pintado/corte', 'ts-conc-cut': 'concreto/corte', 'ts-gasket-cut': 'caucho/corte',
+  'ts-ss': 'acero', 'ts-bolt': 'acero', 'ts-cs': 'fundicion', 'ts-cast': 'fundicion', 'ts-paint': 'pintado', 'ts-conc': 'concreto', 'ts-gasket': 'caucho',
+  'ts-liq': { fill: 'agua.sombras.0', 'fill-opacity': LIQ }, 'ts-liq-sup': { fill: 'agua.sombras.0', 'fill-opacity': LIQ_SUP },
+  'ts-cond': { fill: 'agua.sombras.0', 'fill-opacity': 0.55 }, 'ts-espuma': { fill: 'agua.sombras.0', 'fill-opacity': 0.24 },
+  'ts-mez-0': { fill: 'agua.sombras.0', 'fill-opacity': 0.5 }, 'ts-mez-1': { fill: 'agua.sombras.0', 'fill-opacity': 0.42 },
+  'ts-mez-2': { fill: 'agua.sombras.0', 'fill-opacity': 0.34 }, 'ts-mez-3': { fill: 'agua.sombras.0', 'fill-opacity': 0.26 },
+  'ts-mez-4': { fill: 'agua.sombras.0', 'fill-opacity': 0.18 }, 'ts-mez-5': { fill: 'agua.sombras.0', 'fill-opacity': 0.12 },
+  'ts-burbuja': { fill: 'blanco' }, 'ts-gota': { fill: 'agua.oscuro' }, 'ts-onda': { stroke: 'agua.oscuro' },
+  'ts-agujero': { fill: 'hueco.claro' }, 'ts-liq-agujero': { fill: 'agua.sombras.0', 'fill-opacity': LIQ }, 'ts-mez-agujero': { fill: 'agua.sombras.0', 'fill-opacity': 0.15 },
+  'ts-boca-tubo': { fill: 'hueco.medio' }, 'ts-haz-fondo': { fill: 'hueco.claro' }, 'ts-afuera': { fill: 'blanco' }, 'ts-hueco': { fill: 'hueco.medio' },
+  'ts-flujo': { stroke: 'azul' }, 'ts-flujo-v': { stroke: 'azul' }, 'ts-flecha': { fill: 'azul' }, 'ts-flecha-v': { fill: 'azul' },
+  'ts-vapor': { stroke: 'naranja' }, 'ts-vapor-p': { fill: 'naranja' }, 'ts-cota': { stroke: 'tinta' }, 'ts-cota-p': { fill: 'tinta' }, 'ts-guia': { stroke: 'tinta-2' },
   // florentino (capítulo 10): agua abajo, aceite arriba
   ...corte('fl'), 'fl-ss': 'acero', 'fl-in': 'acero/dentro', 'fl-pipe': 'acero', 'fl-trim': 'acero', 'fl-cast': 'fundicion',
   'fl-lever': 'fundicion', 'fl-cu': 'cobre', 'fl-tierra': 'caucho', 'fl-glw': 'agua', 'fl-glo': 'aceite',
@@ -324,6 +341,7 @@ export const VISTAS = {
   'bombas/_por-dentro': {},
   'calor-en-equipos/_linea-vapor': {},
   'condensacion-y-ebullicion/_condensador-arrastre': {},
+  'condensacion-y-ebullicion/_termosifon': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
   'filtracion/_prensa-tornillo': {},
   'intercambiadores-de-calor/_aeroenfriador': {},
