@@ -24,14 +24,14 @@ export const TS = {
   boquillaFondo: { cuello: 150 },
   manga: { r: 215, t: 8, largo: 90 },
   // la vinaza que sale del fondo de la columna: una boquilla fuera del eje, que baja dentro del faldón y sale por él
-  vinaza: { ro: 84.15, t: 7.1, x: -300, y: -330, z: 2450, x1: -1700, bridaR: 140, bridaT: 24 },
+  vinaza: { ro: 84.15, t: 7.1, x: -520, y: -250, z: 2450, x1: -1700, bridaR: 140, bridaT: 24 },
   /* el lado del vapor: la entrada arriba de la coraza, la salida del condensado abajo, a la trampa, y el venteo justo
      arriba del condensado, en el extremo frío */
-  vapor: { ro: 136.5, phi: -16, z: 280, largo: 380, sube: 1350, bridaR: 203, bridaT: 30 },
-  condensado: { ro: 44.45, phi: -16, largo: 300, baja: 620, bridaR: 95, bridaT: 20, x1: 900 },
+  vapor: { ro: 136.5, phi: -15, z: 280, largo: 380, sube: 1350, bridaR: 203, bridaT: 30 },
+  condensado: { ro: 44.45, phi: -10, largo: 450, baja: 620, bridaR: 95, bridaT: 20, x1: 900 },
   trampa: { r: 105, largo: 300, tapaR: 125 },
-  venteo: { ro: 16.7, phi: -26, z: 260, largo: 230 },
-  patas: { r: 920, phi: [-52, -128], lado: 200, t: 10, oreja: 0.62, pedestal: { lado: 520, alto: 300 } },
+  venteo: { ro: 16.7, phi: -20, z: 260, largo: 230 },
+  patas: { r: 950, phi: [-70, -110], lado: 160, t: 10, oreja: 0.62, pedestal: { lado: 520, alto: 300 } },
   /* la persona de referencia (../persona.mjs, 1,75 m), de pie en el piso */
   persona: { x: 3700, y: 380, rumbo: 215 },
 };

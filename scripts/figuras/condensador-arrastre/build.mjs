@@ -303,7 +303,7 @@ function head(name, zc, dir, rh, { owner = "e" } = {}) {
   for (let i = NA; i >= 0; i--) { const r = RO - ((RO - rh) * i) / NA; merO.push([zc + dir * headZ(r, RO, HDO), r]); }
   const poly = [...mer, ...merO];
   put(`${name}.in`, eW(0, -R * 0.6, zc + dir * HD * 0.5), svg, [record(A.body(FE, poly, { name: `${name}.in`, owner, cut: [FRONT_E] }))]);
-  const side = [...mer.map(([z, r]) => [r, z]), ...merO.slice().reverse().map(([z, r]) => [r, z])];
+  const side = [...mer, ...merO].map(([z, r]) => [r, z]);
   cutE.push({ owner, poly: side, cls: "ca-cut" }, { owner, poly: side.map(([u, z]) => [-u, z]), cls: "ca-cut" });
 }
 
@@ -349,6 +349,7 @@ const tubeF = (t) => ({ o: eW(t.u, t.n, 0), a: ZD3, u: uE, v: nE });
   const bores2 = eBore(R - 0.4, cwIn.deg, zCwIn, NW.ri, "ca-bore-dk") + eBore(R - 0.4, cwOut.deg, zCwOut, NW.ri, "ca-bore-dk");
   wall("e.shell", zS0, zS1, { holes, bores: bores2 });
   ANCH.E_CORAZA = eW(-RO, 0, zS0 + 520);
+  ANCH.E_NOMBRE = eW(RO, 0, zS0 + 980);
   const Bt = E.bonnet.bolts;
   for (let q = 0; q < Bt.n / 2; q++) {
     const deg = 180 + 180 / Bt.n + (360 / Bt.n) * q, c = ePol(Bt.bc, deg, 0), F = FZ(c[0], c[1], 0), rot = deg * D2R - AZ * D2R;
@@ -610,6 +611,7 @@ const STAD = (w, h, r) => {                                         // un estadi
     disc(`d.hs${h}.plug`, FXa(yD, zb - HS.pad + 22), xH0 - 14, xH0, 14, {}, { owner: `d.hs${h}`, cls: "ca-trim", n: 20 });
   }
   ANCH.D_RETORNO = [xH0 - 4, yD + 30, legZ(2) + 20];
+  ANCH.D_NOMBRE = [xH0 + 40, yD + D.housing.w * 0.7, legZ(0) + D.housing.pad - 10];
   // las curvas del tubo interior adelante, entre horquillas, y los puentes del ánulo
   for (let h = 0; h < D.legs / 2 - 1; h++) {
     const z1 = legZ(2 * h + 1), z2 = legZ(2 * h + 2), Rb = D.bendR;
@@ -684,6 +686,9 @@ const STAD = (w, h, r) => {                                         // un estadi
   ANCH.COND2 = [xR + D32.ro * HV[0], yD + D32.ro * HV[1], 1100];
   ANCH.REDUCCION = [(xr0 + xr1) / 2, yD, z + D40.ro];
 }
+
+// el nombre del florentino, en la franja de afuera de su envolvente que se ve a la derecha
+ANCH.F_NOMBRE = pol(303, -25, 420 + 520);
 
 /* ====================================================================
    4 · la persona de referencia: 1,75 m, de pie en el piso junto al florentino
