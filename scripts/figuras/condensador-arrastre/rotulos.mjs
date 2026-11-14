@@ -48,12 +48,12 @@ export const ROTULOS_EN = [
   ['E_CORAZA', 'izq', 'Shell (cut)'],
   ['CW_IN', 'izq', 'Cooling-tower water in'],
   ['E_NIVEL', 'izq', 'Condensate level'],
-  ['SW_OUT', 'izq', 'Service water out', { dy: -40 }],
+  ['SW_OUT', 'izq', 'Utility water out', { dy: -40 }],
   ['D_NOMBRE', 'izq', 'Subcooler'],
   ['D_RETORNO', 'izq', 'Return bend'],
   ['D_ANULO', 'izq', 'Annulus'],
   ['D_INTERIOR', 'izq', 'Inner pipe'],
-  ['SW_IN', 'izq', 'Service water in'],
+  ['SW_IN', 'izq', 'Utility water in'],
   ['d:D_PARED', 'izq', 'Tube wall'],
   ['d:D_VAPOR', 'izq', 'Vapor'],
   ['d:D_GOTAS', 'izq', 'Oil drops'],
@@ -93,8 +93,8 @@ export const DESCRIPCION_EN = 'The condensing train of a steam distillation, in 
   'The bottom channel collects the condensate, with its level; above the level, the vent for the noncondensables, with its valve. ' +
   'The condenser rests on two lugs on a two-column frame with brackets. ' +
   'From the bottom of the channel the condensate flows by gravity to the subcooler, on the left: stacked double-pipe hairpins with the return bends at the back and, at the front, the flanges, the packing glands, the inner-pipe bends and the annulus jumpers. ' +
-  'The legs are drawn broken, and the break shows the section: the outer pipe, the annulus with the service water and the inner pipe with the condensate. ' +
-  'The condensate enters the top leg and flows down; the service water enters the bottom leg and flows up. ' +
+  'The legs are drawn broken, and the break shows the section: the outer pipe, the annulus with the utility water and the inner pipe with the condensate. ' +
+  'The condensate enters the top leg and flows down; the utility water enters the bottom leg and flows up. ' +
   'From the bottom leg the cold condensate rises beside the subcooler and enters the Florentine flask, on the right, in section, with the oil on top and the water below. ' +
   'A person 1.75 m tall stands on the floor by the flask for scale. ' +
   'A circle on the left enlarges one tube of the bundle, opened along its axis: the vapor flows down the center and the condensate film runs down the wall, with drops of oil; outside, between the tube and its neighbors, the tower water.';
