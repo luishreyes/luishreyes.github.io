@@ -327,12 +327,13 @@ function route(name, ctl, r, bend, opts = {}) {
    ==================================================================== */
 const ZF = FA.cimiento.alto;                                  // la cara de arriba del cimiento
 const RS0 = Rco - FA.t, RS1 = Rco;                            // el faldón, por dentro y por fuera
-const ZSK = Z.tanCol - 48;                                    // donde el faldón llega a la cabeza
+const ZSK = Z.tanCol - 5;                                     // el faldón llega al borde recto de la cabeza
 const SLV = TS.manga;
 // los huecos del faldón: la manga de la entrada (en el plano del corte), la de la vinaza y la boca de acceso
 const vinXw = -Math.sqrt(RS1 * RS1 - VI.y * VI.y);
-const holeEntrada = A.disc({ o: [0, 0, ZE], a: XD, u: YD, v: ZD }, RS0 - 60, RS1 + 60, SLV.r + SLV.t, { name: "hueco" });
-const holeVinaza = A.disc({ o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, vinXw - 90, vinXw + 90, VI.ro + 60, { name: "hueco" });
+const VS1 = -RS0 + 100;                                       // la cara de adentro de la manga de la vinaza
+const holeEntrada = A.disc({ o: [0, 0, ZE], a: XD, u: YD, v: ZD }, RS0 - 200, RS1 + 200, SLV.r + SLV.t, { name: "hueco" });
+const holeVinaza = A.disc({ o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, vinXw - 150, vinXw + 220, VI.ro + 60, { name: "hueco" });
 const AC = FA.acceso;
 const FAC = { o: [0, 0, AC.z], a: radial(AC.phi), u: tang(AC.phi), v: ZD };
 const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
@@ -366,37 +367,25 @@ const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
   ANCH.FALDON = [-RS0 * Math.cos(30 * D2R), -RS0 * Math.sin(30 * D2R), 1900];
   // la manga de la línea de entrada (en el corte) y la de la vinaza (entera)
   horiz("manga.entrada", RS1 - 4, RS1 + 50, ZE, SLV.r, SLV.r + SLV.t, { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, skip: [3] });
-  {
-    const F = { o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD };
-    // la manga: se dibuja entera, pero se registra solo lo que queda dentro del faldón (lo de afuera lo tapa la pared)
-    const x0 = vinXw - 60, x1 = vinXw + 60, xw = -Math.sqrt(RS0 * RS0 - (Math.abs(VI.y) - VI.ro - 60) ** 2);
-    const svg = sweepSvg({ F, profile: [[x0, VI.ro + 50], [x1, VI.ro + 50], [x1, VI.ro + 60], [x0, VI.ro + 60]], a0: 0, a1: TAU, steps: 48, cls: "ts-paint", capA: "none", capB: "none" });
-    record(A.ring(F, x0, x1, VI.ro + 50, VI.ro + 60, { name: "manga.vinaza.toda", owner: own }));
-    const s2 = A.ring(F, xw + 2, x1, VI.ro + 50, VI.ro + 60, { name: "manga.vinaza", owner: own });
-    put("manga.vinaza", [x1, VI.y, VI.z], svg, [s2]);
+  /* una manga que entra por la pared del faldón: arranca en la cara de adentro de la pared (un asiento sobre el cilindro)
+     y llega hasta s1; F.a apunta hacia adentro y la pared queda en s = −√(RS0² − t²), t el desvío de cada generatriz a lo
+     largo de F.u (horizontal). Se registra solo lo que queda dentro del faldón. hole: el radio de lo que se ve por ella;
+     afuera: si por ella se ve afuera (la boca de acceso, los respiraderos) */
+  const OUTSIDE = A.ring(FV(0), -10, 9000, RS0, 9000, { name: "afuera" });
+  function sleeve(name, F, ro, ri, s1, { afuera = false, ref } = {}) {
+    const start = (t) => -Math.sqrt(Math.max(0, RS0 * RS0 - (G.dot3(F.o, F.u) + ro * Math.cos(t)) ** 2 - 0));
+    const svg = S(G.saddleOf(F, ro, start, s1, P), { tone: "mid" });
+    const bore = []; for (let i = 0; i < 48; i++) { const t = (i / 48) * TAU; bore.push(pr(G.pointOf(F, s1 + 0.4, ri, t))); }
+    const sh = record(A.ring(F, -RS1 - 20, s1, ri, ro, { name, owner: "columna", cut: [OUTSIDE] }));
+    put(name, ref || G.pointOf(F, s1, 0, 0), wrap(svg, "ts-paint") + `<path class="${afuera ? "ts-afuera" : "ts-hueco"}" d="${pth1(bore)}"/>`, [sh]);
   }
-  // la boca de acceso: una manga a lo largo de y en la pared de atrás; por ella se ve afuera
-  {
-    const F = FAC;
-    const s0 = RS0 - 50, s1 = RS1 + 70;
-    const prof = [[s0, AC.r], [s1, AC.r], [s1, AC.r + 8], [s0, AC.r + 8]];
-    const ring = (s, r) => { const pts = []; for (let i = 0; i < 72; i++) { const t = (i / 72) * TAU; pts.push(pr(G.pointOf(F, s, r, t))); } return pth1(pts); };
-    const afuera = `<path class="ts-afuera" d="${ring(s1, AC.r)}"/>`;
-    const svg = afuera + sweepSvg({ F, profile: prof, a0: 0, a1: TAU, steps: 72, cls: "ts-paint", capA: "none", capB: "none" });
-    record(A.ring(F, s0, s1, AC.r, AC.r + 8, { name: "boca-acceso.toda", owner: own }));
-    const s2 = A.ring(F, s0, RS0 - Math.sqrt(RS0 * RS0 - (AC.r + 8) ** 2) * 0 - 2, AC.r, AC.r + 8, { name: "boca-acceso", owner: own });
-    put("boca-acceso", G.pointOf(F, s0, 0, 0), svg, [s2, A.disc(F, s0, s0 + 1, AC.r, {})]);
-    ANCH.ACCESO = G.pointOf(F, s0, AC.r + 8, -PI / 2 + 0.6);
-  }
-  // los respiraderos del faldón, arriba: dos agujeros con su manga corta, por dentro
-  for (const phi of FA.respiraderos.phi) {
-    const r = FA.respiraderos.r, c = [RS0 * Math.cos(phi * D2R), RS0 * Math.sin(phi * D2R), FA.respiraderos.z];
-    const F = { o: [0, 0, c[2]], a: [Math.cos(phi * D2R), Math.sin(phi * D2R), 0], u: [-Math.sin(phi * D2R), Math.cos(phi * D2R), 0], v: ZD };
-    const pts = []; for (let i = 0; i < 36; i++) { const t = (i / 36) * TAU; pts.push(pr(G.add3(G.add3([0, 0, c[2]], G.mul3(F.a, RS0 - 1)), G.add3(G.mul3(F.u, r * Math.cos(t)), G.mul3(F.v, r * Math.sin(t)))))); }
-    const svg = `<path class="ts-afuera" d="${pth1(pts)}"/>` + sweepSvg({ F, profile: [[RS0 - 25, r], [RS1 + 5, r], [RS1 + 5, r + 5], [RS0 - 25, r + 5]], a0: 0, a1: TAU, steps: 36, cls: "ts-paint", capA: "none", capB: "none" });
-    record(A.ring(F, RS0 - 25, RS1 + 5, r, r + 5, { name: `respiradero${phi}.todo`, owner: own }));
-    put(`respiradero${phi}`, c, svg, [A.ring(F, RS0 - 25, RS0 - 3, r, r + 5, {}), A.disc(F, RS0 - 3, RS0 - 2, r, {})]);
-  }
+  // la manga de la vinaza: a lo largo de x (F.u = y, así el desvío es el de la y)
+  sleeve("manga.vinaza", { o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, VI.ro + 60, VI.ro + 50, VS1);
+  // la boca de acceso: hacia adentro, en φ = 240°; por ella se ve afuera
+  sleeve("boca-acceso", { o: [0, 0, AC.z], a: G.mul3(radial(AC.phi), -1), u: tang(AC.phi), v: ZD }, AC.r + 8, AC.r, -RS0 + 110, { afuera: true });
+  ANCH.ACCESO = G.add3([0, 0, AC.z], G.add3(G.mul3(radial(AC.phi), RS0 - 110), [0, 0, -AC.r - 8]));
+  // los respiraderos del faldón, arriba: dos agujeros con su manga corta
+  for (const phi of FA.respiraderos.phi) sleeve(`respiradero${phi}`, { o: [0, 0, FA.respiraderos.z], a: G.mul3(radial(phi), -1), u: tang(phi), v: ZD }, FA.respiraderos.r + 5, FA.respiraderos.r, -RS0 + 30, { afuera: true });
 }
 
 /* ====================================================================
@@ -885,7 +874,7 @@ function nozzle(name, phi, zc, a, len, flangeR, flangeT, { cls = "ts-cs", owner 
   const s1 = Rro + len - flangeT;
   const svg = S(G.saddleOf(F, a, Rro, s1, P), { tone: "mid" });
   const low = Math.sqrt(Rro * Rro - a * a);
-  const sh = record(A.disc(F, low - 2, s1, a, { name: `${name}.cuello`, owner, seated: true, cut: CORAZA }));
+  const sh = record(A.disc(F, low - 2, s1, a, { name: `${name}.cuello`, owner, seated: true, cut: [...CORAZA, A.disc(FV(Xr), ZT1 - 20, ZT2 + 20, Rro, { name: "coraza.adentro", piece: "frame", ride: "frame" })] }));
   put(`${name}.cuello`, G.add3([Xr, 0, zc], G.mul3(radial(phi), (low + s1) / 2)), wrap(svg, cls), [sh]);
   disc(`${name}.brida`, F, s1, s1 + flangeT, flangeR, { cls, owner, extra: Dots(Array.from({ length: 8 }, (_, i) => at(G.pointOf(F, s1 + flangeT + 0.5, flangeR * 0.78, (i + 0.5) * PI / 4))).filter((_, i) => G.dot3(G.radialOf(F, (i + 0.5) * PI / 4), V3) > -0.2), { size: 0.9, tone: "mid" }) });
   return { F, s: s1 + flangeT, end: G.add3([Xr, 0, zc], G.mul3(radial(phi), s1 + flangeT)) };
@@ -949,8 +938,9 @@ function nozzle(name, phi, zc, a, len, flangeR, flangeT, { cls = "ts-cs", owner 
   put("venteo.valvula", cV, wrap(S(G.sphereOf(cV, 30, P), { tone: "mid" }), "ts-cast"), [record(A.ball(cV, 30, { name: "venteo.valvula", owner: own }))]);
   disc("venteo.palanca-eje", { o: cV, a: ZD, u: XD, v: YD }, 28, 46, 7, { cls: "ts-cast", owner: own });
   fp("venteo.palanca", { o: [cV[0], cV[1], cV[2] + 46], a: ZD, u: tang(VT.phi), v: radial(VT.phi) }, [[-8, -10], [130, -10], [130, 10], [-8, 10]], 0, 8, { cls: "ts-paint", owner: own });
-  const p0 = G.add3(cV, G.mul3(radial(VT.phi), 28)), p1 = G.add3(cV, G.mul3(radial(VT.phi), 95)), p2 = [p1[0], p1[1], p1[2] + 150];
-  route("venteo.tubo", [nz.end, G.add3(cV, G.mul3(radial(VT.phi), -28))], VT.ro, 30, { cls: "ts-cs", owner: own });
+  const ent = Math.sqrt(30 * 30 - VT.ro * VT.ro) - 0.2;
+  const p0 = G.add3(cV, G.mul3(radial(VT.phi), ent)), p1 = G.add3(cV, G.mul3(radial(VT.phi), 95)), p2 = [p1[0], p1[1], p1[2] + 150];
+  route("venteo.tubo", [nz.end, G.add3(cV, G.mul3(radial(VT.phi), -ent))], VT.ro, 30, { cls: "ts-cs", owner: own });
   route("venteo.sube", [p0, p1, p2], VT.ro, 50, { cls: "ts-cs", owner: own });
   const Fv = { o: p2, a: ZD, u: XD, v: YD };
   turned("venteo.termostatico", Fv, [[0, 0], [0, 26], [10, 32, 1], [40, 32], [50, 26, 1], [56, 12], [56, 0]], { cls: "ts-cast", owner: own, steps: 32 });
@@ -969,13 +959,13 @@ function nozzle(name, phi, zc, a, len, flangeR, flangeT, { cls = "ts-cs", owner 
   const start = (t) => { const x = VI.x + VI.ro * Math.cos(t), y = VI.y + VI.ro * Math.sin(t); return hOut * Math.sqrt(Math.max(0, 1 - (x * x + y * y) / (Rco * Rco))); };
   const s1 = Z.tanCol - 3060;
   const sNeck = start(0);
-  put("vinaza.cuello", [VI.x, VI.y, (Z.tanCol - sNeck + 3060) / 2], wrap(S(G.saddleOf(F, VI.ro, start, s1, P), { tone: "mid" }), "ts-ss"), [record(A.disc(F, sNeck - 12, s1, VI.ro, { name: "vinaza.cuello", owner: own, seated: true, cut: CABEZA }))]);
+  put("vinaza.cuello", [VI.x, VI.y, (Z.tanCol - sNeck + 3060) / 2], wrap(S(G.saddleOf(F, VI.ro, start, s1, P), { tone: "mid" }), "ts-ss"), [record(A.disc(F, sNeck - 12, s1, VI.ro, { name: "vinaza.cuello", owner: own, seated: true, cut: [...CABEZA, A.lathe(FV(0), [[Z.tanCol + 5, 0], [Z.tanCol + 5, Rco], ...Array.from({ length: 23 }, (_, i) => { const t = ((i + 1) / 24) * (PI / 2); return [Z.tanCol - hOut * Math.sin(t), Rco * Math.cos(t)]; }), [Z.tanCol - hOut, 0]], { name: "cabeza.adentro", piece: "frame", ride: "frame" })] }))]);
   const Fz = FV(VI.x, VI.y);
   disc("vinaza.brida-boca", Fz, 3060 - VI.bridaT, 3060, VI.bridaR, { cls: "ts-ss", owner: own });
   disc("vinaza.junta", Fz, 3060 - VI.bridaT - 3, 3060 - VI.bridaT, VI.bridaR - 25, { cls: "ts-gasket", owner: own });
   disc("vinaza.brida", Fz, 3060 - 2 * VI.bridaT - 3, 3060 - VI.bridaT - 3, VI.bridaR, { cls: "ts-ss", owner: own });
   const p0 = [VI.x, VI.y, 3060 - 2 * VI.bridaT - 3], c1 = [VI.x, VI.y, VI.z], p1 = [VI.x1, VI.y, VI.z];
-  route("vinaza.tubo", [p0, c1, p1], VI.ro, 3 * VI.ro, { cls: "ts-ss", owner: own, breakAt: [(p) => Math.hypot(p[0], p[1]) - RS0 + 70, (p) => Math.hypot(p[0], p[1]) - RS1 - 70] });
+  route("vinaza.tubo", [p0, c1, p1], VI.ro, VI.ro, { cls: "ts-ss", owner: own, breakAt: [(p) => p[0] - VS1, (p) => Math.hypot(p[0], p[1]) - RS1 - 40] });
   void 0;
   disc("vinaza.brida-sale", { o: p1, a: XD, u: YD, v: ZD }, -VI.bridaT, 0, VI.bridaR, { cls: "ts-ss", owner: own });
   TS._vinSale = [VI.x1 - 20, VI.y, VI.z];
@@ -985,7 +975,7 @@ function nozzle(name, phi, zc, a, len, flangeR, flangeT, { cls = "ts-cs", owner 
 
 /* ====================================================================
    10 · las patas del rehervidor: dos atrás, cada una con su pedestal, su placa base y la oreja de la coraza que se
-   apoya en ella; un larguero entre las dos. Las dos de adelante se van con el corte
+   apoya en ella. Las dos de adelante se van con el corte
    ==================================================================== */
 const ZLUG = ZB + 1500;
 {
@@ -1006,9 +996,7 @@ const ZLUG = ZB + 1500;
       fp(`oreja${phi}.cartela${w > 0 ? 2 : 1}`, Fg, [[s0, ZLUG - 260], [s0, ZLUG], [PT.r - h - 25, ZLUG], [PT.r - h - 25, ZLUG - 60]], -6, 6, { cls: "ts-ss", owner: "rehervidor" });
     }
   }
-  // el larguero entre las dos patas, abajo
-  const c1 = [Xr + PT.r * Math.cos(PT.phi[1] * D2R), PT.r * Math.sin(PT.phi[1] * D2R)], c2 = [Xr + PT.r * Math.cos(PT.phi[0] * D2R), PT.r * Math.sin(PT.phi[0] * D2R)];
-  box("pata.larguero", [c1[0] + h, c1[1] - 50, 1500], [c2[0] - h, c1[1] + 50, 1620], { cls: "ts-paint", owner: own, r: 0, steps: 1 });
+  const c2 = [Xr + PT.r * Math.cos(PT.phi[0] * D2R), PT.r * Math.sin(PT.phi[0] * D2R)];
   ANCH.PATA = [c2[0] + h, c2[1] + h, 1000];
   ANCH.OREJA = [Xr + (PT.r + h) * Math.cos(PT.phi[0] * D2R), (PT.r + h) * Math.sin(PT.phi[0] * D2R), ZLUG + 22];
 }
@@ -1118,6 +1106,11 @@ const XCOTA = (Rco + Xr - RH.bridaR) / 2 + 60;
 }
 
 /* ---------- orden y salida ---------- */
+if (process.env.TS_SDF) {
+  const [nm, ...xyz] = process.env.TS_SDF.split(","); const q = xyz.map(Number).map((v) => v * U);
+  for (const it of R_.items.filter((i) => i.name === nm)) for (const sh of it.shapes) console.log(nm, sh.kind, "sdf", A.sdf(sh, q).toFixed(3), "cuts", (sh.cut || []).length, (sh.cut || []).map((c) => c.name + ":" + A.sdf(c, q).toFixed(2)).join(" "));
+  process.exit(0);
+}
 if (process.env.TS_ITEM) {
   for (const nm of process.env.TS_ITEM.split(",")) {
     const me = R_.items.find((it) => it.name === nm);
