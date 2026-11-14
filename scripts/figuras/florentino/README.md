@@ -25,8 +25,9 @@ El dibujo va en milímetros y el audit en centímetros (`cm()`).
 
 | Archivo | Qué es |
 |---|---|
-| `build.mjs` | Geometría, orden de pintura (`A.settle`) y audit. Escribe `out/fig.svg`, `out/fig.css`, `out/florentino_data.json` (cámara y puntos de los rótulos) y `preview.html`. |
+| `build.mjs` | La cámara, los ayudantes del kit, el orden de pintura (`A.settle`) y el audit; el dibujo está en `dibujo.mjs`. Escribe `out/fig.svg`, `out/fig.css`, `out/florentino_data.json` (cámara y puntos de los rótulos) y `preview.html`. |
 | `geo.mjs` | Las medidas (`FL`), los tubos y bridas (`DN`), las alturas y dos secciones de uso común. |
+| `dibujo.mjs` | El dibujo del recipiente (`dibujarFlorentino`), aparte de `build.mjs` para que otra figura lo ponga en su escena tal cual: el tren de condensación de `../condensador-arrastre`. |
 | `xprism.mjs` | Prismas de sección cualquiera en cualquier marco (el mismo de las otras figuras). |
 | `libro.mjs` | Escribe el `.qmd` del libro, con el SVG y los rótulos, y `out/libro-preview.html` (con `estilo/anatomia.css` del libro y el ancho mínimo de 640 px del teléfono). `--anclas` imprime dónde cae cada rótulo. |
 

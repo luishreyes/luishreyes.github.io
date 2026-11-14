@@ -523,7 +523,7 @@ function flangePair(name, F, s, d, { owner = name } = {}) {
     fp(`e.knee${i}`, { o: eW(u, 0, 0), a: uE, u: nE, v: ZD3 }, [[n + c, zl0 - b - 520], [n + c, zl0 - b], [n + c + 420, zl0 - b]], -12, 12, {}, { owner: `e.st${i}`, cls: "ca-paint" });
   });
   fp("e.beamB", { o: eW(0, ST.n, 0), a: uE, u: nE, v: ZD3 }, rect(-c, zl0 - b, c, zl0), -ST.du - c, ST.du + c, {}, { owner: "e.st0", cls: "ca-paint" });
-  ANCH.E_ESTRUCTURA = eW(ST.du + c, ST.n, 1100);
+  ANCH.E_ESTRUCTURA = eW(ST.du + c, ST.n + 120, zl0 - b - 380);
 }
 
 /* 1h · las flechas: el vapor baja por la boquilla, la placa de choque lo abre y entra a los tubos; el agua sube en
@@ -628,15 +628,15 @@ const STAD = (w, h, r) => {                                         // un estadi
   ANCH.D_PUENTE = [xF - D.noz.dx + D32.ro, yD, (legZ(5) + legZ(6)) / 2];
   // el agua de servicios: entra por el ánulo de la rama de abajo y sale por el de la de arriba (boquillas adelante)
   [[D.legs - 1, "d.swin"], [0, "d.swout"]].forEach(([i, nm]) => {
-    const z = legZ(i), xn = xF - D.sw, F = i ? { o: [xn, yD, z], a: [0, 1, 0], u: ZD3, v: XD } : { o: [xn, yD, z], a: ZD3, u: YD, v: XD };
+    const z = legZ(i), xn = xF - D.sw, F = { o: [xn, yD, z], a: [0, 1, 0], u: ZD3, v: XD };
     const host = A.disc(FXa(yD, z), xBrk1, xFL, D65.ro, { name: `d.leg${i}.macizo` });
-    const s1 = D65.ro + (i ? 110 : 60);
+    const s1 = D65.ro + (i ? 110 : 70);
     saddle(`${nm}.neck`, F, D40.ro, (t) => G.saddleStart(D65.ro, D40.ro, t), s1, {}, { owner: nm, cls: "ca-ss", hosts: [host] });
     disc(`${nm}.fl`, F, s1, s1 + D40.ft, D40.fl, {}, { owner: nm, cls: "ca-ss" });
-    const s2 = s1 + D40.ft, s3 = s2 + (i ? 130 : 160);
+    const s2 = s1 + D40.ft, s3 = s2 + 130;
     tubeItems(`${nm}.pipe`, [G.pointOf(F, s2, 0, 0), G.pointOf(F, s3, 0, 0)], D40.ro, { cls: "ca-pipe" });
     flangePair(`${nm}.end`, F, s3, D40);
-    ANCH[nm === "d.swin" ? "SW_IN" : "SW_OUT"] = add(G.pointOf(F, (s2 + s3) / 2, 0, 0), nm === "d.swin" ? [0, 0, -D40.ro] : mul(TMINUS, D40.ro));
+    ANCH[nm === "d.swin" ? "SW_IN" : "SW_OUT"] = add(G.pointOf(F, (s2 + s3) / 2, 0, 0), nm === "d.swin" ? [0, 0, -D40.ro] : [0, 0, D40.ro]);
   });
   // los soportes: un poste detrás de las ramas, con un brazo bajo cada una
   [xF - D.posts[0], xB + D.posts[1]].forEach((x, q) => {
@@ -673,7 +673,7 @@ const STAD = (w, h, r) => {                                         // un estadi
   const z0 = zCondFl - NC.ft;
   const route = G.fillet([[xE, yE, z0], [xE, yE, legZ(0)], [xE, yD, legZ(0)], [xG, yD, legZ(0)]], 60, 12, { P, tube: D40.ro });
   tubeItems("lc1.pipe", route, D40.ro, { cls: "ca-pipe" });
-  ANCH.COND1 = add(G.pointAlong(route, G.pathLength(route) * 0.55), [0, 0, D40.ro]);
+  ANCH.COND1 = add([xE, yE, (z0 + legZ(0)) / 2 + 30], mul(TPLUS, D40.ro));
 }
 {
   // del subenfriador al florentino: sale del prensaestopas de la rama de abajo, una reducción, sube junto al
@@ -688,7 +688,7 @@ const STAD = (w, h, r) => {                                         // un estadi
 }
 
 // el nombre del florentino, en la franja de afuera de su envolvente que se ve a la derecha
-ANCH.F_NOMBRE = pol(303, -25, 420 + 520);
+ANCH.F_NOMBRE = pol(345, -20, 420 + 1240 + 6);
 
 /* ====================================================================
    4 · la persona de referencia: 1,75 m, de pie en el piso junto al florentino
