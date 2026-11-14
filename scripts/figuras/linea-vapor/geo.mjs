@@ -1,29 +1,9 @@
-/* Medidas de la línea de vapor del capítulo 21 del libro de operaciones unitarias (Heat in equipment, «La línea
-   aislada en la planta»): un tramo de la línea que lleva los 1600 kg/h de vapor saturado a 5 bara de la caldera al
-   extractor de la planta de aceite esencial, al exterior, sobre un soporte de tubería.
+/* Medidas de la línea de vapor del capítulo 21 del libro de operaciones unitarias: un tramo de una línea de vapor
+   aislada, al exterior, sobre un soporte de tubería.
    Unidades: 1 = 1 mm. El eje del tubo va en y = 0, z = 0, a lo largo de x; el vapor corre hacia +x. z hacia arriba.
    Los ángulos alrededor del tubo (φ) se miden desde +y (el lado que mira al lector) hacia +z (arriba).
-
-   De las fuentes (con su página; el README dice qué sale de dónde):
-   - el tubo de 4 in cédula 40: 114,30 mm por fuera, 6,02 mm de pared, 102,26 mm por dentro (Perry, 2008, tabla
-     10-22, p. 10-78; la tabla tbl-tub-cedula del capítulo 10 del libro);
-   - el aislante de tubos va en medias cañas, cilindros partidos en dos (o en tres o cuatro), amarrado con alambre o
-     con bandas antes de la chaqueta; la chaqueta, de aluminio, se asegura con bandas, y las válvulas y los accesorios
-     llevan cubiertas preformadas (Perry, p. 11-76); el aislante de 2 in nominales sobre un tubo de 4 in mide 52 mm
-     (Perry, tabla 11-21, p. 11-71); el acabado de un sistema caliente debe impedir que entre el agua (p. 11-71);
-   - la chaqueta metálica en toda tubería al exterior; los traslapos longitudinales a las diez o a las dos (de una
-     chaqueta de PVC); la chaqueta de aluminio de 0,41 mm como mínimo, con traslapos de 50 mm como mínimo dispuestos
-     para que el agua escurra en el sentido de la pendiente, y bandas de acero inoxidable de 13 × 0,50 mm cada 300 mm;
-     la chaqueta de las válvulas y los accesorios, como la del tubo (ASHRAE, 2014, p. 10.7); los aislantes, en dos
-     medias cañas (p. 10.8);
-   - los soportes de acero no deben estorbar la dilatación del tubo, y las guías dirigen su movimiento (Perry,
-     pp. 10-122 y 10-123);
-   - las bridas de 4 in clase 150: 230 mm de diámetro, 22,3 mm de espesor mínimo, cuello de 135 mm, 75 mm de largo
-     por el cuello, cara realzada de 157,2 mm y 2 mm; ocho espárragos de 5/8 in en un círculo de 190,5 mm (ASME
-     B16.5-2013, tablas 4, 7 y 8, pp. 64, 71 y 73);
-   - la línea va con una pendiente hacia los puntos donde se recoge el condensado, y ahí van las trampas (Bylund,
-     1995, p. 179).
-   Lo demás es «medida del libro»: típico de una línea así, escogido para el dibujo. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const LV = {
   AZ: 60, EL: 24,
   /* el tubo: 4 in cédula 40 (Perry, tabla 10-22) */

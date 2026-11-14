@@ -1,17 +1,15 @@
 /* ====================================================================
-   El ciclón de alta eficiencia de Stairmand en isométrico (skill anatomy), para el capítulo 20 del libro de operaciones
-   unitarias (Particles and drops in gases, «El ciclón por dentro»): uno de los cuatro ciclones que recogen el polvo del
-   aire del secador por aspersión de la planta de café instantáneo, de D = 1,2 m, cortado por el plano del eje (y = 0)
-   sin la mitad que mira al lector.
+   El ciclón en isométrico (skill anatomy), para el capítulo 20 del libro de operaciones unitarias: un ciclón de
+   flujo invertido de alta eficiencia, cortado por el plano del eje (y = 0) sin la mitad que mira al lector.
    Concepto: el aire con polvo entra por la entrada tangencial rectangular y baja en espiral pegado a la pared (el
    vórtice de afuera); las partículas gruesas van a la pared y bajan por ella en espiral hasta la boca del cono. El gas
-   da la vuelta 2 D por debajo del tubo de salida y sube por el centro, girando más rápido (el vórtice de adentro), hasta
+   da la vuelta por debajo del tubo de salida y sube por el centro, girando más rápido (el vórtice de adentro), hasta
    el tubo de salida, con las partículas finas que no alcanzaron la pared. El polvo cae a la tolva y sale por la válvula
    rotativa, que lo deja salir sin dejar entrar aire.
    Corte: el plano y = 0; se quita la mitad que mira al lector (y > 0) del cilindro, el cono, el techo, el tubo de
    salida con su codo y su ducto, la boca del polvo, la tolva, la válvula rotativa y su rotor. La entrada, las patas,
    el motorreductor y el interruptor de nivel quedan detrás del plano, enteros.
-   Uso: node build.mjs [--audit] [--fast] [--check]
+   Uso: node build.mjs [--audit] [--fast] [--check] [--detalle]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */
 import { writeFileSync, mkdirSync } from "node:fs";

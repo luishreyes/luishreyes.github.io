@@ -1,11 +1,10 @@
 /* ====================================================================
-   La línea de vapor aislada en isométrico (skill anatomy), para el capítulo 21 del libro de operaciones unitarias
-   (Heat in equipment, «La línea aislada en la planta»): un tramo de la línea que lleva el vapor saturado a 5 bara de
-   la caldera al extractor de la planta de aceite esencial, al exterior, sobre un soporte de tubería.
-   Concepto: el tubo de acero al carbono de 4 in cédula 40 va forrado con dos medias cañas de lana mineral de 50 mm y
-   una chaqueta de aluminio, con sus traslapos y sus bandas; se apoya en una zapata soldada que deja pasar el aislante
-   por encima de la viga; la válvula y la unión de bridas llevan chaquetas desmontables; en un punto bajo, la pierna de
-   goteo recoge el condensado y lo entrega a la trampa. Un corte en cuña muestra las capas y el vapor por dentro.
+   La línea de vapor aislada en isométrico (skill anatomy), para el capítulo 21 del libro de operaciones unitarias:
+   un tramo de una línea de vapor al exterior, sobre un soporte de tubería.
+   Concepto: el tubo de acero va forrado con dos medias cañas de lana mineral y una chaqueta de aluminio, con sus
+   traslapos y sus bandas; se apoya en una zapata soldada que deja pasar el aislante por encima de la viga; la válvula
+   y la unión de bridas llevan chaquetas desmontables; en un punto bajo, la pierna de goteo recoge el condensado y lo
+   entrega a la trampa. Un corte en cuña muestra las capas y el vapor por dentro.
    Cortes: la cuña φ ∈ [315°, 450°] del tubo (del lado del lector y arriba), escalonada: la chaqueta se quita primero,
    luego la lana, luego el acero; la chaqueta desmontable de la unión de bridas va cortada con la misma cuña; el extremo
    de la derecha va cortado por un plano x = constante. La viga va cortada en su extremo delantero.

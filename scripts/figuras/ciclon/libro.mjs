@@ -1,5 +1,4 @@
-// El ciclón de alta eficiencia de Stairmand con los nombres de sus piezas, para el capítulo 20 del libro de operaciones
-// unitarias (Particles and drops in gases, «El ciclón por dentro»):
+// El ciclón con los nombres de sus piezas, para el capítulo 20 del libro de operaciones unitarias:
 //
 //   node build.mjs --audit && node build.mjs --detalle --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]

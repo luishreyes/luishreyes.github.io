@@ -1,5 +1,5 @@
 // El congelador de lecho fluidizado con los nombres de sus piezas, para el capítulo 16 del libro de operaciones
-// unitarias (Partículas en un fluido, «Congelar en un lecho fluidizado», antes del ejemplo de las arvejas):
+// unitarias:
 //
 //   node build.mjs --audit && node build.mjs --detalle=1 --audit && node build.mjs --detalle=2 --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]

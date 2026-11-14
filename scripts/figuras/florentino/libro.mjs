@@ -1,4 +1,4 @@
-// El florentino con los nombres de sus piezas, para el capítulo 16 del libro de operaciones unitarias (Sedimentación
+// El florentino con los nombres de sus piezas, para el capítulo 17 del libro de operaciones unitarias (Sedimentación
 // y decantación):
 //
 //   node build.mjs && node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro

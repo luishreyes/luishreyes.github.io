@@ -1,11 +1,10 @@
 /* Medidas de los siete impulsores del capítulo 14 del libro de operaciones unitarias (Agitación). Unidades: 1 = 1 mm,
    z hacia arriba, el eje del impulsor en x = y = 0 y el plano medio de las palas en z = 0.
    Las proporciones salen de las fuentes del capítulo (la página va al lado); lo demás es «medida del libro»: típico de
-   un impulsor así, escogido para la figura. El README lleva la misma lista.
+   un impulsor así, escogido para la figura. La lista completa está en notas/figuras-isometricas.md del libro.
 
-   Las cinco turbinas (hélice, palas inclinadas, hidrofoil, Rushton y paleta) van con el mismo diámetro, D = 450 mm,
-   para que se comparen: 18 in es lo más grande que se hace una hélice (McCabe, p. 261). El ancla y la cinta van en su
-   tamaño de pared, dentro de un tanque de T = 1200 mm del que se ve la mitad de atrás. */
+   Las cinco turbinas (hélice, palas inclinadas, hidrofoil, Rushton y paleta) van con el mismo diámetro, para que se
+   comparen. El ancla y la cinta van en su tamaño de pared, dentro de un tanque del que se ve la mitad de atrás. */
 export const D = 450, R = D / 2;
 
 // lo que comparten las turbinas (medida del libro): eje de 50 mm, chaveta de 14 × 9 (la de un eje de 50 mm), prisioneros

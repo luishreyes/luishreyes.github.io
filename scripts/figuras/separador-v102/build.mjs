@@ -1,18 +1,16 @@
 /* ====================================================================
-   El separador de alta V-102 de la planta de benceno en isométrico
+   El separador de alta presión de la planta de benceno en isométrico
    (skill anatomy), para la edición impresa del libro (capítulo 2).
-   Recipiente vertical de 1,2 m de diámetro interior y 3,4 m entre
-   tangentes, cabezas elípticas 2:1, sobre un faldón. Va abierto por el
-   plano vertical de su eje que mira al lector, con el faldón y su anillo
-   de base: se ven la placa desviadora de la entrada, la malla sobre su
-   anillo, el líquido al nivel normal (0,35 de la altura del cuerpo), el
-   rompe-vórtice de la salida de líquido, el termopozo y las horquillas
-   del interruptor de muy alto nivel.
-   Afuera: la entrada de 8″, la salida de gas de 8″, la válvula de
-   seguridad con su válvula de bloqueo, el transmisor de presión, el
-   puente de nivel con el visor de vidrio y el transmisor de nivel, el
-   interruptor de muy alto nivel, el termómetro, la salida de líquido
-   de 3″ y el drenaje de 2″.
+   Recipiente vertical de cabezas elípticas 2:1, sobre un faldón. Va
+   abierto por el plano vertical de su eje que mira al lector, con el
+   faldón y su anillo de base: se ven la placa desviadora de la entrada,
+   la malla sobre su anillo, el líquido al nivel normal, el rompe-vórtice
+   de la salida de líquido, el termopozo y las horquillas del interruptor
+   de muy alto nivel.
+   Afuera: la entrada, la salida de gas, la válvula de seguridad con su
+   válvula de bloqueo, el transmisor de presión, el puente de nivel con
+   el visor de vidrio y el transmisor de nivel, el interruptor de muy
+   alto nivel, el termómetro, la salida de líquido y el drenaje.
    Figura quieta: no tiene nada vivo. Unidades: 1 = 1 cm. z hacia arriba.
    ==================================================================== */
 import { writeFileSync, mkdirSync } from "node:fs";

@@ -1,6 +1,6 @@
 /* ====================================================================
-   Válvula de control de globo en isométrico (skill anatomy), para el capítulo 12 del libro de operaciones unitarias
-   (Válvulas, tuberías y medición de flujo).
+   Válvula de control de globo en isométrico (skill anatomy), para el capítulo 13 del libro de operaciones unitarias
+   (Tanques, válvulas, tuberías y medición).
    Concepto: el agua entra por la izquierda, baja por la galería de abajo, sube por el puerto del asiento y sale por
    la galería de arriba: el paso en S. El obturador perfilado, colgado del vástago, decide cuánto puerto queda abierto.
    Arriba, el actuador de diafragma y resorte: el aire entra debajo del diafragma y lo levanta (aire para abrir); si

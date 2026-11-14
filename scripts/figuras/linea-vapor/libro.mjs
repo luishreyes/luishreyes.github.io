@@ -1,5 +1,4 @@
-// La línea de vapor aislada con los nombres de sus piezas, para el capítulo 21 del libro de operaciones unitarias (Heat
-// in equipment, «La línea aislada en la planta»):
+// La línea de vapor aislada con los nombres de sus piezas, para el capítulo 21 del libro de operaciones unitarias:
 //
 //   node build.mjs --audit && node build.mjs --detalle --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]

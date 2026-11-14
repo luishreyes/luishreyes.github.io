@@ -1,5 +1,4 @@
-// El intercambiador de doble tubo con los nombres de sus piezas, para el capítulo 22 del libro de operaciones unitarias
-// (Heat exchangers, 22.10: doble tubo y horquillas):
+// El intercambiador de doble tubo con los nombres de sus piezas, para el capítulo 22 del libro de operaciones unitarias:
 //
 //   node build.mjs --libro --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]

@@ -1,16 +1,12 @@
-/* Medidas del filtro a presión de doble medio del capítulo 15 del libro de operaciones unitarias (Partículas en un
-   fluido): el filtro que limpia el agua de servicios de la planta. Unidades: 1 = 1 mm. z hacia arriba, desde el piso;
+/* Medidas del filtro a presión de doble medio del capítulo 16 del libro de operaciones unitarias (Partículas en un
+   fluido). Unidades: 1 = 1 mm. z hacia arriba, desde el piso;
    el eje del recipiente en x = y = 0. El corte quita lo que mira al lector por encima de la línea de tangencia del
    fondo (y > 0 y z > zt): el fondo queda entero, como una taza, y el resto se ve por el plano y = 0. El medio va
    además escalonado: se quita también el cuarto de atrás a la derecha (x > 0, y < 0), hasta la placa, para que se
    vean las boquillas sobre ella.
-   - Del caso del capítulo (figuras/particulas-en-un-fluido/caso.json del libro): diámetro interior de 1,5 m, 0,30 m de
-     arena (ES 0,5 mm) sobre la placa, 0,50 m de antracita (ES 1,0 mm) encima y unos 0,60 m de agua libre hasta el
-     distribuidor; se lava cuando la caída del lecho llega a unos 50 kPa.
-   - De las fuentes: falso fondo de boquillas sin grava de soporte (ahorra unos 0,5 m de altura) y boquillas que dejan
-     pasar aire y agua (Crittenden et al., 2012, cap. 11; Perry, 8.ª ed., p. 18-110).
-   Lo demás (cabezas 2:1, espesores, boquillas, bridas, patas, distribuidor, rejilla de las boquillas) es dibujo: una
-   elección plausible para un filtro a presión de 1,5 m, no un dato. Las bridas siguen ASME B16.5, clase 150. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro. Lo demás (cabezas 2:1,
+   espesores, boquillas, bridas, patas, distribuidor, rejilla de las boquillas) es dibujo: una elección plausible, no
+   un dato. Las bridas siguen ASME B16.5, clase 150. */
 export const FA = {
   AZ: 60, EL: 26,
   R: 750, tw: 8, hd: 375,                 // radio interior, pared y profundidad de las cabezas 2:1 (D/4)

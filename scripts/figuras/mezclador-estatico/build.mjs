@@ -1,14 +1,13 @@
 /* ====================================================================
-   Mezclador estático en isométrico (skill anatomy), para el capítulo 14 del libro de operaciones unitarias (Mezclado
-   y escalado de tanques agitados): el ácido clorhídrico al 32 % que se inyecta en la línea de agua de proceso del
-   reactor de extracción de pectina, uno en mil, y los elementos que lo reparten antes de que llegue al reactor.
+   Mezclador estático en isométrico (skill anatomy), para el capítulo 15 del libro de operaciones unitarias (Mezclado
+   y escalado de tanques agitados): un aditivo que se inyecta en una línea de agua y los elementos que lo reparten.
    Concepto: el agua entra por la brida de la izquierda; la lanza baja por la boquilla de arriba, dobla y descarga el
-   ácido en el centro del tubo, hacia aguas abajo; siete elementos Kenics KMS (cintas torcidas 180° en 1,5 D, a la
-   derecha y a la izquierda, cada una girada 90° respecto a la anterior) parten la corriente y la recombinan.
+   aditivo en el centro del tubo, hacia aguas abajo; los elementos de cinta torcida (a la derecha y a la izquierda, cada
+   uno girado 90° respecto al anterior) parten la corriente y la recombinan.
    Corte: se quita la mitad que mira al lector del tubo, de las bridas y de la boquilla con sus bridas (el plano y = 0).
    Los elementos, la lanza, el conector de compresión y la unión van enteros. Lo que se ve por la abertura del corte va
    recortado a ella y se registra recortado al prisma que la abertura proyecta a lo largo de la mirada (`CLIPWIN`).
-   El chorro de ácido es esquemático: muestra que la primera cinta lo parte en dos y que se diluye, no un perfil medido.
+   El chorro es esquemático: muestra que la primera cinta lo parte en dos y que se diluye, no un perfil medido.
    Uso: node build.mjs [--audit] [--fast]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */

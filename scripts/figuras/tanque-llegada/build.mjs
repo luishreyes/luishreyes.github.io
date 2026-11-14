@@ -1,15 +1,15 @@
 /* ====================================================================
-   Tanque de llegada en isométrico (skill anatomy), para el capítulo 12 del libro de operaciones unitarias (Válvulas,
-   tuberías y medición de flujo): el tanque elevado de agua de servicios del caso.
-   Concepto: la descarga de la bomba llega por arriba a 13 m, pasa por la válvula de control y baja por el techo hasta
-   1 m bajo el nivel normal; la planta toma el agua por el fondo, por gravedad, y por eso el tanque va en alto, sobre
-   una estructura. El transmisor de nivel lee la columna de agua desde la toma de 9,2 m; el interruptor de muy alto
-   nivel y el rebose cuidan que no se llene de más, y el respiradero deja entrar y salir el aire.
+   Tanque de llegada en isométrico (skill anatomy), para el capítulo 13 del libro de operaciones unitarias (Tanques,
+   válvulas, tuberías y medición): un tanque elevado de agua sobre su estructura.
+   Concepto: la descarga de la bomba llega por arriba, pasa por la válvula de control y baja por el techo hasta debajo
+   del nivel normal; la planta toma el agua por el fondo, por gravedad, y por eso el tanque va en alto, sobre una
+   estructura. El transmisor de nivel lee la columna de agua desde su toma; el interruptor de muy alto nivel y el
+   rebose cuidan que no se llene de más, y el respiradero deja entrar y salir el aire.
    Corte: se quita el cuarto de la envolvente, del techo y del agua que mira al lector (x > 0, y > 0, sobre el
    fondo). El fondo, la estructura, la escalera, la baranda y la tubería de afuera van enteros. Lo que queda bajo el
    nivel lleva el tinte del agua (tl-sub) y la superficie es una lámina translúcida.
-   La estructura mide 9,7 m del piso al fondo: se dibuja con un corte, y lo de abajo (el piso, los pedestales, las
-   placas base y el pie de la escalera y del rebose) va subido SHIFT (geo.mjs).
+   La estructura se dibuja con un corte, y lo de abajo (el piso, los pedestales, las placas base y el pie de la
+   escalera y del rebose) va subido SHIFT (geo.mjs).
    Uso: node build.mjs [--audit] [--fast]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */

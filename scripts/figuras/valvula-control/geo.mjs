@@ -1,12 +1,10 @@
-/* Medidas de la válvula de control de globo del capítulo 12 del libro de operaciones unitarias
-   (Válvulas, tuberías y medición de flujo). Unidades: 1 = 1 mm.
-   x a lo largo del flujo (la entrada en −x), y hacia el lector (el corte quita y > 0), z hacia arriba.
-   El origen está en el eje de la tubería, en el eje del vástago.
-   Válvula de 2″, clase 150 RF: cara a cara 254 mm (ISA 75.08.01); bridas ASME B16.5 (Ø 152,4 × 19,1, cara realzada
-   Ø 92,1 × 1,6, cuatro espárragos de 5/8″ en un círculo de Ø 120,7); tubo de 2″ cédula 40 (Ø 60,3 × 3,91).
-   Un solo asiento, guiada por arriba, obturador perfilado, puerto de Ø 46 y carrera de 19 mm (3/4″).
-   Actuador de diafragma y resorte de aire para abrir (el aire entra debajo del diafragma y lo levanta; el resorte,
-   arriba del plato, empuja el obturador contra el asiento: falla cerrada). */
+/* Medidas de la válvula de control de globo del capítulo 13 del libro de operaciones unitarias (Tanques,
+   válvulas, tuberías y medición): una válvula bridada de un solo asiento, guiada por arriba, con obturador
+   perfilado y actuador de diafragma y resorte de aire para abrir (falla cerrada).
+   Unidades: 1 = 1 mm. x a lo largo del flujo (la entrada en −x), y hacia el lector (el corte quita y > 0), z hacia
+   arriba. El origen está en el eje de la tubería, en el eje del vástago.
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const VC = {
   AZ: 62, EL: 27,
   /* línea */

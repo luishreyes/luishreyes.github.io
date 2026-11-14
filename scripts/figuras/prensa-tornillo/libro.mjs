@@ -1,5 +1,4 @@
-// La prensa de tornillo con los nombres de sus piezas, para el capítulo 18 del libro de operaciones unitarias
-// (Filtración, «Apretar para sacar el líquido»):
+// La prensa de tornillo con los nombres de sus piezas, para el capítulo 18 del libro de operaciones unitarias:
 //
 //   node build.mjs --audit && node build.mjs --detalle --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]

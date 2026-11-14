@@ -1,4 +1,4 @@
-// El mezclador estático con los nombres de sus piezas, para el capítulo 14 del libro de operaciones unitarias
+// El mezclador estático con los nombres de sus piezas, para el capítulo 15 del libro de operaciones unitarias
 // (Mezclado y escalado de tanques agitados):
 //
 //   node build.mjs && node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro

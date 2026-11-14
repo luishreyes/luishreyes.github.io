@@ -4,9 +4,9 @@
    el ancla y la cinta helicoidal doble, cada uno con su trozo de eje, su cubo, su chaveta, sus prisioneros y sus pernos.
    Concepto: el lector reconoce cada impulsor por cómo está hecho: las palas torcidas y fundidas de la hélice, las palas
    planas empernadas a 45°, las palas anchas y torcidas del hidrofoil, el disco con seis palas de la Rushton, las dos
-   palas planas de la paleta y, en su tanque, el ancla y la cinta que pasan a 30 mm de la pared.
-   Las cinco turbinas van con el mismo diámetro (D = 450 mm) y la misma cámara, así se comparan; el ancla y la cinta, en
-   su tamaño de pared, dentro de la mitad de atrás de un tanque de 1,2 m.
+   palas planas de la paleta y, en su tanque, el ancla y la cinta que pasan cerca de la pared.
+   Las cinco turbinas van con el mismo diámetro y la misma cámara, así se comparan; el ancla y la cinta, en su tamaño
+   de pared, dentro de la mitad de atrás de su tanque.
    Uso: node build.mjs [--imp=helice|pbt|hidrofoil|rushton|paleta|ancla|cinta|all] [--audit] [--fast]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */

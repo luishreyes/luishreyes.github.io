@@ -1,8 +1,8 @@
 /* ====================================================================
-   Tanque agitado en isométrico (skill anatomy), para el capítulo 13 del libro de operaciones unitarias (Agitación):
-   el reactor de extracción de pectina de la cáscara de cítricos.
+   Tanque agitado en isométrico (skill anatomy), para el capítulo 14 del libro de operaciones unitarias (Agitación):
+   un tanque vidriado con chaqueta, dos bafles y dos turbinas.
    Concepto: el motor y el reductor, sobre la linterna, hacen girar el eje; las dos turbinas vidriadas de cuatro palas
-   inclinadas empujan la suspensión de cáscara hacia el fondo, que la devuelve por la pared hacia arriba; los dos
+   inclinadas empujan la suspensión hacia el fondo, que la devuelve por la pared hacia arriba; los dos
    bafles de aleta, colgados de la tapa, rompen el giro del líquido (sin ellos se formaría un vórtice) y la chaqueta
    calienta la pared. El reactor es vidriado: por dentro, lo que queda sobre el nivel lleva el tono del vidrio.
    Corte: se quita lo que mira al lector por encima de la línea de tangencia del fondo (y > 0, z > zt). El fondo queda

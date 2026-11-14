@@ -1,4 +1,5 @@
-// El separador V-102 con los nombres de sus piezas, para la edición impresa en inglés del libro (capítulo 2):
+// El separador de alta presión de la planta de benceno con los nombres de sus piezas, para la edición impresa en
+// inglés del libro (capítulo 2):
 //
 //   node build.mjs --audit && node libro.mjs --en ../../../../libro-operaciones-unitarias/en/figuras/02/v102.svg
 //

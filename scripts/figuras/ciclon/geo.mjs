@@ -1,26 +1,9 @@
-/* Medidas del ciclón del capítulo 20 del libro de operaciones unitarias (Particles and drops in gases, «El ciclón por
-   dentro»): un ciclón de flujo invertido de alta eficiencia de Stairmand, uno de los cuatro que recogen el polvo del
-   aire del secador por aspersión de la planta de café instantáneo. D = 1,2 m.
+/* Medidas del ciclón del capítulo 20 del libro de operaciones unitarias: un ciclón de flujo invertido de alta
+   eficiencia (Stairmand).
    Unidades: 1 = 1 mm. El eje del ciclón va en x = 0, y = 0; z hacia arriba, desde el piso. El corte: el plano y = 0;
    se quita la mitad que mira al lector (y > 0). x crece hacia la derecha del dibujo.
-
-   De las fuentes (con su página; el README dice qué sale de dónde):
-   - las proporciones del Stairmand de alta eficiencia: entrada de 0,5 D × 0,2 D, tubo de salida de 0,5 D que entra
-     0,5 D, cilindro de 1,5 D, cono de 2,5 D (4 D en total), salida del polvo de 0,375 D y tolva colectora de diámetro
-     D (Towler y Sinnott, 2022, fig. 18.32a, p. 768; Rhodes y Seville, 2024, fig. 8.5, p. 274);
-   - el gas entra tangencial, baja en espiral por la pared y sube por el centro hasta el tubo de salida; los sólidos van
-     a la pared y resbalan hacia abajo (Towler, p. 767; Rhodes, pp. 267–268); el vórtice de adentro gira más rápido que
-     el de afuera, con un radio de 0,4 a 0,8 del tubo de salida, y su extremo de abajo se mueve y puede tocar el cono,
-     levantar el polvo que baja por él y desgastarlo (Perry, 2008, pp. 17-29 y 17-30);
-   - el vórtice se alarga 2,0 D por debajo del tubo de salida cuando el área de salida es mayor que la de entrada; esa
-     longitud se mide sobre un cilindro 10 cm más ancho que el tubo de salida, y el cono no debe tocarlo (Perry,
-     tabla 17-4, p. 17-33);
-   - el gas da unas 5 vueltas (de 0,3 a 10) en el ciclón (Darby, 2017, p. 373);
-   - la abrasión es mayor en el cilindro justo después de la entrada y en el cono cerca de la descarga; el polvo
-     acumulado debe quedar al menos un diámetro (de la salida) por debajo de ella (Rhodes, p. 277; Perry, p. 17-31);
-   - el aire que entra por la descarga del polvo es la mayor causa de que un ciclón no separe; una válvula rotativa
-     descarga el polvo sin dejar entrar aire (Perry, p. 17-34).
-   Lo demás es «medida del libro»: típico de un ciclón así, escogido para el dibujo. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 const D = 1200;
 export const CI = {
   AZ: 60, EL: 22,

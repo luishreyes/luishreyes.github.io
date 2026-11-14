@@ -1,8 +1,7 @@
 /* ====================================================================
    La separadora centrífuga de discos autodeslodante en isométrico (skill anatomy), para el capítulo 19 del libro de
-   operaciones unitarias (Separación centrífuga, «La separadora por dentro»): una máquina mediana de tazón semiabierto,
-   de 450 mm de tazón a 5400 r/min, puesta como purificadora de aceite, cortada por el plano del eje (y = 0) sin la
-   mitad que mira al lector.
+   operaciones unitarias: una máquina de tazón semiabierto, puesta como purificadora de aceite, cortada por el plano
+   del eje (y = 0) sin la mitad que mira al lector.
    Concepto: la mezcla baja por el tubo fijo de alimentación, el distribuidor la lleva bajo la pila y sube por los
    agujeros alineados de los discos. Entre cada dos discos, la fase liviana (el aceite, o la crema) va hacia el eje
    por la cara de arriba del disco de abajo y la pesada (el agua, o la leche descremada) y el sólido van hacia afuera

@@ -1,9 +1,9 @@
 /* Medidas de los cuatro impulsores de bomba del capítulo 11 del libro de operaciones unitarias (Bombas): cerrado,
    semiabierto, abierto y axial. Unidades: 1 = 1 mm, z hacia arriba, el eje del impulsor en x = y = 0. Los tres radiales
    van con el ojo arriba (el líquido entra por arriba) y el eje abajo; el axial, igual: el líquido entra por el cono.
-   Las proporciones salen de las fuentes del capítulo (la página va al lado) o del caso del capítulo (el modelo del
-   Explorador de bombas centrífugas, el mismo de la tabla del caso); lo demás es «medida del libro»: típico de un
-   impulsor así, escogido para la figura. El README lleva la misma lista. */
+   Las proporciones salen de las fuentes del capítulo (la página va al lado) o del caso del capítulo; lo demás es
+   «medida del libro»: típico de un impulsor así, escogido para la figura. La lista completa está en
+   notas/figuras-isometricas.md del libro. */
 
 /* ---------- los tres radiales: el impulsor del caso, una 2×3‑8 ----------
    Diámetro de 190 mm (el del caso; la carcasa admite 203), seis álabes que salen a 27°, ojo de 80 mm y ancho de salida

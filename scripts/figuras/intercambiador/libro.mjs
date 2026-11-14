@@ -1,5 +1,5 @@
 // El intercambiador de tubos y coraza AES de una coraza con los nombres de sus piezas, para el capítulo 22 del libro de
-// operaciones unitarias (Heat exchangers, 22.5: la designación TEMA):
+// operaciones unitarias:
 //
 //   node build.mjs --head AES --ns 1 --libro --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]

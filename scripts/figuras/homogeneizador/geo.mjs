@@ -1,21 +1,10 @@
-/* Medidas del homogeneizador de alta presión del capítulo 15 del libro de operaciones unitarias (Mezclado y escalado
-   de tanques agitados, sección «Homogeneizar»): el cabezal de una máquina de leche de 10 000 L/h, el caudal del
-   ejemplo de la leche homogeneizada del capítulo, a 20 MPa en la primera etapa y 2 MPa en la segunda.
+/* Medidas del homogeneizador de alta presión del capítulo 15 del libro de operaciones unitarias: el cabezal de una
+   máquina de tres pistones y dos etapas.
    Unidades: 1 = 1 mm. x a lo largo de los pistones (el cárter queda a −x), y hacia el lector (el corte quita y > 0),
    z hacia arriba. El eje del cilindro 1 está en el plano del corte (y = 0); los cilindros 2 y 3 quedan detrás, a −p y
    −2p. El piso (donde se apoyan el cárter y los pies del bloque) está en z = 0.
-
-   De las fuentes (con su página; el README dice qué sale de dónde):
-   - tres pistones desfasados 120° (Lewis y Heppell, 2000, p. 61), en un bloque macizo de acero inoxidable, con doble
-     sello en cada pistón (Bylund, 1995, p. 117);
-   - una válvula de succión y una de descarga por cilindro, que solo dejan pasar el líquido en un sentido (Lewis y
-     Heppell, p. 61);
-   - la válvula de homogeneizar: asiento, forzador y anillo de impacto, con la cara de adentro del anillo perpendicular
-     a la salida de la rendija (Bylund, p. 118; Fellows, 2000, p. 112; Berk, 2013, p. 212); la rendija de unos 0,1 mm
-     (Bylund, p. 118; Fellows da hasta 0,3 mm, p. 112);
-   - dos etapas en serie, la primera de eje vertical y la segunda horizontal, cada una con su actuador hidráulico
-     (Bylund, p. 118, figs. 6.3.5 y 6.3.6; Fellows, fig. 4.5, p. 112).
-   Lo demás es «medida del libro»: típico de una máquina así, escogido para el dibujo. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const HM = {
   AZ: 64, EL: 26,
   p: 130,                                   // paso entre cilindros (y)

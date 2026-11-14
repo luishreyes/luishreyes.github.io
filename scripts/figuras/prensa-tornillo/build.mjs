@@ -1,8 +1,7 @@
 /* ====================================================================
-   La prensa de tornillo (expulsor) en isométrico (skill anatomy), para el capítulo 18 del libro de operaciones unitarias
-   (Filtración, «Apretar para sacar el líquido»): una prensa continua de unos 1000 kg/h de semilla oleaginosa
-   acondicionada, sin el cuarto de la jaula que mira al lector y sin la mitad de adelante de la capota, de la bandeja, de
-   la tolva y de la canaleta de la torta.
+   La prensa de tornillo (expulsor) en isométrico (skill anatomy), para el capítulo 18 del libro de operaciones unitarias:
+   una prensa continua para semilla oleaginosa acondicionada, sin el cuarto de la jaula que mira al lector y sin la
+   mitad de adelante de la capota, de la bandeja, de la tolva y de la canaleta de la torta.
    Concepto: el alimentador vertical empuja las hojuelas calientes a la caja de la entrada. El tornillo las lleva por la
    jaula de barras; su paso se acorta y su núcleo crece hacia la salida, así que el espacio entre los filetes se achica y
    el material se aprieta: suelto a la entrada, cada vez más compacto. Entre cada dos gusanos, un collar y unas cuchillas
@@ -12,7 +11,7 @@
    Corte: se quita el cuarto de la jaula, de los bastidores, de la caja de la entrada y del anillo de salida que queda
    arriba y hacia el lector (y > 0, z > ZE), y la mitad de adelante (y > 0) de la capota, la bandeja, la garganta, el
    alimentador, la tolva y la canaleta de la torta. El tornillo, el eje, los collares y el cono no se cortan.
-   --detalle: dos barras de la jaula cortadas de través, treinta veces más grandes, con la rendija.
+   --detalle: dos barras de la jaula cortadas de través, ampliadas, con la rendija.
    Uso: node build.mjs [--audit] [--fast] [--detalle]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */

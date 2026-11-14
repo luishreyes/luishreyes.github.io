@@ -1,16 +1,10 @@
-/* Medidas del florentino del capítulo 16 del libro de operaciones unitarias (Sedimentación y decantación): el
-   decantador que separa el condensado del arrastre de vapor de la planta de aceite esencial de cáscara de cítricos
-   (agua con un 1,3 % de aceite, casi todo d-limoneno, más liviano que el agua) en aceite y agua. Unidades: 1 = 1 mm.
+/* Medidas del florentino del capítulo 17 del libro de operaciones unitarias (Sedimentación y decantación): el
+   decantador que separa en aceite y agua el condensado de un arrastre de vapor. Unidades: 1 = 1 mm.
    z hacia arriba, desde el piso; el eje del recipiente en x = y = 0. El corte quita lo que mira al lector por encima
    del fondo (y > 0 y z > ZF): el fondo plano queda entero y el resto se ve por el plano y = 0.
-   - Del caso del capítulo (herramientas/decantadores.py del libro): diámetro interior de 600 mm (la regla del área
-     con el 20 % del Perry), H = 2D = 1200 mm, el rebose del aceite a z₁ = 1080 mm (90 % de H, como Towler), la
-     interfase a z₃ = 980 mm y el codo de la pierna del agua a z₂ = 1065 mm, todas desde el fondo por dentro.
-   - De las fuentes: la forma del vaso florentino (Başer y Buchbauer, 2010, fig. 4.17: cilindro cerrado, entrada por
-     un tubo central que baja hasta cerca de media altura, aceite arriba, pierna exterior que toma el agua del fondo),
-     la pierna y la regla H = 2D (Towler y Sinnott, 2022, pp. 605–608) y el rompe-sifón (Perry, 7.ª ed., p. 15-26).
-   Lo demás (espesores, bridas, tubos, mirilla, patas, posiciones de las boquillas) es dibujo: una elección plausible
-   para un florentino de 0,60 m, no un dato. Tubo de acero inoxidable cédula 10S y bridas ASME B16.5, clase 150. */
+   Las medidas del caso y la fuente de la forma del recipiente están en notas/figuras-isometricas.md del libro. Lo demás
+   (espesores, bridas, tubos, mirilla, patas, posiciones de las boquillas) es dibujo: una elección plausible, no un
+   dato. */
 export const FL = {
   AZ: 52, EL: 24,
   R: 300, tw: 3,                              // radio interior y pared

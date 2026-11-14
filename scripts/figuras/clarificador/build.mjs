@@ -1,17 +1,15 @@
 /* ====================================================================
-   El clarificador de placas en isométrico (skill anatomy), para el capítulo 17 del libro de operaciones unitarias
-   (Sedimentación y decantación, ejemplo 17.4, «El clarificador del agua de servicios»): el tanque rectangular de
-   1,3 × 5,13 m con 3,6 m de agua que limpia 25 m³/h de agua floculada antes del filtro de doble medio, sin el muro que
-   mira al lector.
-   Concepto: el agua floculada entra por el muro de la entrada a una cámara angosta y pasa por los 21 orificios del muro
+   El clarificador de placas en isométrico (skill anatomy), para el capítulo 17 del libro de operaciones unitarias:
+   un tanque rectangular de placas inclinadas, sin el muro que mira al lector.
+   Concepto: el agua floculada entra por el muro de la entrada a una cámara angosta y pasa por los orificios del muro
    difusor, que la reparten en toda la sección. En el primer cuarto, sin placas, cae el flóculo pesado; el resto pasa
-   bajo la pantalla, corre bajo el paquete de placas y sube entre ellas, a 60°: el flóculo cae los 50 mm que hay entre
-   dos placas, se junta en la cara de arriba de la de abajo y resbala hacia abajo, a contracorriente del agua. El agua
+   bajo la pantalla, corre bajo el paquete de placas y sube entre ellas: el flóculo cae la distancia que hay entre dos
+   placas, se junta en la cara de arriba de la de abajo y resbala hacia abajo, a contracorriente del agua. El agua
    clara sale por arriba a los vertederos en V de la canaleta, que la lleva a la caja de salida y al filtro. Abajo, el
    barredor de cadenas y paletas arrastra el lodo por el piso hasta la tolva de la entrada, de donde sale por la purga.
    Corte: se quita el muro de y > 0. Lo que llega al plano y = 0 (la losa, los muros de los extremos, el muro difusor,
    la pantalla, las placas, los ejes, el lodo y el agua) se ve cortado ahí.
-   --detalle: dos canales entre placas, doce veces más grandes, con el agua que sube y el flóculo que resbala.
+   --detalle: dos canales entre placas, ampliados, con el agua que sube y el flóculo que resbala.
    Uso: node build.mjs [--audit] [--fast] [--detalle]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */

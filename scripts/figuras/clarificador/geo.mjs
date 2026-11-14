@@ -1,28 +1,9 @@
-/* Medidas del clarificador de placas del capítulo 17 del libro de operaciones unitarias (Sedimentación y decantación,
-   ejemplo 17.4, «El clarificador del agua de servicios»): el tanque rectangular que limpia el agua de servicios de la
-   planta, 25 m³/h como máximo a 15 °C, con el primer cuarto libre y placas a 60° en los tres cuartos de atrás.
+/* Medidas del clarificador de placas del capítulo 17 del libro de operaciones unitarias: un tanque rectangular con
+   el primer cuarto libre y placas inclinadas en los tres cuartos de atrás.
    Unidades: 1 = 1 mm. x a lo largo del tanque (el agua entra por x = 0 y sale por x = L), y hacia el lector (el corte
    quita el muro de y > 0), z hacia arriba. El piso de adentro está en z = 0; el interior va de x = 0 a L, de y = −W a 0.
-
-   Del caso (herramientas/decantadores.py del libro, función clarificador): 25 m³/h, carga de 5 m/h sobre el área que
-   cubren las placas (5 m²), el primer cuarto libre (6,67 m² de tanque), 1,3 m de ancho, 5,13 m de largo, 3,6 m de
-   agua; placas de 1,5 m a 60° separadas 50 mm.
-
-   De las fuentes (con su página; el README dice qué sale de dónde):
-   - el primer cuarto del tanque sin placas: entrada, flóculo pesado e instalación del barredor (Kawamura, 2000,
-     p. 156; MWH, 2012, p. 682 y fig. 10-16, p. 681);
-   - placas a 60° o más para que el lodo de alumbre resbale (Kawamura, p. 157; MWH, p. 687); a contracorriente, el agua
-     sube y el lodo baja (MWH, pp. 682–687); acero inoxidable 304 delgado (Kawamura, p. 156); separación de 50 a 75 mm
-     y 55 a 60° (Perry, 2008, p. 18-74);
-   - muro difusor en toda la sección, con orificios iguales de 75 a 200 mm a 0,25–0,5 m entre centros y 0,3 a 0,9 mm
-     de pérdida, menos de 10 (Kawamura, pp. 149 y 152); orificios de 100 a 200 mm (MWH, p. 669);
-   - canaletas sobre las placas, de las que pueden colgar los módulos, con vertederos en V (Kawamura, pp. 152 y 156;
-     MWH, pp. 672 y 682), carga de 3,7 a 7,5 m³/(m·h) (Kawamura, p. 172);
-   - con placas, remoción continua del lodo: barredor de cadenas y paletas (Kawamura, pp. 156–158 y 169; MWH, p. 682);
-     las paletas llevan el lodo a una tolva en un extremo (Perry, p. 18-74), a 0,3 m/min a lo largo del piso y de 1,5
-     a 3 en el retorno (Kawamura, p. 171; MWH, tabla 10-4, p. 669); fondo plano o casi (Kawamura, p. 157; MWH, p. 673);
-     tubo de purga de 150 mm como mínimo (MWH, p. 674); 0,6 m de borde libre (Kawamura, p. 161).
-   Lo demás es «medida del libro»: típico de un tanque así, escogido para el dibujo. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const CL = {
   AZ: 62, EL: 28,
   /* el tanque: concreto, muros de 250 mm sobre una losa de 600 */

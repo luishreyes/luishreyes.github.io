@@ -5,10 +5,10 @@
    Concepto: el lector distingue los tres radiales por sus tapas. El cerrado lleva los álabes entre dos tapas, con el
    ojo y su anillo de desgaste en la delantera y los agujeros de balance en la trasera; aquí se le quita un sector de la
    tapa delantera para ver los álabes. El semiabierto es el mismo sin la tapa delantera: los álabes muestran su borde
-   libre. El abierto pierde además buena parte de la trasera, recortada entre álabes. Los tres son el impulsor del caso
-   (190 mm, seis álabes que salen a 27°) con la misma cámara. Al cubo se le quita el cuarto que mira al lector para ver
+   libre. El abierto pierde además buena parte de la trasera, recortada entre álabes. Los tres comparten álabes,
+   diámetro y cámara. Al cubo se le quita el cuarto que mira al lector para ver
    el eje, la chaveta y la tuerca. El axial es el de una bomba de hélice: un cubo de la mitad del diámetro, cuatro
-   álabes torcidos de perfil delgado que casi tocan la carcasa (0,6 mm), de la que se ve la mitad de atrás, y el cono
+   álabes torcidos de perfil delgado que casi tocan la carcasa, de la que se ve la mitad de atrás, y el cono
    de entrada sin su cuarto de adelante, para ver la tuerca.
    Uso: node build.mjs [--imp=cerrado|semiabierto|abierto|axial|all] [--audit] [--fast]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.

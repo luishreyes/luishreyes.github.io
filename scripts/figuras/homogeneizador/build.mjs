@@ -1,9 +1,8 @@
 /* ====================================================================
    El homogeneizador de alta presión en isométrico (skill anatomy), para el capítulo 15 del libro de operaciones
-   unitarias (Mezclado y escalado de tanques agitados, «El homogeneizador por dentro»): el cabezal de una máquina de
-   leche de 10 000 L/h, en corte.
+   unitarias: el cabezal de una máquina de tres pistones, en corte.
    Concepto: tres pistones desfasados 120° salen del cárter; el 1 va dentro de su cilindro, en el plano del corte, y
-   empuja la leche: la válvula de succión, abajo, está cerrada y la de descarga, arriba, abierta. La leche sale del
+   empuja el líquido: la válvula de succión, abajo, está cerrada y la de descarga, arriba, abierta. El líquido sale del
    bloque al cabezal de homogeneización, sube por el asiento de la primera etapa, pasa por la rendija entre el asiento
    y el forzador, choca con el anillo de impacto y sigue a la segunda etapa, horizontal, igual pero a menos presión;
    de ahí sale hacia arriba. Cada forzador lo aprieta un émbolo hidráulico: la presión del aceite fija la fuerza.

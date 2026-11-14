@@ -13,7 +13,7 @@
 //   node paleta-libro.mjs --revisar       solo dice qué colores de las vistas no están en paleta.json
 //   node paleta-libro.mjs --libro RUTA    si el libro está en otra parte (también LIBRO_OU=RUTA)
 //
-// Si se cambia un color en paleta.json, basta con correr este script. La vista inglesa del V-102
+// Si se cambia un color en paleta.json, basta con correr este script. La vista inglesa del separador
 // (en/figuras/02/v102.svg) lleva los colores resueltos: esa se rehace con separador-v102/libro.mjs.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';

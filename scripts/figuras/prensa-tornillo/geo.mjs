@@ -1,31 +1,11 @@
-/* Medidas de la prensa de tornillo (expulsor) del capítulo 18 del libro de operaciones unitarias (Filtración, «Apretar
-   para sacar el líquido»): una prensa continua de tamaño mediano, de unos 1000 kg/h de semilla oleaginosa acondicionada
-   (caliente y en hojuelas), dentro de los 40 a 8000 kg/h de Fellows.
+/* Medidas de la prensa de tornillo (expulsor) del capítulo 18 del libro de operaciones unitarias: una prensa
+   continua para semilla oleaginosa acondicionada (caliente y en hojuelas).
    Unidades: 1 = 1 mm. x a lo largo del eje (las hojuelas entran por la izquierda, en x < 0, y la torta sale por la
    derecha), y hacia el lector, z hacia arriba. El eje del tornillo va en y = 0, z = ZE; el piso, en z = 0.
    El corte: se quita el cuarto de arriba de la jaula que mira al lector (y > 0, z > ZE), y la mitad de adelante de la
    capota, de la bandeja, de la tolva y de la canaleta de la torta (y > 0).
-
-   De las fuentes (con su página; el README dice qué sale de dónde):
-   - un cilindro (barril) horizontal robusto con un tornillo helicoidal de acero inoxidable; el paso de los filetes se
-     acorta hacia la salida y la última parte del barril va perforada; la presión se regula con el diámetro de la
-     salida; el calor de la fricción baja la viscosidad del aceite; 40 a 8000 kg/h; la torta sale con 5 a 18 % de
-     aceite (Fellows, 2000, p. 152);
-   - un tornillo con el paso que se acorta, y una compuerta a la salida, hidráulica, de resorte o puesta con un
-     tornillo; más de 50 000 kPa (Berk, 2013, p. 238); las semillas molidas se acondicionan con calor antes de entrar
-     (Berk, 2013, p. 236);
-   - el tornillo gira dentro de una malla o un cilindro ranurado; el diámetro del tornillo crece y el paso se acorta
-     hacia la salida (Perry, 2008, p. 18-149);
-   - la tolva arriba, en la entrada, con un alimentador en las prensas grandes; el cono a la salida, en el eje, que
-     regula la contrapresión y el espesor de la torta; el paso menor que el diámetro y el eje a menos de 100 r/min; la
-     jaula de barras planas de 12 mm de ancho, 20 a 25 mm de alto y 280 mm de largo, separadas por láminas de acero de
-     unos 0,7 mm (0,8 mm a la entrada y 0,31 mm a la salida), en dos mitades unidas con abrazaderas; los gusanos en
-     tramos, montados y enchavetados en un eje central, con un collar entre cada dos tramos y, en las prensas grandes,
-     cuchillas fijas que bajan de la jaula al espacio del collar para que el material no gire con el tornillo; cada
-     tramo con un filete de menos de 350° (Muhammad y otros, 1984, pp. 244–247);
-   - el tornillo en un barril (jaula) con ranuras, el material empujado hacia una compuerta de salida; el cocinador
-     antes de la prensa (Berk, 1992, FAO, sección 3-1).
-   Lo demás es «medida del libro»: típico de una prensa así, escogido para el dibujo. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const PT = {
   AZ: 55, EL: 28,
   ZE: 950,                                          // la altura del eje

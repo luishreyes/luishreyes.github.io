@@ -1,5 +1,4 @@
-// El clarificador de placas con los nombres de sus piezas, para el capítulo 17 del libro de operaciones unitarias
-// (Sedimentación y decantación, después del ejemplo 17.4, «El clarificador del agua de servicios»):
+// El clarificador de placas con los nombres de sus piezas, para el capítulo 17 del libro de operaciones unitarias:
 //
 //   node build.mjs --audit && node build.mjs --detalle --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]
