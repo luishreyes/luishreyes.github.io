@@ -13,8 +13,12 @@
      entra por la de abajo y sube.
    - El florentino es el de ../florentino, dibujado por ../florentino/dibujo.mjs en la misma escena, con su eje en el
      origen. Su entrada recibe la línea que sube del subenfriador.
-   Uso: node build.mjs [--audit] [--fast]
-   Escribe out/fig.svg, out/fig.css, out/fig_data.json (cámara y puntos de los rótulos) y preview.html.
+   - Con --detalle, el círculo que amplía la pared de un tubo de la fila de adelante, abierto por su eje: la película
+     de condensado que baja (más gruesa que la real), las gotas de aceite en ella, el vapor en el centro, los tubos
+     vecinos y, de fondo, el agua de la coraza.
+   Uso: node build.mjs [--audit] [--fast] [--detalle]
+   Escribe out/fig.svg, out/fig.css, out/fig_data.json (cámara y puntos de los rótulos) y preview.html; con --detalle,
+   out/detalle.svg, out/detalle_data.json y out/preview-detalle.html.
    Unidades: 1 = 1 mm (el audit, en centímetros). Medidas en geo.mjs.
    ==================================================================== */
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -30,7 +34,7 @@ const X = await import(join(HERE, "../florentino/xprism.mjs"));
 const { dibujarFlorentino, puntosCamara, entradaCondensado, CSS_FL } = await import(join(HERE, "../florentino/dibujo.mjs"));
 const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
-const FAST = process.argv.includes("--fast");
+const FAST = process.argv.includes("--fast"), DET = process.argv.includes("--detalle");
 const STEP = Number(process.env.CA_STEP || 0.5);
 const CA = GEO.CA, DN = GEO.DN, E = CA.e, D = CA.d;
 const AZ = CA.AZ, EL = CA.EL;
@@ -77,7 +81,14 @@ EXT.push([xE - 1100, yE, zVapFl + 420], [xE - 1100, yE, zVapFl + 220], [xE, yE, 
 for (const i of [0, D.legs - 1]) EXT.push([xH0 - 20, yD - 80, legZ(i) + 120], [xH0 - 20, yD + 80, legZ(i) - 120], [xG + 200, yD + 80, legZ(i)]);
 EXT.push([xH0, yD - 300, 0], [xH0, yD + 150, 0], [xG + 200, yD + 150, 0], [xH0, yD - 420, legZ(0)]);
 EXT.push([CA.persona.x - 300, CA.persona.y - 300, 0], [CA.persona.x + 300, CA.persona.y + 300, 0], [CA.persona.x, CA.persona.y, 1800]);
-const P = k.fitProjection(EXT, W, H, { pad: 14, azimuth: AZ, elevation: EL });
+const PMAIN = k.fitProjection(EXT, W, H, { pad: 14, azimuth: AZ, elevation: EL });
+/* el detalle: la pared de un tubo de la fila de adelante, abierto por su eje, MDET veces más grande, dentro de un
+   círculo de radio RDET (en las unidades de la vista); CDET es el punto que se amplía, en el eje del tubo */
+const DT = E.detalle, nE0 = [Math.cos(AZ * D2R), Math.sin(AZ * D2R), 0];
+const uDet = DT.i * E.tube.p, nDet = -0.5 * E.tube.p * Math.sin(Math.PI / 3);
+const CDET = [xE + uDet * TPLUS[0] + nDet * nE0[0], yE + uDet * TPLUS[1] + nDet * nE0[1], zS0 + DT.z], MDET = DT.M, RDET = DT.R;
+const WD = 2 * RDET + 8;
+const P = DET ? (() => { const Q = { origin: [0, 0], scale: PMAIN.scale * MDET, azimuth: AZ, elevation: EL }; const c = k.iso(CDET, Q); Q.origin = [WD / 2 - c[0], WD / 2 - c[1]]; return Q; })() : PMAIN;
 const C = X.xCam(P);
 const at = (p) => k.iso(p, P);
 const S = (paths, style) => k.solidSvg(paths, style);
@@ -243,6 +254,42 @@ const halfRing = (r0, r1, n = 36) => {
 const rect = (x0, z0, x1, z1) => [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
 const add = G.add3, mul = G.mul3;
 
+const uE = TPLUS, nE = [Math.cos(AZ * D2R), Math.sin(AZ * D2R), 0];
+const eW = (u, n, z) => [xE + u * uE[0] + n * nE[0], yE + u * uE[1] + n * nE[1], z];
+const dE = (deg) => add(mul(uE, Math.cos(deg * D2R)), mul(nE, Math.sin(deg * D2R)));      // hacia afuera, a deg de u
+const tE = (deg) => add(mul(uE, -Math.sin(deg * D2R)), mul(nE, Math.cos(deg * D2R)));
+const ePol = (r, deg, z) => eW(r * Math.cos(deg * D2R), r * Math.sin(deg * D2R), z);
+
+const smooth = (ctl, n = 40) => {
+  const out = [];
+  for (let i = 0; i < ctl.length - 1; i++) {
+    const p0 = ctl[Math.max(0, i - 1)], p1 = ctl[i], p2 = ctl[i + 1], p3 = ctl[Math.min(ctl.length - 1, i + 2)];
+    for (let j = 0; j < n; j++) {
+      const t = j / n, t2 = t * t, t3 = t2 * t;
+      out.push([0, 1].map((q) => 0.5 * (2 * p1[q] + (-p0[q] + p2[q]) * t + (2 * p0[q] - 5 * p1[q] + 4 * p2[q] - p3[q]) * t2 + (-p0[q] + 3 * p1[q] - 3 * p2[q] + p3[q]) * t3)));
+    }
+  }
+  out.push(ctl[ctl.length - 1]);
+  return out;
+};
+// una flecha: la polilínea suave de los puntos de control (a, z), llevados al mundo con toW, con su punta
+function arrowSvg(ctl, toW, cls) {
+  const pts = smooth(ctl).map(([a, z]) => toW(a, z));
+  const sc = pts.map(at), n = sc.length, b = sc[n - 1], a = sc[n - 4], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+  const h = 6.5, w = 3.2, base = [b[0] - ux * h, b[1] - uy * h];
+  const keep = sc.filter((p) => (p[0] - b[0]) * ux + (p[1] - b[1]) * uy < -h + 0.5);
+  const line = keep.map(([x, y], i) => (i ? "L" : "M") + r10(x) + " " + r10(y)).join("") + "L" + r10(base[0]) + " " + r10(base[1]);
+  const headD = `M${r10(b[0])} ${r10(b[1])}L${r10(base[0] - uy * w)} ${r10(base[1] + ux * w)}L${r10(base[0] + uy * w)} ${r10(base[1] - ux * w)}Z`;
+  return { pts, svg: `<path class="${cls}" d="${line}"/><path class="${cls}-p" d="${headD}"/>`, w };
+}
+function arrows(list, toW, rf) {
+  for (const [nm, cls, ctl] of list) {
+    const { pts, svg, w } = arrowSvg(ctl, toW, cls);
+    put(nm, pts[Math.floor(pts.length / 2)], svg, [A.tube(pts, rf), A.ball(pts[pts.length - 1], Math.max(rf, w / G.scaleOf(P)))]);
+  }
+}
+
+if (!DET) {
 /* ====================================================================
    0 · el florentino, tal como lo dibuja ../florentino/dibujo.mjs
    ==================================================================== */
@@ -253,11 +300,6 @@ dibujarFlorentino({ A, G, P, at, Ln, Dots, path3, V3, HV, pr, r10, pth1, put, re
    1 · el condensador, cortado por el plano vertical de su eje que mira de frente al lector: se quita la mitad de
    adelante. Coordenadas propias: u a lo largo del corte (hacia la derecha de la pantalla), n hacia el lector, z
    ==================================================================== */
-const uE = TPLUS, nE = [Math.cos(AZ * D2R), Math.sin(AZ * D2R), 0];
-const eW = (u, n, z) => [xE + u * uE[0] + n * nE[0], yE + u * uE[1] + n * nE[1], z];
-const dE = (deg) => add(mul(uE, Math.cos(deg * D2R)), mul(nE, Math.sin(deg * D2R)));      // hacia afuera, a deg de u
-const tE = (deg) => add(mul(uE, -Math.sin(deg * D2R)), mul(nE, Math.cos(deg * D2R)));
-const ePol = (r, deg, z) => eW(r * Math.cos(deg * D2R), r * Math.sin(deg * D2R), z);
 const FE = { o: [xE, yE, 0], a: ZD3, u: uE, v: nE };             // el eje; halfRing (v ≤ 0) da la mitad de atrás
 const FYE = { o: [xE, yE, 0], a: nE, u: uE, v: ZD3 };            // el plano del corte: sección (u, z), espesor a lo largo de n
 const FRONT_E = A.orientedBox(eW(0, 3000, 4000), [nE, uE, ZD3], [3000, 9000, 9000]);
@@ -528,29 +570,6 @@ function flangePair(name, F, s, d, { owner = name } = {}) {
 
 /* 1h · las flechas: el vapor baja por la boquilla, la placa de choque lo abre y entra a los tubos; el agua sube en
    zigzag por las ventanas de los deflectores */
-const smooth = (ctl, n = 40) => {
-  const out = [];
-  for (let i = 0; i < ctl.length - 1; i++) {
-    const p0 = ctl[Math.max(0, i - 1)], p1 = ctl[i], p2 = ctl[i + 1], p3 = ctl[Math.min(ctl.length - 1, i + 2)];
-    for (let j = 0; j < n; j++) {
-      const t = j / n, t2 = t * t, t3 = t2 * t;
-      out.push([0, 1].map((q) => 0.5 * (2 * p1[q] + (-p0[q] + p2[q]) * t + (2 * p0[q] - 5 * p1[q] + 4 * p2[q] - p3[q]) * t2 + (-p0[q] + 3 * p1[q] - 3 * p2[q] + p3[q]) * t3)));
-    }
-  }
-  out.push(ctl[ctl.length - 1]);
-  return out;
-};
-function arrows(list, toW, rf) {
-  for (const [nm, cls, ctl] of list) {
-    const pts = smooth(ctl).map(([a, z]) => toW(a, z));
-    const sc = pts.map(at), n = sc.length, b = sc[n - 1], a = sc[n - 4], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
-    const h = 6.5, w = 3.2, base = [b[0] - ux * h, b[1] - uy * h];
-    const keep = sc.filter((p) => (p[0] - b[0]) * ux + (p[1] - b[1]) * uy < -h + 0.5);
-    const line = keep.map(([x, y], i) => (i ? "L" : "M") + r10(x) + " " + r10(y)).join("") + "L" + r10(base[0]) + " " + r10(base[1]);
-    const headD = `M${r10(b[0])} ${r10(b[1])}L${r10(base[0] - uy * w)} ${r10(base[1] + ux * w)}L${r10(base[0] + uy * w)} ${r10(base[1] - ux * w)}Z`;
-    put(nm, pts[Math.floor(pts.length / 2)], `<path class="${cls}" d="${line}"/><path class="${cls}-p" d="${headD}"/>`, [A.tube(pts, rf), A.ball(pts[pts.length - 1], Math.max(rf, w / G.scaleOf(P)))]);
-  }
-}
 {
   const zi = zTC + headZ(NV.ri, R, HD) - E.imp.gap - E.imp.t;
   arrows([
@@ -715,6 +734,84 @@ ANCH.F_NOMBRE = pol(345, -20, 420 + 1240 + 6);
   }
 }
 
+}
+
+/* ====================================================================
+   5 · el detalle (--detalle): un tubo de la fila de adelante, abierto por su eje, con la película de condensado que
+   baja por la pared, las gotas de aceite en la película y el vapor en el centro; a los lados, los dos tubos vecinos de
+   la misma fila, y de fondo el agua de la coraza. La película va más gruesa que la real para que se vea.
+   ==================================================================== */
+if (DET) {
+  const ri = E.tube.ri, ro = E.tube.ro, df = DT.film, zc = CDET[2], z0 = zc - 30, z1 = zc + 30;
+  const tP = (u, n, z) => eW(uDet + u, nDet + n, z);
+  const FT = { o: tP(0, 0, 0), a: ZD3, u: uE, v: nE };
+  const FYT = { o: tP(0, 0, 0), a: nE, u: uE, v: ZD3 };
+  const FRONT_T = A.orientedBox(tP(0, 300, zc), [nE, uE, ZD3], [300, 900, 900]);
+  const tcP = (r, za, zb) => (f, u) => tP(r * Math.cos(f), r * Math.sin(f), za + (zb - za) * u);
+  const cN = (sg) => (f) => mul(add(mul(uE, Math.cos(f)), mul(nE, Math.sin(f))), sg);
+  // la pared: la cara de adentro de la mitad de atrás y las dos caras del corte
+  put("det.pared", tP(0, -ri * 0.7, zc), toned((o) => surface(tcP(ri, z0, z1), cN(-1), PI, TAU, 96, 1, o), "ca-in"),
+    [record(A.body(FT, [[z0, ri], [z1, ri], [z1, ro], [z0, ro]], { name: "det.pared", owner: "det.tubo", ground: true, cut: [FRONT_T] }))]);
+  {
+    const faces = [rect(ri, z0, ro, z1), rect(-ro, z0, -ri, z1)];
+    const d = faces.map((poly) => pth1(poly.map(([u, z]) => pr(tP(u, 0, z))))).join("");
+    put("det.pared.corte", tP(0, 0, zc), `<g class="iso-solid ca-cut"><path class="iso-fill" d="${d}"/><path class="iso-shade" data-shade="3" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/></g>`,
+      faces.map((poly) => record(A.prism(FYT, poly, -0.3, 0, { name: "det.pared.corte", owner: "det.tubo", ground: true }))));
+  }
+  // la película: la superficie de la mitad de atrás (translúcida), sus caras en el corte, las ondas y las gotas de aceite
+  let seed = 23;
+  const rnd = () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  {
+    const rf = ri - df, NF = 64;
+    const outline = [...Array.from({ length: NF + 1 }, (_, i) => tP(rf * Math.cos(PI + (PI * i) / NF), rf * Math.sin(PI + (PI * i) / NF), z0)),
+      ...Array.from({ length: NF + 1 }, (_, i) => tP(rf * Math.cos(TAU - (PI * i) / NF), rf * Math.sin(TAU - (PI * i) / NF), z1))];
+    const strips = [rect(rf, z0, ri, z1), rect(-ri, z0, -rf, z1)].map((poly) => pth1(poly.map(([u, z]) => pr(tP(u, 0.05, z))))).join("");
+    let waves = "";
+    // las ondas de la película, solo dentro del círculo (así terminan en las caras del corte de la película)
+    for (let q = 0; q < 4; q++) {
+      const zw = zc - 13 + q * 8.7, amp = 0.55, kk = 3 + (q % 2);
+      waves += path3(Array.from({ length: 49 }, (_, i) => { const f = PI + (PI * i) / 48; return tP(rf * Math.cos(f), rf * Math.sin(f), zw + amp * Math.sin(kk * f + q)); }));
+    }
+    // las gotas: en la superficie de la película y en sus caras del corte
+    let dG = "", dB = "";
+    const shapes = [A.prism(FT, halfRing(rf, ri, 48), z0, z1, { name: "det.pelicula", owner: "det.tubo" })];
+    const drop = (p, r) => {
+      const c = at(p), rs = r * G.scaleOf(P);
+      dG += pth1(Array.from({ length: 14 }, (_, i) => { const t = (TAU * i) / 14; return [c[0] + rs * Math.cos(t), c[1] + rs * Math.sin(t)]; }));
+      dB += pth1(Array.from({ length: 8 }, (_, i) => { const t = (TAU * i) / 8; return [c[0] - rs * 0.35 + rs * 0.3 * Math.cos(t), c[1] - rs * 0.35 + rs * 0.3 * Math.sin(t)]; }));
+      shapes.push(A.ball(p, r, { name: "det.pelicula", owner: "det.tubo" }));
+    };
+    // la gota del rótulo, cerca del borde izquierdo de la película, y las demás al azar
+    const gota = tP((rf - 0.05) * Math.cos(PI + 0.4), (rf - 0.05) * Math.sin(PI + 0.4), zc - 6);
+    const placed = [gota];
+    drop(gota, 0.34);
+    for (let i = 0; i < 400 && placed.length < 22; i++) {
+      const f = PI + 0.15 + (PI - 0.3) * rnd(), z = z0 + 3 + (z1 - z0 - 6) * rnd(), r = 0.18 + 0.2 * rnd();
+      const p = tP((rf - 0.05) * Math.cos(f), (rf - 0.05) * Math.sin(f), z);
+      if (placed.some((q) => G.len3(G.sub3(q, p)) < 1.6)) continue;
+      placed.push(p); drop(p, r);
+    }
+    for (const sg of [-1, 1]) for (let i = 0; i < 4; i++) { const z = z0 + 7 + i * 13 + rnd() * 4; const p = tP(sg * (ri - df / 2), 0.25, z); placed.push(p); drop(p, df * 0.32); }
+    // la flecha de la película, sobre ella: baja por la pared
+    const fa = 1.5 * PI - 0.6, rr = rf - 0.3, flecha = arrowSvg([[0, zc + 12], [0, zc - 12]], (a, z) => tP(rr * Math.cos(fa), rr * Math.sin(fa), z), "ca-agua-flujo").svg;
+    put("det.pelicula", tP(0, -rf * 0.6, zc), `<g class="ca-agua"><path class="ca-pelicula" d="${pth1(outline.map(pr))}"/><path class="ca-cond-sec" d="${strips}"/>${Ln(waves, { tone: "lo" })}<path class="ca-gota-aceite" d="${dG}"/><path class="ca-brillo" d="${dB}"/>${flecha}</g>`, shapes);
+    ANCH.D_GOTAS = gota;
+    ANCH.D_PELICULA = tP(-(ri - df / 2), 0.3, zc - 11);
+  }
+  // los tubos vecinos de la fila de adelante, a los lados (los de atrás no se dibujan: así se ve el agua entre los tubos)
+  const p = E.tube.p, dy = p * Math.sin(Math.PI / 3), sec = Array.from({ length: 40 }, (_, i) => { const a = (TAU * i) / 40; return [ro * Math.cos(a), ro * Math.sin(a)]; });
+  [[-p, 0], [p, 0]].forEach(([u, n], i) => {
+    const F = { o: tP(u, n, 0), a: ZD3, u: uE, v: nE };
+    put(`det.vecino${i}`, tP(u, n, zc), wrap(X.prismSvg(C, sec, z0, z1, { F, tone: "mid" }), "ca-tubo"), [record(A.disc(F, z0, z1, ro, { name: `det.vecino${i}`, owner: `det.vecino${i}`, ground: true }))]);
+  });
+  // las flechas: el vapor baja por el centro y la película por la pared
+  arrows([["det.flujo.v", "ca-vapor", [[0, z1 - 12], [0, zc - 8]]]], (u, z) => tP(u, -2, z), 1);
+  ANCH.D_VAPOR = tP(0.4, -2, zc + 6);
+  ANCH.D_PARED = tP(-(ri + ro) / 2, 0, zc + 12);
+  ANCH.D_AGUA = tP(-(ro + 2.4), -2, zc);
+  ANCH.D_VECINO = tP(p - ro * 0.7, ro * 0.5, zc + 12);
+}
+
 /* ---------- orden y salida ---------- */
 if (process.env.CA_ITEM) {
   for (const nm of process.env.CA_ITEM.split(",")) {
@@ -749,7 +846,10 @@ const CSS_CA = `.ca-cut{${shades("#c9ced3", "#c9ced3", "#c9ced3", "#c9ced3", "#c
 .ca-vapor{fill:none;stroke:#c8452b;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
 .ca-vapor-p{fill:#c8452b;stroke:none;opacity:.85}
 .ca-agua-flujo{fill:none;stroke:#2f5f86;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
-.ca-agua-flujo-p{fill:#2f5f86;stroke:none;opacity:.85}`;
+.ca-agua-flujo-p{fill:#2f5f86;stroke:none;opacity:.85}
+.ca-pelicula{fill:#9cb7c3;fill-opacity:.55;stroke:none}.ca-gota-aceite{fill:#dc9a2a;stroke:none}.ca-brillo{fill:#fff6dc;stroke:none}
+.ca-det-fondo{fill:#e4eef7;stroke:none}.ca-det-marco{fill:none;stroke:#525c64;stroke-width:1px}
+.ca-det-marca{fill:none;stroke:#525c64;stroke-width:1px}.ca-det-linea{fill:none;stroke:#525c64;stroke-width:1px}`;
 const CSS = CSS_FL + "\n" + CSS_CA + "\n" + CSS_PERSONA;
 const groupsSvg = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
@@ -783,13 +883,15 @@ function compact(svgText) {
     return ` d="${out}"`;
   });
 }
-const svg = k.figureSvg({ width: W, height: H, label: "Condensador, subenfriador y florentino", body: [`<style>${CSS}</style><defs>${DEFS.join("")}</defs><g class="ca-items">${groupsSvg.join("")}</g>`] });
+const svg = DET
+  ? k.figureSvg({ width: WD, height: WD, label: "La pared de un tubo, ampliada", body: [`<style>${CSS}</style><defs><clipPath id="caDet"><circle cx="${WD / 2}" cy="${WD / 2}" r="${RDET}"/></clipPath></defs><g class="ca-items" clip-path="url(#caDet)"><circle class="ca-det-fondo" cx="${WD / 2}" cy="${WD / 2}" r="${RDET}"/>${groupsSvg.join("")}</g><circle class="ca-det-marco" cx="${WD / 2}" cy="${WD / 2}" r="${RDET}"/>`] })
+  : k.figureSvg({ width: W, height: H, label: "Condensador, subenfriador y florentino", body: [`<style>${CSS}</style><defs>${DEFS.join("")}</defs><g class="ca-items">${groupsSvg.join("")}</g>`] });
 const OUT = join(HERE, "out");
 mkdirSync(OUT, { recursive: true });
 const svgOut = compact(svg);
-writeFileSync(join(OUT, "fig.svg"), svgOut);
+writeFileSync(join(OUT, DET ? "detalle.svg" : "fig.svg"), svgOut);
 writeFileSync(join(OUT, "fig.css"), k.ISO_CSS);
-writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Condensador del arrastre", theme: "light", width: 1000, body: `<div class="iso-stage">${svgOut}</div>`, script: "" }));
+writeFileSync(DET ? join(OUT, "preview-detalle.html") : join(HERE, "preview.html"), k.pageHtml({ title: "Condensador del arrastre", theme: "light", width: DET ? 400 : 1000, body: `<div class="iso-stage">${svgOut}</div>`, script: "" }));
 console.log("items", R_.items.length, "scale", G.scaleOf(P).toFixed(4), "svg", Math.round(svgOut.length / 1024), "KB");
-writeFileSync(join(OUT, "fig_data.json"), JSON.stringify({ P, W, H, ANCLAS: ANCH }));
+writeFileSync(join(OUT, DET ? "detalle_data.json" : "fig_data.json"), JSON.stringify({ P, W: DET ? WD : W, H: DET ? WD : H, ANCLAS: ANCH, CDET, MDET, RDET }));
 if (!FAST) A.auditOrExit(R_, PA, {});

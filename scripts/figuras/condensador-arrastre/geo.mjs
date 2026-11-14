@@ -39,6 +39,9 @@ export const CA = {
     imp: { r: 135, t: 6, gap: 52 },             // placa de choque bajo la boquilla del vapor
     lug: { degs: [196, 344], w: 150, h: 180, t: 12 },        // orejas de apoyo
     stand: { du: 330, n: -520, nArm: -40, top: 3540, col: 100, beam: 100 },   // la estructura: columnas atrás y ménsulas
+    // el detalle: el tubo i de la fila de adelante, a z sobre la placa de abajo, M veces más grande en un círculo de radio
+    // R (unidades de la vista); la película se dibuja de film mm
+    detalle: { i: -3, z: 1197, M: 20, R: 80, film: 0.5 },
   },
   /* el subenfriador de doble tubo: horquillas apiladas a lo largo de x; adelante (x mayor) las bridas, los
      prensaestopas y las curvas del tubo interior; atrás los cabezales de retorno. Las ramas van partidas: se ven sus dos

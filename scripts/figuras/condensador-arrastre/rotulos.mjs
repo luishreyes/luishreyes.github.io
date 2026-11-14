@@ -1,6 +1,6 @@
 // Los nombres de las piezas del tren de condensación (el condensador, el subenfriador y el florentino), en español (la
 // vista del libro) y en inglés (la lámina de la edición impresa). Cada rótulo es [ancla, lado, texto, opciones]: el
-// ancla es un punto de build.mjs (out/fig_data.json), el lado dice dónde va el texto ('izq' o 'der' del dibujo) y las
+// ancla es un punto de build.mjs (out/fig_data.json, o out/detalle_data.json si empieza por «d:»), el lado dice dónde va el texto ('izq' o 'der' del dibujo) y las
 // opciones corren el texto ({ dy }) o lo fijan ({ x, y }, en las unidades de la vista). libro.mjs los acomoda a la
 // altura de su pieza, sin encimarse.
 export const ROTULOS = [
@@ -20,6 +20,12 @@ export const ROTULOS = [
   ['D_ANULO', 'izq', 'Ánulo: agua de servicios'],
   ['D_INTERIOR', 'izq', 'Tubo interior: condensado'],
   ['D_SOPORTE', 'izq', 'Soporte'],
+  // el detalle: la pared de un tubo
+  ['d:D_PARED', 'izq', 'Pared del tubo'],
+  ['d:D_VAPOR', 'izq', 'Vapor'],
+  ['d:D_GOTAS', 'izq', 'Gotas de limoneno'],
+  ['d:D_AGUA', 'izq', 'Agua de torre'],
+  ['d:D_PELICULA', 'izq', 'Película de condensado'],
   ['SW_IN', 'izq', 'Entra el agua de servicios'],
   // a la derecha: el condensador por su lado derecho, la estructura, la bajada del condensado, el florentino y la persona
   ['E_CHOQUE', 'der', 'Placa de choque'],
@@ -48,6 +54,11 @@ export const ROTULOS_EN = [
   ['D_ANULO', 'izq', 'Annulus'],
   ['D_INTERIOR', 'izq', 'Inner pipe'],
   ['SW_IN', 'izq', 'Service water in'],
+  ['d:D_PARED', 'izq', 'Tube wall'],
+  ['d:D_VAPOR', 'izq', 'Vapor'],
+  ['d:D_GOTAS', 'izq', 'Limonene drops'],
+  ['d:D_AGUA', 'izq', 'Tower water'],
+  ['d:D_PELICULA', 'izq', 'Condensate film'],
   ['E_CHOQUE', 'der', 'Impingement plate'],
   ['CW_OUT', 'der', 'Cooling-tower water out'],
   ['E_TUBOS', 'der', 'Tubes'],
@@ -57,6 +68,10 @@ export const ROTULOS_EN = [
   ['F_NOMBRE', 'der', 'Florentine flask V-202', { dy: -40 }],
   ['PERSONA', 'der', 'Person, 1.75 m'],
 ];
+
+// el nombre del círculo, debajo de él (m: cuántas veces más grande)
+export const PIES = (m) => [`Un tubo abierto, ×${m}`];
+export const PIES_EN = (m) => [`One tube, opened, ×${m}`];
 
 export const DESCRIPCION = 'El tren de condensación de un arrastre de vapor, en isométrico. ' +
   'Arriba, el condensador E-201: un intercambiador de tubos y coraza vertical, de un paso, cortado por el plano de su eje para ver adentro. ' +
@@ -68,7 +83,8 @@ export const DESCRIPCION = 'El tren de condensación de un arrastre de vapor, en
   'Las ramas van partidas y en la rotura se ve la sección: el tubo exterior, el ánulo con el agua de servicios y el tubo interior con el condensado. ' +
   'El condensado entra por la rama de arriba y baja; el agua de servicios entra por la de abajo y sube. ' +
   'De la rama de abajo, el condensado frío sube junto al subenfriador y entra al florentino V-202, a la derecha, en corte, con el aceite arriba y el agua abajo. ' +
-  'Junto al florentino, una persona de 1,75 m de pie en el piso da la escala.';
+  'Junto al florentino, una persona de 1,75 m de pie en el piso da la escala. ' +
+  'Un círculo a la izquierda amplía un tubo del haz, abierto por su eje: el vapor baja por el centro y por la pared baja la película de condensado, con gotas de limoneno; afuera, entre el tubo y sus vecinos, el agua de torre.';
 
 export const DESCRIPCION_EN = 'The condensing train of a steam distillation, in isometric. ' +
   'At the top, the condenser E-201: a vertical, single-pass shell-and-tube exchanger cut along its axis. ' +
@@ -80,4 +96,5 @@ export const DESCRIPCION_EN = 'The condensing train of a steam distillation, in 
   'The legs are drawn broken, and the break shows the section: the outer pipe, the annulus with the service water and the inner pipe with the condensate. ' +
   'The condensate enters the top leg and flows down; the service water enters the bottom leg and flows up. ' +
   'From the bottom leg the cold condensate rises beside the subcooler and enters the Florentine flask V-202, on the right, in section, with the oil on top and the water below. ' +
-  'A person 1.75 m tall stands on the floor by the flask for scale.';
+  'A person 1.75 m tall stands on the floor by the flask for scale. ' +
+  'A circle on the left enlarges one tube of the bundle, opened along its axis: the vapor flows down the center and the condensate film runs down the wall, with drops of limonene; outside, between the tube and its neighbors, the tower water.';

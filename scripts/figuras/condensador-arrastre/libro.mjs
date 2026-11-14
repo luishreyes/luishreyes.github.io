@@ -1,12 +1,13 @@
 // El tren de condensación (el condensador, el subenfriador y el florentino) con los nombres de sus piezas, para el libro
 // de operaciones unitarias:
 //
-//   node build.mjs --audit
+//   node build.mjs --audit && node build.mjs --detalle --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]
 //   CHROME_PATH=/opt/pw-browsers/chromium node libro.mjs --lamina [ruta/condenser-train.svg]
 //
-// Sin --lamina escribe figuras/condensacion-y-ebullicion/_condensador-arrastre.qmd en el libro: la vista entera y los
-// rótulos (línea, punto amarillo y texto, a los dos lados del dibujo, cada uno a la altura de su pieza y sin
+// Sin --lamina escribe figuras/condensacion-y-ebullicion/_condensador-arrastre.qmd en el libro: la vista entera, el
+// círculo con la pared de un tubo ampliada (out/detalle.svg), unido por una línea al círculo chico que marca de dónde
+// sale (su centro se cambia con CA_DX y CA_DY), y los rótulos (línea, punto amarillo y texto, a los dos lados del dibujo, cada uno a la altura de su pieza y sin
 // encimarse), y out/libro-preview.html y out/libro-preview-620.html para revisarla. Con --lamina escribe la lámina de la
 // edición impresa en inglés (en/figuras/23/condenser-train.svg): lo mismo con pocos rótulos en inglés, 428 pt de ancho,
 // colores resueltos y la letra Archivo, que herramientas/svg-a-pdf.mjs del libro pasa a PDF. Con --anclas, una página
@@ -14,7 +15,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ROTULOS, ROTULOS_EN, DESCRIPCION, DESCRIPCION_EN } from './rotulos.mjs';
+import { ROTULOS, ROTULOS_EN, PIES, PIES_EN, DESCRIPCION, DESCRIPCION_EN } from './rotulos.mjs';
 // los colores de las piezas salen de la paleta del libro (estilo/paleta.json), como en todas sus figuras
 import { aplicarPaleta, cssAnatomia, revisar } from '../paleta-libro.mjs';
 
@@ -23,10 +24,12 @@ const arg = (key, d) => { const i = process.argv.indexOf(key); return i > 0 && p
 const KIT = process.env.ANATOMY_KIT || fileURLToPath(new URL('../../../.claude/skills/anatomy', import.meta.url));
 const k = await import(KIT + '/kit/iso-kit.mjs');
 const REPO_LIBRO = resolve(process.env.LIBRO_REPO || join(AQUI, '../../../../libro-operaciones-unitarias'));
-for (const f of ['fig.svg', 'fig_data.json']) if (!existsSync(join(AQUI, 'out', f))) throw new Error(`Falta out/${f}: corra antes node build.mjs`);
+for (const f of ['fig.svg', 'fig_data.json', 'detalle.svg', 'detalle_data.json']) if (!existsSync(join(AQUI, 'out', f))) throw new Error(`Falta out/${f}: corra antes node build.mjs y node build.mjs --detalle`);
 const r1 = (v) => Math.round(v * 10) / 10;
 const SVG = readFileSync(join(AQUI, 'out/fig.svg'), 'utf8');
-const { P, ANCLAS } = JSON.parse(readFileSync(join(AQUI, 'out/fig_data.json'), 'utf8'));
+const { P, ANCLAS, CDET, MDET, RDET } = JSON.parse(readFileSync(join(AQUI, 'out/fig_data.json'), 'utf8'));
+const DSVG = readFileSync(join(AQUI, 'out/detalle.svg'), 'utf8');
+const DD = JSON.parse(readFileSync(join(AQUI, 'out/detalle_data.json'), 'utf8'));
 const VISTA = 'condensacion-y-ebullicion/_condensador-arrastre';
 const cuerpoDe = (svg) => svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/<style>[^<]*<\/style>/, '');
 const estiloDe = (svg) => (svg.match(/<style>([^<]*)<\/style>/) || [, ''])[1];
@@ -50,11 +53,30 @@ function puntos(svg) {
   }
   return out;
 }
-const PTS = puntos(SVG);
+/* ── la composición: la vista entera, el círculo del detalle y la línea que los une. POS es el centro del círculo, en
+   las unidades de la vista entera: a la izquierda del condensador, a la altura del tubo que amplía ── */
+const POS = [Number(process.env.CA_DX || 185), Number(process.env.CA_DY || 362)];
+const TD = [POS[0] - DD.W / 2, POS[1] - DD.H / 2];
+const MARCA = k.iso(CDET, P), RM = RDET / MDET;
+const COMPOS = (() => {
+  const dx = POS[0] - MARCA[0], dy = POS[1] - MARCA[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+  return `<circle class="ca-det-marca" cx="${r1(MARCA[0])}" cy="${r1(MARCA[1])}" r="${r1(RM)}"/>` +
+    `<path class="ca-det-linea" d="M${r1(MARCA[0] + ux * RM)} ${r1(MARCA[1] + uy * RM)}L${r1(POS[0] - ux * RDET)} ${r1(POS[1] - uy * RDET)}"/>` +
+    `<g transform="translate(${r1(TD[0])} ${r1(TD[1])})">${cuerpoDe(DSVG)}</g>`;
+})();
+// un ancla: de la vista entera, o del detalle si empieza por «d:»
+const punto = (a) => {
+  if (a.startsWith('d:')) { const p = DD.ANCLAS[a.slice(2)]; if (!p) throw new Error(`Falta el ancla ${a}`); const q = k.iso(p, DD.P); return [q[0] + TD[0], q[1] + TD[1]]; }
+  if (!ANCLAS[a]) throw new Error(`Falta el ancla ${a}`);
+  return k.iso(ANCLAS[a], P);
+};
+const CIRCULO = Array.from({ length: 48 }, (_, i) => [POS[0] + RDET * Math.cos((Math.PI * 2 * i) / 48), POS[1] + RDET * Math.sin((Math.PI * 2 * i) / 48)]);
+const PTS = [...puntos(SVG), ...CIRCULO];
 
 /* ── los rótulos: a los dos lados del dibujo, cada uno a la altura de su pieza y tan cerca del dibujo como se pueda, sin
    encimarse (el mismo acomodo de ../intercambiador/libro-comun.mjs) ── */
-function rotulado(lista, { letra, punto = letra * 0.14, separa = 18, margen = 10 }) {
+function rotulado(lista, pies, { letra, separa = 18, margen = 10 }) {
+  const rp = letra * 0.14;
   const pts = PTS;
   const minX = Math.min(...pts.map((p) => p[0])), maxX = Math.max(...pts.map((p) => p[0]));
   const minY = Math.min(...pts.map((p) => p[1])), maxY = Math.max(...pts.map((p) => p[1]));
@@ -65,8 +87,7 @@ function rotulado(lista, { letra, punto = letra * 0.14, separa = 18, margen = 10
   };
   const lados = { izq: [], der: [] };
   for (const [a, lado, t, op = {}] of lista) {
-    if (!ANCLAS[a]) throw new Error(`Falta el ancla ${a}`);
-    const [ax, ay] = k.iso(ANCLAS[a], P);
+    const [ax, ay] = punto(a);
     lados[lado].push({ a, t, op, n: t.split('\n').length, ax: r1(ax), ay: r1(ay) });
   }
   for (const col0 of Object.values(lados)) {
@@ -94,11 +115,19 @@ function rotulado(lista, { letra, punto = letra * 0.14, separa = 18, margen = 10
   for (const [col, izq] of [[lados.izq, true], [lados.der, false]]) for (const r of col) {
     const ex = izq ? r.x + 5 : r.x - 5, ey = r.y - letra * 0.35, rs = r.t.split('\n');
     const tsp = rs.length === 1 ? rs[0] : rs.map((s, i) => `<tspan x="${r1(r.x)}"${i ? ` dy="${r1(letra * 1.2)}"` : ''}>${s}</tspan>`).join('');
-    trazos += `<path class="rot-linea" d="M${r.ax} ${r.ay}L${r1(ex)} ${r1(ey)}"/><circle class="rot-punto" cx="${r.ax}" cy="${r.ay}" r="${r1(punto)}"/>` +
+    trazos += `<path class="rot-linea" d="M${r.ax} ${r.ay}L${r1(ex)} ${r1(ey)}"/><circle class="rot-punto" cx="${r.ax}" cy="${r.ay}" r="${r1(rp)}"/>` +
       `<text class="rot-texto" x="${r1(r.x)}" y="${r1(r.y)}" text-anchor="${izq ? 'end' : 'start'}" font-size="${r1(letra)}">${tsp}</text>`;
     const w = ancho(r.t);
     bx0 = Math.min(bx0, izq ? r.x - w : r.x); bx1 = Math.max(bx1, izq ? r.x : r.x + w);
     by0 = Math.min(by0, r.y - letra); by1 = Math.max(by1, r.y + 4 + (r.n - 1) * letra * 1.2);
+  }
+  // el nombre del círculo, debajo, centrado, sin línea
+  for (const t of pies) {
+    // un poco a la izquierda del centro, para no llegar a los rótulos del condensador
+    const rs = t.split('\n'), y = POS[1] + RDET + letra * 1.25, w = ancho(t), xp = POS[0] - RDET * 0.2;
+    const tsp = rs.length === 1 ? rs[0] : rs.map((q, i) => `<tspan x="${r1(xp)}"${i ? ` dy="${r1(letra * 1.2)}"` : ''}>${q}</tspan>`).join('');
+    trazos += `<text class="rot-texto rot-pie" x="${r1(xp)}" y="${r1(y)}" text-anchor="middle" font-size="${r1(letra)}">${tsp}</text>`;
+    bx0 = Math.min(bx0, xp - w / 2); bx1 = Math.max(bx1, xp + w / 2); by1 = Math.max(by1, y + 4 + (rs.length - 1) * letra * 1.2);
   }
   return { trazos, caja: [Math.floor(bx0 - margen), Math.floor(by0 - margen), Math.ceil(bx1 + margen), Math.ceil(by1 + margen)] };
 }
@@ -116,9 +145,9 @@ else libro();
 /* ── dónde cae cada ancla ── */
 function anclas() {
   let marcas = '';
-  for (const [a, p] of Object.entries(ANCLAS)) { const [x, y] = k.iso(p, P); marcas += `<circle cx="${r1(x)}" cy="${r1(y)}" r="3" fill="#FFF500" stroke="#19222F"/><text x="${r1(x + 5)}" y="${r1(y - 4)}" font-size="9" fill="#B3261E">${a}</text>`; }
+  for (const a of [...Object.keys(ANCLAS), ...Object.keys(DD.ANCLAS).map((d) => 'd:' + d)]) { const [x, y] = punto(a); marcas += `<circle cx="${r1(x)}" cy="${r1(y)}" r="3" fill="#FFF500" stroke="#19222F"/><text x="${r1(x + 5)}" y="${r1(y - 4)}" font-size="9" fill="#B3261E">${a}</text>`; }
   const css = readFileSync(join(AQUI, 'out/fig.css'), 'utf8').replace(/\.iso\[data-theme="light"\]\{/, '.iso,.iso[data-theme="light"]{');
-  writeFileSync(join(AQUI, 'out/anclas.html'), `<!doctype html><html><head><meta charset="utf-8"><style>${css}${estiloDe(SVG)} body{margin:0;background:#fff} svg{display:block}</style></head><body><div class="iso" data-theme="light"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${P.width ?? 1000} ${P.height ?? 1200}" width="1000" height="1200">${cuerpoDe(SVG)}${marcas}</svg></div></body></html>`);
+  writeFileSync(join(AQUI, 'out/anclas.html'), `<!doctype html><html><head><meta charset="utf-8"><style>${css}${estiloDe(SVG)} body{margin:0;background:#fff} svg{display:block}</style></head><body><div class="iso" data-theme="light"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${P.width ?? 1000} ${P.height ?? 1200}" width="1000" height="1200">${cuerpoDe(SVG)}${COMPOS}${marcas}</svg></div></body></html>`);
   console.log('out/anclas.html');
 }
 
@@ -126,9 +155,9 @@ function anclas() {
 function libro() {
   const LIBRO = resolve(arg('--salida', join(REPO_LIBRO, 'libro')));
   const DEST = join(LIBRO, 'figuras/condensacion-y-ebullicion');
-  const R = conLetra((letra) => rotulado(ROTULOS, { letra }));
+  const R = conLetra((letra) => rotulado(ROTULOS, PIES(MDET), { letra }));
   const [vx, vy, x1, y1] = R.caja, vw = x1 - vx, vh = y1 - vy;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" class="iso-svg" viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${DESCRIPCION}"><style>${estiloDe(SVG)}</style>${cuerpoDe(SVG)}<g class="rotulos">${R.trazos}</g></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" class="iso-svg" viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${DESCRIPCION}"><style>${estiloDe(SVG)}</style>${cuerpoDe(SVG)}${COMPOS}<g class="rotulos">${R.trazos}</g></svg>`;
   const html = aplicarPaleta(svg, VISTA);
   const fuera = revisar(html);
   if (fuera.size) console.warn('¡Ojo! colores fuera de la paleta:', [...fuera].map(([c, n]) => `${c}×${n}`).join(' '));
@@ -158,8 +187,8 @@ async function lamina() {
   const FUENTES = resolve(arg('--fuentes', join(REPO_LIBRO, 'en/estilo/fuentes')));
   const ANCHO = 428, LETRA = 7.5, TINTA = '#19222F', TRAZO = 0.32;
   let letra = 14, R;
-  for (let vuelta = 0; vuelta < 4; vuelta++) { R = rotulado(ROTULOS_EN, { letra }); letra = LETRA / (ANCHO / (R.caja[2] - R.caja[0])); }
-  R = rotulado(ROTULOS_EN, { letra });
+  for (let vuelta = 0; vuelta < 4; vuelta++) { R = rotulado(ROTULOS_EN, PIES_EN(MDET), { letra }); letra = LETRA / (ANCHO / (R.caja[2] - R.caja[0])); }
+  R = rotulado(ROTULOS_EN, PIES_EN(MDET), { letra });
   const [vx, vy, x1, y1] = R.caja, vw = x1 - vx, vh = y1 - vy;
   const s = ANCHO / vw, ALTO = Math.ceil(vh * s);
   const b64 = (f) => readFileSync(join(FUENTES, f)).toString('base64');
@@ -169,7 +198,7 @@ async function lamina() {
   const nav = await chromium.launch({ args: ['--no-sandbox'], ...(exe && existsSync(exe) ? { executablePath: exe } : {}) });
   const pag = await nav.newPage();
   const rotCss = `.rot-linea{fill:none;stroke:${TINTA};stroke-width:${r1((0.5 / s) * 10) / 10}px}.rot-punto{fill:#FFF500;stroke:${TINTA};stroke-width:${r1((0.5 / s) * 10) / 10}px}.rot-texto{fill:${TINTA};font-family:Archivo;font-weight:600}`;
-  const svgIn = aplicarPaleta(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vx} ${vy} ${vw} ${vh}"><style>${estiloDe(SVG)}</style>${cuerpoDe(SVG)}<g class="rotulos">${R.trazos}</g></svg>`, VISTA);
+  const svgIn = aplicarPaleta(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vx} ${vy} ${vw} ${vh}"><style>${estiloDe(SVG)}</style>${cuerpoDe(SVG)}${COMPOS}<g class="rotulos">${R.trazos}</g></svg>`, VISTA);
   await pag.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${fuentes}${cssAnatomia(k.ISO_CSS, '')}${rotCss}</style></head><body><div class="iso" data-theme="light" style="width:${vw}px">${svgIn}</div></body></html>`, { waitUntil: 'load' });
   await pag.evaluate(() => document.fonts.ready);
   const res = await pag.evaluate(() => {

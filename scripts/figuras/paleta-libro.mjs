@@ -128,6 +128,9 @@ export const CLASES = {
   'ca-agua-sup': { fill: 'agua.sombras.0', 'fill-opacity': LIQ_SUP }, 'ca-gota-agua': { fill: 'agua.oscuro' },
   '.ca-agua .iso-line[data-tone="lo"]': { stroke: 'agua.oscuro' },
   'ca-vapor': { stroke: 'naranja' }, 'ca-vapor-p': { fill: 'naranja' }, 'ca-agua-flujo': { stroke: 'azul' }, 'ca-agua-flujo-p': { fill: 'azul' },
+  // el círculo del detalle: la película de condensado, las gotas de limoneno, el agua de la coraza de fondo y el marco
+  'ca-pelicula': { fill: 'agua.sombras.0', 'fill-opacity': 0.55 }, 'ca-gota-aceite': { fill: 'aceite.oscuro' }, 'ca-brillo': { fill: 'aceite.tapa' },
+  'ca-det-fondo': { fill: 'agua.cara' }, 'ca-det-marco': { stroke: 'tinta-2' }, 'ca-det-marca': { stroke: 'tinta-2' }, 'ca-det-linea': { stroke: 'tinta-2' },
   // florentino (capítulo 10): agua abajo, aceite arriba
   ...corte('fl'), 'fl-ss': 'acero', 'fl-in': 'acero/dentro', 'fl-pipe': 'acero', 'fl-trim': 'acero', 'fl-cast': 'fundicion',
   'fl-lever': 'fundicion', 'fl-cu': 'cobre', 'fl-tierra': 'caucho', 'fl-glw': 'agua', 'fl-glo': 'aceite',
