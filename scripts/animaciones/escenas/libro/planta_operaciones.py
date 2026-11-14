@@ -24,7 +24,7 @@ PASOS = [
     (["Arrastre", "de vapor"], "vapor vivo", [MAS, CAL]),
     (["Condensación"], "agua de enfriamiento", [CAL]),
     (["Decantador", "florentino"], "aceite e hidrolato", [MEC]),
-    (["Winterización"], "a 5–10 °C", [CAL, MAS, MEC]),
+    (["Winterización"], "a 5 °C, 8 h", [CAL, MAS, MEC]),
     (["Rectificación", "al vacío"], "a 10–20 mbar", [MAS]),
 ]
 MIXTOS = (2, 5)
@@ -88,6 +88,12 @@ class PlantaOperaciones(Scene):
         flechas.append(bajada)
         flechas += [flecha(cajas[k].get_right(), cajas[k + 1].get_left()) for k in (4, 5)]
 
+        # el florentino devuelve el hidrolato al alambique (cohobación), como en la Figura 1.3 inglesa
+        x_ret = X[1] + 0.75
+        retorno = flecha([x_ret, Y2 - H / 2, 0], [x_ret, -2.25, 0])
+        et_retorno = texto("hidrolato, de vuelta al alambique", 18, TINTA_2) \
+            .next_to(retorno, LEFT, buff=0.12).align_to(retorno, DOWN)
+
         salida = flecha(cajas[6].get_bottom(), [X[3], -2.25, 0])
         et_salida = texto("Aceite rectificado", 22, TINTA, peso=SEMIBOLD).next_to(salida, DOWN, buff=0.1)
 
@@ -99,7 +105,7 @@ class PlantaOperaciones(Scene):
             if i < len(flechas):
                 anims.append(Create(flechas[i]) if i == 3 else GrowArrow(flechas[i]))
             self.play(*anims, run_time=0.65)
-        self.play(GrowArrow(salida), FadeIn(et_salida), run_time=0.7)
+        self.play(GrowArrow(retorno), FadeIn(et_retorno), GrowArrow(salida), FadeIn(et_salida), run_time=0.7)
         self.wait(0.8)
 
         # ── 2. Tres familias ────────────────────────────────────────────

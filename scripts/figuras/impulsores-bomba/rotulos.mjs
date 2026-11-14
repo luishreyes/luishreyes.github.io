@@ -11,38 +11,42 @@ export const IMPULSORES = [
 
 export const ROTULOS = {
   cerrado: [
-    ['OJO', 'izq', 'Ojo'],
-    ['TUERCA', 'izq', 'Tuerca del impulsor'],
+    ['MANO', 'izq', 'Mano'],
     ['ALABE', 'izq', 'Álabe'],
     ['TAPA_TRAS', 'izq', 'Tapa trasera'],
+    ['OJO', 'der', 'Ojo'],
+    ['TUERCA', 'der', 'Tuerca del impulsor'],
     ['ANILLO', 'der', 'Anillo de desgaste'],
     ['AGUJERO', 'der', 'Agujero de balance'],
     ['TAPA_DEL', 'der', 'Tapa delantera, cortada'],
   ],
   semiabierto: [
-    ['TUERCA', 'izq', 'Tuerca del impulsor'],
-    ['ENTRADA', 'izq', 'Borde de ataque'],
-    ['CUBO', 'izq', 'Cubo, en corte'],
+    ['MANO', 'izq', 'Mano'],
     ['ALABE', 'izq', 'Álabe'],
     ['TAPA_TRAS', 'izq', 'Tapa trasera'],
+    ['TUERCA', 'der', 'Tuerca del impulsor'],
+    ['ENTRADA', 'der', 'Borde de ataque'],
+    ['CUBO', 'der', 'Cubo, en corte'],
     ['BORDE', 'der', 'Borde libre del álabe'],
     ['CHAVETA', 'der', 'Chaveta'],
     ['EJE', 'der', 'Eje'],
   ],
   abierto: [
-    ['TUERCA', 'izq', 'Tuerca del impulsor'],
-    ['CUBO', 'izq', 'Cubo, en corte'],
-    ['NERVIO', 'izq', 'Tapa trasera recortada'],
+    ['MANO', 'izq', 'Mano'],
     ['ALABE', 'izq', 'Álabe'],
+    ['EJE', 'izq', 'Eje'],
+    ['TUERCA', 'der', 'Tuerca del impulsor'],
+    ['CUBO', 'der', 'Cubo, en corte'],
+    ['NERVIO', 'der', 'Tapa trasera recortada'],
     ['BORDE', 'der', 'Borde libre del álabe'],
     ['CHAVETA', 'der', 'Chaveta'],
-    ['EJE', 'der', 'Eje'],
   ],
   axial: [
     ['CONO', 'izq', 'Cono de entrada, cortado'],
     ['ALABE', 'izq', 'Álabe torcido'],
     ['EJE', 'izq', 'Eje'],
     ['HOLGURA', 'izq', 'Holgura de 0,6 mm'],
+    ['MANO', 'der', 'Mano'],
     ['CARCASA', 'der', 'Carcasa, mitad de atrás'],
     ['TUERCA', 'der', 'Tuerca del impulsor'],
     ['PUNTA', 'der', 'Perfil del álabe'],
@@ -52,10 +56,10 @@ export const ROTULOS = {
 
 // los mismos rótulos en inglés, por ancla (para la edición impresa o una lámina con nombres)
 export const ROTULOS_EN = {
-  cerrado: { OJO: 'Eye', TUERCA: 'Impeller nut', ALABE: 'Vane', TAPA_TRAS: 'Back shroud', ANILLO: 'Wear ring', AGUJERO: 'Balance hole', TAPA_DEL: 'Front shroud, cut away' },
-  semiabierto: { TUERCA: 'Impeller nut', ENTRADA: 'Leading edge', ALABE: 'Vane', TAPA_TRAS: 'Back shroud', BORDE: 'Open vane edge', CUBO: 'Hub, sectioned', CHAVETA: 'Key', EJE: 'Shaft' },
-  abierto: { TUERCA: 'Impeller nut', ALABE: 'Vane', NERVIO: 'Scalloped back shroud', BORDE: 'Open vane edge', CUBO: 'Hub, sectioned', CHAVETA: 'Key', EJE: 'Shaft' },
-  axial: { CONO: 'Nose cone, cut away', CUBO: 'Hub', ALABE: 'Twisted blade', EJE: 'Shaft', TUERCA: 'Impeller nut', PUNTA: 'Blade section', HOLGURA: '0.6 mm tip clearance', CARCASA: 'Casing, back half' },
+  cerrado: { OJO: 'Eye', TUERCA: 'Impeller nut', ALABE: 'Vane', TAPA_TRAS: 'Back shroud', ANILLO: 'Wear ring', AGUJERO: 'Balance hole', TAPA_DEL: 'Front shroud, cut away', MANO: 'Hand' },
+  semiabierto: { TUERCA: 'Impeller nut', ENTRADA: 'Leading edge', ALABE: 'Vane', TAPA_TRAS: 'Back shroud', BORDE: 'Open vane edge', CUBO: 'Hub, sectioned', CHAVETA: 'Key', EJE: 'Shaft', MANO: 'Hand' },
+  abierto: { TUERCA: 'Impeller nut', ALABE: 'Vane', NERVIO: 'Scalloped back shroud', BORDE: 'Open vane edge', CUBO: 'Hub, sectioned', CHAVETA: 'Key', EJE: 'Shaft', MANO: 'Hand' },
+  axial: { CONO: 'Nose cone, cut away', CUBO: 'Hub', ALABE: 'Twisted blade', EJE: 'Shaft', TUERCA: 'Impeller nut', PUNTA: 'Blade section', HOLGURA: '0.6 mm tip clearance', CARCASA: 'Casing, back half', MANO: 'Hand' },
 };
 
 // lo que lee un lector de pantalla en cada vista

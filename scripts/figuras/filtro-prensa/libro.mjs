@@ -1,9 +1,10 @@
-// El filtro prensa con los nombres de sus piezas, para el capítulo 17 del libro de operaciones unitarias (Filtración):
+// El filtro prensa con los nombres de sus piezas, para el capítulo 18 del libro de operaciones unitarias (Filtración):
 //
-//   CHROME_PATH=/opt/pw-browsers/chromium node build.mjs --audit
+//   CHROME_PATH=/opt/pw-browsers/chromium node build.mjs --libro --audit
 //   node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro
 //
-// Abre preview.html en Chromium, congela la figura en un instante del ciclo (ESTADO: a mitad de la filtración, con
+// La vista del libro lleva la persona de referencia de 1,75 m junto al cilindro (build.mjs --libro, que escribe en
+// out/libro/ y no toca lo del explorador). Abre out/libro/preview.html en Chromium, congela la figura en un instante del ciclo (ESTADO: a mitad de la filtración, con
 // la torta a medio crecer en las cámaras, el filtrado bajando por las caras de las placas y la tolva vacía) y escribe
 // figuras/filtracion/_prensa.qmd con el SVG del skill anatomy y los rótulos (línea y punto, como la bomba, el
 // florentino y el filtro de arena), y out/libro-preview.html para revisarla en el navegador.
@@ -24,10 +25,11 @@ const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const LIBRO = resolve(arg('--salida', join(AQUI, '../../../../libro-operaciones-unitarias/libro')));
 const DEST = join(LIBRO, 'figuras/filtracion');
-if (!existsSync(join(AQUI, 'out/fig.svg')) || !existsSync(join(AQUI, 'preview.html'))) throw new Error('Falta out/: corra antes node build.mjs --audit');
+const OUTL = join(AQUI, 'out/libro');
+if (!existsSync(join(OUTL, 'preview.html')) || !existsSync(join(OUTL, 'press_data.json'))) throw new Error('Falta out/libro/: corra antes node build.mjs --libro --audit');
 const KIT = fileURLToPath(new URL('../../../.claude/skills/anatomy', import.meta.url));
 const k = await import(KIT + '/kit/iso-kit.mjs');
-const D = JSON.parse(readFileSync(join(AQUI, 'press_data.json'), 'utf8'));
+const D = JSON.parse(readFileSync(join(OUTL, 'press_data.json'), 'utf8'));
 const r1 = (v) => Math.round(v * 10) / 10;
 
 // el instante del ciclo: filtración (fase f) a la mitad; cada torta llena el 70 % de su media cámara, el manómetro
@@ -37,7 +39,7 @@ const TORTA = [180, 138, 90], SUSPENSION = [201, 183, 156];
 
 const navegador = await chromium.launch({ args: ['--no-sandbox'], ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
 const pagina = await navegador.newPage({ viewport: { width: 1400, height: 1000 } });
-await pagina.goto(pathToFileURL(join(AQUI, 'preview.html')).href + '?t=0');
+await pagina.goto(pathToFileURL(join(OUTL, 'preview.html')).href + '?t=0');
 await pagina.waitForTimeout(300);
 const { svg, caja } = await pagina.evaluate(([estado, torta, susp]) => {
   const fp = window.__fp;
@@ -79,6 +81,7 @@ const RS = [
   [[-4.17, 4.52, 20], 'Mirilla', 246, 360, 'der'],
   [[-42, 10, 26], 'Bomba neumática\nde doble diafragma', 120, 372, 'der'],
   [[-51, 24.7, 16], 'Línea de aire\ncomprimido', 82, 372, 'izq'],
+  [D.PERSONA, 'Persona\nde 1,75 m', 652, 26, 'izq'],
 ];
 
 let trazos = '';
@@ -101,7 +104,8 @@ const etiqueta = 'Filtro prensa de placas de cámara, en isométrico, a mitad de
   'La suspensión recorre el canal central de alimentación, que atraviesa todas las placas, y llena las cámaras. En cada cámara crece una torta parda desde las dos telas filtrantes, una en cada cara de las placas, y entre las dos tortas queda suspensión. ' +
   'El filtrado atraviesa la torta y la tela, baja por la cara de las placas (unas líneas de trazos lo muestran) y sale por el canal de filtrado, abajo, hacia un tanque de filtrado con mirilla, lleno hasta poco más de la mitad. ' +
   'Las placas cuelgan de la barra lateral y las aprieta el cabezal móvil, empujado por el vástago de un cilindro hidráulico abierto, con su pistón adentro, montado en el cabezal trasero; las mangueras del cilindro bajan a la central hidráulica, con su tanque, su bloque de válvulas y su motor. ' +
-  'Debajo de las placas, una tolva sin fondo deja caer la torta en la descarga sobre una banda transportadora entre dos tambores; ahora está vacía.';
+  'Debajo de las placas, una tolva sin fondo deja caer la torta en la descarga sobre una banda transportadora entre dos tambores; ahora está vacía. ' +
+  'A la derecha, junto al cilindro y la central hidráulica, una persona de 1,75 m de pie da la escala.';
 const fpcss = readFileSync(join(AQUI, 'fp.css'), 'utf8').replace(/;transition:[^;}]*/g, '').replace(/\n/g, '');
 const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, at) => `<svg${at.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}"><style>${fpcss}</style>`)

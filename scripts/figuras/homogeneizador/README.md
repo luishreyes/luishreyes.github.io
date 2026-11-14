@@ -26,6 +26,12 @@ Todo va a escala real, en milímetros (`geo.mjs`), salvo la rendija, que va exag
 - **El detalle** (`node build.mjs --detalle`): la primera etapa ampliada 3,2 veces en un círculo, con el camino de la
   leche por la rendija dibujado a los dos lados del eje. En el libro va a la derecha, abajo, unido por una línea al
   círculo chico que marca la primera etapa en la vista entera.
+- **La mano de referencia** (`manoEnBorde` de `../persona.mjs`; `HM.mano` en `geo.mjs`, medida del libro): lo dibujado
+  mide menos de un metro, así que la escala la da una mano derecha de adulto que llega desde el lado del cárter y apoya
+  los dedos en el canto izquierdo de la cara de arriba del bloque, cerca de atrás, cruzándolo hacia el cabezal, sin tapar
+  el cabezal ni las líneas de los rótulos. Los dedos se apoyan en la cara de arriba y el antebrazo baja por detrás del
+  bloque, oculto. La cámara no la incluye, así que el detalle queda igual y no la lleva. Rótulo «Mano» en la vista del
+  libro y en la lámina.
 
 El corte quita la mitad que mira al lector (y > 0) del bloque, de sus pies, de los asientos, del tapón, del cartucho,
 de los sellos, del cabezal, de los anillos, de los forzadores, de los émbolos, de los actuadores y de los tubos de la
@@ -147,5 +153,5 @@ propios de la figura van en un `<style>` dentro del SVG.
 `hm-plunger` son acero; `hm-hard` (los anillos de impacto) y `hm-cast` (las cajas del cárter), fundición; `hm-paint` y
 `hm-rod`, pintado; `hm-rubber`, caucho; `hm-sub` (las paredes mojadas por la leche), agua; `hm-oil` y `hm-oil-liq`
 (el aceite en corte, con opacidad), aceite; el corte del bloque y del cabezal, el del acero; el de sus piezas, un paso
-más claro; el de los anillos, el de la fundición; el de los pies, el del pintado; el de los sellos, el del caucho. Si
+más claro; el de los anillos, el de la fundición; el de los pies, el del pintado; el de los sellos, el del caucho; `ps-persona` (la mano), el material «persona». Si
 cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar la vista sin rehacer el dibujo.

@@ -21,6 +21,11 @@ mezclador estático que lo reparte antes de que llegue al reactor. Todo va a esc
   en dos y cada mitad sigue una cara de la cinta mientras se ensancha, se adelgaza y pasa al color del agua. Dice que
   la cinta reparte el ácido y que se diluye; no es un perfil medido.
 
+**La mano de referencia** (`manoEnBorde` de `../persona.mjs`; `MZ.mano` en `geo.mjs`, medida del libro): una mano
+derecha de adulto llega desde atrás y apoya los dedos en el canto de arriba de la brida de salida, cruzándolo hacia el
+lector; los dedos se apoyan en el dibujo mismo y el antebrazo baja por detrás, oculto por la mano. La cámara la
+incluye. Rótulo «Mano» en la vista del libro.
+
 ## Por qué el KMS y no el KVM
 
 El capítulo recomienda un KVM de vórtice (7,4 D, unos 0,47 m) para esta línea turbulenta. Paul (2004, cap. 7) no da

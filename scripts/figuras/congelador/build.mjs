@@ -27,6 +27,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const CG = GEO.CG;
 const FAST = process.argv.includes("--fast");
 const DETN = Number((process.argv.find((a) => a.startsWith("--detalle=")) || "--detalle=0").split("=")[1]);
@@ -741,6 +742,15 @@ if (DET) {
     const j = jump.filter((p) => p[2] > st.top(p[0]) + 22 && p[1] > -40 && inC(p)).sort((a, b) => G.dot3(b, V3) - G.dot3(a, V3))[0]; if (j) ANCH.D_SALTA = j; }
 }
 
+/* ---------- la persona de referencia: 1,75 m, de pie en el piso junto a la salida (../persona.mjs; no va en los detalles) ---------- */
+if (!DET) {
+  const PS = CG.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.PECHO;
+}
+
 /* ---------- orden y salida ---------- */
 if (process.env.CG_ITEM) {
   for (const nm of process.env.CG_ITEM.split(",")) {
@@ -789,7 +799,8 @@ const CSS = `.cg-cut{${flat("#c9ced3")}}.cg-cut1{${flat("#d6dade")}}.cg-foam{${f
 .cg-burb{fill:#ffffff;stroke:#b8a67a;stroke-width:.5px}
 .cg-flujo{fill:none;stroke:#2e5e9e;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
 .cg-flecha{fill:#2e5e9e;stroke:none;opacity:.85}.cg-fino{stroke-width:1.1px}
-.cg-det-fondo{fill:#ffffff;stroke:none}.cg-det-marco{fill:none;stroke:#525c64;stroke-width:1px}`;
+.cg-det-fondo{fill:#ffffff;stroke:none}.cg-det-marco{fill:none;stroke:#525c64;stroke-width:1px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

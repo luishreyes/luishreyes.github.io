@@ -36,6 +36,9 @@ diez veces cada etapa.
   grande, con las arvejas de 6 mm una por una. En la primera, separadas (el lecho expandido), con burbujas que cortan
   la cara y arvejas en el aire; en la segunda, apretadas y quietas. Debajo, la banda en corte con sus agujeros, las
   barras de la rejilla y el aire que sube.
+- **La persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie en el piso de la planta, a la derecha
+  del congelador y hacia el lector, frente a la salida de las arvejas, mirando hacia el equipo, con una sombra corta
+  (`CG.persona` en `geo.mjs`, medida del libro). Los detalles no la llevan.
 
 **Ningún nombre de fabricante.** Berk y Singh y Heldman muestran equipos comerciales; el dibujo sigue la disposición
 que describen las fuentes, no una máquina en particular.
@@ -142,5 +145,5 @@ desde `en/` la pasa a PDF.
 (acero inoxidable) y `cg-panel`, `cg-motor` (pintado); `cg-cast` y `cg-spring` (los rodetes, las levas y las
 ballestas), fundición; `cg-ins` (la línea de succión aislada), caucho; el corte de las piezas, el del acero, y el de los
 paneles (`cg-foam`), el del amarillo, que se lee como el poliuretano; las arvejas, en los tonos del sólido (como en el
-diagrama del ejemplo); la escarcha, en el del vidrio; las bocas y las ranuras, hueco; y las flechas, el azul de la base.
+diagrama del ejemplo); la escarcha, en el del vidrio; las bocas y las ranuras, hueco; las flechas, el azul de la base; y `ps-persona`, el material «persona».
 Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar la vista sin rehacer el dibujo.

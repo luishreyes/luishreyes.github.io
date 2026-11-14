@@ -32,7 +32,8 @@ const DETS = { d: leer('detalle.svg', 'detalle_data.json') };
 
 /* ---------- la composición: la vista entera, el detalle y la línea que los une ---------- */
 // dónde va el centro del círculo, en las unidades de la vista entera: abajo a la derecha, bajo la base
-const POS = { d: [Number(process.env.PT_DX || 782), Number(process.env.PT_DY || 888)] };
+// (más abajo que antes: los rótulos de la salida van debajo de la persona de referencia; la lámina tiene menos)
+const POS = { d: [Number(process.env.PT_DX || 782), Number(process.env.PT_DY || (process.argv.includes('--lamina') ? 1000 : 1082))] };
 const cuerpoDe = (svg) => svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/<style>[^<]*<\/style>/, '');
 const estiloDe = (svg) => (svg.match(/<style>([^<]*)<\/style>/) || [, ''])[1];
 function composicion() {

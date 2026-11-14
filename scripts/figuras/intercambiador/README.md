@@ -26,6 +26,8 @@ La mueve el mismo perfil de Nagle del explorador (`profileAll`), con el que sale
 | `hx.css` | Corte, cara cortada y lo vivo. El tema blueprint va en el explorador. |
 | `drive_test.js` | Perfil sintético para `preview.html` (`?np=2…8`, `&steam=1`, `&t=s`, `&snap=1`). |
 | `splice.mjs` | Mete el código y los datos en el HTML publicado (marcadores `HXFIG_*`) y copia los SVG a `simulaciones/fig/intercambiador/`, de donde la página los pide cuando hacen falta. |
+| `libro.mjs`, `rotulos.mjs` | La vista del libro (capítulo 22, 22.5): el AES de una coraza con los nombres de las piezas, en español y en inglés. |
+| `libro-comun.mjs` | Lo común de las vistas del libro de los cuatro intercambiadores (este, `../placas`, `../doble-tubo` y `../aeroenfriador`): la captura de lo vivo en Chromium, sus colores en las clases `ic-*` de la paleta del libro, los rótulos, el `.qmd` y la lámina inglesa. |
 
 ```sh
 node build.mjs --head BEM --ns 1 --audit   # una figura (medio minuto a un minuto); debe terminar en «audit passed»
@@ -35,3 +37,16 @@ node splice.mjs                            # al explorador publicado
 
 Las piezas vivas (`u{l}.sl{k}` para cada tajada del haz entre bafles, `u{l}.ch` y `u{l}.rr` para las particiones)
 se registran con la forma del volumen que ocupan, así `settle` las ordena con el resto; la página las llena.
+
+**La vista del libro** (capítulo 22, «Tubos y coraza por dentro»): `node build.mjs --head AES --ns 1 --libro --audit`
+agrega la persona de referencia de 1,75 m (`../persona.mjs`) de pie detrás de la coraza, junto a la brida de la coraza y
+al cabezal flotante, con las piernas tapadas por la coraza (`PERSONA` en `build.mjs`), y las anclas de los rótulos, y
+escribe aparte `out/tc-AES-1-libro.svg` y `.json`; sin `--libro` el SVG del explorador sale idéntico y `splice.mjs` no ve
+nada. `node libro.mjs` la abre con el código vivo en un estado quieto (cuatro pasos de un tono cada uno, del más caliente
+abajo al más frío arriba, y la coraza con el velo del frío), quita las partículas y los trazos, agrega dos piezas de la
+designación TEMA que el explorador no dibuja (una varilla tensora con sus espaciadores en lugar de una fila de tubos de
+la columna de adelante, del espejo fijo al último deflector, y la placa de choque bajo la boquilla de entrada de la
+coraza) y escribe `figuras/intercambiadores-de-calor/_tubos-coraza.qmd` del libro; `CHROME_PATH=/opt/pw-browsers/chromium
+node libro.mjs --lamina` escribe la lámina inglesa, `en/figuras/22/shell-and-tube.svg`, y `node
+herramientas/svg-a-pdf.mjs figuras/22/shell-and-tube.svg` desde `en/` la pasa a PDF. El dibujo conserva las medidas del
+explorador (coraza de 0,6 m y 3,6 m entre espejos), no las de E-101.

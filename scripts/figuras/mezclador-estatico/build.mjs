@@ -23,6 +23,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { manoEnBorde, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const STEP = Number(process.env.MZ_STEP || 0.25);
 const MZ = GEO.MZ, { D, ro, ri } = MZ, FL = MZ.fl, NZ = MZ.noz, NF = MZ.nfl, GK = MZ.gk, ST = MZ.stud, FT = MZ.fit, LA = MZ.lance;
@@ -42,7 +43,11 @@ const EXT = [];
 for (let i = 0; i <= 24; i++) { const a = PI / 2 + (PI * i) / 24; for (const x of [0, XL]) EXT.push([x, FL.r * Math.cos(a), FL.r * Math.sin(a)]); }
 EXT.push([xn - NF.r, -NF.r, zBT], [xn + NF.r, 0, zBT], [xU - MZ.union.len, 0, zT + 12], [xU - MZ.union.len, 0, zT - 12], [xn + 12, 0, zT + 20]);
 for (let i = 0; i <= NEL; i++) EXT.push([XE(i), ro, 0], [XE(i), 0, -ro]);
-const P = k.fitProjection(EXT, W, H, { pad: 14, azimuth: AZ, elevation: EL });
+/* la mano de referencia (geo.mjs, MANO; ../persona.mjs): llega desde atrás y apoya los dedos en el canto de arriba de la
+   brida de salida, que cruza hacia el lector; la cámara la incluye (con el plano de arriba de la brida como apoyo, que
+   basta para saber lo que ocupa) y después los dedos se apoyan en el dibujo mismo */
+const manoMZ = (Pm, apoyo = null) => manoEnBorde({ P: Pm, borde: [XL - FL.t / 2 + MZ.mano.dx, 0, FL.r], hacia: [0, 1, 0], lado: "der", mm: 1, adentro: MZ.mano.adentro, alto: MZ.mano.alto, inclina: MZ.mano.inclina, gira: MZ.mano.gira, apoyo });
+const P = k.fitProjection([...EXT, ...manoMZ(k.fitProjection(EXT, W, H, { pad: 14, azimuth: AZ, elevation: EL })).pts], W, H, { pad: 14, azimuth: AZ, elevation: EL });
 const C = X.xCam(P);
 const at = (p) => k.iso(p, P);
 const S = (paths, style) => k.solidSvg(paths, style);
@@ -532,6 +537,15 @@ const studHoles = (z0, z1) => studXY.map(([dx, y]) => A.disc(FZo(xn + dx, y), z0
   }
 }
 
+/* ---------- la mano de referencia, con los dedos en la brida de salida ---------- */
+{
+  const formas = R_.items.flatMap((it) => it.shapes || []);
+  const m = manoMZ(P, (p) => { let d = Infinity; for (const sh of formas) { const v = A.sdf(sh, p); if (v < d) d = v; } return d; });
+  m.shapes.forEach(record);
+  put("mano", m.ref, m.svg, m.shapes);
+  ANCH.MANO = m.anclas.MANO;
+}
+
 /* ---------- orden y salida ---------- */
 if (process.env.MZ_ITEM) {
   for (const nm of process.env.MZ_ITEM.split(",")) {
@@ -562,7 +576,8 @@ const CSS = `.mz-cut{--anatomy-paper:#c9ced3;--anatomy-face:#c9ced3;--anatomy-to
 .mz-bore{fill:#a9b1b9;stroke:none}
 .mz-bore-dark{fill:#6f7a84;stroke:none}
 .mz-flujo{fill:none;stroke:#2f5f86;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
-.mz-flecha{fill:#2f5f86;stroke:none;opacity:.85}`;
+.mz-flecha{fill:#2f5f86;stroke:none;opacity:.85}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

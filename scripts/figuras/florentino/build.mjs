@@ -2,10 +2,10 @@
    Florentino en isométrico (skill anatomy), para el capítulo 16 del libro de operaciones unitarias (Sedimentación y
    decantación): el decantador de la planta de aceite esencial de cáscara de cítricos, que separa el condensado del
    arrastre de vapor (agua con un 1,3 % de aceite, casi todo d-limoneno, más liviano que el agua) en aceite y agua.
-   Concepto: el condensado entra por la tapa a un tubo de calma que baja hasta 500 mm del fondo y sale bajo un
+   Concepto: el condensado entra por la tapa a un tubo de calma que baja hasta 550 mm del fondo y sale bajo un
    deflector, debajo de la interfase, sin revolver la capa de aceite. Las gotas de aceite suben por el agua hasta la
-   interfase (z₃ = 890 mm) y el aceite sale por el rebose (z₁ = 990 mm). El agua sale por abajo, a 50 mm del fondo,
-   y sube por fuera por la pierna hasta el codo de rebose (z₂ = 975 mm): esos 15 mm bajo el rebose del aceite fijan la
+   interfase (z₃ = 980 mm) y el aceite sale por el rebose (z₁ = 1080 mm). El agua sale por abajo, a 50 mm del fondo,
+   y sube por fuera por la pierna hasta el codo de rebose (z₂ = 1065 mm): esos 15 mm bajo el rebose del aceite fijan la
    interfase. En lo alto de la pierna, el rompe-sifón la une con el espacio de cabeza para que el recipiente no se
    vacíe por sifón. Dentro del tubo de calma solo hay agua y su nivel queda casi a la altura del codo de la pierna.
    Corte: se quita lo que mira al lector por encima del fondo (y > 0, z > ZF). El fondo plano queda entero; la

@@ -42,6 +42,10 @@ export const TL = {
   hh: { th: 285, r: 1050, z: 12250 },
   lad: { th: -14, r: 1720, half: 225, rw: 60, rt: 12, pitch: 300 },    // escalera: plano de los largueros a r = 1720
   cage: { half: 360, depth: 700, t: 6, h: 50, from: 1500 },            // jaula: aros de 720 mm, desde 2,2 m sobre el piso
+  /* la persona de referencia (../persona.mjs, 1,75 m), de pie en el piso al pie de la escalera: s a lo largo del radio
+     de la escalera y t a lo largo de su tangente (hacia +θ), en mm; rumbo, hacia dónde mira, en grados desde el radio
+     hacia +θ. Medida del libro. */
+  persona: { s: 2600, t: 0, rumbo: 180 },
   rail: { th0: -60, th1: -27, r: 1530, h: 1070, ro: 21.1 },            // baranda del techo
 };
 export const RO = TL.R + TL.tw;

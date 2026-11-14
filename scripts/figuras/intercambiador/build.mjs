@@ -8,7 +8,10 @@
    curvas en U. Lo que cambia con el caso (los pasos, la temperatura de cada
    tubo, el flujo de la coraza) lo dibuja la página con el mismo perfil de
    Nagle del explorador (profileAll).
-   Uso: node build.mjs --head BEM|BEU|AES --ns 1|2|3 [--audit]   ·   --all
+   Uso: node build.mjs --head BEM|BEU|AES --ns 1|2|3 [--audit] [--libro]   ·   --all
+   --libro: la vista del libro (capítulo 22), con la persona de referencia de 1,75 m (../persona.mjs) de pie detrás de la
+   coraza, junto al cabezal flotante, y las anclas de los rótulos; escribe aparte out/tc-{cabezal}-{n}-libro.svg y .json, que lee
+   libro.mjs. Sin --libro el SVG del explorador sale igual que siempre (los simuladores no llevan la persona).
    Unidades: 1 = 1 cm. z hacia arriba; cada coraza a lo largo de y.
    ==================================================================== */
 import { writeFileSync, readFileSync, mkdirSync } from "node:fs";
@@ -23,7 +26,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
-const FAST = process.argv.includes("--fast");
+const FAST = process.argv.includes("--fast"), LIBRO = process.argv.includes("--libro"), SUF = LIBRO ? "-libro" : "";
 const argv = (key, d) => { const i = process.argv.indexOf(key); return i >= 0 ? process.argv[i + 1] : d; };
 const strip = (n) => readFileSync(join(HERE, n), "utf8").replace(/^export /gm, "");
 mkdirSync(join(HERE, "out"), { recursive: true });
@@ -464,6 +467,46 @@ const top = UNITS[NS - 1], bot = UNITS[0], ENDS = {};
       }
 });
 
+/* ====================================================================
+   3 · solo en la vista del libro (--libro): la persona de referencia y las anclas de los rótulos
+   ==================================================================== */
+// la persona: 1,75 m, de pie en el piso detrás de la coraza, junto a la brida de la coraza y al cabezal flotante (ahí se
+// trabaja para quitar la tapa de la coraza y la del cabezal flotante y sacar el haz); la coraza le tapa las piernas, como
+// a la persona de la separadora de discos, y así no agranda la vista. Mira hacia el intercambiador (rumbo en grados desde
+// +x hacia +y). Va aquí y no en geo.mjs, que también corre en la página del explorador. Medida del libro.
+const PERSONA = { x: -75, y: 20, rumbo: 15 };
+let ANCLAS = null;
+if (LIBRO) {
+  const { personaDePie } = await import(join(HERE, "../persona.mjs"));
+  const PS = process.env.HX_PER ? Object.fromEntries(["x", "y", "rumbo"].map((kk, i) => [kk, Number(process.env.HX_PER.split(",")[i])])) : PERSONA;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 0.1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  // las anclas, en cm (la vista del libro las proyecta con P): la coraza de abajo, que en una coraza es la única
+  const u = UNITS[0], zc = u.zc, top = (x, rr) => zc + Math.sqrt(rr * rr - x * x);
+  const ln = GEO.lanes(4), yCh = u.noz.chan;
+  ANCLAS = {
+    PERSONA: per.anclas.PECHO, CABEZA: per.anclas.CABEZA,
+    TAPA_CANAL: [-14, Y.yFront, zc + 12],
+    CANAL: [-6, (L + TSH + 4 + yCh) / 2 - 6, top(-6, RO)],
+    DIVISOR: [-14, yCh + 8, zc + ln[2] + 0.5],
+    ESPEJO_FIJO: [0, L + TSH / 2, zc - 26],
+    CORAZA: [0, 230, zc - R - TW / 2],
+    DEFLECTOR: [0, BAF[3].y, zc - 18],
+    TUBOS: [-1.5, (BAF[1].y + BAF[2].y) / 2, zc - 0.9 + 1.2],
+    SILLETA: [-12, HX.sad[0], zc - RO - 4],
+    ESPEJO_FLOT: [0, -1.7, zc - 16],
+    ANILLO: [-2, 2.8, zc - 27.6],
+    CABEZAL_FLOT: [-10, -12, zc - 8],
+    TAPA_CORAZA: [-10, -12, top(-10, 38) - 0.3],
+    BRIDA_CORAZA: [-8, 24, top(-8, 45)],
+    BOQ_C_ENT: [u.pads.shellTop.face[0], u.pads.shellTop.face[1], ENDS.sIn[2] + 2],
+    BOQ_C_SAL: ENDS.sOut,
+    BOQ_T_SAL: [ENDS.tOut[0], ENDS.tOut[1], ENDS.tOut[2] + 2],
+    BOQ_T_ENT: [ENDS.tIn[0], ENDS.tIn[1], ENDS.tIn[2]],
+  };
+}
+
 /* ---------- orden y salida ---------- */
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
@@ -484,12 +527,13 @@ UNITS.forEach((un) => {
 });
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 const label = `Intercambiador de tubos y coraza ${HEAD} en corte, ${NS === 1 ? "una coraza" : NS + " corazas en serie apiladas"}: el haz de tubos, los bafles segmentados, las placas de tubos y los cabezales`;
-const svg = k.figureSvg({ width: W, height: H, label, body: [`<g class="hx-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="hxSvg" data-head="${HEAD}" data-ns="${NS}" `);
-const DATA = { P, W, H, AZ, EL, head: HEAD, ns: NS, RB, units: UNITS.map((u) => ({ l: u.l, letter: u.letter, odd: u.odd, zc: u.zc, chanP: u.chanP, rearP: u.rearP || null, noz: u.noz })), ends: ENDS, links: LINKS };
+const cssPersona = LIBRO ? `<style>${(await import(join(HERE, "../persona.mjs"))).CSS_PERSONA}</style>` : "";
+const svg = k.figureSvg({ width: W, height: H, label, body: [`${cssPersona}<g class="hx-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="hxSvg" data-head="${HEAD}" data-ns="${NS}" `);
+const DATA = { P, W, H, AZ, EL, head: HEAD, ns: NS, RB, units: UNITS.map((u) => ({ l: u.l, letter: u.letter, odd: u.odd, zc: u.zc, chanP: u.chanP, rearP: u.rearP || null, noz: u.noz })), ends: ENDS, links: LINKS, ...(LIBRO ? { anclas: ANCLAS } : {}) };
 const tag = `${HEAD}-${NS}`;
-writeFileSync(join(HERE, "out", `tc-${tag}.svg`), svg);
-writeFileSync(join(HERE, "out", `tc-${tag}.json`), JSON.stringify(DATA));
+writeFileSync(join(HERE, "out", `tc-${tag}${SUF}.svg`), svg);
+writeFileSync(join(HERE, "out", `tc-${tag}${SUF}.json`), JSON.stringify(DATA));
 writeJs();
-writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Intercambiador " + tag, theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "hx.css"), "utf8")}</style><div class="iso-stage" id="hxFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar HX_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
+writeFileSync(LIBRO ? join(HERE, "out", `preview-${tag}-libro.html`) : join(HERE, "preview.html"), k.pageHtml({ title: "Intercambiador " + tag, theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "hx.css"), "utf8")}</style><div class="iso-stage" id="hxFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar HX_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
 console.log(tag, "items", R_.items.length, "scale", G.scaleOf(P).toFixed(3), "svg", svg.length);
 if (!FAST) A.auditOrExit(R_, P, {});

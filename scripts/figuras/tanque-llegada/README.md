@@ -52,6 +52,11 @@ translúcida.
 `SHIFT` = 5,95 m, con 350 mm de aire entre las dos partes. Las columnas, los largueros, las barras de la jaula y el
 tubo del rebose terminan en el corte; arriba, las columnas cuentan como apoyo (`ground`) en el audit.
 
+**La persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie en el piso al pie de la escalera, por
+fuera de la jaula y mirando hacia la escalera, con una sombra corta (`TL.persona` en `geo.mjs`, medida del libro). Va
+en el tramo de abajo, subido `SHIFT` como el piso, y la cabeza pasa el corte de la estructura (llega 20 cm por encima del arranque del
+tramo de arriba); por eso va donde arriba no hay nada. La vista del libro la rotula «Persona de 1,75 m».
+
 **El audit en centímetros.** Como en el tanque agitado, `cm()` pasa cada forma registrada a centímetros y el audit
 recibe la misma cámara con la escala por 10 (`PA`).
 

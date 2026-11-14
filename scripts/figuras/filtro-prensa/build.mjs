@@ -34,6 +34,11 @@ if (process.argv.includes("--js")) {
 }
 const W = 680, H = 400, AZ = +(process.env.AZ || 70), EL = +(process.env.EL || 26);
 const FAST = process.argv.includes("--fast");
+// --libro: la vista quieta del libro, con la persona de referencia (../persona.mjs) junto al cilindro. Escribe solo en
+// out/libro/ (preview.html y press_data.json, que lee libro.mjs); lo del explorador (out/fig.*, preview.html,
+// press_data.json) no cambia. La cámara es la misma: la persona queda fuera del marco del explorador.
+const LIBRO = process.argv.includes("--libro");
+const { personaDePie, CSS_PERSONA } = LIBRO ? await import(join(HERE, "../persona.mjs")) : {};
 
 /* ---------- medidas ---------- */
 const NPL = 8, PT = 6.7, DEPTH = 3.2, POCK = DEPTH / 2, WEB = PT - DEPTH;
@@ -226,6 +231,16 @@ const HOSE_TOP = [[PK.x0 + 6, -20, 31], [PK.x0 + 12, -20, 31]];
 const hose = (name, x, top, zmid) => { const tip = PORT_TIP(x); tubeItems("frame", name, G.fillet([tip, G.add3(tip, G.mul3(PD, 3)), [x, -20, zmid], [top[0], -20, zmid - 6], top], 6, 14, { P, tube: 1 }), 1, { tone: "hi", maxLength: 20 }); };
 hose("hose.a", PORTS[0], HOSE_TOP[0], 52);
 hose("hose.b", PORTS[1], HOSE_TOP[1], 58);
+// la persona de referencia (solo en el libro): 1,75 m, de pie en el piso a la derecha del cilindro y de la central
+// hidráulica, donde se abre y se cierra la prensa, mirando hacia ella
+const PERSONA = { pie: [212, -26, 0], rumbo: 160 };
+let ANCLA_PERSONA = null;
+if (LIBRO) {
+  const per = personaDePie({ P, pie: PERSONA.pie, rumbo: PERSONA.rumbo, mm: 0.1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("frame", "persona", per.ref, per.svg, per.shapes);
+  ANCLA_PERSONA = per.anclas.CABEZA;
+}
 
 /* ====================================================================
    3 · tolva bajo las placas (media sección)
@@ -364,20 +379,22 @@ const groups = R.items.map((item, index) => {
 const walls = [];
 for (let j = 0; j <= NPL; j++) for (const x of [wallL(j) - 0.3, wallR(j) + 0.3]) walls.push(path3([[x, 0, ZR1 - 1.2], [x, 0, ZF + RF]]));
 const flows = `<g class="fp-flows"><path data-live="flow.walls" class="fp-flow" d="${walls.join("")}"/><path data-live="flow.drain" class="fp-flow" d="${path3([[XFP - 0.3, -0.9, ZF], [0, -0.9, ZF]])}"/><path data-live="flow.eye" class="fp-flow fp-feed" d="${path3([[0, -1.8, ZC], [XFP - 0.3, -1.8, ZC]])}"/></g>`;
-const svg = k.figureSvg({ width: W, height: H, label: "Filtro prensa de placas en media sección", body: [`<g class="fp-items">${groups.join("")}</g>`, flows] });
-writeFileSync(join(HERE, "press_svg.html"), svg);
+const svg = k.figureSvg({ width: W, height: H, label: "Filtro prensa de placas en media sección", body: [...(LIBRO ? [`<style>${CSS_PERSONA}</style>`] : []), `<g class="fp-items">${groups.join("")}</g>`, flows] });
+const OUTL = join(HERE, "out", "libro");
+if (LIBRO) (await import("node:fs")).mkdirSync(OUTL, { recursive: true });
+else writeFileSync(join(HERE, "press_svg.html"), svg);
 const FPCSS = readFileSync(join(HERE, "fp.css"), "utf8");
 const LIVE = readFileSync(join(HERE, "live.js"), "utf8") + readFileSync(join(HERE, "drive_test.js"), "utf8").replace("__FPCSS__", JSON.stringify(FPCSS));
 const CROP = (() => { const pts = [[-21, 0, 140], [-21, 0, 40], [XFB + 12, 0, 40], [XFB + 12, -50, 140], [0, -50, 140], [XFB + 12, 0, 140], [0, -30, 30], [XFB + 12, -30, 30]].map(at); const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]); return [Math.min(...xs) - 4, Math.min(...ys) - 4, Math.max(...xs) - Math.min(...xs) + 8, Math.max(...ys) - Math.min(...ys) + 8].map((v) => +v.toFixed(1)); })();
-const DATA = { CROP, EX: k.axisVector(P, [1, 0, 0]), EZ: k.axisVector(P, [0, 0, 1]), HOP_FLOOR: BELT_TOP, BELT: [CV.x0, CV.x1], SIGHT: { ...SIGHT, top: at([SIGHT.x, SIGHT.y, SIGHT.z1]), bot: at([SIGHT.x, SIGHT.y, SIGHT.z0]) }, GMAX, P, V: R.V, W, H, NPL, PT, WEB, POCK, YR, ZR0, ZR1, ZC, RC, ZF, RF, XH, XFP, X0, GAP, TRAVEL, walls: Array.from({ length: NPL + 1 }, (_, j) => [wallL(j), wallR(j)]), rides: Array.from({ length: NPL + 1 }, (_, j) => [rideL(j), rideR(j)]), pieces: PIECES, stagger: STAGGER, spring: SPRING, webs: Array.from({ length: NPL }, (_, i) => webX(i)) };
+const DATA = { ...(LIBRO ? { PERSONA: ANCLA_PERSONA } : {}), CROP, EX: k.axisVector(P, [1, 0, 0]), EZ: k.axisVector(P, [0, 0, 1]), HOP_FLOOR: BELT_TOP, BELT: [CV.x0, CV.x1], SIGHT: { ...SIGHT, top: at([SIGHT.x, SIGHT.y, SIGHT.z1]), bot: at([SIGHT.x, SIGHT.y, SIGHT.z0]) }, GMAX, P, V: R.V, W, H, NPL, PT, WEB, POCK, YR, ZR0, ZR1, ZC, RC, ZF, RF, XH, XFP, X0, GAP, TRAVEL, walls: Array.from({ length: NPL + 1 }, (_, j) => [wallL(j), wallR(j)]), rides: Array.from({ length: NPL + 1 }, (_, j) => [rideL(j), rideR(j)]), pieces: PIECES, stagger: STAGGER, spring: SPRING, webs: Array.from({ length: NPL }, (_, i) => webX(i)) };
 const xsrc = readFileSync(join(HERE, "xprism.mjs"), "utf8").replace(/^export /gm, "");
-writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Filtro prensa", theme: "light", width: 980, body: `<div class="iso-stage">${svg}</div>`, script: xsrc + "\nconst D=" + JSON.stringify(DATA) + ";\n" + LIVE }));
-writeFileSync(join(HERE, "press_data.json"), JSON.stringify(DATA));
+writeFileSync(join(LIBRO ? OUTL : HERE, "preview.html"), k.pageHtml({ title: "Filtro prensa", theme: "light", width: 980, body: `<div class="iso-stage">${svg}</div>`, script: xsrc + "\nconst D=" + JSON.stringify(DATA) + ";\n" + LIVE }));
+writeFileSync(join(LIBRO ? OUTL : HERE, "press_data.json"), JSON.stringify(DATA));
 // salidas para el explorador
 
 console.log("items", R.items.length, "scale", KS.toFixed(3));
 if (!FAST) A.auditOrExit(R, P, {});
-{
+if (!LIBRO) {
   const { mkdirSync } = await import("node:fs");
   mkdirSync(join(HERE, "out"), { recursive: true });
   writeFileSync(join(HERE, "out", "fig.svg"), svg.replace("<svg ", '<svg id="fpSvg" '));

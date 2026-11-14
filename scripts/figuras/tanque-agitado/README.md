@@ -33,6 +33,10 @@ inoxidable). Todo va a escala real, en milímetros (`geo.mjs`):
   todo lo que queda bajo el nivel, unos trozos de cáscara y las flechas del patrón de flujo en un plano justo detrás
   del corte: dos lazos, uno por turbina, como dan dos turbinas inclinadas en un tanque alto (Hemrajani y Tatterson,
   p. 367). Por dentro, sobre el nivel, la tapa, la envolvente y el eje llevan el tono del vidrio (`ta-glass`).
+- **la persona de referencia** (`../persona.mjs`): un maniquí de 1,75 m de pie en el piso, a la derecha del tanque y
+  un poco hacia el lector, fuera de las patas y bajo la salida de condensado, mirando hacia el tanque, con una sombra
+  corta (`TQ.persona` en `geo.mjs`, medida del libro). Su rótulo en el libro es «Persona de 1,75 m», y en la edición en
+  inglés lo traduce el diccionario de `en/herramientas/figuras-14.mjs`.
 
 El corte quita lo que mira al lector por encima de la línea de tangencia del fondo (y > 0, z > zt): el fondo queda
 entero y el resto se ve por el plano y = 0. La envolvente, la tapa, la chaqueta y la boquilla del agitador se ven
@@ -69,4 +73,4 @@ pantalla y quién va delante. `TA_STEP=0.5` hace la rejilla del orden más grues
 En el capítulo se incluye con `{{< include figuras/agitacion/_tanque-agitado.qmd >}}` dentro de un bloque
 `::: {#fig-tanque-agitado}`; el CSS de las piezas es el de siempre (`estilo/anatomia.css`).
 
-**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. `ta-ss` y `ta-trim` son acero; `ta-glass`, vidrio; `ta-drive`, pintado; `ta-cast` y `ta-lever`, fundición; `ta-sub` y el agua (`ta-liq`), agua; la cáscara (`ta-peel`), cáscara; `ta-cut`, el corte del acero; `ta-bore`, hueco, y las flechas del flujo, el azul de la base. Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.
+**Colores en el libro.** La vista del libro no lleva los tonos del dibujo sino los de la paleta del libro (`estilo/paleta.json`, sección `isometricas`, en el repositorio del libro), la misma de todas sus figuras isométricas: `libro.mjs` la pasa por `../paleta-libro.mjs`, que le da a cada clase el tono de su material. `ta-ss` y `ta-trim` son acero; `ta-glass`, vidrio; `ta-drive`, pintado; `ta-cast` y `ta-lever`, fundición; `ta-sub` y el agua (`ta-liq`), agua; la cáscara (`ta-peel`), cáscara; `ta-cut`, el corte del acero; `ta-bore`, hueco; las flechas del flujo, el azul de la base, y `ps-persona`, el material «persona». Si cambia un color de `paleta.json`, `node ../paleta-libro.mjs` vuelve a pintar las vistas del libro sin rehacer el dibujo.

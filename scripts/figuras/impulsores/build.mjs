@@ -20,6 +20,7 @@ const G = await import(KIT + "/kit/lathe.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { manoEnBorde, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 
 export const IMPS = ["helice", "pbt", "hidrofoil", "rushton", "paleta", "ancla", "cinta"];
 const argImp = (process.argv.find((a) => a.startsWith("--imp=")) || "--imp=all").slice(6);
@@ -42,6 +43,43 @@ const pth1 = (pts) => pts.map(([x, y], i) => (i ? "L" : "M") + r10(x) + " " + r1
 const BANDS = [0, 0.2, 0.42, 0.62];
 const BAND = (s) => { let t = 0; while (t < BANDS.length && s >= BANDS[t]) t++; return t; };
 
+/* ---------- la mano de referencia (geo.mjs, MANO) ----------
+   Una mano derecha de adulto que llega desde atrás y apoya las yemas en el borde (manoEnBorde de ../persona.mjs): en
+   las turbinas, en la punta de la pala de atrás más cercana al ángulo th (grados desde el punto de atrás hacia la
+   derecha); en las de pared, en el borde de arriba del tanque. Lo que tocan los dedos es el dibujo mismo: el apoyo es la
+   distancia a las formas ya registradas de la figura (las del audit), así cada dedo se dobla hasta tocar la pala o el
+   canto y el que no la alcanza queda suelto. El antebrazo baja por detrás, oculto por la mano. */
+function manoDe(name, P, cx) {
+  const M = GEO.MANO[name], pared = name === "ancla" || name === "cinta";
+  const az = (pared ? GEO[name === "ancla" ? "ANCLA" : "CINTA"].AZ : GEO.COMUN.AZ) * D2R;
+  const Rs = [Math.sin(az), -Math.cos(az), 0], Vh = [Math.cos(az), Math.sin(az), 0];
+  const enDir = (th) => add3(mul3(Vh, -Math.cos(th * D2R)), mul3(Rs, Math.sin(th * D2R)));
+  // sin cx (para la cámara) el apoyo es el plano de z del borde
+  const U = cx ? cx.U : 1, formas = cx ? cx.R_.items.flatMap((it) => it.shapes || []) : [];
+  const apoyo = cx ? (p) => { const q = p.map((v) => v * U); let d = Infinity; for (const sh of formas) { const v = A.sdf(sh, q); if (v < d) d = v; } return d / U; } : null;
+  let th = M.th, r = M.r, z = M.z;
+  if (!pared) {
+    // la pala de atrás más cercana a th: el ángulo donde hay pala a r = 0,9 R, y en él, la punta y la cara de arriba
+    const hay = (t, rr) => { const dd = enDir(t); for (let zz = -90; zz <= 90; zz += 3) if (apoyo([rr * dd[0], rr * dd[1], zz]) < 0) return true; return false; };
+    let mejor = null;
+    for (let t = -180; t <= 180; t += 1) if (hay(t, 0.9 * GEO.R) && (mejor === null || Math.abs(t - M.th) < Math.abs(mejor - M.th))) mejor = t;
+    th = mejor ?? M.th;
+    // el centro de la pala en ese radio (entre sus dos bordes) y su punta
+    const lados = []; for (let t = th - 30; t <= th + 30; t += 0.5) if (hay(t, 0.9 * GEO.R)) lados.push(t);
+    th = (Math.min(...lados) + Math.max(...lados)) / 2;
+    const dd = enDir(th);
+    r = 0.9 * GEO.R; while (r < GEO.R + 20 && hay(th, r + 1)) r += 1;
+    r -= M.atras ?? 30;
+    z = -90; for (let zz = 90; zz >= -90; zz -= 0.5) if (apoyo([r * dd[0], r * dd[1], zz]) < 0) { z = zz; break; }
+  }
+  const dir = enDir(th);
+  if (process.env.IM_MANO) console.log(name, "mano en th", th.toFixed(1), "r", r, "z", z);
+  // en las turbinas la mano cruza el canto de la pala de atrás hacia adelante (perpendicular a la pala, hacia el
+  // lector); en las de pared, el borde del tanque hacia adentro
+  const hacia = pared ? mul3(dir, -1) : (() => { const tg = [-dir[1], dir[0], 0]; return dot3(tg, Vh) > 0 ? tg : mul3(tg, -1); })();
+  return manoEnBorde({ P, borde: [r * dir[0], r * dir[1], z], hacia, lado: M.lado || "der", mm: 1, adentro: M.adentro, alto: M.alto, inclina: M.inclina, gira: M.gira ?? 40, apoyo, antebrazoAparte: !!M.aparte });
+}
+
 /* ---------- las dos cámaras: la de las turbinas y la de las de pared ---------- */
 const WD = 600, HD = 500;               // el área del dibujo; libro.mjs le agrega los rótulos a los lados
 function camTurb() {
@@ -50,11 +88,11 @@ function camTurb() {
   ext.push([0, 0, GEO.COMUN.sh.top + 4], [30, 0, GEO.COMUN.sh.top], [-30, 0, GEO.COMUN.sh.top], [0, 0, -118]);
   return k.fitProjection(ext, WD, HD, { pad: 8, azimuth: AZ, elevation: EL });
 }
-function camPared(AZ, EL) {
+function camPared(AZ, EL, mas = []) {
   const T = GEO.TANQUE, ext = [];
   for (let d = 0; d < 360; d += 10) for (const z of [0, T.top]) ext.push([(T.Rt + T.w) * Math.cos(d * D2R), (T.Rt + T.w) * Math.sin(d * D2R), z]);
   for (let d = 0; d < 360; d += 10) ext.push([(T.Rt + T.w) * 0.7 * Math.cos(d * D2R), (T.Rt + T.w) * 0.7 * Math.sin(d * D2R), -(T.hd + T.w) * 0.72]);
-  ext.push([0, 0, -T.hd - T.w], [0, 0, GEO.ANCLA.sh.top + 4], [45, 0, GEO.ANCLA.sh.top]);
+  ext.push([0, 0, -T.hd - T.w], [0, 0, GEO.ANCLA.sh.top + 4], [45, 0, GEO.ANCLA.sh.top], ...mas);
   return k.fitProjection(ext, WD, HD, { pad: 8, azimuth: AZ, elevation: EL });
 }
 
@@ -816,6 +854,7 @@ const CSS = `.im-ss{--anatomy-paper:#eef0f2;--anatomy-face:#eef0f2;--anatomy-top
 .im-gh{--anatomy-paper:#f3f4f5;--anatomy-face:#f3f4f5;--anatomy-top:#f8f9f9;--anatomy-shade-0:#e1e4e7;--anatomy-shade-1:#e6e8eb;--anatomy-shade-2:#eaecee;--anatomy-shade-3:#eef0f1}
 .im-cut{--anatomy-paper:#cfd4d9;--anatomy-face:#cfd4d9;--anatomy-top:#cfd4d9;--anatomy-shade-0:#cfd4d9;--anatomy-shade-1:#cfd4d9;--anatomy-shade-2:#cfd4d9;--anatomy-shade-3:#cfd4d9}
 .im-bore{fill:#8f99a3;stroke:#6f7880;stroke-width:.4px}
+${CSS_PERSONA}
 .im-sock{fill:#5d666e;stroke:none}`;
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {
@@ -855,9 +894,21 @@ const results = [];
 for (const name of WHICH) {
   const t0 = Date.now();
   const pared = name === "ancla" || name === "cinta";
-  const P = pared ? camPared(GEO[name === "ancla" ? "ANCLA" : "CINTA"].AZ, GEO[name === "ancla" ? "ANCLA" : "CINTA"].EL) : PTURB;
+  // en las de pared la cámara incluye la mano (armada con la cámara sin ella y el plano del borde como apoyo)
+  const camP = pared && ((mas) => camPared(GEO[name === "ancla" ? "ANCLA" : "CINTA"].AZ, GEO[name === "ancla" ? "ANCLA" : "CINTA"].EL, mas));
+  const P = pared ? camP(manoDe(name, camP(), null).pts) : PTURB;
   const cx = contexto(P, pared ? 0.1 : 0.25, name);
   BUILD[name](cx);
+  // la mano de referencia, con las yemas en la pala o en el borde del tanque (../persona.mjs): una sola pieza
+  {
+    const m = manoDe(name, P, cx);
+    const fuera = m.pts.map((p) => k.iso(p, P)).filter(([x, y]) => x < 0 || x > WD || y < 0 || y > HD).length;
+    if (fuera) console.log(`${name}: ${fuera} puntos de la mano fuera del cuadro`);
+    m.shapes.forEach((sh) => cx.record(sh));
+    cx.put("mano", m.ref, m.svg, m.shapes);
+    for (const q of m.aparte) { q.shapes.forEach((sh) => cx.record(sh)); cx.put(q.name, q.ref, q.svg, q.shapes); }
+    cx.ANCLAS.MANO = m.anclas.MANO;
+  }
   const R_ = cx.R_, PA = cx.PA;
   if (process.env.IM_PIX) {
     // depuración: qué forma de cada pieza corta el rayo de ese punto de la pantalla, y dónde

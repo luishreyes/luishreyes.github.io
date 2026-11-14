@@ -204,9 +204,13 @@ async function lamina() {
       nuevas.set(el, fuera);
     }
     quitar.forEach((el) => el.remove());
+    const decls = new Map([...clases].map(([d, n]) => [n, d]));
     for (const [el, fuera] of nuevas) {
       for (const a of [...el.attributes]) if (a.name === 'class' || a.name.startsWith('data-') || a.name.startsWith('aria-') || a.name === 'role' || a.name === 'fill-rule' || a.name === 'style') el.removeAttribute(a.name);
-      if (fuera.length) el.setAttribute('class', fuera.join(' '));
+      // lo de defs (las arvejas que se repiten con <use>) lleva el estilo en línea: Chromium no aplica a la copia de un
+      // <use> una regla con antecesor (.cgo .cN), y las arvejas salían negras en el PDF
+      if (fuera.length && el.closest('defs')) el.setAttribute('style', fuera.map((n) => decls.get(n)).join(';'));
+      else if (fuera.length) el.setAttribute('class', fuera.join(' '));
     }
     svg.querySelectorAll('style').forEach((st) => st.remove());
     return { cuerpo: svg.innerHTML, css: [...clases] };
@@ -217,6 +221,7 @@ async function lamina() {
   // puntos de arvejas (trazos de largo cero con punta redonda) conservan su ancho, que es su diámetro
   const ancho = (decl) => (/stroke-linecap:round/.test(decl) && !/stroke-linejoin/.test(decl) ? decl : decl.replace(/stroke-width:([\d.]+)/, (_, w) => `stroke-width:${Math.round(((+w * TRAZO) / (s * 0.8)) * 1000) / 1000}`));
   const css = res.css.map(([decl, n]) => `.cgo .${n}{${ancho(hex(decl))}}`).join('');
+  res.cuerpo = res.cuerpo.replace(/ style="([^"]*)"/g, (_, decl) => ` style="${ancho(hex(decl.replace(/&quot;/g, "'")))}"`);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" class="cgo" width="${ANCHO}pt" height="${ALTO}pt" viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${DESCRIPCION_EN}">`
     + `<style>${css}</style>${res.cuerpo}</svg>\n`;
   mkdirSync(dirname(SALIDA), { recursive: true });

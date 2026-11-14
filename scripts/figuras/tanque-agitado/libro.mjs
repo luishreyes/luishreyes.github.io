@@ -61,6 +61,7 @@ const RS = [
   ['DEFLECTOR', 'der', 'Bafle de aleta'],
   ['CHAQ_IN', 'der', 'Entrada de vapor a la camisa'],
   ['CHAQ_OUT', 'der', 'Salida de condensado'],
+  ['PERSONA', 'der', 'Persona de 1,75 m'],
 ];
 const xIzq = minX - 24, xDer = maxX + 24;
 const lados = { izq: [], der: [] };

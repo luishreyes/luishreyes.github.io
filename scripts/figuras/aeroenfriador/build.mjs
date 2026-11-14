@@ -8,8 +8,11 @@
    cámara y de los anillos de los ventiladores. Lo vivo (los tubos con la
    temperatura de cada paso, las aspas que giran y el aire que sube) lo
    pinta la página con el perfil del explorador.
-   Uso: node build.mjs [--odd] [--audit] [--fast] · --js
+   Uso: node build.mjs [--odd] [--audit] [--fast] [--libro] · --js
    --odd: número impar de pasos (la salida va en el cabezal de atrás).
+   --libro: la vista del libro (capítulo 22), con la persona de referencia de 1,75 m (../persona.mjs) de pie junto a la
+   estructura, y las anclas de los rótulos; escribe aparte out/aero-{par,impar}-libro.svg y .json, que lee libro.mjs.
+   Sin --libro el SVG del explorador sale igual que siempre (los simuladores no llevan la persona).
    Unidades: 1 = 1 cm. z hacia arriba; los tubos a lo largo de y.
    ==================================================================== */
 import { writeFileSync, readFileSync, mkdirSync } from "node:fs";
@@ -24,6 +27,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const FAST = process.argv.includes("--fast"), ODD = process.argv.includes("--odd"), TAG = ODD ? "impar" : "par";
+const LIBRO = process.argv.includes("--libro"), SUF = LIBRO ? "-libro" : "";
 const strip = (n) => readFileSync(join(HERE, n), "utf8").replace(/^export /gm, "");
 mkdirSync(join(HERE, "out"), { recursive: true });
 const writeJs = () => {
@@ -445,17 +449,51 @@ AC.fan.y.forEach((yf, f) => {
   put(`air.in${f}.fr`, [14, yf, 114], "", [record(A.prism(FZ, arcRing(3, 40, SPLIT, SPLIT + 180), 106, 125, { name: `air.in${f}.fr`, ground: true }))], { live: true });
 });
 
+/* ====================================================================
+   6 · solo en la vista del libro (--libro): la persona de referencia y las anclas de los rótulos
+   ==================================================================== */
+// la persona: 1,75 m, de pie en el piso junto a la columna de atrás, por fuera de la estructura (bajo la cámara no
+// cabe: los anillos de los ventiladores bajan a 1,26 m); mira hacia el aeroenfriador (rumbo en grados desde +x hacia
+// +y). Va aquí y no en geo.mjs, que también corre en la página del explorador. Medida del libro.
+const PERSONA = { x: 20, y: -70, rumbo: 110 };
+let ANCLAS = null;
+if (LIBRO) {
+  const { personaDePie } = await import(join(HERE, "../persona.mjs"));
+  const PS = process.env.AC_PER ? Object.fromEntries(["x", "y", "rumbo"].map((kk, i) => [kk, Number(process.env.AC_PER.split(",")[i])])) : PERSONA;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 0.1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  // las anclas, en cm (la vista del libro las proyecta con P); el ventilador y el motor, los de adelante (el ventilador,
+  // en el aspa que va hacia atrás, la que se ve por la boca del anillo; la cámara, en su piso, entre los dos ventiladores)
+  const yf = AC.fan.y[1], M = AC.motor, a55 = (55 * Math.PI) / 180;
+  ANCLAS = {
+    PERSONA: per.anclas.PECHO, CABEZA: per.anclas.CABEZA,
+    HAZ: [6, L * 0.55, ZT],
+    CAB_DEL: [-24, L + HD.dy, (HD.z0 + HD.z1) / 2 - 3],
+    CAB_TRAS: [HD.x, -HD.dy / 2, HD.z1 - 6],
+    BOQ_ENT: [0, ENDS.pIn[1], ENDS.pIn[2]],
+    BOQ_SAL: [0, ENDS.pOut[1], ENDS.pOut[2]],
+    VENTILADOR: [0, yf - 28, AC.fan.z],
+    ANILLO: [FR * Math.sin(a55), yf + FR * Math.cos(a55), (AC.fan.ring[0] + AC.fan.ring[1]) / 2],
+    MOTOR: [M.r * Math.cos(1.75), yf + M.r * Math.sin(1.75), (M.z0 + M.z1) / 2],
+    CAMARA: [35, 165, ZF + 0.6],
+    ESTRUCTURA: [CX + CW, YC[1], 60],
+    AIRE_ENT: [0, yf, 108], AIRE_SAL: [0, L * 0.35, ZT + 30],
+  };
+}
+
 /* ---------- orden y salida ---------- */
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
 R_.items.forEach((it) => { if (it.live) it.svg = `<g data-live="${it.name}"></g>`; });
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 const label = "Aeroenfriador de tiro forzado en isométrico: un haz de cuatro filas de tubos aleteados entre dos cabezales de tapones, sobre la cámara con dos ventiladores axiales y sus motores, en una estructura de columnas y vigas; sin el bastidor del haz del lado del lector ni la mitad de adelante de la cámara";
-const svg = k.figureSvg({ width: W, height: H, label, body: [`<g class="ac-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="acSvg" `);
-const DATA = { P, W, H, L, sc: G.scaleOf(P), odd: ODD, ends: ENDS };
-writeFileSync(join(HERE, "out", `aero-${TAG}.svg`), svg);
-writeFileSync(join(HERE, "out", `aero-${TAG}.json`), JSON.stringify(DATA));
+const cssPersona = LIBRO ? `<style>${(await import(join(HERE, "../persona.mjs"))).CSS_PERSONA}</style>` : "";
+const svg = k.figureSvg({ width: W, height: H, label, body: [`${cssPersona}<g class="ac-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="acSvg" `);
+const DATA = { P, W, H, L, sc: G.scaleOf(P), odd: ODD, ends: ENDS, ...(LIBRO ? { anclas: ANCLAS } : {}) };
+writeFileSync(join(HERE, "out", `aero-${TAG}${SUF}.svg`), svg);
+writeFileSync(join(HERE, "out", `aero-${TAG}${SUF}.json`), JSON.stringify(DATA));
 writeJs();
-writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Aeroenfriador", theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "ac.css"), "utf8")}</style><div class="iso-stage" id="acFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar AC_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
+writeFileSync(LIBRO ? join(HERE, "out", `preview-${TAG}-libro.html`) : join(HERE, "preview.html"), k.pageHtml({ title: "Aeroenfriador", theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "ac.css"), "utf8")}</style><div class="iso-stage" id="acFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar AC_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
 console.log("aero", TAG, "items", R_.items.length, "scale", G.scaleOf(P).toFixed(3), "svg", svg.length);
 if (!FAST) A.auditOrExit(R_, P, {});

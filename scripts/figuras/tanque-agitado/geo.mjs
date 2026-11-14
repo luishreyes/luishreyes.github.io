@@ -32,6 +32,9 @@ export const TQ = {
   mot: { z: 5835, r: 118, x0: 210, x1: 228, x2: 530, x3: 640, rc: 122 },                     // motor
   legs: { r: 900, a: 110, rp: 84, plate: 150, pt: 25 },                   // patas
   out: { r: 57, z1: 540, fl: 114, ft: 22 },                               // salida de fondo (DN 100)
+  /* la persona de referencia (../persona.mjs, 1,75 m; medida del libro): de pie en el piso, a la derecha del tanque y
+     un poco hacia el lector, fuera de las patas y bajo la salida de condensado, mirando hacia el frente del tanque */
+  persona: { x: 1920, y: 340, rumbo: 165 },
 };
 export const RO = TQ.R + TQ.tw;
 const sq = (v) => Math.sqrt(Math.max(0, v));
