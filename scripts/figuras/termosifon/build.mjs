@@ -305,11 +305,19 @@ function liq(name, polyXZ, { cls = "ts-liq", extra = "", y0 = -0.4, line = "" } 
 const rectXZ = (x0, x1, z0, z1) => [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
 
 /* ---------- los tubos de afuera (vapor, condensado, venteo, vinaza): tubos del kit con sus codos ---------- */
-function tubeItems(name, route, r, { cls = "ts-cs", owner = name, gaps = [], ends = [true, true], maxLength = 300, caps = true, breaks = [] } = {}) {
+// la forma de un trozo, sin los puntos casi repetidos (un tramo de una fracción de milímetro, con su tapa plana torcida,
+// sobresale del trozo tanto como su radio)
+function tubeShape(part) {
+  const pts = [], rr = [];
+  part.points.forEach((q, i) => { if (!pts.length || G.len3(G.sub3(q, pts[pts.length - 1])) > 1 || i === part.points.length - 1) { if (pts.length > 1 && i === part.points.length - 1 && G.len3(G.sub3(q, pts[pts.length - 1])) <= 1) { pts.pop(); rr.pop(); } pts.push(q); rr.push(part.radii[i]); } });
+  return A.tube(pts, rr);
+}
+function tubeItems(name, route, r, { cls = "ts-cs", owner = name, gaps = [], ends = [true, true], maxLength = 300, caps = true, breaks = [], spacing = 0 } = {}) {
   R_.route(name, route.map((p) => p.map((v) => v * U)), r * U, { owner: name, gaps: gaps.map(([a, b]) => [a * U, b * U]), ends, piece: "frame", move: [0, 0, 0], ride: "frame" });
-  tubePieces(route, r, P, { maxLength, spacing: Math.max(2, Math.min(40, r * 0.5)), gaps, caps, breaks }).forEach((part, index) => {
+  tubePieces(route, r, P, { maxLength, spacing: spacing || Math.max(2, Math.min(40, r * 0.5)), gaps, caps, breaks }).forEach((part, index) => {
     const svg = tubeSvg(part, { tone: "mid" });
-    R_.put({ piece: "frame", ride: "frame", at: part.mid.map((v) => v * U), svg: wrap(svg, cls), move: [0, 0, 0], name: `${name}:${index}`, route: name, chunk: index, shapes: [cm(A.tube(part.points, part.radii))] });
+    if (process.env.TS_CHUNKS && name === process.env.TS_CHUNKS) { const t = tubeShape(part); console.log(name, index, t.points.length, JSON.stringify(t.points.slice(-3).map((q) => q.map((v) => +v.toFixed(1)))), JSON.stringify(t.points.slice(0, 2).map((q) => q.map((v) => +v.toFixed(1)))), t.radii.slice(-2)); }
+    R_.put({ piece: "frame", ride: "frame", at: part.mid.map((v) => v * U), svg: wrap(svg, cls), move: [0, 0, 0], name: `${name}:${index}`, route: name, chunk: index, shapes: [cm(tubeShape(part))] });
   });
 }
 function route(name, ctl, r, bend, opts = {}) {
@@ -327,13 +335,15 @@ function route(name, ctl, r, bend, opts = {}) {
    ==================================================================== */
 const ZF = FA.cimiento.alto;                                  // la cara de arriba del cimiento
 const RS0 = Rco - FA.t, RS1 = Rco;                            // el faldón, por dentro y por fuera
-const ZSK = Z.tanCol - 5;                                     // el faldón llega al borde recto de la cabeza
+const ZSK = Z.tanCol;                                         // el faldón llega a la tangente de la cabeza
 const SLV = TS.manga;
+// la cara de arriba del faldón sigue la cabeza: por dentro llega a la cara de afuera de la cabeza, por fuera a la tangente
+const zSkIn = Z.tanCol - (CO.R / 2 + CO.t) * Math.sqrt(1 - (RS0 / Rco) ** 2);
 // los huecos del faldón: la manga de la entrada (en el plano del corte), la de la vinaza y la boca de acceso
 const vinXw = -Math.sqrt(RS1 * RS1 - VI.y * VI.y);
-const VS1 = -RS0 + 100;                                       // la cara de adentro de la manga de la vinaza
+const VS1 = -625;                                              // la cara de adentro de la manga de la vinaza
 const holeEntrada = A.disc({ o: [0, 0, ZE], a: XD, u: YD, v: ZD }, RS0 - 200, RS1 + 200, SLV.r + SLV.t, { name: "hueco" });
-const holeVinaza = A.disc({ o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, vinXw - 150, vinXw + 220, VI.ro + 60, { name: "hueco" });
+const holeVinaza = A.disc({ o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, vinXw - 450, -300, VI.ro + 66, { name: "hueco" });
 const AC = FA.acceso;
 const FAC = { o: [0, 0, AC.z], a: radial(AC.phi), u: tang(AC.phi), v: ZD };
 const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
@@ -357,12 +367,15 @@ const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
   }
   // el faldón: de la cara de arriba del anillo hasta la cabeza, con sus huecos
   const zs0 = ZF + AN.t;
-  vert("faldon", 0, ringRZ(RS0, RS1, zs0, ZSK), { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, cut: [holeEntrada, holeVinaza, holeAcceso], noCaps: true, skip: [0, 2] });
+  // en dos tramos (uno solo sería tan esbelto que el audit lo tomaría por una varilla)
+  const ZSM = 1950;
+  vert("faldon", 0, ringRZ(RS0, RS1, zs0, ZSM), { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, cut: [holeEntrada, holeVinaza, holeAcceso], noCaps: true, skip: [0, 2], noEdge: [2, 3] });
+  vert("faldon.arriba", 0, [[RS0, ZSM], [RS1, ZSM], [RS1, ZSK], [RS0, zSkIn]], { cls: "ts-paint", cutCls: "ts-paint-cut", owner: own, cut: [holeEntrada, holeVinaza, holeAcceso], noCaps: true, skip: [0, 2], noEdge: [0, 1] });
   // las caras del corte del faldón: la de la izquierda entera; la de la derecha, partida por la manga de la entrada
   const zh0 = ZE - SLV.r - SLV.t, zh1 = ZE + SLV.r + SLV.t;
-  cap("faldon.corte.izq", rectXZ(-RS1, -RS0, zs0, ZSK), { cls: "ts-paint-cut", owner: own });
+  cap("faldon.corte.izq", [[-RS1, zs0], [-RS0, zs0], [-RS0, zSkIn], [-RS1, ZSK]], { cls: "ts-paint-cut", owner: own });
   cap("faldon.corte.der-abajo", rectXZ(RS0, RS1, zs0, zh0), { cls: "ts-paint-cut", owner: own });
-  cap("faldon.corte.der-arriba", rectXZ(RS0, RS1, zh1, ZSK), { cls: "ts-paint-cut", owner: own });
+  cap("faldon.corte.der-arriba", [[RS0, zh1], [RS1, zh1], [RS1, ZSK], [RS0, zSkIn]], { cls: "ts-paint-cut", owner: own });
   // la soldadura del faldón con la cabeza: un cordón por dentro
   ANCH.FALDON = [-RS0 * Math.cos(30 * D2R), -RS0 * Math.sin(30 * D2R), 1900];
   // la manga de la línea de entrada (en el corte) y la de la vinaza (entera)
@@ -372,15 +385,18 @@ const holeAcceso = A.disc(FAC, RS0 - 80, RS1 + 80, AC.r + 8, { name: "hueco" });
      largo de F.u (horizontal). Se registra solo lo que queda dentro del faldón. hole: el radio de lo que se ve por ella;
      afuera: si por ella se ve afuera (la boca de acceso, los respiraderos) */
   const OUTSIDE = A.ring(FV(0), -10, 9000, RS0, 9000, { name: "afuera" });
-  function sleeve(name, F, ro, ri, s1, { afuera = false, ref } = {}) {
+  function sleeve(name, F, ro, ri, s1, { afuera = false, ref, tubo = false } = {}) {
     const start = (t) => -Math.sqrt(Math.max(0, RS0 * RS0 - (G.dot3(F.o, F.u) + ro * Math.cos(t)) ** 2 - 0));
     const svg = S(G.saddleOf(F, ro, start, s1, P), { tone: "mid" });
     const bore = []; for (let i = 0; i < 48; i++) { const t = (i / 48) * TAU; bore.push(pr(G.pointOf(F, s1 + 0.4, ri, t))); }
     const sh = record(A.ring(F, -RS1 - 20, s1, ri, ro, { name, owner: "columna", cut: [OUTSIDE] }));
-    put(name, ref || G.pointOf(F, s1, 0, 0), wrap(svg, "ts-paint") + `<path class="${afuera ? "ts-afuera" : "ts-hueco"}" d="${pth1(bore)}"/>`, [sh]);
+    // con un tubo adentro, el orden se toma de lo que se dibuja: la cara de adentro (con la boca oscura, que tapa lo que
+    // va dentro de la manga) y la mitad de la manga que mira al lector; la otra queda detrás del tubo
+    const shapes = tubo ? [A.disc(F, s1 - 2, s1, ro, {}), A.ring(F, -RS1 - 20, s1, ri, ro, { cut: [OUTSIDE, halfSpaceAt([0, -1, 0], F.o)] })] : [sh];
+    put(name, ref || G.pointOf(F, s1, 0, 0), wrap(svg, "ts-paint") + `<path class="${afuera ? "ts-afuera" : "ts-hueco"}" d="${pth1(bore)}"/>`, shapes);
   }
   // la manga de la vinaza: a lo largo de x (F.u = y, así el desvío es el de la y)
-  sleeve("manga.vinaza", { o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, VI.ro + 60, VI.ro + 50, VS1);
+  sleeve("manga.vinaza", { o: [0, VI.y, VI.z], a: XD, u: YD, v: ZD }, VI.ro + 66, VI.ro + 58, VS1, { tubo: true });
   // la boca de acceso: hacia adentro, en φ = 240°; por ella se ve afuera
   sleeve("boca-acceso", { o: [0, 0, AC.z], a: G.mul3(radial(AC.phi), -1), u: tang(AC.phi), v: ZD }, AC.r + 8, AC.r, -RS0 + 110, { afuera: true });
   ANCH.ACCESO = G.add3([0, 0, AC.z], G.add3(G.mul3(radial(AC.phi), RS0 - 110), [0, 0, -AC.r - 8]));
@@ -965,7 +981,12 @@ function nozzle(name, phi, zc, a, len, flangeR, flangeT, { cls = "ts-cs", owner 
   disc("vinaza.junta", Fz, 3060 - VI.bridaT - 3, 3060 - VI.bridaT, VI.bridaR - 25, { cls: "ts-gasket", owner: own });
   disc("vinaza.brida", Fz, 3060 - 2 * VI.bridaT - 3, 3060 - VI.bridaT - 3, VI.bridaR, { cls: "ts-ss", owner: own });
   const p0 = [VI.x, VI.y, 3060 - 2 * VI.bridaT - 3], c1 = [VI.x, VI.y, VI.z], p1 = [VI.x1, VI.y, VI.z];
-  route("vinaza.tubo", [p0, c1, p1], VI.ro, VI.ro, { cls: "ts-ss", owner: own, breakAt: [(p) => p[0] - VS1, (p) => Math.hypot(p[0], p[1]) - RS1 - 40] });
+  // el codo, de radio 1,5 D, a mano: así el tubo llega recto a la manga, y el trozo se corta en su cara
+  const RBv = 1.5 * VI.ro, arcV = Array.from({ length: 11 }, (_, i) => { const t = (i / 10) * (PI / 2); return [VI.x - RBv + RBv * Math.cos(t), VI.y, VI.z + RBv - RBv * Math.sin(t)]; });
+  const lineV = [p0, ...arcV, p1];
+  const brk = (fn) => { let walked = 0; for (let i = 1; i < lineV.length; i++) { const a = fn(lineV[i - 1]), b = fn(lineV[i]); const L = G.len3(G.sub3(lineV[i], lineV[i - 1])); if (Math.sign(a) !== Math.sign(b)) return walked + (L * a) / (a - b); walked += L; } return null; };
+  tubeItems("vinaza.tubo", lineV, VI.ro, { cls: "ts-ss", owner: own, spacing: 3, breaks: [brk((p) => p[0] - VS1), brk((p) => Math.hypot(p[0], p[1]) - RS1 - 40)] });
+  void c1;
   void 0;
   disc("vinaza.brida-sale", { o: p1, a: XD, u: YD, v: ZD }, -VI.bridaT, 0, VI.bridaR, { cls: "ts-ss", owner: own });
   TS._vinSale = [VI.x1 - 20, VI.y, VI.z];
@@ -1109,6 +1130,16 @@ const XCOTA = (Rco + Xr - RH.bridaR) / 2 + 60;
 if (process.env.TS_SDF) {
   const [nm, ...xyz] = process.env.TS_SDF.split(","); const q = xyz.map(Number).map((v) => v * U);
   for (const it of R_.items.filter((i) => i.name === nm)) for (const sh of it.shapes) console.log(nm, sh.kind, "sdf", A.sdf(sh, q).toFixed(3), "cuts", (sh.cut || []).length, (sh.cut || []).map((c) => c.name + ":" + A.sdf(c, q).toFixed(2)).join(" "));
+  process.exit(0);
+}
+if (process.env.TS_PROBE) {
+  const [sx, sy, ...names] = process.env.TS_PROBE.split(",");
+  const cam = A.cameraBasis(PA), kk = cam.k;
+  for (const nm of names) {
+    const it = R_.items.find((q) => q.name === nm);
+    const base = G.add3(G.mul3(cam.R, (Number(sx) - cam.origin[0]) / kk), G.mul3(cam.D, (Number(sy) - cam.origin[1]) / kk));
+    it.shapes.forEach((sh, si) => { let hit = null; for (let t = 1500; t > -1500; t -= 0.05) { const q = G.add3(base, G.mul3(cam.V, t)); if (A.sdf(sh, q) < 0) { hit = q; break; } } console.log(nm, si, sh.kind, hit ? hit.map((v) => (v / U).toFixed(0)).join(", ") + "  depth " + G.dot3(hit, cam.V).toFixed(2) : "no hit"); });
+  }
   process.exit(0);
 }
 if (process.env.TS_ITEM) {

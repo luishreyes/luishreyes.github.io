@@ -24,7 +24,7 @@ export const TS = {
   boquillaFondo: { cuello: 150 },
   manga: { r: 215, t: 8, largo: 90 },
   // la vinaza que sale del fondo de la columna: una boquilla fuera del eje, que baja dentro del faldón y sale por él
-  vinaza: { ro: 84.15, t: 7.1, x: -480, y: -250, z: 2450, x1: -1700, bridaR: 140, bridaT: 24 },
+  vinaza: { ro: 84.15, t: 7.1, x: -440, y: -230, z: 2450, x1: -1700, bridaR: 140, bridaT: 24 },
   /* el lado del vapor: la entrada arriba de la coraza, la salida del condensado abajo, a la trampa, y el venteo justo
      arriba del condensado, en el extremo frío */
   vapor: { ro: 136.5, phi: -15, z: 280, largo: 380, sube: 1350, bridaR: 203, bridaT: 30 },
