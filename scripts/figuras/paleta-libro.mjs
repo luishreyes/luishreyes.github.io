@@ -119,6 +119,15 @@ export const CLASES = {
   'fa-sd': { fill: 'solido.oscuro' }, 'fa-sk': { fill: 'antracita.cara' },
   '.fa-medio .iso-line[data-tone="mid"]': { stroke: 'tinta-2' }, '.fa-medio .iso-line[data-tone="lo"]': { stroke: 'guia' },
   'fa-flujo': { stroke: 'azul' }, 'fa-flecha': { fill: 'azul' },
+  // el condensador del arrastre, el subenfriador y su estructura (capítulo 23); el florentino lleva sus fl-*
+  ...corte('ca'), 'ca-ss': 'acero', 'ca-in': 'acero/dentro', 'ca-tubo': 'acero', 'ca-pipe': 'acero', 'ca-trim': 'acero',
+  'ca-cast': 'fundicion', 'ca-lever': 'fundicion', 'ca-paint': 'pintado',
+  'ca-bore': { fill: 'hueco.claro' }, 'ca-bore-dk': { fill: 'hueco.oscuro' }, 'ca-tubo-boca': { fill: 'acero.sombras.2', stroke: 'hueco.medio' },
+  'ca-cut-face': { fill: 'acero.sombras.0' }, 'ca-agua-sec': { fill: 'agua.sombras.0', 'fill-opacity': 0.6 },
+  'ca-cond-sec': { fill: 'agua.sombras.0', 'fill-opacity': 0.85 }, 'ca-agua-cara': { fill: 'agua.sombras.0', 'fill-opacity': LIQ },
+  'ca-agua-sup': { fill: 'agua.sombras.0', 'fill-opacity': LIQ_SUP }, 'ca-gota-agua': { fill: 'agua.oscuro' },
+  '.ca-agua .iso-line[data-tone="lo"]': { stroke: 'agua.oscuro' },
+  'ca-vapor': { stroke: 'naranja' }, 'ca-vapor-p': { fill: 'naranja' }, 'ca-agua-flujo': { stroke: 'azul' }, 'ca-agua-flujo-p': { fill: 'azul' },
   // florentino (capítulo 10): agua abajo, aceite arriba
   ...corte('fl'), 'fl-ss': 'acero', 'fl-in': 'acero/dentro', 'fl-pipe': 'acero', 'fl-trim': 'acero', 'fl-cast': 'fundicion',
   'fl-lever': 'fundicion', 'fl-cu': 'cobre', 'fl-tierra': 'caucho', 'fl-glw': 'agua', 'fl-glo': 'aceite',
@@ -311,6 +320,7 @@ export const VISTAS = {
   'bombas/_instalacion': {},
   'bombas/_por-dentro': {},
   'calor-en-equipos/_linea-vapor': {},
+  'condensacion-y-ebullicion/_condensador-arrastre': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
   'filtracion/_prensa-tornillo': {},
   'intercambiadores-de-calor/_aeroenfriador': {},
