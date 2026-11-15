@@ -320,7 +320,11 @@ function ventana(id, zA, zB, r = R) {
 // los anfitriones macizos de las boquillas (no se registran): la coraza y la cámara de abajo
 const SHELL_SOLID = A.body(FE, [[zS0, 0], [zS0, RO], [zS1, RO], [zS1, 0]], { name: "e.shell.macizo" });
 const BON_B_SOLID = A.body(FE, [[zBC, 0], [zBC, RO], [zBF, RO], [zBF, 0]], { name: "e.bonB.macizo" });
-const cwIn = E.cw.in, cwOut = E.cw.out, zCwIn = zS0 + cwIn.dz, zCwOut = zS1 - cwOut.dz, zVent = zBF - E.vent.dz;
+/* el agua sale por el lado contrario a la ventana del último deflector: con un número par de deflectores, a la
+   derecha (el ángulo de geo.mjs); con uno impar, del lado de la entrada (el ángulo reflejado) */
+const OUT_SIDE = -BAF[BAF.length - 1].win;
+const cwIn = E.cw.in, cwOut = OUT_SIDE > 0 ? E.cw.out : { ...E.cw.out, deg: 540 - E.cw.out.deg };
+const zCwIn = zS0 + cwIn.dz, zCwOut = zS1 - cwOut.dz, zVent = zBF - E.vent.dz;
 const nozHole = (deg, z, r) => A.disc({ o: [xE, yE, z], a: dE(deg), u: tE(deg), v: ZD3 }, 0, 1200, r - 1);
 
 /* una pared cilíndrica cortada: la cara de adentro de la mitad de atrás (recortada a la ventana del corte) y las caras
@@ -579,7 +583,7 @@ function flangePair(name, F, s, d, { owner = name } = {}) {
   ], (u, z) => eW(u, -14, z), 6);
   const ctl = [[-R + 30, zS0 + 60]];
   BAF.forEach((b) => { ctl.push([b.win * (R - 70), b.z - 70]); ctl.push([b.win * (R - 60), b.z + 70]); });
-  ctl.push([R - 30, zS1 - 60]);
+  ctl.push([OUT_SIDE * (R - 30), zS1 - 60]);
   arrows([["e.flujo.cw", "ca-agua-flujo", ctl]], (u, z) => eW(u, -0.5, z), 0.3);
 }
 

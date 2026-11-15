@@ -6,7 +6,7 @@ arrastre de vapor, unidos por sus líneas, con la persona de referencia de 1,75 
 - **El condensador**: un tubos y coraza vertical de un paso, con cabezales de bonete y placas de tubos fijas que se
   extienden como bridas, apoyado en dos orejas sobre una estructura de dos columnas con ménsulas. Va cortado por el
   plano vertical de su eje que mira de frente al lector: se ven el haz (las dos filas de adelante, en tramos entre
-  deflectores), los cuatro deflectores segmentados con sus ventanas a un lado y al otro, las placas de tubos (la de
+  deflectores), los seis deflectores segmentados con sus ventanas a un lado y al otro, las placas de tubos (la de
   arriba con las bocas de los tubos), la cámara de arriba con la boquilla del vapor y la placa de choque, y la de abajo
   con el condensado translúcido, su nivel, unas gotas que caen de los tubos y el venteo sobre el nivel, con su válvula.
   Las boquillas del agua de la coraza van abajo a la izquierda y arriba a la derecha. Flechas: el vapor que baja y se

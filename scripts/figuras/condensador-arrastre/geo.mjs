@@ -25,10 +25,10 @@ export const CA = {
     x: -875, y: 300,
     zb: 2600,                                   // cara de abajo de la placa de tubos de abajo
     R: 186.5, tw: 5,                            // coraza: radio interior y pared
-    L: 1829,                                    // largo de los tubos, de cara de afuera a cara de afuera de las placas
+    L: 2438,                                    // largo de los tubos (8 ft), de cara de afuera a cara de afuera de las placas
     ts: 30, RF: 255,                            // placas de tubos (se extienden como bridas): espesor y radio
     tube: { ro: 9.525, ri: 7.875, p: 23.8125, Rb: 180.5 },   // tubos de ¾ in en triángulo; radio del haz
-    baffle: { n: 4, t: 5, sp: 366, cut: 0.25, gap: 1.6 },   // deflectores: número, espesor, espaciado, corte, holgura
+    baffle: { n: 6, t: 5, sp: 348, cut: 0.25, gap: 1.6 },   // deflectores: número, espesor, espaciado, corte, holgura
     bonnet: { flange: 30, cylB: 250, cylT: 200, bolts: { bc: 228, n: 16, af: 30, h: 16 } },
     head: 0.25,                                 // fondos 2:1: profundidad interior = D/4
     noz: { vap: 200, cond: 40, cw: 150, vent: 25 },
@@ -38,10 +38,10 @@ export const CA = {
     level: 165,                                 // nivel del condensado en la cámara de abajo, bajo la brida de la cámara
     imp: { r: 135, t: 6, gap: 52 },             // placa de choque bajo la boquilla del vapor
     lug: { degs: [196, 344], w: 150, h: 180, t: 12 },        // orejas de apoyo
-    stand: { du: 330, n: -520, nArm: -40, top: 3540, col: 100, beam: 100 },   // la estructura: columnas atrás y ménsulas
+    stand: { du: 315, n: -520, nArm: -40, top: 3845, col: 100, beam: 100 },   // la estructura: columnas atrás y ménsulas (las orejas, a media coraza)
     // el detalle: el tubo i de la fila de adelante, a z sobre la placa de abajo, M veces más grande en un círculo de radio
     // R (unidades de la vista); la película se dibuja de film mm
-    detalle: { i: -3, z: 1197, M: 20, R: 80, film: 0.5 },
+    detalle: { i: -3, z: 1537, M: 20, R: 80, film: 0.5 },
   },
   /* el subenfriador de doble tubo: horquillas apiladas a lo largo de x; adelante (x mayor) las bridas, los
      prensaestopas y las curvas del tubo interior; atrás los cabezales de retorno. Las ramas van partidas: se ven sus dos

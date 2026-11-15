@@ -76,7 +76,7 @@ export const PIES_EN = (m) => [`One tube, opened, ×${m}`];
 export const DESCRIPCION = 'El tren de condensación de un arrastre de vapor, en isométrico. ' +
   'Arriba, el condensador: un intercambiador de tubos y coraza vertical, de un paso, cortado por el plano de su eje para ver adentro. ' +
   'El vapor del extractor llega por una línea gruesa desde la izquierda, baja a la cámara de arriba y una placa de choque lo reparte hacia las bocas de los tubos, que se ven en la placa de tubos. ' +
-  'El vapor condensa al bajar por dentro de los tubos; el agua de torre entra a la coraza abajo a la izquierda, sube en zigzag por las ventanas de cuatro deflectores, a la izquierda y a la derecha, y sale arriba a la derecha. ' +
+  'El vapor condensa al bajar por dentro de los tubos; el agua de torre entra a la coraza abajo a la izquierda, sube en zigzag por las ventanas de seis deflectores, a la izquierda y a la derecha, y sale arriba a la derecha. ' +
   'Abajo, la cámara recoge el condensado, con su nivel y unas gotas que caen de los tubos; sobre el nivel sale el venteo de los incondensables, con su válvula. ' +
   'El condensador se apoya en dos orejas sobre una estructura de dos columnas con ménsulas. ' +
   'Del fondo de la cámara, el condensado baja por gravedad al subenfriador, a la izquierda: horquillas de doble tubo apiladas, con los cabezales de retorno atrás y adelante las bridas, los prensaestopas, las curvas del tubo interior y los puentes del ánulo. ' +
@@ -89,7 +89,7 @@ export const DESCRIPCION = 'El tren de condensación de un arrastre de vapor, en
 export const DESCRIPCION_EN = 'The condensing train of a steam distillation, in isometric. ' +
   'At the top, the condenser: a vertical, single-pass shell-and-tube exchanger cut along its axis. ' +
   'The vapor from the extractor arrives through a large line from the left, enters the top channel, and an impingement plate spreads it over the tube inlets in the tubesheet. ' +
-  'The vapor condenses as it flows down inside the tubes; the cooling-tower water enters the shell at the bottom left, rises in a zigzag through the windows of four baffles, and leaves at the top right. ' +
+  'The vapor condenses as it flows down inside the tubes; the cooling-tower water enters the shell at the bottom left, rises in a zigzag through the windows of six baffles, and leaves at the top right. ' +
   'The bottom channel collects the condensate, with its level; above the level, the vent for the noncondensables, with its valve. ' +
   'The condenser rests on two lugs on a two-column frame with brackets. ' +
   'From the bottom of the channel the condensate flows by gravity to the subcooler, on the left: stacked double-pipe hairpins with the return bends at the back and, at the front, the flanges, the packing glands, the inner-pipe bends and the annulus jumpers. ' +

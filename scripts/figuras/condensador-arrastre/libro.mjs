@@ -38,7 +38,9 @@ const estiloDe = (svg) => (svg.match(/<style>([^<]*)<\/style>/) || [, ''])[1];
 // build.mjs), sin los recortes
 function puntos(svg) {
   const out = [];
-  for (const m of svg.replace(/<defs>[\s\S]*?<\/defs>/g, '').matchAll(/ d="M(-?[\d.]+)[ ,]?(-?\.?[\d.]+)((?:[lmz][^"]*)?)"/g)) {
+  // un número puede empezar por el punto y pegarse al anterior («M301.5.9» es 301,5 y 0,9)
+  const N = String.raw`-?(?:\d+(?:\.\d*)?|\.\d+)`;
+  for (const m of svg.replace(/<defs>[\s\S]*?<\/defs>/g, '').matchAll(new RegExp(` d="M(${N})[ ,]?(${N})((?:[lmz][^"]*)?)"`, 'g'))) {
     let x = Number(m[1]), y = Number(m[2]);
     out.push([x, y]);
     const rest = m[3].match(/[lmz]|-?\d*\.?\d+/g) || [];
@@ -55,7 +57,7 @@ function puntos(svg) {
 }
 /* ── la composición: la vista entera, el círculo del detalle y la línea que los une. POS es el centro del círculo, en
    las unidades de la vista entera: a la izquierda del condensador, a la altura del tubo que amplía ── */
-const POS = [Number(process.env.CA_DX || 185), Number(process.env.CA_DY || 362)];
+const POS = [Number(process.env.CA_DX || 185), Number(process.env.CA_DY || 376)];
 const TD = [POS[0] - DD.W / 2, POS[1] - DD.H / 2];
 const MARCA = k.iso(CDET, P), RM = RDET / MDET;
 const COMPOS = (() => {
