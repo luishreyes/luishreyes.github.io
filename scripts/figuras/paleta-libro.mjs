@@ -272,6 +272,7 @@ export const VISTAS = {
       '--fp-slurry': 'suspension.relleno', '--fp-slurry-edge': 'suspension.medio' },
   },
   'los-diagramas-de-ingenieria/_planta-iso': { piezas: PIEZAS.planta },
+  'los-diagramas-de-ingenieria/_v102': {},
   'mezclado/_homogeneizador': {},
   'mezclado/_mezclador-estatico': {
     // build.mjs mezcla el color del ácido con el del agua a lo largo del chorro (grads: mzJ de 0 a 0,12 y mzS de

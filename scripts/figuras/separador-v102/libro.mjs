@@ -6,6 +6,9 @@
 // los colores de la paleta del libro resueltos (sin variables CSS ni la hoja del kit) en un <style> propio y la letra Archivo en cada texto.
 // Los rótulos van en inglés, con su línea y su punto, a los dos lados del dibujo. Chromium (Playwright) resuelve los
 // estilos del kit y mide los textos con la Archivo del libro. Después: node ../en/herramientas/svg-a-pdf.mjs v102.svg.
+//
+// Con --salida LIBRO escribe en cambio la vista del libro web en español (figuras/los-diagramas-de-ingenieria/_v102.qmd),
+// con los nombres de las piezas en español: ver más abajo, «La vista del libro web en español».
 import { createRequire } from 'node:module';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -22,6 +25,92 @@ const KIT = fileURLToPath(new URL('../../../.claude/skills/anatomy', import.meta
 const k = await import(KIT + '/kit/iso-kit.mjs');
 const { P, ANCLAS } = JSON.parse(readFileSync(join(AQUI, 'out/separador_data.json'), 'utf8'));
 const svgFuente = aplicarPaleta(readFileSync(join(AQUI, 'out/fig.svg'), 'utf8'));
+
+/* ── La vista del libro web en español ──────────────────────────────────────────────────────────────
+   node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro
+   escribe figuras/los-diagramas-de-ingenieria/_v102.qmd, como las otras vistas isométricas del libro web: el SVG del
+   kit con sus clases (las pinta estilo/anatomia.css), los colores de la paleta (paleta-libro.mjs, vista
+   «los-diagramas-de-ingenieria/_v102») y los nombres de las piezas en español, con su línea y su punto. No abre
+   Chromium y no toca la vista inglesa, que sigue saliendo sin --salida. */
+if (process.argv.includes('--salida')) {
+  const LIBRO = resolve(arg('--salida'));
+  const DEST = join(LIBRO, 'figuras/los-diagramas-de-ingenieria');
+  const crudo = readFileSync(join(AQUI, 'out/fig.svg'), 'utf8');
+  const r1 = (v) => Math.round(v * 10) / 10;
+  // el contorno del dibujo, de las coordenadas absolutas de sus trazos y de sus círculos
+  const pts = [];
+  for (const m of crudo.matchAll(/ d="([^"]+)"/g)) {
+    const n = m[1].match(/-?\d*\.?\d+/g) || [];
+    for (let i = 0; i + 1 < n.length; i += 2) pts.push([+n[i], +n[i + 1]]);
+  }
+  for (const m of crudo.matchAll(/<circle[^>]*\scx="(-?[\d.]+)"[^>]*\scy="(-?[\d.]+)"[^>]*\sr="([\d.]+)"/g)) {
+    pts.push([+m[1] - +m[3], +m[2] - +m[3]], [+m[1] + +m[3], +m[2] + +m[3]]);
+  }
+  const minX = Math.min(...pts.map((p) => p[0])), maxX = Math.max(...pts.map((p) => p[0]));
+  const minY = Math.min(...pts.map((p) => p[1])), maxY = Math.max(...pts.map((p) => p[1]));
+  const letra = 17, renglon = letra * 1.2, sep = 9, ancho = (t) => t.length * letra * 0.56;
+  // [ancla, lado, renglones]
+  const RS = [
+    ['PSV', 'izq', ['PSV-116 con su válvula', 'de bloqueo (CSO)']],
+    ['INLET', 'izq', ['Boquilla de entrada, 8″', '(de E-102)']],
+    ['DIVERTER', 'izq', ['Placa desviadora']],
+    ['DEMISTER', 'izq', ['Malla eliminadora', 'de niebla']],
+    ['LSHH', 'izq', ['LSHH-115']],
+    ['NNL', 'izq', ['Nivel normal del', 'líquido (NNL)']],
+    ['TI', 'izq', ['Termopozo de TI-113']],
+    ['VORTEX', 'izq', ['Rompe-vórtice']],
+    ['OUTLET', 'izq', ['Salida de líquido, 3″', '(a V-103)']],
+    ['SKIRT', 'izq', ['Faldón']],
+    ['GAS', 'der', ['Salida de gas, 8″', '(a C-101 A/B)']],
+    ['PT', 'der', ['PT-105']],
+    ['HEAD_TOP', 'der', ['Cabeza elíptica']],
+    ['LT', 'der', ['Transmisor de', 'nivel LT-106']],
+    ['BRIDLE', 'der', ['Puente de nivel']],
+    ['SHELL', 'der', ['Cuerpo']],
+    ['LG', 'der', ['Visor de nivel LG-114']],
+    ['DRAIN', 'der', ['Drenaje']],
+  ];
+  const xIzq = minX - 26, xDer = maxX + 26;
+  const lados = { izq: [], der: [] };
+  for (const [a, lado, lineas] of RS) {
+    if (!ANCLAS[a]) throw new Error(`Falta el ancla ${a}`);
+    const [ax, ay] = k.iso(ANCLAS[a], P);
+    lados[lado].push({ a, lineas, ax: r1(ax), ay: r1(ay), alto: lineas.length * renglon });
+  }
+  // cada rótulo, tan cerca de la altura de su punto como se pueda, sin encimarse y dentro del alto del dibujo
+  for (const lista of Object.values(lados)) {
+    lista.sort((p, q) => p.ay - q.ay);
+    lista.forEach((r) => (r.y = r.ay - r.alto / 2));
+    for (let i = 1; i < lista.length; i++) lista[i].y = Math.max(lista[i].y, lista[i - 1].y + lista[i - 1].alto + sep);
+    const ult = lista[lista.length - 1], tope = maxY - ult.alto;
+    if (ult.y > tope) { ult.y = tope; for (let i = lista.length - 2; i >= 0; i--) lista[i].y = Math.min(lista[i].y, lista[i + 1].y - lista[i].alto - sep); }
+    if (lista[0].y < minY) { lista[0].y = minY; for (let i = 1; i < lista.length; i++) lista[i].y = Math.max(lista[i].y, lista[i - 1].y + lista[i - 1].alto + sep); }
+  }
+  const trazo = (r, izq) => {
+    const x = izq ? xIzq : xDer, fin = izq ? x + 6 : x - 6, ym = r.y + r.alto / 2;
+    return `<path class="rot-linea" d="M${r.ax} ${r.ay}L${r1(fin)} ${r1(ym)}"/><circle class="rot-punto" cx="${r.ax}" cy="${r.ay}" r="3.2"/>` +
+      r.lineas.map((t, i) => `<text class="rot-texto" x="${r1(x)}" y="${r1(r.y + renglon * (i + 0.78))}" text-anchor="${izq ? 'end' : 'start'}" font-size="${letra}">${t}</text>`).join('');
+  };
+  const trazos = lados.izq.map((r) => trazo(r, true)).join('') + lados.der.map((r) => trazo(r, false)).join('');
+  const anchoLado = (l) => Math.max(...l.map((r) => Math.max(...r.lineas.map(ancho))));
+  const vx = Math.floor(xIzq - anchoLado(lados.izq) - 10), vw = Math.ceil(xDer + anchoLado(lados.der) + 10 - vx);
+  const vy = Math.floor(minY - 12), vh = Math.ceil(maxY + 12 - vy);
+  const etiqueta = 'El separador de alta V-102 de la planta de benceno en isométrico, abierto: un recipiente vertical de 1,2 m de diámetro ' +
+    'interior y 3,4 m entre tangentes, con cabezas elípticas 2:1, sobre un faldón y su fundación, sin la mitad que mira al lector. ' +
+    'Adentro, la boquilla de entrada de 8 pulgadas descarga contra una placa desviadora; arriba, la malla eliminadora de niebla sobre su ' +
+    'anillo; abajo, el líquido hasta el nivel normal, el termopozo de TI-113 y el rompe-vórtice en cruz sobre la salida de líquido de 3 ' +
+    'pulgadas, que baja hacia V-103. Afuera, en la cabeza de arriba, la salida de gas de 8 pulgadas hacia los compresores, la PSV-116 sobre ' +
+    'su válvula de bloqueo sellada abierta y el transmisor de presión PT-105; al lado del cuerpo, el puente de nivel con el transmisor ' +
+    'LT-106 arriba, el visor de vidrio LG-114 y el interruptor de nivel muy alto LSHH-115; abajo, el drenaje con su válvula y brida ciega.';
+  let cuerpo = crudo
+    .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
+    .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
+  cuerpo = compacto(aplicarPaleta(cuerpo, 'los-diagramas-de-ingenieria/_v102'));
+  mkdirSync(DEST, { recursive: true });
+  writeFileSync(join(DEST, '_v102.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
+  console.log('_v102.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);
+  process.exit(0);
+}
 
 /* ── medidas de la página ────────────────────────────────────────────── */
 const ANCHO = 318, ALTO_MAX = 415;      // pt

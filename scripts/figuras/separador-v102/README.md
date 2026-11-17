@@ -31,12 +31,14 @@ la salida de gas, la PSV y el transmisor de presión quedan un poco corridos hac
 | `build.mjs` | Geometría, interior sombreado del corte, líquido, orden de pintura (`A.settle`) y audit. Escribe `out/fig.svg`, `out/fig.css`, `out/separador_data.json` (cámara y puntos de los rótulos) y `preview.html`. |
 | `xprism.mjs` | Prismas de sección cóncava en cualquier marco (el mismo de las otras figuras). |
 | `libro.mjs` | El SVG de la edición impresa: 318 pt de ancho, colores resueltos en un `<style>` propio (sin variables CSS ni la hoja del kit), rótulos en inglés con línea y punto, Archivo de 7,5 pt. |
+| `libro.mjs --salida` | La vista del libro web en español, `figuras/los-diagramas-de-ingenieria/_v102.qmd`: el SVG del kit con sus clases (las pinta `estilo/anatomia.css`), los colores de la paleta (vista `los-diagramas-de-ingenieria/_v102` de `../paleta-libro.mjs`) y los nombres de las piezas en español, con su línea y su punto. No abre Chromium ni toca la vista inglesa. |
 
 ```sh
 node build.mjs --audit        # unos dos minutos y medio (el orden); debe terminar en «audit passed»
 node build.mjs --fast         # sin orden ni audit, en un segundo: para mirar la geometría
 CHROME_PATH=/opt/pw-browsers/chromium node libro.mjs --en ../../../../libro-operaciones-unitarias/en/figuras/02/v102.svg
 node ../../../../libro-operaciones-unitarias/en/herramientas/svg-a-pdf.mjs ../../../../libro-operaciones-unitarias/en/figuras/02/v102.svg
+node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro   # la vista del libro web en español
 ```
 
 `libro.mjs` abre el dibujo en Chromium (Playwright) para resolver los estilos del kit y medir los rótulos con la
