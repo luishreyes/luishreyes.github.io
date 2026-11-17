@@ -28,8 +28,8 @@ export const awardsData: Recognition[] = [
         es: "La distinción reconoce una innovación pedagógica específica, creada o implementada en un curso real y juzgada por su impacto documentado en la efectividad de la enseñanza y en el aprendizaje de los estudiantes."
       },
       {
-        en: "It was presented at the AIChE Annual Meeting in Minneapolis in November 2026.",
-        es: "Lo recibí en el AIChE Annual Meeting, en Minneapolis, en noviembre de 2026."
+        en: "It was presented at the AIChE Annual Meeting in Minneapolis on November 10, 2026.",
+        es: "Lo recibí en el AIChE Annual Meeting, en Minneapolis, el 10 de noviembre de 2026."
       }
     ],
     url: "https://www.aiche.org/community/awards/award-innovation-chemical-engineering-education",
