@@ -26,7 +26,8 @@ const k = await import(KIT + '/kit/iso-kit.mjs');
 const D = JSON.parse(readFileSync(join(AQUI, 'planta_data.json'), 'utf8'));
 const { PB, ROUTES, ANCLAS } = D;
 const r1 = v => Math.round(v * 10) / 10;
-const mm = dm => Math.round(dm * 100).toLocaleString('es-CO').replace(/\./g, ' ');
+// Miles con espacio solo desde cinco cifras, como en el libro (2930, 12 200).
+const mm = dm => { const v = Math.round(dm * 100); return v >= 10000 ? v.toLocaleString('es-CO').replace(/\./g, ' ') : String(v); };
 const escribir = (n, html) => { writeFileSync(join(DEST, n), '```{=html}\n' + html.trim() + '\n```\n'); console.log(n, Math.round(html.length / 1024), 'KB'); };
 const txt = (x, y, t, cls = 'lbl-s', anc = 'start') => `<text x="${r1(x)}" y="${r1(y)}" class="${cls}" text-anchor="${anc}">${t}</text>`;
 
