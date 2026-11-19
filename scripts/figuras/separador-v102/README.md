@@ -19,6 +19,7 @@ node build.mjs --audit        # unos dos minutos y medio (el orden); debe termin
 node build.mjs --fast         # sin orden ni audit, en un segundo: para mirar la geometría
 CHROME_PATH=/opt/pw-browsers/chromium node libro.mjs --en ../../../../libro-operaciones-unitarias/en/figuras/02/v102.svg
 node ../../../../libro-operaciones-unitarias/en/herramientas/svg-a-pdf.mjs ../../../../libro-operaciones-unitarias/en/figuras/02/v102.svg
+node build.mjs --libro --audit   # el dibujo de la vista del libro web en español, con la persona de referencia
 node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro   # la vista del libro web en español
 ```
 
@@ -27,10 +28,10 @@ El audit tiene dos excusas revisadas a 4×, en `build.mjs` (`crowd` y `allow`).
 | Archivo | Qué es |
 |---|---|
 | `geo.mjs` | Las medidas (`SV`), el contorno del recipiente en el plano del corte y la media corona. |
-| `build.mjs` | Geometría, interior sombreado del corte, líquido, orden de pintura (`A.settle`) y audit. Escribe `out/fig.svg`, `out/fig.css`, `out/separador_data.json` (cámara y puntos de los rótulos) y `preview.html`. |
+| `build.mjs` | Geometría, interior sombreado del corte, líquido, orden de pintura (`A.settle`) y audit. Escribe `out/fig.svg`, `out/fig.css`, `out/separador_data.json` (cámara y puntos de los rótulos) y `preview.html`. Con `--libro` agrega la persona de referencia de 1,75 m (`../persona.mjs`; su lugar, en `SV.persona` de `geo.mjs`) y escribe aparte `out/fig-libro.svg`, `out/separador_data-libro.json` y `out/preview-libro.html`; sin `--libro`, el dibujo de la edición en inglés sale como siempre, sin ella. |
 | `xprism.mjs` | Prismas de sección cóncava en cualquier marco (el mismo de las otras figuras). |
 | `libro.mjs` | El SVG de la edición impresa: 318 pt de ancho, colores resueltos en un `<style>` propio (sin variables CSS ni la hoja del kit), rótulos en inglés con línea y punto, Archivo de 7,5 pt. |
-| `libro.mjs --salida` | La vista del libro web en español, `figuras/los-diagramas-de-ingenieria/_v102.qmd`: el SVG del kit con sus clases (las pinta `estilo/anatomia.css`), los colores de la paleta (vista `los-diagramas-de-ingenieria/_v102` de `../paleta-libro.mjs`) y los nombres de las piezas en español, con su línea y su punto. No abre Chromium ni toca la vista inglesa. |
+| `libro.mjs --salida` | La vista del libro web en español, `figuras/los-diagramas-de-ingenieria/_v102.qmd`, del dibujo con la persona (`out/fig-libro.svg`): el SVG del kit con sus clases (las pinta `estilo/anatomia.css`), los colores de la paleta (vista `los-diagramas-de-ingenieria/_v102` de `../paleta-libro.mjs`) y los nombres de las piezas en español, con su línea y su punto, más el de la persona. Los rótulos del recipiente se ponen con el contorno del dibujo sin la persona, así que no se mueven; el recorte crece para que ella quepa. No abre Chromium ni toca la vista inglesa. |
 
 ## Qué escribe
 

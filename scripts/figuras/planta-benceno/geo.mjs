@@ -19,6 +19,9 @@ export const PB = {
   C101: { ys: [112, 140], m0: 214, m1: 238, mR: 6, x0: 244, x1: 262, R: 7, z: 13 },
   // tuberías (radio exterior dibujado)
   r: { big: 1.5, mid: 1.1, small: 0.7 },
+  // la persona de referencia (../persona.mjs, 1,75 m), de pie en el piso al sureste de los compresores y mirando
+  // hacia ellos; rumbo en grados desde +x hacia +y. Solo va en el isométrico. Medida del libro.
+  persona: { x: 255, y: 168, rumbo: 225 },
 };
 export function axesOf(az) {
   const a = (az * Math.PI) / 180, sA = Math.sin(a), cA = Math.cos(a);

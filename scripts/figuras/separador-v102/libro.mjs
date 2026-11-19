@@ -21,34 +21,42 @@ const AQUI = dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const SALIDA = resolve(arg('--en', join(AQUI, '../../../../libro-operaciones-unitarias/en/figuras/02/v102.svg')));
 const FUENTES = resolve(arg('--fuentes', join(AQUI, '../../../../libro-operaciones-unitarias/en/estilo/fuentes')));
-if (!existsSync(join(AQUI, 'out/fig.svg'))) throw new Error('Falta out/: corra antes node build.mjs');
 const KIT = fileURLToPath(new URL('../../../.claude/skills/anatomy', import.meta.url));
 const k = await import(KIT + '/kit/iso-kit.mjs');
-const { P, ANCLAS } = JSON.parse(readFileSync(join(AQUI, 'out/separador_data.json'), 'utf8'));
-const svgFuente = aplicarPaleta(readFileSync(join(AQUI, 'out/fig.svg'), 'utf8'));
 
 /* ── La vista del libro web en español ──────────────────────────────────────────────────────────────
-   node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro
+   node build.mjs --libro --audit && node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro
    escribe figuras/los-diagramas-de-ingenieria/_v102.qmd, como las otras vistas isométricas del libro web: el SVG del
    kit con sus clases (las pinta estilo/anatomia.css), los colores de la paleta (paleta-libro.mjs, vista
-   «los-diagramas-de-ingenieria/_v102») y los nombres de las piezas en español, con su línea y su punto. No abre
-   Chromium y no toca la vista inglesa, que sigue saliendo sin --salida. */
+   «los-diagramas-de-ingenieria/_v102») y los nombres de las piezas en español, con su línea y su punto. Lee el dibujo
+   con la persona de referencia (out/fig-libro.svg, de build.mjs --libro). No abre Chromium y no toca la vista inglesa,
+   que sigue saliendo sin --salida, del dibujo sin la persona. */
 if (process.argv.includes('--salida')) {
   const LIBRO = resolve(arg('--salida'));
   const DEST = join(LIBRO, 'figuras/los-diagramas-de-ingenieria');
-  const crudo = readFileSync(join(AQUI, 'out/fig.svg'), 'utf8');
+  if (!existsSync(join(AQUI, 'out/fig-libro.svg'))) throw new Error('Falta out/fig-libro.svg: corra antes node build.mjs --libro');
+  const crudo = readFileSync(join(AQUI, 'out/fig-libro.svg'), 'utf8');
+  const { P, ANCLAS } = JSON.parse(readFileSync(join(AQUI, 'out/separador_data-libro.json'), 'utf8'));
   const r1 = (v) => Math.round(v * 10) / 10;
-  // el contorno del dibujo, de las coordenadas absolutas de sus trazos y de sus círculos
-  const pts = [];
-  for (const m of crudo.matchAll(/ d="([^"]+)"/g)) {
-    const n = m[1].match(/-?\d*\.?\d+/g) || [];
-    for (let i = 0; i + 1 < n.length; i += 2) pts.push([+n[i], +n[i + 1]]);
-  }
-  for (const m of crudo.matchAll(/<circle[^>]*\scx="(-?[\d.]+)"[^>]*\scy="(-?[\d.]+)"[^>]*\sr="([\d.]+)"/g)) {
-    pts.push([+m[1] - +m[3], +m[2] - +m[3]], [+m[1] + +m[3], +m[2] + +m[3]]);
-  }
-  const minX = Math.min(...pts.map((p) => p[0])), maxX = Math.max(...pts.map((p) => p[0]));
-  const minY = Math.min(...pts.map((p) => p[1])), maxY = Math.max(...pts.map((p) => p[1]));
+  // el grupo de la persona, para medirlo aparte: no cambia el lugar de los rótulos del recipiente
+  const INI = '<g class="it" data-name="persona">', i0 = crudo.indexOf(INI);
+  if (i0 < 0) throw new Error('Falta la persona en out/fig-libro.svg');
+  let hondo = 0, i1 = -1;
+  for (const m of crudo.slice(i0).matchAll(/<g\b|<\/g>/g)) { hondo += m[0] === '</g>' ? -1 : 1; if (!hondo) { i1 = i0 + m.index + 4; break; } }
+  const persona = crudo.slice(i0, i1), sinPersona = crudo.slice(0, i0) + crudo.slice(i1);
+  // el contorno de un dibujo, de las coordenadas absolutas de sus trazos y de sus círculos
+  const contorno = (texto) => {
+    const pts = [];
+    for (const m of texto.matchAll(/ d="([^"]+)"/g)) {
+      const n = m[1].match(/-?\d*\.?\d+/g) || [];
+      for (let i = 0; i + 1 < n.length; i += 2) pts.push([+n[i], +n[i + 1]]);
+    }
+    for (const m of texto.matchAll(/<circle[^>]*\scx="(-?[\d.]+)"[^>]*\scy="(-?[\d.]+)"[^>]*\sr="([\d.]+)"/g)) {
+      pts.push([+m[1] - +m[3], +m[2] - +m[3]], [+m[1] + +m[3], +m[2] + +m[3]]);
+    }
+    return [Math.min(...pts.map((p) => p[0])), Math.min(...pts.map((p) => p[1])), Math.max(...pts.map((p) => p[0])), Math.max(...pts.map((p) => p[1]))];
+  };
+  const [minX, minY, maxX, maxY] = contorno(sinPersona), CP = contorno(persona);
   const letra = 17, renglon = letra * 1.2, sep = 9, ancho = (t) => t.length * letra * 0.56;
   // [ancla, lado, renglones]
   const RS = [
@@ -70,6 +78,7 @@ if (process.argv.includes('--salida')) {
     ['SHELL', 'der', ['Cuerpo']],
     ['LG', 'der', ['Visor de nivel LG-114']],
     ['DRAIN', 'der', ['Drenaje']],
+    ['PERSONA', 'der', ['Persona de 1,75 m']],
   ];
   const xIzq = minX - 26, xDer = maxX + 26;
   const lados = { izq: [], der: [] };
@@ -94,15 +103,17 @@ if (process.argv.includes('--salida')) {
   };
   const trazos = lados.izq.map((r) => trazo(r, true)).join('') + lados.der.map((r) => trazo(r, false)).join('');
   const anchoLado = (l) => Math.max(...l.map((r) => Math.max(...r.lineas.map(ancho))));
-  const vx = Math.floor(xIzq - anchoLado(lados.izq) - 10), vw = Math.ceil(xDer + anchoLado(lados.der) + 10 - vx);
-  const vy = Math.floor(minY - 12), vh = Math.ceil(maxY + 12 - vy);
+  // el recorte: los rótulos y el dibujo, con la persona
+  const vx = Math.floor(Math.min(xIzq - anchoLado(lados.izq) - 10, CP[0] - 12)), vw = Math.ceil(Math.max(xDer + anchoLado(lados.der) + 10, CP[2] + 12) - vx);
+  const vy = Math.floor(Math.min(minY, CP[1]) - 12), vh = Math.ceil(Math.max(maxY, CP[3]) + 12 - vy);
   const etiqueta = 'El separador de alta V-102 de la planta de benceno en isométrico, abierto: un recipiente vertical de 1,2 m de diámetro ' +
     'interior y 3,4 m entre tangentes, con cabezas elípticas 2:1, sobre un faldón y su fundación, sin la mitad que mira al lector. ' +
     'Adentro, la boquilla de entrada de 8 pulgadas descarga contra una placa desviadora; arriba, la malla eliminadora de niebla sobre su ' +
     'anillo; abajo, el líquido hasta el nivel normal, el termopozo de TI-113 y el rompe-vórtice en cruz sobre la salida de líquido de 3 ' +
     'pulgadas, que baja hacia V-103. Afuera, en la cabeza de arriba, la salida de gas de 8 pulgadas hacia los compresores, la PSV-116 sobre ' +
     'su válvula de bloqueo sellada abierta y el transmisor de presión PT-105; al lado del cuerpo, el puente de nivel con el transmisor ' +
-    'LT-106 arriba, el visor de vidrio LG-114 y el interruptor de nivel muy alto LSHH-115; abajo, el drenaje con su válvula y brida ciega.';
+    'LT-106 arriba, el visor de vidrio LG-114 y el interruptor de nivel muy alto LSHH-115; abajo, el drenaje con su válvula y brida ciega. ' +
+    'Adelante y a la derecha, una persona de 1,75 m de pie en el piso da la escala.';
   let cuerpo = crudo
     .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
     .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`);
@@ -112,6 +123,11 @@ if (process.argv.includes('--salida')) {
   console.log('_v102.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);
   process.exit(0);
 }
+
+/* ── La lámina de la edición impresa en inglés: el dibujo sin la persona (out/fig.svg, de build.mjs sin --libro) ── */
+if (!existsSync(join(AQUI, 'out/fig.svg'))) throw new Error('Falta out/: corra antes node build.mjs');
+const { P, ANCLAS } = JSON.parse(readFileSync(join(AQUI, 'out/separador_data.json'), 'utf8'));
+const svgFuente = aplicarPaleta(readFileSync(join(AQUI, 'out/fig.svg'), 'utf8'));
 
 /* ── medidas de la página ────────────────────────────────────────────── */
 const ANCHO = 318, ALTO_MAX = 415;      // pt

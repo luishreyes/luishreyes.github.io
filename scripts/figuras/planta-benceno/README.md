@@ -46,3 +46,8 @@ isométrico y de las vistas están puestos a mano en `libro.mjs` y hay que revis
 de la paleta del libro (`estilo/paleta.json`, sección `isometricas`) por `../paleta-libro.mjs`, que le pone las clases
 `mat-*` por el nombre de la pieza: si cambia un color, `node ../paleta-libro.mjs` vuelve a pintar las vistas sin
 rehacer el dibujo.
+
+El isométrico lleva la persona de referencia de 1,75 m (`../persona.mjs`; su lugar, en `PB.persona` de `geo.mjs`),
+que `build.mjs` pone siempre y `libro.mjs` rotula; las otras tres vistas no la llevan. La persona y su rótulo llevan la
+clase `solo-es`, y la vista trae la regla `#impresion .solo-es{display:none}`: la lámina de la edición en inglés, que
+se toma de la página del libro web dentro de `#impresion`, sale sin ella.

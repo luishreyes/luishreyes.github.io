@@ -12,6 +12,9 @@
    el visor de vidrio y el transmisor de nivel, el interruptor de muy
    alto nivel, el termómetro, la salida de líquido y el drenaje.
    Figura quieta: no tiene nada vivo. Unidades: 1 = 1 cm. z hacia arriba.
+   --libro: la vista del libro web en español, con la persona de referencia de 1,75 m (../persona.mjs) de pie en el
+   piso; escribe out/fig-libro.svg, out/separador_data-libro.json y out/preview-libro.html, que lee libro.mjs --salida.
+   Sin --libro el SVG de la edición en inglés sale igual que siempre.
    ==================================================================== */
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -25,6 +28,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const FAST = process.argv.includes("--fast");
+const LIBRO = process.argv.includes("--libro"), SUF = LIBRO ? "-libro" : "";
 
 const SV = GEO.SV, AZ = SV.AZ, EL = SV.EL, W = 700, H = 1180;
 const { T, HV } = GEO.axesOf(AZ);
@@ -507,6 +511,16 @@ const liquidSvg = (() => {
 })();
 ANCLAS.NNL = [T[0] * -R * 0.62, T[1] * -R * 0.62, ZL + 5.2];
 
+/* ---------- la persona de referencia (solo con --libro): 1,75 m, de pie en el piso junto al recipiente ---------- */
+const PERSONA = LIBRO ? await import(join(HERE, "../persona.mjs")) : null;
+if (LIBRO) {
+  const PS = SV.persona;
+  const per = PERSONA.personaDePie({ P, pie: UV(PS.u, PS.v, 0), rumbo: PS.rumbo, mm: 0.1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCLAS.PERSONA = per.anclas.CABEZA;
+}
+
 /* ---------- orden y salida ---------- */
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
@@ -531,14 +545,14 @@ const CSS = `.sv-cav{--anatomy-paper:#d3d8dd;--anatomy-face:#d3d8dd;--anatomy-to
 .sv-nnl{fill:none;stroke:#3f6e8f;stroke-width:.7px;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .sv-nnlmark{fill:#3f6e8f;stroke:none}
 .sv-lgliq{fill:#9fbfd4;stroke:none}
-.sv-lgvap{fill:#f3f7fa;stroke:none}`;
+.sv-lgvap{fill:#f3f7fa;stroke:none}` + (LIBRO ? "\n" + PERSONA.CSS_PERSONA : "");
 const groups = R_.items.map((item, index) => `<g class="it" data-name="${item.name}">${item.svg}${slots.get(index) ?? ""}</g>`);
 const svg = k.figureSvg({ width: W, height: H, label: "V-102 high-pressure separator, cutaway", body: [`<style>${CSS}</style><g class="sv-items">${groups.join("")}</g>`] });
 mkdirSync(join(HERE, "out"), { recursive: true });
-writeFileSync(join(HERE, "out", "fig.svg"), svg);
+writeFileSync(join(HERE, "out", `fig${SUF}.svg`), svg);
 writeFileSync(join(HERE, "out", "fig.css"), k.ISO_CSS);
-writeFileSync(join(HERE, "out", "separador_data.json"), JSON.stringify({ P, W, H, ANCLAS }));
-writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "V-102", theme: "light", width: 760, body: `<div class="iso-stage">${svg}</div>`, script: "" }));
+writeFileSync(join(HERE, "out", `separador_data${SUF}.json`), JSON.stringify({ P, W, H, ANCLAS }));
+writeFileSync(LIBRO ? join(HERE, "out", "preview-libro.html") : join(HERE, "preview.html"), k.pageHtml({ title: "V-102", theme: "light", width: 760, body: `<div class="iso-stage">${svg}</div>`, script: "" }));
 console.log("items", R_.items.length, "scale", G.scaleOf(P).toFixed(3));
 // Dos excusas, revisadas a 4×: (1) el audit toma el cuerpo y el corte de la pared como varillas por su eje, y el codo
 // de la salida de líquido cae bajo el polo de esa varilla imaginaria, 26 cm detrás de la pared; (2) el asiento de la

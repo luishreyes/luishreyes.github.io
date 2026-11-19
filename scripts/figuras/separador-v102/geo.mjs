@@ -20,6 +20,10 @@ export const SV = {
   LG: { off: 17, z: [150, 360] },                                          // visor de vidrio, al lado del puente
   LSHH: { th: 190, z: 296 },
   TI: { th: 196, z: 165 },
+  // la persona de referencia (../persona.mjs, 1,75 m), solo en la vista del libro web en español (build.mjs --libro):
+  // de pie en el piso, adelante y a la derecha de la fundación, mirando al recipiente; u a lo largo de T, v hacia el
+  // lector, rumbo en grados desde +x hacia +y. Medida del libro.
+  persona: { u: 95, v: 240, rumbo: 215 },
 };
 export function axesOf(az) {
   const a = (az * Math.PI) / 180, sA = Math.sin(a), cA = Math.cos(a);

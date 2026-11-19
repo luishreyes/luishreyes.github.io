@@ -47,18 +47,25 @@ const txt = (x, y, t, cls = 'lbl-s', anc = 'start') => `<text x="${r1(x)}" y="${
     ['PSV', 830, 200, 'Válvula de seguridad a la tea', 0, 0],
     ['LV', 900, 400, 'Válvula de nivel', 0, 0],
     ['C101B', 860, 640, 'C-101 A/B · Compresores', 0, 0],
+    ['PERSONA', 950, 470, 'Persona de 1,75 m', 0, 0],
   ];
+  /* La persona de referencia va solo en la edición en español. La impresa en inglés toma esta figura de la página del
+     libro web (en/herramientas/figuras-02.mjs, con impresion-figuras.mjs, que copia la figura dentro de #impresion):
+     la persona y su rótulo llevan la clase solo-es y allí no se ven, así la lámina inglesa sale como antes. */
   const trazos = R.map(([a, x, y, t, dx, dy]) => {
     const [ax, ay] = k.iso(ANCLAS[a], D.P).map(v => r1(v));
     const bx = ax + dx, by = ay + dy;
-    return `<path class="rot-linea" d="M${bx} ${by}L${x} ${y}"/><circle class="rot-punto" cx="${bx}" cy="${by}" r="2.6"/>` +
+    const rot = `<path class="rot-linea" d="M${bx} ${by}L${x} ${y}"/><circle class="rot-punto" cx="${bx}" cy="${by}" r="2.6"/>` +
       `<text class="rot-texto" x="${x + 5}" y="${r1(y + letra * 0.35)}" text-anchor="start" font-size="${letra}">${t}</text>`;
+    return a === 'PERSONA' ? `<g class="solo-es">${rot}</g>` : rot;
   }).join('');
   const svg = readFileSync(join(AQUI, 'out/fig.svg'), 'utf8');
-  const etiqueta = 'Isométrico de la sección de reacción de la planta de benceno: el rack de tuberías en el centro; al norte, el horno H-101, el precalentador E-101 y el reactor R-101 con su plataforma y su escalera; al sur, el enfriador E-102, el separador V-102 con su válvula de seguridad y los compresores C-101 A/B. Las líneas de proceso van de un equipo al otro por el rack.';
+  if (!svg.includes('<g class="it" data-name="persona"')) throw new Error('Falta la persona en out/fig.svg: corra antes node build.mjs');
+  const etiqueta = 'Isométrico de la sección de reacción de la planta de benceno: el rack de tuberías en el centro; al norte, el horno H-101, el precalentador E-101 y el reactor R-101 con su plataforma y su escalera; al sur, el enfriador E-102, el separador V-102 con su válvula de seguridad y los compresores C-101 A/B. Las líneas de proceso van de un equipo al otro por el rack. Junto a los compresores, una persona de 1,75 m de pie en el piso da la escala.';
   const cuerpo = aplicarPaleta(svg
     .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="0 80 1090 680" role="img" aria-label="${etiqueta}">`)
-    .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'los-diagramas-de-ingenieria/_planta-iso');
+    .replace('<g class="it" data-name="persona"', '<g class="it solo-es" data-name="persona"')
+    .replace(/<\/svg>\s*$/, `<style>#impresion .solo-es{display:none}</style><g class="rotulos">${trazos}</g></svg>`), 'los-diagramas-de-ingenieria/_planta-iso');
   escribir('_planta-iso.qmd', '<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>');
 }
 

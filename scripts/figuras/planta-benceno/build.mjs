@@ -381,19 +381,27 @@ box("stand.cwpit", [E2f.cws[0] - 5, E2.y + 10, 0], [E2f.cws[0] + 5, E2.y + 22, 1
 pipe("cws", [E2f.cws, [E2f.cws[0], E2.y + 13, E2f.cws[2]], [E2f.cws[0], E2.y + 13, 1.2]], rB, { flanges: [true, false] });
 pipe("cwr", [E2f.cwr, [E2f.cwr[0], E2.y + 19, E2f.cwr[2]], [E2f.cwr[0], E2.y + 19, 1.2]], rB, { flanges: [true, false] });
 
+/* ====================================================================
+   8 · la persona de referencia (../persona.mjs): 1,75 m, de pie en el piso junto a los compresores
+   ==================================================================== */
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
+const PER = personaDePie({ P, pie: [PB.persona.x, PB.persona.y, 0], rumbo: PB.persona.rumbo, mm: 0.01, adelante: "der" });
+PER.shapes.forEach(record);
+put("persona", PER.ref, PER.svg, PER.shapes);
+
 /* ---------- orden y salida ---------- */
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
 const pickOf = (nm) => (nm.match(/^(?:stand\.)?(h101|r101|e101|e102|v102|c101a|c101b|rack|lv)/) || [, nm.match(/^p\d+|^hps|^cond|^cw/) ? "tubo" : "otro"])[1];
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}" data-pick="${pickOf(item.name)}">${item.svg}</g>`);
-const svg = k.figureSvg({ width: W, height: H, label: "Sección de reacción de la planta de benceno en isométrico: rack de tuberías, horno, precalentador y reactor al norte; enfriador, separador y compresores al sur, con las líneas de proceso entre ellos", body: [`<g class="pb-items">${groups.join("")}</g>`] });
+const svg = k.figureSvg({ width: W, height: H, label: "Sección de reacción de la planta de benceno en isométrico: rack de tuberías, horno, precalentador y reactor al norte; enfriador, separador y compresores al sur, con las líneas de proceso entre ellos", body: [`<style>${CSS_PERSONA}</style><g class="pb-items">${groups.join("")}</g>`] });
 mkdirSync(join(HERE, "out"), { recursive: true });
 writeFileSync(join(HERE, "out", "fig.svg"), svg);
 writeFileSync(join(HERE, "out", "fig.css"), k.ISO_CSS);
 writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Planta de benceno", theme: "light", width: 1000, body: `<div class="iso-stage">${svg}</div>`, script: "" }));
 const ANCLAS = { H101: [H1.x, H1.y, 70], E101: [E1.x0 + 12, E1.y, E1.z + E1.R], R101: [R1.x, R1.y, 100], E102: [E2.x0 + 30, E2.y, E2.z + E2.R], V102: [V2.x, V2.y, V2.z1 - 4],
   C101A: [C1.m0 + 12, C1.ys[0], C1.z + C1.mR], C101B: [C1.m0 + 12, C1.ys[1], C1.z + C1.mR], RACK: [RK.xs[2], RK.y, RK.z], LV: [276, V2.y, 20], PSV: [V2.x, V2.y - V2.R - 4, 61],
-  FLARE: [20, LN.flare, laneZ(2.2) + 2.2], CW: [E2f.cws[0], E2.y + 16, 3], PLAT: [R1.x + 12, R1.y + 12, ZP + 6] };
+  FLARE: [20, LN.flare, laneZ(2.2) + 2.2], CW: [E2f.cws[0], E2.y + 16, 3], PLAT: [R1.x + 12, R1.y + 12, ZP + 6], PERSONA: PER.anclas.PECHO };
 writeFileSync(join(HERE, "planta_data.json"), JSON.stringify({ P, W, H, ROUTES, ANCLAS, PB }));
 console.log("items", R_.items.length, "scale", G.scaleOf(P).toFixed(3));
 // Lo excusado: tres líneas que salen o llegan a la boquilla de la cabeza de su propio equipo y pasan,
