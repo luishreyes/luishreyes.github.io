@@ -18,10 +18,13 @@ CHROME_PATH=/opt/pw-browsers/chromium node build.mjs --audit   # unos 2 minutos 
 node build.mjs --fast         # sin orden ni audit: para mirar la geometría
 node libro.mjs                # --salida ../../../../libro-operaciones-unitarias/libro (por defecto)
 FL_ITEM="pieza" node build.mjs   # lista todo lo que se cruza con una pieza en pantalla
+FL_PER="x,y,rumbo" node build.mjs  # prueba otro lugar para la persona de referencia
 CHROME_PATH=/opt/pw-browsers/chromium node ../../../.claude/skills/anatomy/scripts/lines.mjs preview.html --select svg
 ```
 
-El dibujo va en milímetros y el audit en centímetros (`cm()`).
+El dibujo va en milímetros y el audit en centímetros (`cm()`). `build.mjs` agrega la persona de referencia de 1,75 m
+(`../persona.mjs`; su lugar, en `FL.persona` de `geo.mjs`); `dibujo.mjs` no la lleva, así que el tren de condensación
+sale igual.
 
 | Archivo | Qué es |
 |---|---|
@@ -34,6 +37,9 @@ El dibujo va en milímetros y el audit en centímetros (`cm()`).
 ## Qué escribe
 
 `node libro.mjs` escribe `figuras/sedimentacion-y-decantacion/_florentino.qmd` en el libro (la vista y los rótulos en
-español), que el capítulo incluye con `{{< include … >}}` dentro de un bloque `::: {#fig-…}`. Los colores salen de la
+español, con la persona y su rótulo), que el capítulo incluye con `{{< include … >}}` dentro de un bloque `::: {#fig-…}`.
+La edición impresa en inglés copia esa vista dentro de `#impresion`: la persona y su rótulo llevan la clase `solo-es`
+y allí no se ven. El SVG conserva el recorte de antes (`viewBox`) y la persona se pinta en un relleno a su derecha, que
+dentro de `#impresion` vale 0, así la lámina inglesa sale como antes. Los colores salen de la
 paleta del libro (`estilo/paleta.json`, sección `isometricas`) por `../paleta-libro.mjs`: si cambia un color, `node
 ../paleta-libro.mjs` vuelve a pintar la vista sin rehacer el dibujo.

@@ -6,7 +6,8 @@
 // Escribe figuras/particulas-en-un-fluido/_filtro-arena.qmd con el SVG del skill anatomy y los rótulos (línea y punto,
 // como el mezclador estático y el tanque agitado), y out/libro-preview.html para revisarla en el navegador. Cada rótulo
 // va en su lugar (x, y del texto en unidades del dibujo), a la izquierda o a la derecha del recipiente; un texto con
-// «\n» va en dos renglones y la línea llega al primero.
+// «\n» va en dos renglones y la línea llega al primero. La persona de referencia (la que pone build.mjs) lleva su rótulo,
+// «Persona de 1,75 m», y no sale en la lámina inglesa (ver los rótulos).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -48,7 +49,11 @@ if (process.argv.includes('--anclas')) {
 }
 
 const letra = 13, renglon = letra * 1.2, ancho = (t) => t.length * letra * 0.55;
-// [ancla, texto, x, y del texto (primer renglón), lado: 'der' (la línea llega por la izquierda del texto) o 'izq']
+// [ancla, texto, x, y del texto (primer renglón), lado: 'der' (la línea llega por la izquierda del texto) o 'izq', clase]
+// La persona de referencia y lo que se movió por ella llevan la clase solo-es; los dos rótulos en su lugar de antes,
+// solo-en. La edición impresa en inglés (en/herramientas/figuras-16.mjs) copia esta figura del libro web dentro de
+// #impresion: allí se ven los solo-en y no los solo-es, así la lámina inglesa sale como antes; en la web, al revés.
+// Por eso todo cabe en el recorte de siempre.
 const RS = [
   ['MANOMETRO_IN', 'Manómetro de la entrada', 300, 22, 'der'],
   ['ENTRADA_TUBO', 'Entrada del agua cruda\ny salida del lavado', 118, 130, 'izq'],
@@ -63,19 +68,25 @@ const RS = [
   ['PATAS', 'Patas', 205, 792, 'izq'],
   ['MANHOL', 'Boca de visita', 512, 118, 'der'],
   ['BOQUILLAS', 'Boquillas', 512, 356, 'der'],
-  ['AIRE', 'Entrada del aire', 512, 540, 'der'],
+  // la persona de referencia va a la derecha, junto a la válvula del lavado: en la web, la entrada del aire va sobre su
+  // cabeza y la del agua de lavado, bajo la tubería, a la izquierda de sus pies
+  ['AIRE', 'Entrada del aire', 512, 540, 'der', 'solo-en'],
+  ['AIRE', 'Entrada del aire', 512, 404, 'der', 'solo-es'],
+  ['PERSONA', 'Persona\nde 1,75 m', 562, 500, 'der', 'solo-es'],
   ['DRENAJE', 'Drenaje', 300, 732, 'der'],
-  ['LAVADO', 'Entrada del agua\nde lavado', 512, 692, 'der'],
+  ['LAVADO', 'Entrada del agua\nde lavado', 512, 692, 'der', 'solo-en'],
+  ['LAVADO', 'Entrada del agua\nde lavado', 470, 776, 'izq', 'solo-es'],
 ];
 let trazos = '', bx0 = minX, bx1 = maxX, by0 = minY, by1 = maxY;
-for (const [a, t, tx, ty, lado] of RS) {
+for (const [a, t, tx, ty, lado, clase] of RS) {
   if (!ANCLAS[a]) throw new Error(`Falta el ancla ${a}`);
   const [ax, ay] = k.iso(ANCLAS[a], P);
   const lineas = t.split('\n'), w = Math.max(...lineas.map(ancho)), der = lado === 'der';
   const ex = der ? tx - 5 : tx + 5, ey = ty - letra * 0.35;
   const tspans = lineas.map((l, i) => `<tspan x="${tx}" dy="${i ? renglon : 0}">${l}</tspan>`).join('');
-  trazos += `<path class="rot-linea" d="M${r1(ax)} ${r1(ay)}L${r1(ex)} ${r1(ey)}"/><circle class="rot-punto" cx="${r1(ax)}" cy="${r1(ay)}" r="3"/>` +
+  const rot = `<path class="rot-linea" d="M${r1(ax)} ${r1(ay)}L${r1(ex)} ${r1(ey)}"/><circle class="rot-punto" cx="${r1(ax)}" cy="${r1(ay)}" r="3"/>` +
     `<text class="rot-texto" x="${tx}" y="${ty}" text-anchor="${der ? 'start' : 'end'}" font-size="${letra}">${tspans}</text>`;
+  trazos += clase ? `<g class="${clase}">${rot}</g>` : rot;
   bx0 = Math.min(bx0, der ? tx : tx - w); bx1 = Math.max(bx1, der ? tx + w : tx);
   by0 = Math.min(by0, ty - letra); by1 = Math.max(by1, ty + (lineas.length - 1) * renglon + 4);
 }
@@ -88,10 +99,12 @@ const etiqueta = 'Filtro a presión de doble medio para el agua de servicios, en
   'Unas flechas muestran el agua que baja en servicio: entra por la corona, se abre en el distribuidor, baja hacia el medio y, en el pleno, va hacia la salida. ' +
   'En la tapa están el venteo, con su válvula de alivio de aire, y la boca de visita con su tapa empernada. En la tubería de entrada y en la de salida hay un manómetro; los dos juntos leen la caída de presión del lecho. ' +
   'En la pared de la derecha, sobre la placa, un registro de mano y, debajo, la entrada del aire al pleno con su válvula. ' +
-  'Abajo salen del fondo la salida del agua filtrada, hacia la izquierda, y la entrada del agua de lavado, hacia la derecha, cada una con su brida y su válvula de mariposa; en el centro, el drenaje con su válvula de bola.';
+  'Abajo salen del fondo la salida del agua filtrada, hacia la izquierda, y la entrada del agua de lavado, hacia la derecha, cada una con su brida y su válvula de mariposa; en el centro, el drenaje con su válvula de bola. ' +
+  'A la derecha, de pie en el piso junto a la válvula del agua de lavado, una persona de 1,75 m da la escala: la cabeza le queda a la altura de la capa de arena.';
 const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, at) => `<svg${at.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'particulas-en-un-fluido/_filtro-arena');
+  .replace('<g class="it" data-name="persona"', '<g class="it solo-es" data-name="persona"')
+  .replace(/<\/svg>\s*$/, `<style>.rotulos .solo-en{display:none}#impresion .rotulos .solo-en{display:inline}#impresion .solo-es{display:none}</style><g class="rotulos">${trazos}</g></svg>`), 'particulas-en-un-fluido/_filtro-arena');
 mkdirSync(DEST, { recursive: true });
 writeFileSync(join(DEST, '_filtro-arena.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
 console.log('_filtro-arena.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);

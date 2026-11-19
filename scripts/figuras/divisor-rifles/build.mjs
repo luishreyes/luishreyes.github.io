@@ -6,6 +6,8 @@
    mitad es representativa porque todas las canaletas cortan la misma corriente a lo ancho.
    Unidades: 1 = 1 mm. x a lo largo de la fila de canaletas, y hacia el lector (el lado de la bandeja
    que se ve), z hacia arriba. Medidas en geo.mjs.
+   La figura es solo del libro: lleva la mano de referencia (../persona.mjs), apoyada en el borde de atrás de la tolva.
+   Uso: node build.mjs [--audit] [--fast]   (DR_MANO='{"x":…,"gira":…}' prueba otro lugar para la mano)
    ==================================================================== */
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -17,6 +19,7 @@ const G = await import(KIT + "/kit/lathe.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const { DR } = await import(join(HERE, "geo.mjs"));
+const { manoEnBorde, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 
 const W = 1000, H = 760;
@@ -146,16 +149,33 @@ box("tolva.reborde3", [L + endT, -YT, RZ0], [L + endT + RB, YT, RZ1], { tone: "m
   turned(`${n}.monton`, ZA([L / 2, s * heap.y, e]), prof, { tone: "lo" }, { owner: `stand.${n}.fondo`, extra: Dots(granos.map(at), { size: 0.6, tone: "mid" }) });
 });
 
+/* ====================================================================
+   5 · la mano de referencia (geo.mjs, DR.mano; ../persona.mjs, manoEnBorde): una mano derecha de adulto que llega
+   desde atrás y apoya los dedos en el reborde de la tolva del lado de atrás. Los dedos se apoyan en el dibujo mismo
+   (la distancia a las formas ya registradas). La cámara no la incluye, para que el divisor quede como estaba: la mano
+   sale por arriba del cuadro y libro.mjs abre el recorte lo justo.
+   ==================================================================== */
+const ANCLA_MANO = {};
+{
+  // DR_MANO='{"x":…,"gira":…}' prueba otro lugar sin tocar geo.mjs
+  const M = { ...DR.mano, ...(process.env.DR_MANO ? JSON.parse(process.env.DR_MANO) : {}) }, formas = R_.items.flatMap((it) => it.shapes || []);
+  const apoyo = (p) => { let d = Infinity; for (const sh of formas) { const v = A.sdf(sh, p); if (v < d) d = v; } return d; };
+  const m = manoEnBorde({ P, borde: [M.x, -(YT + hop.rim / 2), hop.z1 + 2.5], hacia: [0, 1, 0], lado: "der", mm: 1, adentro: M.adentro, alto: M.alto, inclina: M.inclina, gira: M.gira, apoyo });
+  m.shapes.forEach(record);
+  put("mano", m.ref, m.svg, m.shapes);
+  ANCLA_MANO.MANO = m.anclas.MANO;
+}
+
 /* ---------- orden y salida ---------- */
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
-const svg = k.figureSvg({ width: W, height: H, label: "Divisor de rifles: la tolva de alimentación sobre una fila de doce canaletas que desaguan, una sí y una no, hacia dos bandejas, cada una con la mitad de la muestra", body: [`<g class="dr-items">${groups.join("")}</g>`] });
+const svg = k.figureSvg({ width: W, height: H, label: "Divisor de rifles: la tolva de alimentación sobre una fila de doce canaletas que desaguan, una sí y una no, hacia dos bandejas, cada una con la mitad de la muestra", body: [`<style>${CSS_PERSONA}</style><g class="dr-items">${groups.join("")}</g>`] });
 mkdirSync(join(HERE, "out"), { recursive: true });
 writeFileSync(join(HERE, "out", "fig.svg"), svg);
 writeFileSync(join(HERE, "out", "fig.css"), k.ISO_CSS);
 writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Divisor de rifles", theme: "light", width: 1000, body: `<div class="iso-stage">${svg}</div>`, script: "" }));
-const ANCLAS = { TOLVA: [L * 0.25, -Y, hop.z1], CANALETA: [w * 2.5, Y + lip * 0.5, zLow - lip * 0.5], TABIQUE: [w * 5, Y, skirt - 10], BANDEJA: [L * 0.8, pan.y1, pan.h * 0.5], MONTON: [L / 2, heap.y, heap.h * 0.6], PLACA: [L * 0.62 + 35, YT + 1, zTop + 27], PATA: [-endT - leg / 2, Y - 4, zLow * 0.5], ASA: [-endT - leg - 18, 0, zTop - 10] };
+const ANCLAS = { TOLVA: [L * 0.25, -Y, hop.z1], CANALETA: [w * 2.5, Y + lip * 0.5, zLow - lip * 0.5], TABIQUE: [w * 5, Y, skirt - 10], BANDEJA: [L * 0.8, pan.y1, pan.h * 0.5], MONTON: [L / 2, heap.y, heap.h * 0.6], PLACA: [L * 0.62 + 35, YT + 1, zTop + 27], PATA: [-endT - leg / 2, Y - 4, zLow * 0.5], ASA: [-endT - leg - 18, 0, zTop - 10], ...ANCLA_MANO };
 writeFileSync(join(HERE, "divisor_data.json"), JSON.stringify({ P, W, H, ANCLAS, DR }));
 console.log("items", R_.items.length, "scale", G.scaleOf(P).toFixed(3));
 if (!FAST) A.auditOrExit(R_, P, {});

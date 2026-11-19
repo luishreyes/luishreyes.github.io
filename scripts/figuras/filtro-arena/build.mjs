@@ -11,7 +11,9 @@
    El medio va escalonado: además de la mitad del lector se quita el cuarto de atrás a la derecha (x > 0, y < 0) hasta
    la placa, así se ven las cabezas de las boquillas, y el medio que queda muestra las capas en sus dos caras (y = 0 y
    x = 0). Todo lo de adentro está bajo el agua (el filtro va lleno) y lleva su tinte (fa-sub).
-   Uso: node build.mjs [--audit] [--fast]
+   La figura es solo del libro: lleva la persona de referencia de 1,75 m (../persona.mjs), de pie a la derecha, junto a
+   la válvula de la entrada del agua de lavado.
+   Uso: node build.mjs [--audit] [--fast]   (FA_PER="x,y,rumbo" prueba otro lugar para la persona)
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -25,6 +27,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const STEP = Number(process.env.FA_STEP || 0.25);
 const FA = GEO.FA, DN = GEO.DN, RO = GEO.RO;
@@ -720,6 +723,15 @@ function bottomLine(name, deg, r, d, dir, { run, gaugeAt = 0, bar = 0, open = tr
   }
 }
 
+/* ---------- la persona de referencia: 1,75 m, de pie en el piso junto a la válvula del lavado (../persona.mjs) ---------- */
+{
+  const PS = process.env.FA_PER ? Object.fromEntries(["x", "y", "rumbo"].map((kk, i) => [kk, Number(process.env.FA_PER.split(",")[i])])) : FA.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.PECHO;
+}
+
 /* ---------- las caras del corte, un elemento por pieza ---------- */
 {
   const groups = new Map();
@@ -769,7 +781,8 @@ const CSS = `.fa-cut{${shades("#c9ced3", "#c9ced3", "#c9ced3", "#c9ced3", "#c9ce
 .fa-mixa{fill:#34373b}.fa-mixs{fill:#c9bc9b}
 .fa-medio .iso-line[data-tone="mid"]{stroke:#6c7178}.fa-medio .iso-line[data-tone="lo"]{stroke:#8f959b}
 .fa-flujo{fill:none;stroke:#2f5f86;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
-.fa-flecha{fill:#2f5f86;stroke:none;opacity:.85}`;
+.fa-flecha{fill:#2f5f86;stroke:none;opacity:.85}
+${CSS_PERSONA}`;
 const groupsSvg = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

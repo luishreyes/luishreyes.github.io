@@ -28,6 +28,9 @@ export const FA = {
   bot: { r: 300, rb: 320, out: 150, bw: -40, run: 260 },   // salida (DN 100) y entrada del lavado (DN 150) en el fondo
   legs: { r: 600, degs: [-15, 75, 165, 255], a: 80, rp: 57.15, plate: 115, pt: 20 },
   inlet: { z1: 3320, spool: 330, run: 700 },      // la entrada DN 150 en la corona: cara de la brida y tubería
+  /* la persona de referencia (../persona.mjs, 1,75 m; medida del libro): de pie en el piso, a la derecha del filtro y un
+     poco hacia el lector, pasada la válvula de la entrada del agua de lavado, mirando hacia ella y hacia el filtro */
+  persona: { x: 1166, y: -450, rumbo: 160 },
 };
 /* tubo cédula 40 y bridas deslizantes ASME B16.5 clase 150: radio exterior e interior del tubo, radio y espesor de la
    brida, radio del círculo de pernos y número de pernos */

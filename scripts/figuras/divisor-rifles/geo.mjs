@@ -14,4 +14,10 @@ export const DR = {
   leg: 15,                      // tubo cuadrado de las patas
   pan: { x0: 16, x1: 284, y0: 40, y1: 165, h: 45 },
   heap: { y: 102, r: 54, h: 40 },
+  /* la mano de referencia (medida del libro): el divisor mide 30 cm de largo y 33 cm de alto, menos que una persona, así
+     que la escala la da una mano derecha de adulto (../persona.mjs, manoEnBorde) que llega desde atrás y apoya los dedos
+     en el reborde de la tolva del lado de atrás (y < 0), hacia el extremo de atrás: x, dónde va el nudillo del medio a lo
+     largo del reborde; adentro, el nudillo desde el centro del reborde (negativo: afuera); alto, el nudillo sobre él;
+     inclina, cuánto baja el dorso hacia la muñeca; gira, cuánto se gira la mano sobre el reborde. */
+  mano: { x: 190, adentro: -6, alto: 40, inclina: 10, gira: 40 },
 };

@@ -1,6 +1,6 @@
 // La tamizadora de golpeteo, quieta y con los nombres de sus piezas, para el libro de operaciones unitarias.
 //
-//   node build.mjs --eq=tamiz --n=N && node libro-tamiz.mjs --caso caso.json --salida {libro}/figuras/{capítulo}
+//   node build.mjs --eq=tamiz --n=N --libro && node libro-tamiz.mjs --caso caso.json --salida {libro}/figuras/{capítulo}
 //
 // El caso es un JSON con la pila del análisis y lo que retiene cada tamiz:
 //   { "rows": [{ "m": "n.º 18", "a": 1000 }, …],   del tamiz de arriba al de abajo; a, abertura en µm
@@ -8,8 +8,9 @@
 //     "color": "#d9cfb8",                           el color del material
 //     "granos": 360,                                cuántos granos dibujar (cada uno, un incremento de masa igual)
 //     "nombre": "_tamizadora.qmd", "titulo": "…" }
-// Abre la figura en Chromium con el código en vivo del explorador (FSieve, en out/fig.js), deja caer los granos de
-// una vez (snap) hasta el tamiz que los retiene, para la pila y el martillo, y saca el SVG con los rótulos de las
+// Abre la figura de la vista del libro (out/tamiz-N-libro.svg: la del explorador con la mano de referencia apoyada en
+// la caja, junto a la torre) en Chromium con el código en vivo del explorador (FSieve, en out/fig.js), deja caer los
+// granos de una vez (snap) hasta el tamiz que los retiene, para la pila y el martillo, y saca el SVG con los rótulos de las
 // piezas y de cada tamiz. Escribe el .qmd con el SVG en un bloque de HTML crudo y el CSS propio de la tamizadora en
 // estilo/anatomia-molienda.css del libro, con el de los molinos (las clases del kit van en estilo/anatomia.css, que escribe bomba/libro.mjs).
 import { chromium } from 'playwright';
@@ -26,10 +27,10 @@ const DEST = resolve(arg('--salida', '.'));
 const n = CASO.rows.length;
 if (n < 3 || n > 9) throw new Error('La tamizadora lleva de 3 a 9 tamices');
 if (CASO.masas.length !== n + 1) throw new Error('Hacen falta n masas más la del fondo');
-for (const f of [`out/tamiz-${n}.svg`, `out/tamiz-${n}.json`, 'out/fig.js', 'out/fig.css'])
-  if (!existsSync(join(AQUI, f))) throw new Error(`Falta ${f}: corra node build.mjs --eq=tamiz --n=${n}`);
-const SVG = readFileSync(join(AQUI, `out/tamiz-${n}.svg`), 'utf8');
-const D = JSON.parse(readFileSync(join(AQUI, `out/tamiz-${n}.json`), 'utf8'));
+for (const f of [`out/tamiz-${n}-libro.svg`, `out/tamiz-${n}-libro.json`, 'out/fig.js', 'out/fig.css'])
+  if (!existsSync(join(AQUI, f))) throw new Error(`Falta ${f}: corra node build.mjs --eq=tamiz --n=${n} --libro --audit`);
+const SVG = readFileSync(join(AQUI, `out/tamiz-${n}-libro.svg`), 'utf8');
+const D = JSON.parse(readFileSync(join(AQUI, `out/tamiz-${n}-libro.json`), 'utf8'));
 const JS = readFileSync(join(AQUI, 'out/fig.js'), 'utf8');
 const CSS = readFileSync(join(AQUI, 'out/fig.css'), 'utf8');
 
@@ -91,10 +92,16 @@ for (let k = 0; k < n; k++) {
   const abertura = row.a >= 1000 ? coma(row.a / 1000, 2) + nbsp + 'mm' : row.a + nbsp + 'µm';
   trazos.push(linea([ax, ay], ay, `${row.m} · ${abertura} · ${coma(m, 1)}${nbsp}g`));
 }
-const etiqueta = CASO.titulo || `Tamizadora de golpeteo con una pila de ${n} tamices de 200 mm abierta por delante: cada tamiz retiene los granos que no pasan por su malla.`;
+/* la mano de referencia, solo en el libro web en español: la edición impresa en inglés (en/herramientas/figuras-06.mjs)
+   copia esta figura dentro de #impresion, donde la mano y su rótulo (clase solo-es) no se ven, así la lámina sale como
+   antes; el recorte no cambia */
+trazos.push(`<g class="solo-es">${linea(en('mano', 0.6, 0.3), cj('mano')[1] + cj('mano')[3] * 0.3, 'Mano', true)}</g>`);
+const etiqueta = (CASO.titulo || `Tamizadora de golpeteo con una pila de ${n} tamices de 200 mm abierta por delante: cada tamiz retiene los granos que no pasan por su malla.`) +
+  ' Una mano apoyada en la caja, junto a la torre del martillo, da la escala.';
 const cuerpo = aplicarPaleta(svg.replace(/(\d+\.\d)\d+/g, '$1')
   .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role)="[^"]*"/g, '')} viewBox="-70 12 710 650" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos.join('')}</g></svg>`), 'tamizado-y-analisis-granulometrico/_tamizadora');
+  .replace('<g class="it" data-name="mano"', '<g class="it solo-es" data-name="mano"')
+  .replace(/<\/svg>\s*$/, `<style>#impresion .solo-es{display:none}</style><g class="rotulos">${trazos.join('')}</g></svg>`), 'tamizado-y-analisis-granulometrico/_tamizadora');
 mkdirSync(DEST, { recursive: true });
 const nombre = CASO.nombre || '_tamizadora.qmd';
 writeFileSync(join(DEST, nombre), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');

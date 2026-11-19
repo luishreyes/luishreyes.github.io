@@ -20,10 +20,12 @@ node build.mjs --audit        # unos 2½ minutos (2 del orden); debe terminar en
 node build.mjs --fast         # sin orden ni audit: para mirar la geometría
 node libro.mjs                # --salida ../../../../libro-operaciones-unitarias/libro (por defecto)
 FA_ITEM="pieza" node build.mjs   # lista todo lo que se cruza con una pieza en pantalla
+FA_PER="x,y,rumbo" node build.mjs  # prueba otro lugar para la persona de referencia
 CHROME_PATH=/opt/pw-browsers/chromium node ../../../.claude/skills/anatomy/scripts/lines.mjs preview.html --select svg
 ```
 
-El dibujo va en milímetros y el audit en centímetros (`cm()`).
+El dibujo va en milímetros y el audit en centímetros (`cm()`). Lleva la persona de referencia de 1,75 m
+(`../persona.mjs`), siempre: el dibujo solo lo usa el libro (su lugar, en `FA.persona` de `geo.mjs`).
 
 | Archivo | Qué es |
 |---|---|
@@ -35,6 +37,9 @@ El dibujo va en milímetros y el audit en centímetros (`cm()`).
 ## Qué escribe
 
 `node libro.mjs` escribe `figuras/particulas-en-un-fluido/_filtro-arena.qmd` en el libro (la vista y los rótulos en
-español), que el capítulo incluye con `{{< include … >}}` dentro de un bloque `::: {#fig-…}`. Los colores salen de la
+español, con la persona y su rótulo), que el capítulo incluye con `{{< include … >}}` dentro de un bloque `::: {#fig-…}`.
+La edición impresa en inglés copia esa vista dentro de `#impresion`: la persona y los dos rótulos que se corrieron por
+ella llevan la clase `solo-es`, y esos dos rótulos en su lugar de antes, `solo-en`, así la lámina inglesa sale como
+antes y el recorte no cambia. Los colores salen de la
 paleta del libro (`estilo/paleta.json`, sección `isometricas`) por `../paleta-libro.mjs`: si cambia un color, `node
 ../paleta-libro.mjs` vuelve a pintar la vista sin rehacer el dibujo.

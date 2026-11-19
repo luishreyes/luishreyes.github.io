@@ -77,7 +77,7 @@ en dos dimensiones del lienzo, con sus anotaciones (hombro, pie, sentido de giro
 
 | Archivo | Qué es |
 |---|---|
-| `build.mjs` | `node build.mjs --eq=bolas\|mand\|rod\|mart\|disc [--audit] [--fast]`: geometría del equipo, orden de pintura (`A.settle`) y audit. Escribe `out/molino-{eq}.svg` y `.json`, `out/fig.js`, `out/fig.css` y `preview.html`. `--js` solo rehace `fig.js` y `fig.css`. |
+| `build.mjs` | `node build.mjs --eq=bolas\|mand\|rod\|mart\|disc [--libro] [--audit] [--fast]`: geometría del equipo, orden de pintura (`A.settle`) y audit. Escribe `out/molino-{eq}.svg` y `.json`, `out/fig.js`, `out/fig.css` y `preview.html`. `--js` solo rehace `fig.js` y `fig.css`. Con `--libro`, la vista del libro, con la escala humana de `../persona.mjs` (la persona de 1,75 m delante de cada molino; la mano en la caja de la tamizadora, `ESCALA` en `build.mjs`): escribe aparte `out/{figura}-libro.svg` y `.json` y `out/preview-libro.html`. Sin `--libro` el SVG del explorador sale igual y `splice.mjs` no la ve. |
 | `bolas.mjs`, `mand.mjs`, `rod.mjs`, `mart.mjs`, `disc.mjs` | Cada equipo: su cámara (`camera`) y sus piezas (`build`), con los datos que necesita la página. |
 | `helpers.mjs` | Cajas, prismas en cualquier marco, cuerpos torneados, coronas, tubos, esferas, asientos, diales. |
 | `geo.mjs` | Medidas y la relación con el lienzo de partículas de cada equipo (`BM`, `JC`, `RC`, `HM`, `DS`, `jcMove`). Sin imports: corre en el build y en la página. |
@@ -85,8 +85,8 @@ en dos dimensiones del lienzo, con sus anotaciones (hombro, pie, sentido de giro
 | `live.js` | `FMill`: lo que gira y lo que se mueve, y las partículas en el plano de cada máquina. |
 | `tamiz.mjs`, `tamiz-live.js` | La tamizadora (`--eq=tamiz --n=3…9`) y `FSieve`, que la mueve con la muestra del explorador. |
 | `ml.css` | Fundición, acero, concreto, motor, corona, criba, correas, cortes y lo vivo. El tema blueprint va en el explorador. |
-| `libro-molinos.mjs` | Para el libro de operaciones unitarias: abre el explorador de 2027-10, deja correr la simulación con cada equipo y saca la máquina quieta, con las partículas del lienzo como una capa WebP dentro del SVG y los nombres de las piezas en español (`_molino-{eq}.qmd`). `--cajas` dibuja las cajas de todas las piezas para escoger dónde van los rótulos. |
-| `libro-tamiz.mjs` | Para el libro: la tamizadora quieta con la pila de un análisis y sus rótulos (`_tamizadora.qmd`). Las dos escriben el CSS de la molienda del libro (`estilo/anatomia-molienda.css`). |
+| `libro-molinos.mjs` | Para el libro de operaciones unitarias: abre el explorador de 2027-10, le entrega `out/molino-{eq}-libro.svg` en lugar del SVG de cada máquina, deja correr la simulación con cada equipo y saca la máquina quieta, con las partículas del lienzo como una capa WebP dentro del SVG y los nombres de las piezas en español (`_molino-{eq}.qmd`). La persona y su rótulo llevan la clase `solo-es`, que la edición impresa en inglés esconde, y el SVG conserva el recorte sin la persona: ella va en un relleno de abajo (`svg.recorte-ingles`), así la lámina inglesa sale como antes. `--cajas` dibuja las cajas de todas las piezas para escoger dónde van los rótulos. |
+| `libro-tamiz.mjs` | Para el libro: la tamizadora quieta (`out/tamiz-N-libro.svg`, con la mano, que con su rótulo lleva la clase `solo-es`) con la pila de un análisis y sus rótulos (`_tamizadora.qmd`). Las dos escriben el CSS de la molienda del libro (`estilo/anatomia-molienda.css`). |
 | `splice.mjs` | Mete el código y los datos en el HTML publicado (marcadores `MLFIG_*`, con `ML_FIGS` y `ML_TAMIZ`) y copia los SVG a `simulaciones/fig/molienda/`. |
 
 ```sh
@@ -97,6 +97,15 @@ node build.mjs --eq=mart --audit
 node build.mjs --eq=disc --audit    # minuto y cuarto
 for n in 3 4 5 6 7 8 9; do node build.mjs --eq=tamiz --n=$n --audit; done   # unos 25 s cada una
 node splice.mjs
+```
+
+Las vistas del libro, con la persona y la mano (no tocan lo del explorador):
+
+```sh
+for eq in mand rod mart disc bolas; do node build.mjs --eq=$eq --libro --audit; done
+node build.mjs --eq=tamiz --n=9 --libro --audit
+node libro-molinos.mjs --salida ../../../../libro-operaciones-unitarias/libro/figuras/reduccion-de-tamano
+node libro-tamiz.mjs --caso ../../../../libro-operaciones-unitarias/libro/figuras/tamizado-y-analisis-granulometrico/tamizadora.json --salida ../../../../libro-operaciones-unitarias/libro/figuras/tamizado-y-analisis-granulometrico
 ```
 
 Reglas que salieron de armarlas, para la próxima:

@@ -29,6 +29,10 @@ export const FL = {
   earth: { deg: -2, z: 105 },                 // borne de puesta a tierra
   oil: { deg: 190, neck: 112, down: 230 },    // el rebose del aceite DN 40 (el fondo del agujero a z₁)
   legs: { r: 220, degs: [90, 210, 330], dn: 50, pad: 46, padt: 8, plate: 80, pt: 12 },
+  /* la persona de referencia (../persona.mjs, 1,75 m; medida del libro): de pie en el piso, a la derecha, pasadas las
+     dos válvulas del hidrolato (al alambique y al desagüe), mirando hacia ellas y hacia el florentino. Solo la pone
+     build.mjs: dibujo.mjs, que el tren de condensación usa tal cual, no la lleva. */
+  persona: { x: 1141, y: -645, rumbo: 150 },
 };
 /* tubo de acero inoxidable cédula 10S y bridas deslizantes ASME B16.5 clase 150: radio exterior e interior del tubo,
    radio y espesor de la brida, radio del círculo de pernos y número de pernos */

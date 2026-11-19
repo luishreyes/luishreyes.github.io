@@ -10,7 +10,9 @@
    Corte: se quita lo que mira al lector por encima del fondo (y > 0, z > ZF). El fondo plano queda entero; la
    envolvente, la brida, la tapa, el tubo de calma y el deflector se ven cortados por el plano y = 0, y el agua y el
    aceite se dibujan translúcidos en sus caras (la del corte, la interfase y la superficie del aceite).
-   Uso: node build.mjs [--audit] [--fast]
+   La figura es solo del libro: lleva la persona de referencia de 1,75 m (../persona.mjs), de pie a la derecha, junto a
+   las válvulas del hidrolato.
+   Uso: node build.mjs [--audit] [--fast]   (FL_PER="x,y,rumbo" prueba otro lugar para la persona)
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -25,6 +27,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const { dibujarFlorentino, CSS_FL } = await import(join(HERE, "dibujo.mjs"));
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const STEP = Number(process.env.FL_STEP || 0.25);
 const FL = GEO.FL, DN = GEO.DN, RO = GEO.RO, rect = GEO.rect;
@@ -197,6 +200,17 @@ const boreOn = (rc, deg, z, rh, cls) => `<path class="${cls}" d="${pth1(Array.fr
 dibujarFlorentino({ A, G, P, at, Ln, Dots, path3, V3, HV, pr, r10, pth1, put, record, box, fp, turned, disc, tubeItems, ball, entry, saddle,
   surface, toned, circ, boreOn, DEFS, ANCH, cutStore });
 
+/* la persona de referencia: 1,75 m, de pie en el piso a la derecha, pasadas las válvulas del hidrolato (../persona.mjs).
+   Va aquí y no en dibujo.mjs, para que el tren de condensación, que tiene la suya, no cambie. La cámara no la incluye:
+   el florentino queda como estaba y libro.mjs abre el recorte hacia la derecha. */
+{
+  const PS = process.env.FL_PER ? Object.fromEntries(["x", "y", "rumbo"].map((kk, i) => [kk, Number(process.env.FL_PER.split(",")[i])])) : FL.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.CABEZA;
+}
+
 /* ---------- orden y salida ---------- */
 if (process.env.FL_ITEM) {
   for (const nm of process.env.FL_ITEM.split(",")) {
@@ -213,7 +227,7 @@ const t0 = Date.now();
 if (!FAST) A.settle(R_, PA, { step: STEP });
 if (!FAST) console.log("orden:", ((Date.now() - t0) / 1000).toFixed(1), "s");
 R_.items.sort((a, b) => a.key - b.key);
-const CSS = CSS_FL;
+const CSS = CSS_FL + "\n" + CSS_PERSONA;
 const groupsSvg = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

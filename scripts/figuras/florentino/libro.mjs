@@ -6,7 +6,8 @@
 // Escribe figuras/sedimentacion-y-decantacion/_florentino.qmd con el SVG del skill anatomy y los rótulos (línea y punto,
 // como el filtro de arena y el tanque agitado), y out/libro-preview.html para revisarla en el navegador. Cada rótulo
 // va en su lugar (x, y del texto en unidades del dibujo), a la izquierda o a la derecha de la pieza; un texto con
-// «\n» va en dos renglones y la línea llega al primero.
+// «\n» va en dos renglones y la línea llega al primero. La persona de referencia (la que pone build.mjs) lleva su rótulo,
+// «Persona de 1,75 m», y no sale en la lámina inglesa (ver más abajo).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -24,31 +25,36 @@ const { P, ANCLAS } = JSON.parse(readFileSync(join(AQUI, 'out/florentino_data.js
 const r1 = (v) => Math.round(v * 10) / 10;
 const svg = readFileSync(join(AQUI, 'out/fig.svg'), 'utf8');
 
-// el contorno del dibujo, de las coordenadas de sus trazos (relativas después del primer punto); sin los patrones
-const trazosSvg = svg.replace(/<defs>[\s\S]*?<\/defs>/, '');
-const absol = [];
-for (const m of trazosSvg.matchAll(/ d="M(-?[\d.]+)[ ,]?(-?\.?[\d.]+)((?:[lmz][^"]*)?)"/g)) {
-  let x = Number(m[1]), y = Number(m[2]);
-  absol.push([x, y]);
-  const rest = m[3].match(/[lmz]|-?\d*\.?\d+/g) || [];
-  let cmd = '', i = 0, sx = x, sy = y;
-  while (i < rest.length) {
-    const t = rest[i];
-    if (/[lmz]/.test(t)) { cmd = t; if (t === 'z') { x = sx; y = sy; } i++; continue; }
-    const dx = Number(t), dy = Number(rest[i + 1]); i += 2;
-    x += dx; y += dy; if (cmd === 'm') { sx = x; sy = y; cmd = 'l'; }
+// el contorno del dibujo, de las coordenadas de sus trazos (relativas después del primer punto); sin los patrones.
+// Se mide dos veces: con la persona de referencia (la vista de la web) y sin ella (la lámina inglesa, abajo).
+function contorno(texto) {
+  const absol = [];
+  for (const m of texto.replace(/<defs>[\s\S]*?<\/defs>/, '').matchAll(/ d="M(-?[\d.]+)[ ,]?(-?\.?[\d.]+)((?:[lmz][^"]*)?)"/g)) {
+    let x = Number(m[1]), y = Number(m[2]);
     absol.push([x, y]);
+    const rest = m[3].match(/[lmz]|-?\d*\.?\d+/g) || [];
+    let cmd = '', i = 0, sx = x, sy = y;
+    while (i < rest.length) {
+      const t = rest[i];
+      if (/[lmz]/.test(t)) { cmd = t; if (t === 'z') { x = sx; y = sy; } i++; continue; }
+      const dx = Number(t), dy = Number(rest[i + 1]); i += 2;
+      x += dx; y += dy; if (cmd === 'm') { sx = x; sy = y; cmd = 'l'; }
+      absol.push([x, y]);
+    }
   }
+  return [Math.min(...absol.map((p) => p[0])), Math.min(...absol.map((p) => p[1])), Math.max(...absol.map((p) => p[0])), Math.max(...absol.map((p) => p[1]))];
 }
-const minX = Math.min(...absol.map((p) => p[0])), maxX = Math.max(...absol.map((p) => p[0]));
-const minY = Math.min(...absol.map((p) => p[1])), maxY = Math.max(...absol.map((p) => p[1]));
+const iPer = svg.indexOf('<g class="it" data-name="persona"'), fPer = svg.indexOf('<g class="it"', iPer + 10);
+if (iPer < 0) throw new Error('Falta la persona en out/fig.svg: corra antes node build.mjs');
+const [minX, minY, maxX, maxY] = contorno(svg);
+const sinPersona = contorno(svg.slice(0, iPer) + (fPer > 0 ? svg.slice(fPer) : '</g></svg>'));
 if (process.argv.includes('--anclas')) {
   console.log('dibujo', r1(minX), r1(minY), r1(maxX), r1(maxY));
   for (const [a, p] of Object.entries(ANCLAS)) { const [x, y] = k.iso(p, P); console.log(a.padEnd(16), r1(x), r1(y)); }
 }
 
 const letra = 13, renglon = letra * 1.2, ancho = (t) => t.length * letra * 0.55;
-// [ancla, texto, x, y del texto (primer renglón), lado: 'der' (la línea llega por la izquierda del texto) o 'izq']
+// [ancla, texto, x, y del texto (primer renglón), lado: 'der' (la línea llega por la izquierda del texto) o 'izq', clase]
 const RS = [
   ['ENTRADA', 'Entrada del condensado', 130, 16, 'der'],
   ['VENTEO', 'Venteo', 330, 80, 'der'],
@@ -71,20 +77,41 @@ const RS = [
   ['TIERRA', 'Puesta\na tierra', 335, 512, 'der'],
   ['CALDERA', 'Al alambique\n(cohobación)', 520, 738, 'der'],
   ['DESAGUE', 'Al desagüe', 440, 760, 'izq'],
+  // la persona de referencia, a la derecha de las válvulas del hidrolato: el rótulo, arriba a la izquierda de la cabeza.
+  // Los dos llevan la clase solo-es (ver abajo, la lámina inglesa)
+  ['PERSONA', 'Persona de 1,75 m', 660, 120, 'izq', 'solo-es'],
 ];
 let trazos = '', bx0 = minX, bx1 = maxX, by0 = minY, by1 = maxY;
-for (const [a, t, tx, ty, lado] of RS) {
+let [ex0, ey0, ex1, ey1] = sinPersona;     // el recorte de la lámina inglesa: sin la persona ni su rótulo
+for (const [a, t, tx, ty, lado, clase] of RS) {
   if (!ANCLAS[a]) throw new Error(`Falta el ancla ${a}`);
   const [ax, ay] = k.iso(ANCLAS[a], P);
   const lineas = t.split('\n'), w = Math.max(...lineas.map(ancho)), der = lado === 'der';
   const ex = der ? tx - 5 : tx + 5, ey = ty - letra * 0.35;
   const tspans = lineas.map((l, i) => `<tspan x="${tx}" dy="${i ? renglon : 0}">${l}</tspan>`).join('');
-  trazos += `<path class="rot-linea" d="M${r1(ax)} ${r1(ay)}L${r1(ex)} ${r1(ey)}"/><circle class="rot-punto" cx="${r1(ax)}" cy="${r1(ay)}" r="3"/>` +
+  const rot = `<path class="rot-linea" d="M${r1(ax)} ${r1(ay)}L${r1(ex)} ${r1(ey)}"/><circle class="rot-punto" cx="${r1(ax)}" cy="${r1(ay)}" r="3"/>` +
     `<text class="rot-texto" x="${tx}" y="${ty}" text-anchor="${der ? 'start' : 'end'}" font-size="${letra}">${tspans}</text>`;
+  trazos += clase ? `<g class="${clase}">${rot}</g>` : rot;
   bx0 = Math.min(bx0, der ? tx : tx - w); bx1 = Math.max(bx1, der ? tx + w : tx);
   by0 = Math.min(by0, ty - letra); by1 = Math.max(by1, ty + (lineas.length - 1) * renglon + 4);
+  if (clase !== 'solo-es') {
+    ex0 = Math.min(ex0, der ? tx : tx - w); ex1 = Math.max(ex1, der ? tx + w : tx);
+    ey0 = Math.min(ey0, ty - letra); ey1 = Math.max(ey1, ty + (lineas.length - 1) * renglon + 4);
+  }
 }
 const vx = Math.floor(bx0 - 10), vw = Math.ceil(bx1 + 10 - vx), vy = Math.floor(by0 - 8), vh = Math.ceil(by1 + 10 - vy);
+/* La lámina inglesa: en/herramientas/figuras-17.mjs copia esta figura del libro web dentro de #impresion, y debe salir
+   como antes. Allí la persona y su rótulo (clase solo-es) no se ven. El SVG conserva el recorte de antes (viewBox) y la
+   persona, que queda a la derecha, se pinta en un relleno a la derecha del SVG (padding-right, con overflow visible):
+   en la web el dibujo ocupa lo mismo que con el recorte ancho, y dentro de #impresion el relleno vale 0, así que el
+   recorte de antes llena el ancho de la lámina. Como el relleno en % se mide sobre el ancho de la columna y no sobre el
+   del SVG, en el teléfono, donde el SVG no baja de 640 px (estilo/libro.scss), el relleno no baja de esa parte de 640.
+   Para todo esto la persona solo puede ensanchar el recorte por la derecha. */
+const ux = Math.floor(ex0 - 10), uw = Math.ceil(ex1 + 10 - ux), uy = Math.floor(ey0 - 8), uh = Math.ceil(ey1 + 10 - uy);
+if (ux !== vx || uy !== vy || uh !== vh) throw new Error(`La persona cambió el recorte por la izquierda, por arriba o por abajo (${vx} ${vy} ${vw} ${vh} contra ${ux} ${uy} ${uw} ${uh}): la lámina inglesa ya no saldría igual`);
+const MIN = 640, parte = (vw - uw) / vw;
+const relleno = vw > uw ? ` style="box-sizing:border-box;min-width:${MIN}px;padding-right:max(${(100 * parte).toFixed(4)}%,${(MIN * parte).toFixed(2)}px)"` : '';
+const impresion = '<style>#impresion .solo-es{display:none}#impresion svg.recorte-ingles{padding-right:0 !important;min-width:0 !important}</style>';
 const etiqueta = 'Florentino de la planta de aceite esencial de cáscara de cítricos, en isométrico y en corte. ' +
   'Un recipiente vertical de acero inoxidable de 0,60 m de diámetro y 1,2 m de alto, con fondo plano sobre tres patas y una tapa plana empernada; se le quitó la mitad que mira al lector por encima del fondo, que queda entero. ' +
   'El condensado del arrastre de vapor llega por un tubo desde el condensador y entra por la tapa a un tubo de calma más ancho que baja hasta unos 550 mm del fondo; bajo su boca, un platillo deflector abre el chorro hacia los lados, debajo de la capa de aceite. ' +
@@ -92,13 +119,15 @@ const etiqueta = 'Florentino de la planta de aceite esencial de cáscara de cít
   'A la izquierda, el rebose del aceite: una boquilla cuyo agujero empieza justo en la superficie del aceite, con su válvula hacia el recibo; debajo, a la altura de la interfase, la purga de la capa sucia, con su válvula. ' +
   'A la derecha, la pierna del agua: un tubo que sale cerca del fondo, baja, da la vuelta en U y sube por fuera hasta un codo un poco más bajo que el rebose del aceite, que fija la interfase; tiene un tramo ajustable con prensaestopas. Del codo sube el rompe-sifón, que entra al espacio de cabeza, y el hidrolato baja a dos válvulas: hacia el alambique y hacia el desagüe. ' +
   'También a la derecha, una mirilla de tubo de vidrio muestra el agua abajo y el aceite arriba, y cerca del fondo un borne con un cable de puesta a tierra que baja a una varilla. En la tapa, el venteo con el codo hacia abajo; en el centro del fondo, el drenaje con su válvula. ' +
-  'Unas flechas muestran el condensado que baja por el tubo de calma y sale bajo el deflector, el agua que va hacia la pierna, las gotas que suben y el aceite que va hacia el rebose.';
+  'Unas flechas muestran el condensado que baja por el tubo de calma y sale bajo el deflector, el agua que va hacia la pierna, las gotas que suben y el aceite que va hacia el rebose. ' +
+  'A la derecha, pasadas las válvulas del hidrolato, una persona de 1,75 m de pie en el piso da la escala: la cabeza le queda a la altura de la tapa del florentino.';
 const cuerpo = aplicarPaleta(svg
-  .replace(/<svg([^>]*)>/, (_, at) => `<svg${at.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)
-  .replace(/<\/svg>\s*$/, `<g class="rotulos">${trazos}</g></svg>`), 'sedimentacion-y-decantacion/_florentino');
+  .replace(/<svg([^>]*)>/, (_, at) => `<svg${at.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '').replace(/\sclass="([^"]*)"/, ' class="$1 recorte-ingles"')} viewBox="${ux} ${uy} ${uw} ${uh}"${relleno} role="img" aria-label="${etiqueta}">`)
+  .replace('<g class="it" data-name="persona"', '<g class="it solo-es" data-name="persona"')
+  .replace(/<\/svg>\s*$/, `${impresion}<g class="rotulos">${trazos}</g></svg>`), 'sedimentacion-y-decantacion/_florentino');
 mkdirSync(DEST, { recursive: true });
 writeFileSync(join(DEST, '_florentino.qmd'), '```{=html}\n<div class="iso iso-libro" data-theme="light">' + cuerpo + '</div>\n```\n');
-console.log('_florentino.qmd', Math.round(cuerpo.length / 1024), 'KB', 'viewBox', vx, vy, vw, vh);
+console.log('_florentino.qmd', Math.round(cuerpo.length / 1024), 'KB', 'recorte en la web', vx, vy, vw, vh, '· viewBox (el de la lámina inglesa)', ux, uy, uw, uh);
 
 // una página para revisar la figura con los rótulos: el CSS de las piezas del libro (estilo/anatomia.css) y las reglas
 // de .iso-libro de estilo/libro.scss (en el teléfono la figura no baja de 640 px: se desliza de lado)
