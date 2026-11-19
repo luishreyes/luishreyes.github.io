@@ -170,7 +170,6 @@ export const StudentsPage = () => {
         <section className="a-hundido a-campo">
           <div className="a-c">
             <Sube><h2 className="a-h3 mb-8">{t('students.current')}.</h2></Sube>
-            <div className="grid gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <ul className="a-registro">
               {actuales.map((s, i) => (
                 <Sube as="li" key={s.name} delay={0.04 * Math.min(i, 4)}>
@@ -182,15 +181,6 @@ export const StudentsPage = () => {
                 </Sube>
               ))}
             </ul>
-            <Sube delay={0.1}>
-              <figure className="lg:sticky lg:top-24">
-                <div className="overflow-hidden aspect-[4/3] lg:aspect-[4/5]">
-                  <img src={fotos.marthaAiche.src} alt={localize(fotos.marthaAiche.alt, lang)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: 'center 30%' }} />
-                </div>
-                <figcaption className="a-pie">{localize(fotos.marthaAiche.alt, lang)}.</figcaption>
-              </figure>
-            </Sube>
-            </div>
           </div>
         </section>
       )}

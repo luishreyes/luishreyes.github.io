@@ -177,7 +177,7 @@ export const EditorialPage: React.FC = () => {
           </div>
           <Sube delay={0.08}>
             <Link to="/service/editorships" className="grid grid-cols-3 gap-4 sm:gap-6 items-end" aria-label={t('editorial.editorships.link')}>
-              {editedBooksData.map((book) => (
+              {editedBooksData.filter((book) => book.cover).map((book) => (
                 <img
                   key={book.title}
                   src={book.cover}

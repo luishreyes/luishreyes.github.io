@@ -18,7 +18,7 @@ const anoDe = (p: Product) => parseInt(p.publicationDate.slice(0, 4), 10);
 
 // Las portadas que existen en public/images/books, por DOI o ISBN del libro.
 const PORTADAS: Record<string, string> = Object.fromEntries(
-  editedBooksData.flatMap((b) => [b.doi, b.isbn].filter((x): x is string => !!x).map((id) => [id, b.cover])),
+  editedBooksData.flatMap((b) => (b.cover ? [b.doi, b.isbn].filter((x): x is string => !!x).map((id) => [id, b.cover as string]) : [])),
 );
 
 // Fotos de los congresos de cada año, solo donde la lista tiene ponencias de ese congreso.

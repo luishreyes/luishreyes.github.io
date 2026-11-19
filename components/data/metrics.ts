@@ -4,7 +4,7 @@ import { edcoCoursesData, trainingCourses, moocCourses } from './edco';
 import { grantsData } from './grants';
 import { awardsData } from './awards';
 import { editorialData, leadershipRolesData, committeesData } from './institutional';
-import { editedBooksData, guestEditorshipsData } from './editorships';
+import { publishedBooksData, inPressBooksData, guestEditorshipsData } from './editorships';
 import { outreachData } from './outreach';
 import { studentsData, graduatedStudentsData } from './students';
 
@@ -87,7 +87,8 @@ const firstYear = (text: string) => Number(text.match(/\d{4}/)?.[0]);
 const service = {
   editorialBoards: editorialData.length,
   editorialBoardsSince: Math.min(...editorialData.map((role) => firstYear(role.startDate))),
-  editedBooks: editedBooksData.length,
+  editedBooks: publishedBooksData.length,
+  editedBooksInPress: inPressBooksData.length,
   guestEditorships: guestEditorshipsData.length,
   guestEditorshipsSince: Math.min(...guestEditorshipsData.map((issue) => firstYear(issue.period))),
   leadershipRoles: leadershipRolesData.length,

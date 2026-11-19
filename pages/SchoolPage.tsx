@@ -309,7 +309,7 @@ export const SchoolPage: React.FC = () => {
             <Sube delay={0.06}><Figura src={fotos.gradoJulian.src} alt={localize(fotos.gradoJulian.alt, lang)} pie={t('school.phd.julianPhoto')} proporcion="aspect-[4/5] md:aspect-square" posicion="center 30%" /></Sube>
           </div>
 
-          <div className="mt-20 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+          <div className="mt-20">
             <div>
               <Sube><h3 className="a-h3">{fill(t('school.phd.current'), { N: palabra(studentsData.phd.length, lang, true) })}.</h3></Sube>
               <ul className="mt-6 border-t-2 border-tinta-900">
@@ -321,9 +321,6 @@ export const SchoolPage: React.FC = () => {
                 ))}
               </ul>
             </div>
-            <Sube delay={0.08} className="lg:mt-14">
-              <Figura src={fotos.marthaAiche.src} alt={localize(fotos.marthaAiche.alt, lang)} pie={`${localize(fotos.marthaAiche.alt, lang)}.`} proporcion="aspect-[4/5]" posicion="60% center" />
-            </Sube>
           </div>
         </div>
       </section>

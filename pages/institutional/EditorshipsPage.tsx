@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { EncabezadoPagina } from '../../components/Apertura';
 import { Sube } from '../../components/Sube';
+import { PortadaLibro } from '../../components/PortadaLibro';
 import {
   editedBooksData,
   guestEditorshipsData,
@@ -71,17 +72,16 @@ const BookEntry: React.FC<{ book: EditedBook; chapters: Product[] }> = ({ book, 
   return (
     <Sube as="li" className="grid gap-x-12 gap-y-8 py-14 sm:py-16 sm:grid-cols-[180px_minmax(0,1fr)] lg:grid-cols-[230px_minmax(0,1fr)] border-b-2 border-papel-300">
       <a href={book.url} target="_blank" rel="noopener noreferrer" className="block self-start w-[150px] sm:w-full group">
-        <img
-          src={book.cover}
+        <PortadaLibro
+          book={book}
           alt={fill(t('editorships.coverAlt'), { title: book.title })}
-          loading="lazy"
           className="block w-full h-auto transition-transform duration-200 group-hover:-translate-y-1"
         />
       </a>
       <div>
         <h3 className="a-h3">{titulo}</h3>
         {subtitulo && <p className="mt-2 a-entrada text-tinta-700">{subtitulo}</p>}
-        <p className="mt-5 a-meta">{book.publisher} · {book.year}</p>
+        <p className="mt-5 a-meta">{book.publisher} · {book.inPress ? localize(book.inPress, lang) : book.year}</p>
         <p className="mt-1 a-s">
           {t('editorships.editedBy')} <EditorList names={book.editors} and={t('editorships.and')} />
         </p>

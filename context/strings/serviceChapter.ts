@@ -23,6 +23,7 @@ export const serviceChapter = {
   'svc.figures.title':  { en: 'Service in figures', es: 'El servicio en cifras' },
   'svc.fig.boards':     { en: 'editorial boards of international journals', es: 'comités editoriales de revistas internacionales' },
   'svc.fig.books':      { en: 'books edited, with IntechOpen, Elsevier and CRC Press', es: 'libros editados, en IntechOpen, Elsevier y CRC Press' },
+  'svc.fig.books.inPress': { en: ', and one more in press with Academic Press (Elsevier)', es: ', y uno más en prensa en Academic Press (Elsevier)' },
   'svc.fig.issues':     { en: 'special issues as guest editor', es: 'números especiales como editor invitado' },
   'svc.fig.reviews':    { en: 'reviews credited on ORCID, for {journals} journals', es: 'revisiones acreditadas en ORCID, en {journals} revistas' },
   'svc.fig.proposals':  { en: 'proposals evaluated in {calls} calls, {national} of them for Colciencias and Minciencias', es: 'propuestas evaluadas en {calls} convocatorias, {national} de ellas para Colciencias y Minciencias' },

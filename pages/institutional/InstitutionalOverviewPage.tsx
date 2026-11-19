@@ -46,7 +46,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
   // Las cifras del capítulo: casi todas son conteos; la del Comité de Ética es un estimado y lo dice.
   const stats = [
     { label: t('svc.fig.boards'), value: service.editorialBoards },
-    { label: t('svc.fig.books'), value: service.editedBooks },
+    { label: t('svc.fig.books') + (service.editedBooksInPress ? t('svc.fig.books.inPress') : ''), value: service.editedBooks },
     { label: t('svc.fig.issues'), value: service.guestEditorships },
     { label: fill(t('svc.fig.reviews'), { journals: totalJournalsReviewed }), value: totalReviews },
     { label: fill(t('svc.fig.proposals'), { calls: evaluationCallsData.length, national: nacionales }), value: propuestas },
@@ -93,7 +93,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
       desc: t('service.editorships.desc'),
       media: (
         <div className="grid grid-cols-3 gap-4 items-end">
-          {editedBooksData.map((book) => (
+          {editedBooksData.filter((book) => book.cover).map((book) => (
             <img
               key={book.title}
               src={book.cover}

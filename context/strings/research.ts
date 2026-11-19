@@ -5,7 +5,7 @@ export const research = {
 
   // Research Program
   'research.program.books.title': { en: 'Edited books', es: 'Libros editados' },
-  'research.program.books.text': { en: 'Three volumes edited with colleagues, and the lines of research they belong to.', es: 'Tres volúmenes editados con colegas y las líneas de investigación a las que pertenecen.' },
+  'research.program.books.text': { en: 'Three volumes edited with colleagues and a fourth in press, with the lines of research they belong to.', es: 'Tres volúmenes editados con colegas y un cuarto en prensa, con las líneas de investigación a las que pertenecen.' },
   'research.program.books.editors': { en: 'Edited by {names}', es: 'Editado por {names}' },
   'research.program.books.pages': { en: '{n} pages', es: '{n} páginas' },
   'research.program.books.link': { en: 'Publisher’s page', es: 'Página de la editorial' },

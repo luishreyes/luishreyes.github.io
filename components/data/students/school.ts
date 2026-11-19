@@ -92,9 +92,9 @@ export const schoolFigures = {
     "others": 54
   },
   "talks": {
-    "since2017": 42,
-    "withStudent": 33,
-    "studentFirst": 27,
+    "since2017": 43,
+    "withStudent": 34,
+    "studentFirst": 28,
     "students": 22
   },
   "works": {

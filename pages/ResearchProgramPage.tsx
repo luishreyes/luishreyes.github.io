@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
 import { EncabezadoPagina, Cabecera } from '../components/Apertura';
 import { Sube } from '../components/Sube';
+import { PortadaLibro } from '../components/PortadaLibro';
 import { useI18n, localize, fill, type UIKey } from '../context/i18n';
 import { useAppData } from '../context/AppDataContext';
 import { researchLinesMap } from '../components/data/research';
@@ -143,7 +144,7 @@ const CASOS: Caso[] = [
     id: 'sonido',
     titulo: 'rc.case.sound.title',
     papel: 'rc.case.sound.role',
-    parrafos: ['rc.case.sound.p1', 'rc.case.sound.p2', 'rc.case.sound.p3', 'rc.case.sound.p4'],
+    parrafos: ['rc.case.sound.p1', 'rc.case.sound.p2', 'rc.case.sound.p3', 'rc.case.sound.p4', 'rc.case.sound.p5'],
     foto: { f: fotos.gradoBrayan, pie: 'rc.case.sound.photo', pos: 'center 35%' },
     estudiantes: [
       { nombre: 'Brayan Rodríguez', nivel: 'rc.lvl.phd.felipe', foto: retrato('brayan-rodriguez') },
@@ -487,21 +488,21 @@ export const ResearchProgramPage = () => {
         <div className="a-c">
           <Sube><h2 className="a-h3">{t('research.program.books.title')}.</h2></Sube>
           <Sube delay={0.06}><p className="mt-4 a-texto">{t('research.program.books.text')}</p></Sube>
-          <ul className="mt-12 grid gap-x-10 gap-y-14 md:grid-cols-3">
+          <ul className="mt-12 grid gap-x-10 gap-y-14 md:grid-cols-2 xl:grid-cols-4">
             {editedBooksData.map((libro, i) => {
               const lineas = lineasDeLibro(libro.doi, libro.isbn);
               return (
                 <Sube as="li" key={libro.title} delay={0.08 * i} className="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-6 md:block">
                   <a href={libro.url} target="_blank" rel="noopener noreferrer" className="block w-[8.5rem] md:w-[11rem] group">
-                    <img
-                      src={libro.cover}
+                    <PortadaLibro
+                      book={libro}
                       alt={`${t('products.cover.alt')} ${libro.title}`}
                       className="w-full aspect-[7/10] object-cover transition-transform duration-300 [@media(hover:hover)]:group-hover:-translate-y-1"
                     />
                   </a>
                   <div className="md:mt-6">
                     <p className="font-semibold leading-snug text-tinta-900">{libro.title}</p>
-                    <p className="a-meta mt-2">{libro.publisher} · {libro.year} · {fill(t('research.program.books.pages'), { n: libro.pages })}</p>
+                    <p className="a-meta mt-2">{libro.publisher} · {libro.inPress ? localize(libro.inPress, lang) : libro.year} · {fill(t('research.program.books.pages'), { n: libro.pages })}</p>
                     <p className="a-s mt-3 text-tinta-800">{fill(t('research.program.books.editors'), { names: enumerar(libro.editors, lang) })}</p>
                     {lineas.length > 0 && <p className="a-s mt-1 text-tinta-800">{t('products.lines')}: {lineas.join(' · ')}</p>}
                     <a href={libro.url} target="_blank" rel="noopener noreferrer" className="a-enlace a-s inline-block mt-4">

@@ -12,10 +12,13 @@ export interface EditedBook {
   title: string;
   publisher: string;
   year: number;
+  /** Set while the volume is announced but not out yet. It is not counted among the edited
+   *  books until it comes out: then this line goes and the cover goes in. */
+  inPress?: Localized;
   /** Editors in the order printed on the cover. */
   editors: string[];
-  /** Cover image under public/images/books/. */
-  cover: string;
+  /** Cover image under public/images/books/. Left out while the publisher's cover is not final. */
+  cover?: string;
   pages: number;
   /** Chapters in the whole volume, when the publisher lists them. */
   chapters?: number;
@@ -31,6 +34,23 @@ export interface EditedBook {
 }
 
 export const editedBooksData: EditedBook[] = [
+  {
+    title: 'The Fundamentals of Customer-Centered Design of Food Products: A Multisensory Strategy Integrating Emerging Techniques',
+    publisher: 'Academic Press (Elsevier)',
+    year: 2027,
+    inPress: { en: 'In press, out in February 2027', es: 'En prensa, sale en febrero de 2027' },
+    editors: ['Luis H. Reyes', 'Andrea Sánchez-Camargo', 'Felipe Reinoso-Carvalho', 'Juan C. Cruz'],
+    pages: 395,
+    chapters: 17,
+    authoredChapters: 0,
+    authoredIntroduction: false,
+    isbn: '978-0-443-44109-7',
+    url: 'https://shop.elsevier.com/books/the-fundamentals-of-customer-centered-design-of-food-products/reyes/978-0-443-44109-7',
+    summary: {
+      en: 'How to design foods and beverages around the people who eat them: the psychology of multisensory perception and today’s consumer; how appearance, flavor, texture, aroma and sound are designed; and the tools that support that work, among them advanced sensory analysis, digital prototyping, smart sensors, data analytics and sustainable design.',
+      es: 'Cómo diseñar alimentos y bebidas pensando en quien los come: la psicología de la percepción multisensorial y el consumidor de hoy; cómo se diseñan la apariencia, el sabor, la textura, el aroma y el sonido, y las herramientas que apoyan ese trabajo, entre ellas el análisis sensorial avanzado, los prototipos digitales, los sensores inteligentes, la analítica de datos y el diseño sostenible.',
+    },
+  },
   {
     title: 'Nanocarriers for Nucleic Acids and Proteins',
     publisher: 'CRC Press (Taylor & Francis)',
@@ -82,6 +102,11 @@ export const editedBooksData: EditedBook[] = [
     },
   },
 ];
+
+/** The volumes already out, which are the ones counted. */
+export const publishedBooksData = editedBooksData.filter((b) => !b.inPress);
+/** The volumes announced by their publisher and not out yet. */
+export const inPressBooksData = editedBooksData.filter((b) => b.inPress);
 
 export type CollectionKind = 'special-issue' | 'themed-issue' | 'research-topic';
 
