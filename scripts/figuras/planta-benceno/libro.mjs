@@ -6,7 +6,7 @@
 //   _planta-iso.qmd        el isométrico del skill anatomy, con el nombre de cada equipo
 //   _planta-planta.qmd     la vista en planta (plot plan): equipos, rack, coordenadas y cotas
 //   _planta-elevacion.qmd  la elevación mirando al norte, con las elevaciones principales
-//   _iso-tuberia.qmd       el isométrico de la línea 9, de R-101 a E-102, con sus cotas en mm
+//   _iso-tuberia.qmd       el isométrico de tubería de una línea de proceso, con sus cotas en mm
 //
 // Las tres últimas son dibujos de línea con las clases de svg.dg del libro (estilo/libro.scss).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';

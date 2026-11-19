@@ -256,8 +256,8 @@ export const AwardsPage: React.FC = () => {
               </div>
               <Sube delay={0.12} className="lg:sticky lg:top-28 lg:self-start">
                 <figure>
-                  <img src={fotos.cursoGrupo.src} alt={localize(fotos.cursoGrupo.alt, lang)} className="a-bn w-full aspect-[4/3] object-cover" />
-                  <figcaption className="a-pie !text-tinta-300">{localize(fotos.cursoGrupo.alt, lang)}</figcaption>
+                  <img src={fotos.premioAiche.src} alt={localize(fotos.premioAiche.alt, lang)} className="a-bn w-full aspect-[4/5] object-cover" style={{ objectPosition: fotos.premioAiche.foco }} />
+                  <figcaption className="a-pie !text-tinta-300">{localize(fotos.premioAiche.alt, lang)}</figcaption>
                 </figure>
               </Sube>
             </div>

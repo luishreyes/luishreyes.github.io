@@ -1,17 +1,15 @@
 /* ====================================================================
-   El clarificador de placas en isométrico (skill anatomy), para el capítulo 17 del libro de operaciones unitarias
-   (Sedimentación y decantación, ejemplo 17.4, «El clarificador del agua de servicios»): el tanque rectangular de
-   1,3 × 5,13 m con 3,6 m de agua que limpia 25 m³/h de agua floculada antes del filtro de doble medio, sin el muro que
-   mira al lector.
-   Concepto: el agua floculada entra por el muro de la entrada a una cámara angosta y pasa por los 21 orificios del muro
+   El clarificador de placas en isométrico (skill anatomy), para el capítulo 17 del libro de operaciones unitarias:
+   un tanque rectangular de placas inclinadas, sin el muro que mira al lector.
+   Concepto: el agua floculada entra por el muro de la entrada a una cámara angosta y pasa por los orificios del muro
    difusor, que la reparten en toda la sección. En el primer cuarto, sin placas, cae el flóculo pesado; el resto pasa
-   bajo la pantalla, corre bajo el paquete de placas y sube entre ellas, a 60°: el flóculo cae los 50 mm que hay entre
-   dos placas, se junta en la cara de arriba de la de abajo y resbala hacia abajo, a contracorriente del agua. El agua
+   bajo la pantalla, corre bajo el paquete de placas y sube entre ellas: el flóculo cae la distancia que hay entre dos
+   placas, se junta en la cara de arriba de la de abajo y resbala hacia abajo, a contracorriente del agua. El agua
    clara sale por arriba a los vertederos en V de la canaleta, que la lleva a la caja de salida y al filtro. Abajo, el
    barredor de cadenas y paletas arrastra el lodo por el piso hasta la tolva de la entrada, de donde sale por la purga.
    Corte: se quita el muro de y > 0. Lo que llega al plano y = 0 (la losa, los muros de los extremos, el muro difusor,
    la pantalla, las placas, los ejes, el lodo y el agua) se ve cortado ahí.
-   --detalle: dos canales entre placas, doce veces más grandes, con el agua que sube y el flóculo que resbala.
+   --detalle: dos canales entre placas, ampliados, con el agua que sube y el flóculo que resbala.
    Uso: node build.mjs [--audit] [--fast] [--detalle]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */
@@ -27,6 +25,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const CL = GEO.CL;
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const DET = process.argv.includes("--detalle");
 const STEP = Number(process.env.CL_STEP || (DET ? 2 : 0.25));
@@ -348,6 +347,14 @@ const BX = CL.box;
   ANCH.VALVULA = [xv + 26, PU.y + 125, ZPU + 300];
   ANCH.ACTUADOR = [xv, PU.y + 82, zc0 + 200];
   ANCH.PURGA = [PU.xe + 100, PU.y, ZPU + PU.ro];
+}
+// la persona de referencia: 1,75 m, de pie en el piso junto a la purga (no va en el detalle)
+if (!DET) {
+  const PS = CL.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, PS.piso], rumbo: PS.rumbo, mm: 1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.CABEZA;
 }
 
 /* ====================================================================
@@ -772,7 +779,8 @@ const CSS = `.cp-cut{${flat("#c9ced3")}}.cp-cut1{${flat("#d6dade")}}.cp-cut-c{${
 .cp-flecha{fill:#2e5e9e;stroke:none;opacity:.85}
 .cp-flujo-l{fill:none;stroke:#7a5634;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
 .cp-flecha-l{fill:#7a5634;stroke:none;opacity:.9}.cp-fino{stroke-width:1.1px}
-.cp-det-fondo{fill:#ffffff;stroke:none}.cp-det-marco{fill:none;stroke:#525c64;stroke-width:1px}`;
+.cp-det-fondo{fill:#ffffff;stroke:none}.cp-det-marco{fill:none;stroke:#525c64;stroke-width:1px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

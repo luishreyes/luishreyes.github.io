@@ -1,15 +1,15 @@
 /* ====================================================================
-   Tanque de llegada en isométrico (skill anatomy), para el capítulo 12 del libro de operaciones unitarias (Válvulas,
-   tuberías y medición de flujo): el tanque elevado de agua de servicios del caso.
-   Concepto: la descarga de la bomba llega por arriba a 13 m, pasa por la válvula de control y baja por el techo hasta
-   1 m bajo el nivel normal; la planta toma el agua por el fondo, por gravedad, y por eso el tanque va en alto, sobre
-   una estructura. El transmisor de nivel lee la columna de agua desde la toma de 9,2 m; el interruptor de muy alto
-   nivel y el rebose cuidan que no se llene de más, y el respiradero deja entrar y salir el aire.
+   Tanque de llegada en isométrico (skill anatomy), para el capítulo 13 del libro de operaciones unitarias (Tanques,
+   válvulas, tuberías y medición): un tanque elevado de agua sobre su estructura.
+   Concepto: la descarga de la bomba llega por arriba, pasa por la válvula de control y baja por el techo hasta debajo
+   del nivel normal; la planta toma el agua por el fondo, por gravedad, y por eso el tanque va en alto, sobre una
+   estructura. El transmisor de nivel lee la columna de agua desde su toma; el interruptor de muy alto nivel y el
+   rebose cuidan que no se llene de más, y el respiradero deja entrar y salir el aire.
    Corte: se quita el cuarto de la envolvente, del techo y del agua que mira al lector (x > 0, y > 0, sobre el
    fondo). El fondo, la estructura, la escalera, la baranda y la tubería de afuera van enteros. Lo que queda bajo el
    nivel lleva el tinte del agua (tl-sub) y la superficie es una lámina translúcida.
-   La estructura mide 9,7 m del piso al fondo: se dibuja con un corte, y lo de abajo (el piso, los pedestales, las
-   placas base y el pie de la escalera y del rebose) va subido SHIFT (geo.mjs).
+   La estructura se dibuja con un corte, y lo de abajo (el piso, los pedestales, las placas base y el pie de la
+   escalera y del rebose) va subido SHIFT (geo.mjs).
    Uso: node build.mjs [--audit] [--fast]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */
@@ -24,6 +24,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const STEP = Number(process.env.TL_STEP || 0.25);
 const TL = GEO.TL, RO = GEO.RO, D2R = GEO.D2R, pol = GEO.pol;
@@ -616,6 +617,17 @@ const FLD = { o: [0, 0, 0], a: ZD, u: LU, v: LTN };           // sección (radia
   bars.forEach((poly, j) => fp(`cage.bar${j}`, FLD, poly, TL.brk.top, zc1 + CG.h / 2, { tone: "mid" }, { owner: own, cls: "tl-yel" }));
   ANCH.ESCALERA = G.add3(G.add3(G.mul3(LU, sc + rho), [0, 0, 0]), [0, 0, 11400 - 120]);
 }
+/* la persona de referencia (../persona.mjs, 1,75 m): de pie en el piso, al pie de la escalera, en el tramo de abajo
+   del dibujo (subido SHIFT, como el piso); se mide en el sistema de la escalera (radial y tangente). La cabeza pasa
+   del corte de la estructura: se pone donde arriba no hay nada (fuera de la jaula y de las columnas). */
+{
+  const PS = process.env.TL_PER ? Object.fromEntries(["s", "t", "rumbo"].map((kk, i) => [kk, Number(process.env.TL_PER.split(",")[i])])) : TL.persona;
+  const pie = G.add3(G.add3(G.mul3(LU, PS.s), G.mul3(LTN, PS.t)), [0, 0, GRADE]);
+  const per = personaDePie({ P, pie, rumbo: TL.lad.th + PS.rumbo, mm: 1, adelante: "der" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.PECHO;
+}
 
 /* ====================================================================
    8 · en la envolvente: boca de inspección con su placa de refuerzo, transmitor de nivel y rebose
@@ -822,7 +834,8 @@ const CSS = `.tl-cut{--anatomy-paper:#c9ced3;--anatomy-face:#c9ced3;--anatomy-to
 .tl-lever{--anatomy-paper:#d9dde1;--anatomy-face:#d9dde1;--anatomy-top:#e6e9ec;--anatomy-shade-0:#aeb5bc;--anatomy-shade-1:#b8bfc5;--anatomy-shade-2:#c2c8ce;--anatomy-shade-3:#ccd1d6}
 .tl-liq{fill:#c4d7e3;fill-opacity:.55;stroke:none}
 .tl-bore{fill:#a9b1b9;stroke:none}
-.tl-mesh{fill:none;stroke:#8d969f;stroke-width:.45px}`;
+.tl-mesh{fill:none;stroke:#8d969f;stroke-width:.45px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

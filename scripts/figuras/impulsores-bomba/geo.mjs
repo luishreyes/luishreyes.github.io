@@ -1,9 +1,9 @@
 /* Medidas de los cuatro impulsores de bomba del capítulo 11 del libro de operaciones unitarias (Bombas): cerrado,
    semiabierto, abierto y axial. Unidades: 1 = 1 mm, z hacia arriba, el eje del impulsor en x = y = 0. Los tres radiales
    van con el ojo arriba (el líquido entra por arriba) y el eje abajo; el axial, igual: el líquido entra por el cono.
-   Las proporciones salen de las fuentes del capítulo (la página va al lado) o del caso del capítulo (el modelo del
-   Explorador de bombas centrífugas, el mismo de la tabla del caso); lo demás es «medida del libro»: típico de un
-   impulsor así, escogido para la figura. El README lleva la misma lista. */
+   Las proporciones salen de las fuentes del capítulo (la página va al lado) o del caso del capítulo; lo demás es
+   «medida del libro»: típico de un impulsor así, escogido para la figura. La lista completa está en
+   notas/figuras-isometricas.md del libro. */
 
 /* ---------- los tres radiales: el impulsor del caso, una 2×3‑8 ----------
    Diámetro de 190 mm (el del caso; la carcasa admite 203), seis álabes que salen a 27°, ojo de 80 mm y ancho de salida
@@ -64,4 +64,21 @@ export const AX = {
   shaft: { r: 25, bottom: -150, thread: 18, top: 86 },
   washer: { r: 38, h: 4 }, nut: { af: 55, h: 30 },
   casing: { rIn: 150.6, t: 12, z0: -118, z1: 96, fl: { r: 205, t: 18 }, bolts: 12, boltR: 182, hole: 9 },
+};
+
+/* ---------- la mano de referencia (medida del libro) ----------
+   Una mano derecha de adulto (190 mm de la muñeca a la punta del dedo medio, 85 mm de palma; manoEnBorde de
+   ../persona.mjs) que llega desde atrás y apoya las yemas en el borde del impulsor, como quien lo sostiene: th, dónde
+   va en el borde, en grados desde el punto de atrás (el más lejano del lector) hacia la derecha; r, el radio del canto;
+   z, la altura de la superficie donde se apoyan los dedos (en los radiales, la cara de la tapa delantera a r = 60, o el
+   canto de los álabes, que suben hacia el ojo); adentro, cuánto entra el nudillo desde el canto (negativo: afuera);
+   alto, el nudillo sobre esa superficie; plano, que los dedos se apoyen en el plano de z y no en el dibujo (en el
+   semiabierto y el abierto, para que no bajen entre los álabes). El antebrazo baja por detrás del impulsor, oculto por la mano, y la cara del
+   corte no se ve. En el axial la mano se apoya en la brida de arriba de la carcasa. Nada de la mano tapa el ojo, los
+   álabes ni lo que se rotula. */
+export const MANO = {
+  rad: { th: -55, lado: "izq", r: 95, z: 17.6, adentro: -32, alto: 30, inclina: 25, gira: 45 },
+  semiabierto: { th: -55, lado: "izq", plano: true, r: 95, z: 13.6, adentro: -32, alto: 30, inclina: 25, gira: 45 },
+  abierto: { th: -55, lado: "izq", plano: true, r: 95, z: 13.6, adentro: -32, alto: 30, inclina: 25, gira: 45 },
+  axial: { th: 50, r: 205, z: 96, adentro: -30, alto: 32, inclina: 12, gira: 50 },
 };

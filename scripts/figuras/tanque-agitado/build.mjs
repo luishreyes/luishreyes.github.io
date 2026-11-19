@@ -1,8 +1,8 @@
 /* ====================================================================
-   Tanque agitado en isométrico (skill anatomy), para el capítulo 13 del libro de operaciones unitarias (Agitación):
-   el reactor de extracción de pectina de la cáscara de cítricos.
+   Tanque agitado en isométrico (skill anatomy), para el capítulo 14 del libro de operaciones unitarias (Agitación):
+   un tanque vidriado con chaqueta, dos bafles y dos turbinas.
    Concepto: el motor y el reductor, sobre la linterna, hacen girar el eje; las dos turbinas vidriadas de cuatro palas
-   inclinadas empujan la suspensión de cáscara hacia el fondo, que la devuelve por la pared hacia arriba; los dos
+   inclinadas empujan la suspensión hacia el fondo, que la devuelve por la pared hacia arriba; los dos
    bafles de aleta, colgados de la tapa, rompen el giro del líquido (sin ellos se formaría un vórtice) y la chaqueta
    calienta la pared. El reactor es vidriado: por dentro, lo que queda sobre el nivel lleva el tono del vidrio.
    Corte: se quita lo que mira al lector por encima de la línea de tangencia del fondo (y > 0, z > zt). El fondo queda
@@ -24,6 +24,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const STEP = Number(process.env.TA_STEP || 0.25);
 const TQ = GEO.TQ, RO = GEO.RO;
@@ -710,6 +711,15 @@ const FLOW = [];             // las flechas del flujo, en (x, z) sobre el plano 
   }));
 }
 
+/* ---------- la persona de referencia: 1,75 m, de pie en el piso a la derecha del tanque (../persona.mjs) ---------- */
+{
+  const PS = TQ.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH_PRE.PERSONA = per.anclas.PECHO;
+}
+
 /* ---------- las caras del corte, un elemento por pieza ---------- */
 {
   const groups = new Map();
@@ -762,7 +772,8 @@ const CSS = `.ta-cut{--anatomy-paper:#c9ced3;--anatomy-face:#c9ced3;--anatomy-to
 .ta-bore{fill:#a9b1b9;stroke:none}
 .ta-peel{--anatomy-paper:#e9dcbf;--anatomy-face:#ecdfc3;--anatomy-top:#f1e7d1;--anatomy-shade-0:#cdb98f;--anatomy-shade-1:#d6c49d;--anatomy-shade-2:#ddcda9;--anatomy-shade-3:#e4d6b5}
 .ta-flujo{fill:none;stroke:#2f5f86;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
-.ta-flecha{fill:#2f5f86;stroke:none;opacity:.85}`;
+.ta-flecha{fill:#2f5f86;stroke:none;opacity:.85}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

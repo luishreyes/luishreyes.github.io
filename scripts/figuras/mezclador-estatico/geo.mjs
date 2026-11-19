@@ -1,15 +1,9 @@
-/* Medidas del mezclador estático del capítulo 14 del libro de operaciones unitarias (Mezclado y escalado de tanques
-   agitados): el ácido clorhídrico al 32 % que entra a la línea de agua de proceso del reactor de extracción de pectina.
+/* Medidas del mezclador estático del capítulo 15 del libro de operaciones unitarias (Mezclado y escalado de tanques
+   agitados): un tubo bridado con la lanza de inyección y los elementos de cinta torcida.
    Unidades: 1 = 1 mm. x a lo largo del flujo (el agua entra por −x), y hacia el lector (el corte quita y > 0), z hacia
    arriba. El eje del tubo es la recta y = z = 0; la cara realzada de la brida de entrada está en x = 0.
-   - El tubo: 2½ in cédula 40 (Ø 73,0 × 5,16; diámetro interior D = 62,71 mm), el de la línea de 25 m³/h del caso.
-   - Los elementos: Kenics KMS estándar (Paul, 2004, cap. 3, fig. 3-18, p. 119, y cap. 7, p. 426): cinta torcida 180°
-     en un largo de 1,5 D, alternando giro derecho e izquierdo, cada una girada 90° respecto a la anterior. Siete
-     elementos: los 9,3 D que pide el caso, redondeados a elementos enteros.
-   - La lanza: entra por una boquilla de 1 in en la parte de arriba, baja, dobla 90° y descarga en el centro del tubo,
-     coaxial y hacia aguas abajo, antes del primer elemento (Paul, cap. 7, p. 462: inyección coaxial al centro).
-   - Las bridas: deslizantes ASME B16.5 clase 150 con cara realzada (2½ in en los extremos, 1 in en la boquilla).
-   Lo que las fuentes no dan va marcado «dibujo»: es una elección del dibujo, no un dato. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro. Lo que las fuentes no dan va
+   marcado «dibujo»: es una elección del dibujo, no un dato. */
 export const MZ = {
   AZ: 68, EL: 28,
   /* el tubo de 2½ in cédula 40 */
@@ -35,6 +29,11 @@ export const MZ = {
   /* los elementos KMS */
   el: { x0: 220, n: 7, LD: 1.5, t: 2.4, gap: 0.1 },  // espesor de la cinta y holgura a la pared: dibujo
   tipGap: 0.5,                                        // la punta de la lanza, medio D antes del primer elemento (dibujo)
+  /* la mano de referencia (medida del libro): una mano derecha de adulto (../persona.mjs, manoEnBorde) que llega desde
+     atrás y apoya los dedos en el canto de arriba de la brida de salida, cruzándolo hacia el lector. dx, corrimiento a
+     lo largo del tubo desde el medio de la brida; adentro, el nudillo desde el canto (negativo: atrás); alto, el nudillo
+     sobre el canto; inclina, cuánto baja el dorso hacia la muñeca; gira, cuánto se gira la mano sobre el canto. */
+  mano: { dx: 0, adentro: -14, alto: 24, inclina: 12, gira: 10 },
 };
 export const LE = MZ.el.LD * MZ.D;                    // largo de un elemento: 1,5 D = 94,1 mm
 export const XE = (i) => MZ.el.x0 + i * LE;           // dónde empieza el elemento i

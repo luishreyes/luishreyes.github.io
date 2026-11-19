@@ -1,17 +1,11 @@
 /* Medidas del tanque agitado de los capítulos 14 y 15 del libro de operaciones unitarias (Agitación; Mezclado y
-   escalado): el reactor de extracción de pectina de la cáscara de cítricos. Unidades: 1 = 1 mm. z hacia arriba; el
-   eje del tanque en x = y = 0.
+   escalado): un tanque vidriado con chaqueta, dos bafles de aleta colgados de la tapa y dos turbinas de palas
+   inclinadas.
+   Unidades: 1 = 1 mm. z hacia arriba; el eje del tanque en x = y = 0.
    El corte quita lo que mira al lector por encima de la línea de tangencia del fondo (y > 0 y z > zt): el fondo
    queda entero, como una taza, y el resto se ve por el plano y = 0.
-   Reactor vidriado (el ácido clorhídrico caliente pica el inoxidable): 12 mm de acero al carbono con 2 mm de vidrio,
-   T = 2500 mm de diámetro interior, fondo y tapa elípticos 2:1 (profundidad T/4), H = 3000 mm de líquido sobre el
-   punto más bajo del fondo (H/T = 1,2). Dos turbinas vidriadas y desmontables de cuatro palas inclinadas a 45°
-   (D = 830 mm, D/T = 0,332, palas de W = D/5), bombeando hacia abajo: la de abajo a C = 625 mm del fondo (C/T = 0,25)
-   y la de arriba 830 mm (un diámetro) bajo la superficie. Dos bafles de aleta vidriados, colgados de boquillas de la
-   tapa en el plano del corte (a 0° y 180°): un tubo DN 100 cerrado con una aleta hacia la pared en su parte de abajo,
-   que llega, con el tubo, a unos T/10 de ancho; en el vidriado los bafles no van en la pared (Hemrajani y Tatterson,
-   pp. 350 y 355) y con sólidos se piden al menos dos (Atiemo-Obeng y otros, p. 579). Chaqueta de calentamiento en
-   la parte cilíndrica, desde la línea de tangencia del fondo, con anillo de 60 mm. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const TQ = {
   AZ: 60, EL: 26,
   R: 1250, tw: 14, hd: 625,                       // radio interior, espesor de la pared (12 de acero y 2 de vidrio) y profundidad de las cabezas
@@ -32,6 +26,9 @@ export const TQ = {
   mot: { z: 5835, r: 118, x0: 210, x1: 228, x2: 530, x3: 640, rc: 122 },                     // motor
   legs: { r: 900, a: 110, rp: 84, plate: 150, pt: 25 },                   // patas
   out: { r: 57, z1: 540, fl: 114, ft: 22 },                               // salida de fondo (DN 100)
+  /* la persona de referencia (../persona.mjs, 1,75 m; medida del libro): de pie en el piso, a la derecha del tanque y
+     un poco hacia el lector, fuera de las patas y bajo la salida de condensado, mirando hacia el frente del tanque */
+  persona: { x: 1920, y: 340, rumbo: 165 },
 };
 export const RO = TQ.R + TQ.tw;
 const sq = (v) => Math.sqrt(Math.max(0, v));

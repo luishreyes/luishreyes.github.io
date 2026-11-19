@@ -29,23 +29,23 @@ export const webOfScience = {
  *  tema que es más del otro. Artículos de investigación y de revisión desde 2018, contados uno por uno. */
 export const authorship = {
   since: 2018,
-  articles: 72,
+  articles: 73,
   last: 20,
-  secondToLast: 22,
+  secondToLast: 23,
 };
 
 export const scholar = {
   /** Fecha de la foto del perfil (AAAA-MM-DD). */
-  asOf: '2026-10-21',
-  citations: 3268,
+  asOf: '2026-11-10',
+  citations: 3314,
   hIndex: 32,
   i10Index: 64,
-  /** Citas que recibió cada año, según las barras del perfil al 21 de octubre de 2026.
+  /** Citas que recibió cada año, según las barras del perfil al 10 de noviembre de 2026.
    *  La de 2026 va hasta esa fecha. */
-  perYearAsOf: '2026-10-21',
+  perYearAsOf: '2026-11-10',
   perYear: {
     2012: 19, 2013: 44, 2014: 74, 2015: 69, 2016: 101, 2017: 84, 2018: 112,
-    2019: 131, 2020: 146, 2021: 214, 2022: 277, 2023: 348, 2024: 440, 2025: 601, 2026: 560,
+    2019: 131, 2020: 146, 2021: 214, 2022: 277, 2023: 349, 2024: 441, 2025: 599, 2026: 605,
   } as Record<number, number>,
 };
 
@@ -72,22 +72,22 @@ export const publicationsPerYear: Record<number, Record<ClasePublicacion, number
   2023: { articles: 11, chapters: 0, books: 1, other: 2 },
   2024: { articles: 13, chapters: 2, books: 1, other: 4 },
   2025: { articles: 8, chapters: 14, books: 1, other: 1 },
-  2026: { articles: 4, chapters: 1, books: 1, other: 2 },
+  2026: { articles: 5, chapters: 1, books: 1, other: 2 },
 };
 
 export const publications = {
   /** Fecha del registro del que salen las cifras. */
-  asOf: '2026-11-04',
+  asOf: '2026-11-10',
   since: 2007,
-  total: 118,
+  total: 119,
   patents: 2,
   /** Artículos en revistas (de investigación y de revisión) y su cuartil Scimago en el
    *  año de publicación (los de 2026, con la tabla de 2025, la última publicada). */
-  articles: 82,
-  q1: 58,
+  articles: 83,
+  q1: 59,
   q2: 21,
   /** Artículos desde julio de 2017, cuando el profesor llegó a la Universidad de los Andes. */
-  articlesSince2017: 73,
+  articlesSince2017: 74,
   /** Ponencias en congresos desde 2017, y cuántas en el AIChE Annual Meeting. */
   talksSince2017: 42,
   talksAiche: 10,

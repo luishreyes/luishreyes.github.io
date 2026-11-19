@@ -1,4 +1,4 @@
-// El mezclador estático con los nombres de sus piezas, para el capítulo 14 del libro de operaciones unitarias
+// El mezclador estático con los nombres de sus piezas, para el capítulo 15 del libro de operaciones unitarias
 // (Mezclado y escalado de tanques agitados):
 //
 //   node build.mjs && node libro.mjs --salida ../../../../libro-operaciones-unitarias/libro
@@ -53,7 +53,8 @@ const RS = [
   ['BOQUILLA', 'Boquilla de 1 in', 232, 150, 'der'],
   ['EL_DER', 'Elemento de giro derecho', 420, 205, 'der'],
   ['EL_IZQ', 'Elemento de giro izquierdo', 512, 232, 'der'],
-  ['JUNTA', 'Unión entre elementos, a 90°', 640, 259, 'der'],
+  ['JUNTA', 'Unión entre elementos, a 90°', 560, 259, 'der'],
+  ['MANO', 'Mano', 846, 236, 'izq'],
   ['BRIDA_OUT', 'Brida de 2½ in, clase 150', 826, 500, 'izq'],
   ['AGUA', 'Agua', 104, 338, 'der'],
   ['LANZA', 'Lanza de inyección del ácido', 162, 372, 'der'],

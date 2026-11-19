@@ -1,5 +1,5 @@
 // La separadora de discos autodeslodante con los nombres de sus piezas, para el capítulo 19 del libro de operaciones
-// unitarias (Separación centrífuga, «La separadora por dentro»):
+// unitarias:
 //
 //   node build.mjs --audit && node build.mjs --detalle --audit
 //   node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]

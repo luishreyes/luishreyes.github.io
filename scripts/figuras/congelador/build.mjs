@@ -1,18 +1,15 @@
 /* ====================================================================
    El congelador de lecho fluidizado de dos etapas (IQF) en isométrico (skill anatomy), para el capítulo 16 del libro
-   de operaciones unitarias (Partículas en un fluido, «Congelar en un lecho fluidizado»): un equipo de unos 4000 kg/h
-   de arvejas, sin la pared que mira al lector ni el techo.
-   Concepto: el alimentador vibratorio deja caer las arvejas escaldadas en la banda 1. Ahí el aire, a −30 °C, sube a
-   unos 3,5 m/s, 2,4 veces la mínima fluidización del ejemplo: el lecho borbotea y cada arveja se congela por fuera
-   (la costra). Las arvejas pasan el vertedero, caen a la banda 2 y forman una capa quieta de 10 cm por la que el aire
-   sube a 1,2 m/s, por debajo de la mínima fluidización, hasta que se congela el centro; de ahí caen al canal de la
-   salida. Los ventiladores axiales de la cubierta empujan el aire hacia arriba a través de las bandas; arriba, el
-   aire pasa el tabique y baja por las aletas del evaporador, donde deja su humedad como escarcha, y por el retorno de
-   atrás vuelve, por debajo de la cubierta, a los ventiladores.
+   de operaciones unitarias, sin la pared que mira al lector ni el techo.
+   Concepto: el alimentador vibratorio deja caer el producto en la banda 1. Ahí el aire frío sube más rápido que la
+   mínima fluidización: el lecho borbotea y cada partícula se congela por fuera (la costra). El producto pasa el
+   vertedero, cae a la banda 2 y forma una capa quieta por la que el aire sube por debajo de la mínima fluidización,
+   hasta que se congela el centro; de ahí cae al canal de la salida. Los ventiladores axiales de la cubierta empujan el
+   aire hacia arriba a través de las bandas; arriba, el aire pasa el tabique y baja por las aletas del evaporador, donde
+   deja su humedad como escarcha, y por el retorno de atrás vuelve, por debajo de la cubierta, a los ventiladores.
    Corte: se quitan la pared de y > 0 y el techo. Lo que llega al plano y = 0 (el piso, las paredes de los extremos,
    la cubierta, las bandas, los tambores, la rejilla y los lechos) se ve cortado ahí.
-   --detalle=1 y --detalle=2: la primera y la segunda etapa ampliadas diez veces en un círculo, con las arvejas de
-   6 mm una por una.
+   --detalle=1 y --detalle=2: la primera y la segunda etapa ampliadas en un círculo, con el producto grano por grano.
    Uso: node build.mjs [--audit] [--fast] [--detalle=1|2]
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */
@@ -27,6 +24,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const CG = GEO.CG;
 const FAST = process.argv.includes("--fast");
 const DETN = Number((process.argv.find((a) => a.startsWith("--detalle=")) || "--detalle=0").split("=")[1]);
@@ -741,6 +739,15 @@ if (DET) {
     const j = jump.filter((p) => p[2] > st.top(p[0]) + 22 && p[1] > -40 && inC(p)).sort((a, b) => G.dot3(b, V3) - G.dot3(a, V3))[0]; if (j) ANCH.D_SALTA = j; }
 }
 
+/* ---------- la persona de referencia: 1,75 m, de pie en el piso junto a la salida (../persona.mjs; no va en los detalles) ---------- */
+if (!DET) {
+  const PS = CG.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.PECHO;
+}
+
 /* ---------- orden y salida ---------- */
 if (process.env.CG_ITEM) {
   for (const nm of process.env.CG_ITEM.split(",")) {
@@ -789,7 +796,8 @@ const CSS = `.cg-cut{${flat("#c9ced3")}}.cg-cut1{${flat("#d6dade")}}.cg-foam{${f
 .cg-burb{fill:#ffffff;stroke:#b8a67a;stroke-width:.5px}
 .cg-flujo{fill:none;stroke:#2e5e9e;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
 .cg-flecha{fill:#2e5e9e;stroke:none;opacity:.85}.cg-fino{stroke-width:1.1px}
-.cg-det-fondo{fill:#ffffff;stroke:none}.cg-det-marco{fill:none;stroke:#525c64;stroke-width:1px}`;
+.cg-det-fondo{fill:#ffffff;stroke:none}.cg-det-marco{fill:none;stroke:#525c64;stroke-width:1px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

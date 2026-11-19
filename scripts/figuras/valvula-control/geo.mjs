@@ -1,12 +1,10 @@
-/* Medidas de la válvula de control de globo del capítulo 12 del libro de operaciones unitarias
-   (Válvulas, tuberías y medición de flujo). Unidades: 1 = 1 mm.
-   x a lo largo del flujo (la entrada en −x), y hacia el lector (el corte quita y > 0), z hacia arriba.
-   El origen está en el eje de la tubería, en el eje del vástago.
-   Válvula de 2″, clase 150 RF: cara a cara 254 mm (ISA 75.08.01); bridas ASME B16.5 (Ø 152,4 × 19,1, cara realzada
-   Ø 92,1 × 1,6, cuatro espárragos de 5/8″ en un círculo de Ø 120,7); tubo de 2″ cédula 40 (Ø 60,3 × 3,91).
-   Un solo asiento, guiada por arriba, obturador perfilado, puerto de Ø 46 y carrera de 19 mm (3/4″).
-   Actuador de diafragma y resorte de aire para abrir (el aire entra debajo del diafragma y lo levanta; el resorte,
-   arriba del plato, empuja el obturador contra el asiento: falla cerrada). */
+/* Medidas de la válvula de control de globo del capítulo 13 del libro de operaciones unitarias (Tanques,
+   válvulas, tuberías y medición): una válvula bridada de un solo asiento, guiada por arriba, con obturador
+   perfilado y actuador de diafragma y resorte de aire para abrir (falla cerrada).
+   Unidades: 1 = 1 mm. x a lo largo del flujo (la entrada en −x), y hacia el lector (el corte quita y > 0), z hacia
+   arriba. El origen está en el eje de la tubería, en el eje del vástago.
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const VC = {
   AZ: 62, EL: 27,
   /* línea */
@@ -40,6 +38,11 @@ export const VC = {
   act: { z0: 377, hub: 46, hubh: 12, rf: 146, rin: 128, zf: 424, ft: 4, wall: 3, top: 514, rstem: 9.5, bc: 138, nb: 16 },
   dia: { rplate: 96, t: 3 },
   spring: { r: 56, wire: 5.6, turns: 5.5 },
+  /* la mano de referencia (medida del libro): una mano derecha de adulto (../persona.mjs, manoEnBorde) que llega desde
+     atrás y apoya los dedos en el tubo de entrada, junto a la brida izquierda, cruzándolo hacia el lector: x, dónde va
+     el nudillo del medio a lo largo del tubo; adentro, el nudillo desde lo alto del tubo (negativo: atrás); alto, el
+     nudillo sobre él; inclina, cuánto baja el dorso hacia la muñeca; gira, cuánto se gira la mano sobre el tubo. */
+  mano: { x: -212, adentro: -18, alto: 30, inclina: 10, gira: 10 },
 };
 /* el globo: radio del esferoide a lo largo de x */
 export const rOuter = (x) => VC.body.b * Math.sqrt(Math.max(0, 1 - (x * x) / (VC.body.ax * VC.body.ax)));

@@ -1,21 +1,10 @@
-/* Medidas del homogeneizador de alta presión del capítulo 15 del libro de operaciones unitarias (Mezclado y escalado
-   de tanques agitados, sección «Homogeneizar»): el cabezal de una máquina de leche de 10 000 L/h, el caudal del
-   ejemplo de la leche homogeneizada del capítulo, a 20 MPa en la primera etapa y 2 MPa en la segunda.
+/* Medidas del homogeneizador de alta presión del capítulo 15 del libro de operaciones unitarias: el cabezal de una
+   máquina de tres pistones y dos etapas.
    Unidades: 1 = 1 mm. x a lo largo de los pistones (el cárter queda a −x), y hacia el lector (el corte quita y > 0),
    z hacia arriba. El eje del cilindro 1 está en el plano del corte (y = 0); los cilindros 2 y 3 quedan detrás, a −p y
    −2p. El piso (donde se apoyan el cárter y los pies del bloque) está en z = 0.
-
-   De las fuentes (con su página; el README dice qué sale de dónde):
-   - tres pistones desfasados 120° (Lewis y Heppell, 2000, p. 61), en un bloque macizo de acero inoxidable, con doble
-     sello en cada pistón (Bylund, 1995, p. 117);
-   - una válvula de succión y una de descarga por cilindro, que solo dejan pasar el líquido en un sentido (Lewis y
-     Heppell, p. 61);
-   - la válvula de homogeneizar: asiento, forzador y anillo de impacto, con la cara de adentro del anillo perpendicular
-     a la salida de la rendija (Bylund, p. 118; Fellows, 2000, p. 112; Berk, 2013, p. 212); la rendija de unos 0,1 mm
-     (Bylund, p. 118; Fellows da hasta 0,3 mm, p. 112);
-   - dos etapas en serie, la primera de eje vertical y la segunda horizontal, cada una con su actuador hidráulico
-     (Bylund, p. 118, figs. 6.3.5 y 6.3.6; Fellows, fig. 4.5, p. 112).
-   Lo demás es «medida del libro»: típico de una máquina así, escogido para el dibujo. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const HM = {
   AZ: 64, EL: 26,
   p: 130,                                   // paso entre cilindros (y)
@@ -62,6 +51,13 @@ export const HM = {
   oil: { r: 4, rise: 31, run: 70, union: { af: 16, len: 24 } },
   /* la salida de la leche homogeneizada: tubo sanitario de 1½ in (Ø 38,1 × 1,65) */
   out: { ro: 19.05, ri: 17.4, rf: 50, tf: 16, z1: 515, te: 16 },
+  /* la mano de referencia (../persona.mjs, manoEnBorde; medida del libro): lo dibujado mide menos de un metro, así que
+     la escala la da una mano derecha de adulto que llega desde atrás y apoya los dedos en el canto de atrás de la cara
+     de arriba del bloque (y = blk.y0, z = blk.z1), en la parte libre de la izquierda, cruzándolo hacia el lector; el
+     antebrazo baja por detrás del bloque, oculto. x, dónde va el nudillo del medio a lo largo del canto; adentro, el
+     nudillo desde el canto (negativo: atrás); alto, el nudillo sobre la cara; inclina, cuánto baja el dorso hacia la
+     muñeca; gira, cuánto se gira la mano sobre el canto. */
+  mano: { y: -120, adentro: -14, alto: 24, inclina: 12, gira: 10 },
 };
 
 /* El avance del pistón i a partir del punto muerto de atrás, con la manivela en theta (movimiento armónico simple:

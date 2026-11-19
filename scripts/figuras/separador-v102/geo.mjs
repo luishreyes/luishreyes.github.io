@@ -1,4 +1,4 @@
-/* Medidas del separador de alta V-102 de la planta de benceno (capítulo 2 del libro). Sin imports.
+/* Medidas del separador de alta presión de la planta de benceno (capítulo 2 del libro). Sin imports.
    Unidades: 1 = 1 cm, z hacia arriba. El eje del recipiente va en el origen. Los ángulos θ de las boquillas se miden
    en el plano del suelo desde la dirección T (la del corte, hacia la derecha de la pantalla) hacia HV (hacia el
    lector): θ entre 180° y 360° es la mitad de atrás, la que queda. */

@@ -1,14 +1,11 @@
-/* Medidas del tanque de llegada del capítulo 12 del libro de operaciones unitarias (Válvulas, tuberías y medición de
-   flujo). Unidades: 1 = 1 mm. z hacia arriba, medido desde el eje de la bomba (como las cotas del libro); el eje del
+/* Medidas del tanque de llegada del capítulo 13 del libro de operaciones unitarias (Tanques, válvulas, tuberías y
+   medición): un tanque elevado de agua, de fondo plano y techo de cono, sobre una estructura.
+   Unidades: 1 = 1 mm. z hacia arriba, medido desde el eje de la bomba (como las cotas del libro); el eje del
    tanque en x = y = 0. Ángulos θ medidos desde +x hacia +y; el lector mira desde θ = AZ.
    El corte quita el cuarto de la envolvente, del techo y del agua que mira al lector (x > 0 y y > 0, por encima del
    fondo); el fondo, la estructura, la escalera y la tubería de afuera van enteros.
-   Del libro (@tbl-val-tanque): cilindro vertical de acero de 3,0 m de diámetro sobre una estructura; fondo a 9,0 m;
-   nivel normal a 12,0 m; rebose a 12,4 m (aquí, la plantilla de la boca a 12,35 m: borde libre de 0,30 m hasta el
-   borde de la envolvente, el mínimo de la Resolución 0330 de 2017, art. 79); techo fijo a 12,8 m; LT‑102 de presión diferencial con la toma a 9,2 m;
-   respiradero de cuello de ganso de 2 in con malla; la descarga de 2½ in llega a 13 m y entrega 1 m bajo el nivel
-   normal; la válvula de control de globo de 2 in va al final del tramo alto, antes del carrete y el codo de la
-   bajada. El resto son medidas del libro (de la figura), típicas de un tanque así. */
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const TL = {
   AZ: 62, EL: 26,
   /* tanque */
@@ -42,6 +39,10 @@ export const TL = {
   hh: { th: 285, r: 1050, z: 12250 },
   lad: { th: -14, r: 1720, half: 225, rw: 60, rt: 12, pitch: 300 },    // escalera: plano de los largueros a r = 1720
   cage: { half: 360, depth: 700, t: 6, h: 50, from: 1500 },            // jaula: aros de 720 mm, desde 2,2 m sobre el piso
+  /* la persona de referencia (../persona.mjs, 1,75 m), de pie en el piso al pie de la escalera: s a lo largo del radio
+     de la escalera y t a lo largo de su tangente (hacia +θ), en mm; rumbo, hacia dónde mira, en grados desde el radio
+     hacia +θ. Medida del libro. */
+  persona: { s: 2600, t: 0, rumbo: 180 },
   rail: { th0: -60, th1: -27, r: 1530, h: 1070, ro: 21.1 },            // baranda del techo
 };
 export const RO = TL.R + TL.tw;

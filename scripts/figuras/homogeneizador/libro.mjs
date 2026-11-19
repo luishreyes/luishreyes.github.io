@@ -1,5 +1,4 @@
-// El homogeneizador con los nombres de sus piezas, para el capítulo 15 del libro de operaciones unitarias (Mezclado y
-// escalado de tanques agitados, «El homogeneizador por dentro»):
+// El homogeneizador con los nombres de sus piezas, para el capítulo 15 del libro de operaciones unitarias:
 //
 //   node build.mjs --audit && node build.mjs --detalle --audit && node libro.mjs [--salida ../../../../libro-operaciones-unitarias/libro]
 //   CHROME_PATH=/opt/pw-browsers/chromium node libro.mjs --lamina [ruta/homogenizer.svg]

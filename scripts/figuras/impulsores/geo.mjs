@@ -1,11 +1,10 @@
 /* Medidas de los siete impulsores del capítulo 14 del libro de operaciones unitarias (Agitación). Unidades: 1 = 1 mm,
    z hacia arriba, el eje del impulsor en x = y = 0 y el plano medio de las palas en z = 0.
    Las proporciones salen de las fuentes del capítulo (la página va al lado); lo demás es «medida del libro»: típico de
-   un impulsor así, escogido para la figura. El README lleva la misma lista.
+   un impulsor así, escogido para la figura. La lista completa está en notas/figuras-isometricas.md del libro.
 
-   Las cinco turbinas (hélice, palas inclinadas, hidrofoil, Rushton y paleta) van con el mismo diámetro, D = 450 mm,
-   para que se comparen: 18 in es lo más grande que se hace una hélice (McCabe, p. 261). El ancla y la cinta van en su
-   tamaño de pared, dentro de un tanque de T = 1200 mm del que se ve la mitad de atrás. */
+   Las cinco turbinas (hélice, palas inclinadas, hidrofoil, Rushton y paleta) van con el mismo diámetro, para que se
+   comparen. El ancla y la cinta van en su tamaño de pared, dentro de un tanque del que se ve la mitad de atrás. */
 export const D = 450, R = D / 2;
 
 // lo que comparten las turbinas (medida del libro): eje de 50 mm, chaveta de 14 × 9 (la de un eje de 50 mm), prisioneros
@@ -91,4 +90,22 @@ export const CINTA = {
   D: 0.95 * TANQUE.T, W: (0.95 * TANQUE.T) / 10, t: 16, z0: 40,
   sh: { r: 40, top: 1440 }, collar: { r: 60, h: 64 }, arm: { w: 36 },
   cap: { r: 22, h: 14 },
+};
+
+/* ---------- la mano de referencia (medida del libro) ----------
+   Una mano derecha de adulto (190 mm de la muñeca a la punta del dedo medio, 85 mm de palma; manoEnBorde de
+   ../persona.mjs) que llega desde atrás y apoya las yemas en el borde, como quien toca el impulsor: th, en grados desde
+   el punto de atrás (el más lejano del lector) hacia la derecha (en las turbinas, la pala más cercana a ese ángulo; el
+   build busca su punta y su cara de arriba); atras, cuánto antes de la punta va el canto bajo el nudillo; en las de
+   pared, r y z del borde de arriba del tanque; adentro, cuánto entra el nudillo desde ese punto (negativo: afuera);
+   alto, el nudillo sobre él; inclina, cuánto baja el dorso hacia la muñeca; gira, cuánto se gira la mano para que el
+   pulgar quede hacia adentro. */
+export const MANO = {
+  helice: { th: 140, atras: 70, adentro: -12, alto: 26, inclina: 15, gira: 15 },
+  pbt: { th: 140, atras: 70, adentro: -12, alto: 26, inclina: 15, gira: 15 },
+  hidrofoil: { th: 30, atras: 4, adentro: -12, alto: 26, inclina: 15, gira: -10 },
+  rushton: { th: 70, adentro: -12, alto: 26, inclina: 15, gira: 15 },
+  paleta: { th: -70, atras: 22, adentro: -12, alto: 26, inclina: 15, gira: 15 },
+  ancla: { th: 35, r: TANQUE.Rt + TANQUE.w / 2, z: TANQUE.top, adentro: -6, alto: 50, inclina: 5, gira: 0 },
+  cinta: { th: 35, r: TANQUE.Rt + TANQUE.w / 2, z: TANQUE.top, adentro: -6, alto: 50, inclina: 5, gira: 0 },
 };

@@ -1,22 +1,10 @@
-/* Medidas del congelador de lecho fluidizado de dos etapas (IQF) del capítulo 16 del libro de operaciones unitarias
-   (Partículas en un fluido, «Congelar en un lecho fluidizado» y el ejemplo de las arvejas): un equipo de unos 4000 kg/h
-   de arvejas, en corte.
-   Unidades: 1 = 1 mm. x a lo largo del recorrido de las arvejas (entran por la izquierda, x < 0, y salen por la
+/* Medidas del congelador de lecho fluidizado de dos etapas (IQF) del capítulo 16 del libro de operaciones unitarias,
+   en corte.
+   Unidades: 1 = 1 mm. x a lo largo del recorrido del producto (entra por la izquierda, x < 0, y sale por la
    derecha), y hacia el lector (el corte quita la pared de y > 0 y el techo), z hacia arriba. El piso de la planta está
-   en z = 0; el interior del recinto va de x = 0 a 5000, de y = −1950 a 0 y de z = 300 hacia arriba.
-
-   De las fuentes (con su página; el README dice qué sale de dónde):
-   - aire entre −25 y −35 °C que sube a 2 a 6 m/s por una capa de 2 a 13 cm de producto sobre una bandeja perforada o
-     una banda; en dos etapas, primero una capa delgada que forma la costra y después una banda con capas de 10 a 15 cm
-     (Fellows, 2000, p. 427); hasta 10 000 kg/h (p. 427); la escarcha en el serpentín y el deshielo (pp. 426–427);
-   - las dos etapas: entrada del producto, banda 1, vertedero, banda 2 y la agitación de la banda, que es opcional; la
-     primera fluidiza y forma la costra, la segunda termina de congelar el centro sobre la banda, sin fluidizar (Berk,
-     2013, pp. 472–474, figs. 20.8 y 20.9);
-   - el aire sube vertical por la banda de malla y levanta el producto (Singh y Heldman, 2009, p. 508); los
-     ventiladores abajo y el serpentín al lado del lecho, dentro de un recinto aislado (fig. 7.7, p. 509);
-   - la arveja de 6 mm, unos 1120 kg/m³, porosidad de 0,40 en reposo, aire a −30 °C en Bogotá: U_mf = 1,45 m/s y
-     U_T = 14,5 m/s; una capa de 10 cm pesa 658 Pa (ejemplo 16.6 del libro).
-   Lo demás es «medida del libro»: típico de un equipo así, escogido para el dibujo. */
+   en z = 0; el interior del recinto empieza en x = 0 y llega hasta el plano del corte, y = 0.
+   Las medidas del caso y la fuente de cada una están en notas/figuras-isometricas.md del libro; lo que no sale de una fuente es «medida
+   del libro», escogido para el dibujo. */
 export const CG = {
   AZ: 62, EL: 28,
   /* el recinto: paneles de poliuretano de 150 mm con piel de acero */
@@ -60,6 +48,9 @@ export const CG = {
   defrost: { y: -1580, z: 2700, r: 24, noz: 9 },         // el rociador del deshielo
   hdr: { liq: { y: -1800, z: 2620, r: 22 }, suc: { y: -1350, z: 2850, r: 32, ins: 22 } },   // las líneas del refrigerante
   drain: { x: 2200, y: -450, r: 90 },
+  /* la persona de referencia (../persona.mjs, 1,75 m; medida del libro): de pie en el piso de la planta, a la derecha
+     del congelador y hacia el lector, frente a la salida de las arvejas, mirando hacia el equipo */
+  persona: { x: 6700, y: 1150, rumbo: 200 },
 };
 
 // El aire y la arveja del ejemplo 16.6

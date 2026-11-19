@@ -1,9 +1,8 @@
 /* ====================================================================
    El homogeneizador de alta presión en isométrico (skill anatomy), para el capítulo 15 del libro de operaciones
-   unitarias (Mezclado y escalado de tanques agitados, «El homogeneizador por dentro»): el cabezal de una máquina de
-   leche de 10 000 L/h, en corte.
+   unitarias: el cabezal de una máquina de tres pistones, en corte.
    Concepto: tres pistones desfasados 120° salen del cárter; el 1 va dentro de su cilindro, en el plano del corte, y
-   empuja la leche: la válvula de succión, abajo, está cerrada y la de descarga, arriba, abierta. La leche sale del
+   empuja el líquido: la válvula de succión, abajo, está cerrada y la de descarga, arriba, abierta. El líquido sale del
    bloque al cabezal de homogeneización, sube por el asiento de la primera etapa, pasa por la rendija entre el asiento
    y el forzador, choca con el anillo de impacto y sigue a la segunda etapa, horizontal, igual pero a menos presión;
    de ahí sale hacia arriba. Cada forzador lo aprieta un émbolo hidráulico: la presión del aceite fija la fuerza.
@@ -27,6 +26,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
+const { manoEnBorde, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 // la rejilla del orden: 0,25 unidades de la vista entera; en el detalle, la misma medida en milímetros (3,2 veces más)
 const STEP = Number(process.env.HM_STEP || (process.argv.includes("--detalle") ? 0.8 : 0.25));
@@ -645,6 +645,18 @@ arrow("flujo.cabezal", [xv + 40, -3, HM.zdm], [x1s - 18, -3, HM.zdm]);
 arrow("flujo.salida", [HM.xo, -3, HD.z1 + 20], [HM.xo, -3, OUT.z1 - 8]);
 ANCH.LECHE = [INL.x1 - 20, -3, HM.zs];
 
+/* ====================================================================
+   9 · la mano de referencia, con los dedos en el canto de atrás del bloque (../persona.mjs, manoEnBorde; no va en el
+   detalle). La cámara no la incluye, así el detalle queda igual; los dedos se apoyan en la cara de arriba del bloque.
+   ==================================================================== */
+if (!DET) {
+  const MN = HM.mano;
+  const m = manoEnBorde({ P, borde: [B.x0, MN.y, B.z1], hacia: [1, 0, 0], lado: "der", mm: 1, adentro: MN.adentro, alto: MN.alto, inclina: MN.inclina, gira: MN.gira });
+  m.shapes.forEach(record);
+  put("mano", m.ref, m.svg, m.shapes);
+  ANCH.MANO = m.anclas.MANO;
+}
+
 /* El camino de la leche en la primera etapa, solo en el detalle: sube por el asiento, sale de lado por la rendija,
    choca con el anillo de impacto y sube entre el anillo y el forzador a la cámara. En un plano justo detrás del corte. */
 if (DET) {
@@ -725,7 +737,8 @@ const CSS = `.hm-cut{--anatomy-paper:#c9ced3;--anatomy-face:#c9ced3;--anatomy-to
 .hm-fino{stroke-width:1.1px}
 .hm-oil-liq{fill:#e3cf7a;fill-opacity:.55;stroke:none}
 .hm-det-fondo{fill:#ffffff;stroke:none}
-.hm-det-marco{fill:none;stroke:#525c64;stroke-width:1px}`;
+.hm-det-marco{fill:none;stroke:#525c64;stroke-width:1px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 /* el SVG va en línea en la página del libro: los trazos M, L y Z se reescriben con coordenadas relativas en décimas */
 function compact(svgText) {

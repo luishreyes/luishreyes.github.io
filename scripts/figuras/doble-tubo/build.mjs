@@ -7,7 +7,10 @@
    rama, las curvas exteriores del tubo interior y las boquillas del ánulo
    con sus puentes. Lo vivo (los dos fluidos con su temperatura y sus
    puntos) lo pinta la página con el perfil del explorador.
-   Uso: node build.mjs [--audit] [--fast] · --js
+   Uso: node build.mjs [--audit] [--fast] [--libro] · --js
+   --libro: la vista del libro (capítulo 22), con la persona de referencia de 1,75 m (../persona.mjs) de pie junto a los
+   cabezales de retorno, y las anclas de los rótulos; escribe aparte out/doble-libro.svg y .json, que lee libro.mjs.
+   Sin --libro el SVG del explorador sale igual que siempre (los simuladores no llevan la persona).
    Unidades: 1 = 1 cm. z hacia arriba; cada rama a lo largo de y.
    ==================================================================== */
 import { writeFileSync, readFileSync, mkdirSync } from "node:fs";
@@ -21,7 +24,7 @@ const { tubePieces, tubeSvg } = await import(KIT + "/kit/tube.mjs");
 const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
-const FAST = process.argv.includes("--fast");
+const FAST = process.argv.includes("--fast"), LIBRO = process.argv.includes("--libro"), SUF = LIBRO ? "-libro" : "";
 const strip = (n) => readFileSync(join(HERE, n), "utf8").replace(/^export /gm, "");
 mkdirSync(join(HERE, "out"), { recursive: true });
 const writeJs = () => {
@@ -396,6 +399,37 @@ DP.sup.forEach((ys, j) => {
   for (let k2 = 0; k2 < NL; k2++) { const zc = GEO.legZ(k2); box(`stand.arm${j}.${k2}`, [-xs + 1.8, ys - 2.4, zc - Ro - 2.2], [0.6, ys + 2.4, zc - Ro], { tone: "lo" }, { r: 0.15 }); }
 });
 
+/* ====================================================================
+   4 · solo en la vista del libro (--libro): la persona de referencia y las anclas de los rótulos
+   ==================================================================== */
+// la persona: 1,75 m, de pie en el piso junto a los cabezales de retorno, donde se trabaja para quitarlos y limpiar el
+// ánulo; mira hacia el banco (rumbo en grados desde +x hacia +y). Va aquí y no en geo.mjs, que también corre en la
+// página del explorador. Medida del libro.
+const PERSONA = { x: 22, y: HS.y0 - 52, rumbo: 115 };
+let ANCLAS = null;
+if (LIBRO) {
+  const { personaDePie } = await import(join(HERE, "../persona.mjs"));
+  const PS = process.env.DP_PER ? Object.fromEntries(["x", "y", "rumbo"].map((kk, i) => [kk, Number(process.env.DP_PER.split(",")[i])])) : PERSONA;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 0.1, adelante: "izq" });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  // las anclas, en cm (la vista del libro las proyecta con P)
+  const z = (kk) => GEO.legZ(kk), zr = (h) => (GEO.legZ(2 * h) + GEO.legZ(2 * h + 1)) / 2;
+  ANCLAS = {
+    PERSONA: per.anclas.PECHO, CABEZA: per.anclas.CABEZA,
+    TUBO_INT: [0, L * 0.42, z(NL - 1) + ro],
+    TUBO_EXT: [-3, L * 0.62, z(NL - 1) + Math.sqrt(Ro * Ro - 9)],
+    ANULO: [0, L * 0.42, z(0) - (ro + Ri) / 2],
+    BRIDA: [0, L + GL.fl / 2, z(NL - 1) + Ro + 2.4],
+    PRENSA: [0, L + GL.fl + GL.body / 2, z(NL - 1) + ro + 1.6],
+    CURVA_INT: [0, bendY + ro, (GEO.legZ(3) + GEO.legZ(4)) / 2],
+    RETORNO: [Ro + 1.6, (HS.y0 + HS.y1) / 2 - 2, zr(NL / 2 - 1) + 4],
+    PUENTE: [NZ.x, nozY, (GEO.legZ(3) + GEO.legZ(4)) / 2],
+    ENTRA_INT: ENDS.inIn, SALE_INT: ENDS.inOut, ENTRA_AN: ENDS.anTop, SALE_AN: [ENDS.anBot[0], ENDS.anBot[1], ENDS.anBot[2] - 1],
+    SOPORTE: [-xs, DP.sup[1], GEO.legZ(0) - Ro - 12],
+  };
+}
+
 /* ---------- orden y salida ---------- */
 if (!FAST) A.settle(R_, P);
 R_.items.sort((a, b) => a.key - b.key);
@@ -404,11 +438,12 @@ R_.items.forEach((it) => { if (it.live) it.svg = `<g data-live="${it.name}"></g>
 LEGS.forEach((lg) => { const it = R_.items.find((q) => q.name === `leg${lg.k}.out`); it.svg += `<g data-live="leg${lg.k}.an"></g>`; });
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 const label = "Intercambiador de doble tubo en isométrico: tres horquillas apiladas en su bastidor, con cada rama abierta por el plano de su eje para ver el tubo interior y el ánulo; atrás los cabezales de retorno, adelante los prensaestopas, las curvas del tubo interior y los puentes del ánulo";
-const svg = k.figureSvg({ width: W, height: H, label, body: [`<g class="dp-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="dpSvg" `);
-const DATA = { P, W, H, L, Ri, Ro, ri, ro, sc: G.scaleOf(P), legs: LEGS.map((l) => l.zc), ends: ENDS };
-writeFileSync(join(HERE, "out", "doble.svg"), svg);
-writeFileSync(join(HERE, "out", "doble.json"), JSON.stringify(DATA));
+const cssPersona = LIBRO ? `<style>${(await import(join(HERE, "../persona.mjs"))).CSS_PERSONA}</style>` : "";
+const svg = k.figureSvg({ width: W, height: H, label, body: [`${cssPersona}<g class="dp-items">${groups.join("")}</g>`] }).replace("<svg ", `<svg id="dpSvg" `);
+const DATA = { P, W, H, L, Ri, Ro, ri, ro, sc: G.scaleOf(P), legs: LEGS.map((l) => l.zc), ends: ENDS, ...(LIBRO ? { anclas: ANCLAS } : {}) };
+writeFileSync(join(HERE, "out", `doble${SUF}.svg`), svg);
+writeFileSync(join(HERE, "out", `doble${SUF}.json`), JSON.stringify(DATA));
 writeJs();
-writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Doble tubo", theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "dp.css"), "utf8")}</style><div class="iso-stage" id="dpFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar DP_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
+writeFileSync(LIBRO ? join(HERE, "out", "preview-libro.html") : join(HERE, "preview.html"), k.pageHtml({ title: "Doble tubo", theme: "light", width: 1000, body: `<style>${readFileSync(join(HERE, "dp.css"), "utf8")}</style><div class="iso-stage" id="dpFig">${svg}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + "\nvar DP_DATA = " + JSON.stringify(DATA) + ";\n" + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
 console.log("doble items", R_.items.length, "scale", G.scaleOf(P).toFixed(3), "svg", svg.length);
 if (!FAST) A.auditOrExit(R_, P, {});

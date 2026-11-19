@@ -29,6 +29,7 @@ La mueve el mismo perfil del explorador (`profileAll`, contracorriente o paralel
 | `live.js` | `FDouble`: el tubo interior, el ánulo y el condensado. |
 | `dp.css` | Corte, cara cortada, fundición y lo vivo. El tema blueprint va en el explorador. |
 | `drive_test.js` | Perfil sintético para `preview.html` (`?par=1`, `&steam=1`, `&t=s`, `&snap=1`). |
+| `libro.mjs`, `rotulos.mjs` | La vista del libro (capítulo 22) con los nombres de las piezas, en español y en inglés; lo común está en `../intercambiador/libro-comun.mjs`. |
 
 ```sh
 node build.mjs --audit             # medio minuto; debe terminar en «audit passed»
@@ -37,3 +38,11 @@ node ../intercambiador/splice.mjs  # al explorador publicado (marcadores DPFIG_*
 
 El tubo interior de cada rama (`leg{k}.in`) se registra como el cilindro que es y lleva adentro su capa viva; el
 velo del ánulo va dentro del interior del tubo exterior (`leg{k}.out`), así queda detrás del tubo interior.
+
+**La vista del libro** (capítulo 22): `node build.mjs --libro --audit` agrega la persona de referencia
+(`../persona.mjs`) y las anclas de los rótulos y escribe aparte `out/doble-libro.svg` y `.json`; sin `--libro` el SVG
+del explorador sale idéntico. `node libro.mjs` la abre con el código vivo en un estado quieto (un tono de la paleta para
+cada fluido), quita los trazos y los puntos y escribe `figuras/intercambiadores-de-calor/_doble-tubo.qmd` del libro.
+`CHROME_PATH=/opt/pw-browsers/chromium node libro.mjs --lamina` escribe la lámina inglesa,
+`en/figuras/22/double-pipe.svg`, y `node herramientas/svg-a-pdf.mjs figuras/22/double-pipe.svg` desde `en/` la pasa a
+PDF. El detalle de la vista del libro está en `notas/figuras-isometricas.md` del libro.

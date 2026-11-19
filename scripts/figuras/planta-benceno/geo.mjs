@@ -1,11 +1,8 @@
 /* Medidas de la sección de reacción de la planta de benceno (capítulo 2 del libro de operaciones unitarias).
    Las comparten el isométrico (build.mjs) y las vistas de planta, de elevación y el isométrico de tubería (libro.mjs).
    Unidades: 1 = 10 cm. x hacia el este, y hacia el sur (hacia el lector en el isométrico), z hacia arriba.
-   El rack de tuberías corre de oeste a este por el centro; al norte va la parte caliente (E-101, H-101 y R-101)
-   y al sur la fría (E-102, V-102 y C-101 A/B), como en la disposición en línea de Turton (sec. 1.5).
-   Distancias mínimas de la tabla 1.11 de Turton: compresor y reactor, 9,1 m; reactor y recipientes, 4,6 m.
-   El separador V-102 sale del balance del libro (1,2 m × 3,4 m); el reactor, de las proporciones de Turton
-   (tabla 1.7). El resto de las medidas son de diseño preliminar, sin pretensión de detalle. */
+   El rack de tuberías corre de oeste a este por el centro; al norte va la parte caliente y al sur la fría.
+   La disposición, las distancias mínimas y la fuente de cada medida están en notas/figuras-isometricas.md del libro. */
 export const PB = {
   AZ: 135, EL: 35.264,   // isométrico verdadero: elevación de arctan(1/√2); los tres ejes se acortan igual
   // rack: pórticos cada 6 m, 5 m de ancho, vigas a 5,5 m

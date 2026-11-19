@@ -42,6 +42,13 @@ node build.mjs --audit && node build.mjs --lift --audit   # medio minuto cada un
 node splice.mjs
 ```
 
+**La vista del libro** (`../persona.mjs`): `node build.mjs --libro --audit` agrega la persona de referencia a la
+instalación y una mano a la vista de cerca, y escribe aparte `out/bomba-inundada-libro.svg` y `out/preview-libro.html`,
+que es lo que abre `libro.mjs`. Sin `--libro` el SVG del explorador sale idéntico y `splice.mjs` no la ve. `node
+libro.mjs --salida ../../../../libro-operaciones-unitarias/libro` escribe las dos vistas del libro,
+`figuras/bombas/_instalacion.qmd` y `_por-dentro.qmd`, y `estilo/anatomia.css`. El detalle de la vista del libro está en
+`notas/figuras-isometricas.md` del libro.
+
 Lo vivo se registra con la forma del volumen que ocupa. La pared de arriba de la voluta, el canal y la boquilla de
 succión se parten por el plano que mira al lector (el tramo cercano va delante del líquido y del impulsor, el lejano
 detrás), para que el orden de pintura no haga ciclos.

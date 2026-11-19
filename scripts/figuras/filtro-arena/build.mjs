@@ -1,11 +1,11 @@
 /* ====================================================================
-   Filtro a presión de doble medio en isométrico (skill anatomy), para el capítulo 15 del libro de operaciones
-   unitarias (Partículas en un fluido): el filtro que limpia el agua de servicios de la planta.
+   Filtro a presión de doble medio en isométrico (skill anatomy), para el capítulo 16 del libro de operaciones
+   unitarias (Partículas en un fluido).
    Concepto: el agua cruda entra por la corona, choca con la placa deflectora del distribuidor (que la reparte para que
-   no cave la antracita) y baja por 0,6 m de agua libre, 0,5 m de antracita y 0,3 m de arena; pasa por las ranuras de
-   las boquillas de la placa (el falso fondo, sin grava) y sale del pleno por el fondo. Los dos manómetros, en la
-   entrada y en la salida, leen la caída del lecho: cuando llega a unos 50 kPa se lava, con aire y agua que entran al
-   pleno y suben por las boquillas; el agua del lavado sale por la misma boquilla de la corona.
+   no cave la antracita) y baja por el agua libre, la antracita y la arena; pasa por las ranuras de las boquillas de la
+   placa (el falso fondo, sin grava) y sale del pleno por el fondo. Los dos manómetros, en la entrada y en la salida,
+   leen la caída del lecho: cuando llega a su límite se lava, con aire y agua que entran al pleno y suben por las
+   boquillas; el agua del lavado sale por la misma boquilla de la corona.
    Corte: se quita lo que mira al lector por encima de la línea de tangencia del fondo (y > 0, z > zt). El fondo queda
    entero; la envolvente, la tapa, la placa, la boquilla de entrada y el distribuidor se ven cortados por el plano y = 0.
    El medio va escalonado: además de la mitad del lector se quita el cuarto de atrás a la derecha (x > 0, y < 0) hasta

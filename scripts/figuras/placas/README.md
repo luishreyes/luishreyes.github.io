@@ -25,8 +25,17 @@ Es un equipo tipo: dibuja 15 placas con la separación exagerada (5 cm en el dib
 | `live.js` | `FPlate`: los canales y los puntos. |
 | `pl.css` | Placas en corte, empaques, bastidor y lo vivo. El tema blueprint va en el explorador. |
 | `drive_test.js` | Perfil sintético para `preview.html` (`?steam=1`, `&t=s`, `&snap=1`). |
+| `libro.mjs`, `rotulos.mjs` | La vista del libro (capítulo 22) con los nombres de las piezas, en español y en inglés; lo común está en `../intercambiador/libro-comun.mjs`. |
 
 ```sh
 node build.mjs --audit                   # medio minuto; debe terminar en «audit passed»
 node ../intercambiador/splice.mjs        # mete todas las figuras de intercambiadores en el explorador
 ```
+
+**La vista del libro** (capítulo 22): `node build.mjs --libro --audit` agrega la persona de referencia
+(`../persona.mjs`) y las anclas de los rótulos y escribe aparte `out/placas-libro.svg` y `.json`; sin `--libro` el SVG
+del explorador sale idéntico. `node libro.mjs` la abre con el código vivo en contracorriente, en un estado quieto, quita
+los puntos y escribe `figuras/intercambiadores-de-calor/_placas.qmd` del libro. `CHROME_PATH=/opt/pw-browsers/chromium
+node libro.mjs --lamina` escribe la lámina inglesa, `en/figuras/22/plate-exchanger.svg`, y `node
+herramientas/svg-a-pdf.mjs figuras/22/plate-exchanger.svg` desde `en/` la pasa a PDF. Las placas se ven de canto, en el
+corte: el chevrón no se ve. El detalle de la vista del libro está en `notas/figuras-isometricas.md` del libro.

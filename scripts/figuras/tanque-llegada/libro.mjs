@@ -59,6 +59,7 @@ export const ROTULOS = [
   ['ENTREGA', 'der', 'Entrega bajo el nivel'],
   ['ESCALERA', 'der', 'Escalera con jaula'],
   ['DRENAJE', 'der', 'Drenaje'],
+  ['PERSONA', 'der', 'Persona de 1,75 m'],
 ];
 const xIzq = minX - 24, xDer = maxX + 24;
 const lados = { izq: [], der: [] };
@@ -93,7 +94,7 @@ const etiqueta = 'El tanque de llegada del caso, en isométrico y en corte: un c
   'Adentro, el tubo baja hasta 1 m bajo el nivel normal y entrega el agua sumergido. ' +
   'En el techo están el respiradero de cuello de ganso de 2 in, con dos codos y la boca hacia abajo con su malla; la boca de inspección del techo, partida por el corte, con su tapa, su manija y su bisagra; el interruptor de muy alto nivel, cuya horquilla cuelga adentro entre el nivel normal y el rebose; y una baranda en el borde, junto a la escalera. ' +
   'En la envolvente, a la izquierda: el rebose, que empieza a verter a 12,35 m, con su codo y el tubo que baja por fuera junto a una columna hasta un dado de concreto en el piso; la boca de inspección cerca del fondo, con su placa de refuerzo, su tapa empernada, dos manijas y la bisagra; y el transmisor de nivel LT‑102 en la toma de 9,2 m, con su válvula de bloqueo, una pierna de impulso corta y el lado de baja abierto al aire. ' +
-  'A la derecha, la escalera con jaula sube del piso al techo. ' +
+  'A la derecha, la escalera con jaula sube del piso al techo; al pie, una persona de 1,75 m de pie en el piso da la escala. ' +
   'Abajo, del fondo salen la salida a la planta, con un tubo corto adentro que deja el sedimento en el fondo, su válvula de compuerta, el codo y el tubo que sale de la estructura, y el drenaje con su válvula.';
 const cuerpo = aplicarPaleta(svg
   .replace(/<svg([^>]*)>/, (_, a) => `<svg${a.replace(/\s(id|viewBox|aria-label|role|width|height)="[^"]*"/g, '')} viewBox="${vx} ${vy} ${vw} ${vh}" role="img" aria-label="${etiqueta}">`)

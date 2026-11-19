@@ -15,8 +15,9 @@ export const ROTULOS = [
   ['ENTRADA', 'fig', 'Agua floculada', -14, 170, 'izq'],
   ['ZONA', 'fig', 'Primer cuarto,\nsin placas', -14, 222, 'izq'],
   ['FLOCULO', 'fig', 'Flóculo que cae', -14, 286, 'izq'],
-  ['DIFUSOR', 'fig', 'Muro difusor', -14, 334, 'izq'],
-  ['ACTUADOR', 'fig', 'Actuador neumático', -14, 400, 'izq'],
+  ['DIFUSOR', 'fig', 'Muro difusor', -14, 318, 'izq'],
+  ['PERSONA', 'fig', 'Persona de 1,75 m', -14, 368, 'izq'],
+  ['ACTUADOR', 'fig', 'Actuador neumático', -14, 408, 'izq'],
   ['VALVULA', 'fig', 'Válvula de purga', -14, 446, 'izq'],
   ['PURGA', 'fig', 'Lodo al espesador', -14, 522, 'izq'],
   ['TOLVA', 'fig', 'Tolva de lodos', -14, 580, 'izq'],
@@ -50,6 +51,7 @@ export const ROTULOS_EN = [
   ['ENTRADA', 'fig', 'Flocculated water in', -16, 160, 'izq'],
   ['DIFUSOR', 'fig', 'Perforated baffle', -16, 280, 'izq'],
   ['ZONA', 'fig', 'Inlet zone, no plates', -16, 230, 'izq'],
+  ['PERSONA', 'fig', '1.75 m person', -16, 362, 'izq'],
   ['VALVULA', 'fig', 'Sludge blowdown', -16, 470, 'izq'],
   ['TOLVA', 'fig', 'Sludge hopper', -16, 580, 'izq'],
   ['CANALETA', 'fig', 'Launder with V-notch weirs', 540, 90, 'der'],
@@ -68,12 +70,12 @@ export const DESCRIPCION = 'Clarificador de placas en isométrico, sin el muro q
   'A la izquierda entra el agua floculada por un tubo a una cámara angosta y pasa por los 21 orificios de un muro difusor que la reparte en toda la sección. El primer cuarto del tanque no lleva placas: ahí cae el flóculo pesado y van las ruedas del barredor. ' +
   'Una pantalla separa la zona de entrada del agua clara. En los tres cuartos de atrás, 52 placas de acero inoxidable de 1,5 metros, inclinadas a 60 grados y separadas 50 milímetros, apoyadas en dos ángulos y con un peine arriba: el agua corre bajo el paquete y sube entre las placas, y el lodo resbala por ellas hacia abajo. ' +
   'Arriba, una canaleta con vertederos en V a los dos lados, colgada de ménsulas en el muro de atrás, recoge el agua clara y la lleva a una caja afuera del muro de la salida, de donde sale por un tubo al filtro. ' +
-  'En el fondo, un barredor de cadenas y paletas, con cuatro ruedas dentadas y un motorreductor sobre el muro que lo mueve con una cadena, arrastra el lodo por el piso hasta una tolva bajo la zona de entrada; de la tolva sale por un tubo con una válvula de cuchilla y actuador neumático hacia el espesador. ' +
+  'En el fondo, un barredor de cadenas y paletas, con cuatro ruedas dentadas y un motorreductor sobre el muro que lo mueve con una cadena, arrastra el lodo por el piso hasta una tolva bajo la zona de entrada; de la tolva sale por un tubo con una válvula de cuchilla y actuador neumático hacia el espesador. Junto a la válvula, en el piso, una persona de 1,75 metros da la escala. ' +
   'Un círculo amplía dos canales entre placas: el agua sube por el centro, el flóculo cae a la placa de abajo y el lodo resbala pegado a ella.';
 
 export const DESCRIPCION_EN = 'A plate settler in isometric, with the wall facing the reader removed: a rectangular concrete tank 1.3 by 5.1 meters with 3.6 meters of water. ' +
   'On the left, flocculated water enters a narrow chamber and passes the 21 ports of a perforated baffle wall that spreads it over the whole section. The first quarter of the tank has no plates. ' +
   'A baffle separates the inlet zone from the settled water. In the last three quarters, 52 stainless steel plates, 1.5 meters long, at 60 degrees and 50 millimeters apart: the water flows under the pack and rises between the plates, and the sludge slides down them. ' +
   'On top, a launder with V-notch weirs on both sides collects the settled water and takes it to an outlet box and the filter. ' +
-  'On the floor, a chain-and-flight collector drags the sludge to a hopper under the inlet zone, which is blown down through a knife gate valve to the thickener. ' +
+  'On the floor, a chain-and-flight collector drags the sludge to a hopper under the inlet zone, which is blown down through a knife gate valve to the thickener. A 1.75 meter person stands by the valve for scale. ' +
   'A circle enlarges two channels between plates: the water rises, the floc settles on the lower plate and the sludge slides down along it.';

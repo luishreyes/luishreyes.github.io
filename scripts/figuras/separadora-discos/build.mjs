@@ -1,8 +1,7 @@
 /* ====================================================================
    La separadora centrífuga de discos autodeslodante en isométrico (skill anatomy), para el capítulo 19 del libro de
-   operaciones unitarias (Separación centrífuga, «La separadora por dentro»): una máquina mediana de tazón semiabierto,
-   de 450 mm de tazón a 5400 r/min, puesta como purificadora de aceite, cortada por el plano del eje (y = 0) sin la
-   mitad que mira al lector.
+   operaciones unitarias: una máquina de tazón semiabierto, puesta como purificadora de aceite, cortada por el plano
+   del eje (y = 0) sin la mitad que mira al lector.
    Concepto: la mezcla baja por el tubo fijo de alimentación, el distribuidor la lleva bajo la pila y sube por los
    agujeros alineados de los discos. Entre cada dos discos, la fase liviana (el aceite, o la crema) va hacia el eje
    por la cara de arriba del disco de abajo y la pesada (el agua, o la leche descremada) y el sólido van hacia afuera
@@ -30,6 +29,7 @@ const A = await import(KIT + "/kit/audit.mjs");
 const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const SD = GEO.SD;
+const { personaDePie, CSS_PERSONA } = await import(join(HERE, "../persona.mjs"));
 const FAST = process.argv.includes("--fast");
 const DET = process.argv.includes("--detalle");
 const CHECK = process.argv.includes("--check");
@@ -777,6 +777,16 @@ const CY = SD.cyclone;
 }
 
 /* ====================================================================
+   8b · la persona de referencia: 1,75 m, de pie en el piso detrás del bastidor, a la derecha (no va en el detalle)
+   ==================================================================== */
+if (!DET) {
+  const PS = SD.persona;
+  const per = personaDePie({ P, pie: [PS.x, PS.y, PS.piso], rumbo: PS.rumbo, mm: 1 });
+  per.shapes.forEach(record);
+  put("persona", per.ref, per.svg, per.shapes);
+  ANCH.PERSONA = per.anclas.CABEZA;
+}
+/* ====================================================================
    9 · las flechas: la mezcla baja por el tubo y sube por los agujeros; el liviano va hacia el eje y sale por la izquierda;
    el pesado va hacia afuera, pasa sobre el disco de gravedad y sale por la derecha; el sólido sale del ciclón
    ==================================================================== */
@@ -946,7 +956,8 @@ const CSS = `.sd-cut{${flat("#C9CED3")}}.sd-cut1{${flat("#D6DADE")}}.sd-cut-c{${
 .sd-fino{stroke-width:1.1px}
 .sd-film-w{fill:#8FB0CF;stroke:none}.sd-film-w-line{fill:none;stroke:#2E5E9E;stroke-width:.4px}.sd-film-o{fill:#E3CF7A;stroke:none}.sd-film-o-line{fill:none;stroke:#B08A1E;stroke-width:.4px}
 .sd-drop-w{fill:#8FB0CF;stroke:#2E5E9E;stroke-width:.4px}.sd-drop-o{fill:#F3E9BE;stroke:#B08A1E;stroke-width:.4px}.sd-drop-s{fill:#7A5634;stroke:none}
-.sd-det-fondo{fill:#FFFFFF;stroke:none}.sd-det-marco{fill:none;stroke:#525C64;stroke-width:1px}`;
+.sd-det-fondo{fill:#FFFFFF;stroke:none}.sd-det-marco{fill:none;stroke:#525C64;stroke-width:1px}
+${CSS_PERSONA}`;
 const groups = R_.items.map((item) => `<g class="it" data-name="${item.name}">${item.svg}</g>`);
 function compact(svgText) {
   const num = (v) => { let t = (Math.round(v * 10) / 10).toFixed(1).replace(/\.0$/, ""); if (t === "-0") t = "0"; return t.replace(/^(-?)0\./, "$1."); };

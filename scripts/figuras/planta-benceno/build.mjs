@@ -2,8 +2,8 @@
    La sección de reacción de la planta de benceno en isométrico (skill anatomy), para el capítulo 2
    del libro de operaciones unitarias (Los diagramas de ingeniería).
    Concepto: el mismo proceso del PFD y del P&ID del capítulo, ahora como se construye. El rack de
-   tuberías corre por el centro; al norte, la parte caliente (precalentador E-101, horno H-101 y reactor
-   R-101); al sur, la fría (enfriador E-102, separador V-102 y compresores C-101 A/B). Las líneas de
+   tuberías corre por el centro; al norte, la parte caliente (precalentador, horno y reactor); al sur,
+   la fría (enfriador, separador de alta presión y compresores de reciclo). Las líneas de
    proceso van de un equipo al otro por el rack, y las que lo cruzan pasan por encima de las que corren
    a lo largo. Las medidas están en geo.mjs, que también usan las vistas de planta y de elevación.
    Unidades: 1 = 10 cm. x al este, y al sur (hacia el lector), z hacia arriba.

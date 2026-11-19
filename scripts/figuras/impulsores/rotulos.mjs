@@ -20,6 +20,7 @@ export const ROTULOS = {
     ['EJE', 'der', 'Eje'],
     ['CHAVETA', 'der', 'Chaveta'],
     ['PRISIONERO', 'der', 'Prisionero'],
+    ['MANO', 'der', 'Mano'],
   ],
   pbt: [
     ['PALA', 'izq', 'Pala plana a 45°'],
@@ -27,35 +28,39 @@ export const ROTULOS = {
     ['CUBO', 'izq', 'Cubo'],
     ['EJE', 'der', 'Eje'],
     ['CHAVETA', 'der', 'Chaveta'],
-    ['PRISIONERO', 'der', 'Prisionero'],
     ['OREJA', 'der', 'Oreja soldada'],
+    ['MANO', 'der', 'Mano'],
+    ['PRISIONERO', 'izq', 'Prisionero'],
   ],
   hidrofoil: [
     ['PALA', 'izq', 'Pala con perfil de ala'],
     ['CUBO', 'izq', 'Cubo'],
     ['PERNO', 'izq', 'Perno del extremo'],
-    ['EJE', 'der', 'Eje'],
     ['CHAVETA', 'der', 'Chaveta'],
     ['PRISIONERO', 'der', 'Prisionero'],
     ['PUNTA', 'der', 'Punta angosta'],
+    ['MANO', 'der', 'Mano'],
+    ['EJE', 'izq', 'Eje'],
   ],
   rushton: [
     ['DISCO', 'izq', 'Disco'],
     ['PALA', 'izq', 'Pala plana vertical'],
     ['CUBO', 'izq', 'Cubo'],
     ['EJE', 'der', 'Eje'],
-    ['CHAVETA', 'der', 'Chaveta'],
     ['SOPORTE', 'der', 'Soporte de la pala'],
     ['PERNOS', 'der', 'Pernos'],
+    ['MANO', 'der', 'Mano'],
+    ['CHAVETA', 'izq', 'Chaveta'],
   ],
   paleta: [
-    ['OREJA', 'izq', 'Oreja soldada'],
     ['CUBO', 'izq', 'Cubo'],
     ['EJE', 'der', 'Eje'],
     ['CHAVETA', 'der', 'Chaveta'],
     ['PRISIONERO', 'der', 'Prisionero'],
     ['PALA', 'der', 'Pala plana'],
     ['PERNOS', 'der', 'Pernos de la pala'],
+    ['MANO', 'izq', 'Mano'],
+    ['OREJA', 'der', 'Oreja soldada'],
   ],
   ancla: [
     ['TIRANTE', 'izq', 'Tirante'],
@@ -65,6 +70,7 @@ export const ROTULOS = {
     ['COLLAR', 'der', 'Collar'],
     ['PARED', 'der', 'Pared del tanque'],
     ['HOLGURA', 'der', 'Holgura de 30 mm'],
+    ['MANO', 'der', 'Mano'],
   ],
   cinta: [
     ['CINTA1', 'izq', 'Cinta helicoidal'],
@@ -73,18 +79,19 @@ export const ROTULOS = {
     ['EJE', 'der', 'Eje'],
     ['COLLAR', 'der', 'Collar'],
     ['PARED', 'der', 'Pared del tanque, a 30 mm'],
+    ['MANO', 'der', 'Mano'],
   ],
 };
 
 // los mismos rótulos en inglés, por ancla (para la edición impresa o una lámina con nombres)
 export const ROTULOS_EN = {
-  helice: { PALA: 'Twisted blade', CUBO: 'Hub', TUERCA: 'End nut', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw' },
-  pbt: { PALA: 'Flat blade at 45°', PERNOS: 'Blade bolts', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', OREJA: 'Welded lug' },
-  hidrofoil: { PALA: 'Airfoil blade', CUBO: 'Hub', PERNO: 'End bolt', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', PUNTA: 'Narrow tip' },
-  rushton: { DISCO: 'Disc', PALA: 'Flat vertical blade', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', SOPORTE: 'Blade clip', PERNOS: 'Bolts' },
-  paleta: { PALA: 'Flat blade', PERNOS: 'Blade bolts', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', OREJA: 'Welded lug' },
-  ancla: { TIRANTE: 'Cross arm', BRAZO: 'U-shaped arm', CUBO: 'Hub', EJE: 'Shaft', COLLAR: 'Collar', PARED: 'Tank wall', HOLGURA: '30 mm clearance' },
-  cinta: { CINTA1: 'Helical ribbon', BRAZO: 'Support arm', CINTA2: 'Second ribbon, 180° apart', EJE: 'Shaft', COLLAR: 'Collar', PARED: 'Tank wall, 30 mm away' },
+  helice: { PALA: 'Twisted blade', CUBO: 'Hub', TUERCA: 'End nut', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', MANO: 'Hand' },
+  pbt: { PALA: 'Flat blade at 45°', PERNOS: 'Blade bolts', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', OREJA: 'Welded lug', MANO: 'Hand' },
+  hidrofoil: { PALA: 'Airfoil blade', CUBO: 'Hub', PERNO: 'End bolt', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', PUNTA: 'Narrow tip', MANO: 'Hand' },
+  rushton: { DISCO: 'Disc', PALA: 'Flat vertical blade', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', SOPORTE: 'Blade clip', PERNOS: 'Bolts', MANO: 'Hand' },
+  paleta: { PALA: 'Flat blade', PERNOS: 'Blade bolts', CUBO: 'Hub', EJE: 'Shaft', CHAVETA: 'Key', PRISIONERO: 'Set screw', OREJA: 'Welded lug', MANO: 'Hand' },
+  ancla: { TIRANTE: 'Cross arm', BRAZO: 'U-shaped arm', CUBO: 'Hub', EJE: 'Shaft', COLLAR: 'Collar', PARED: 'Tank wall', HOLGURA: '30 mm clearance', MANO: 'Hand' },
+  cinta: { CINTA1: 'Helical ribbon', BRAZO: 'Support arm', CINTA2: 'Second ribbon, 180° apart', EJE: 'Shaft', COLLAR: 'Collar', PARED: 'Tank wall, 30 mm away', MANO: 'Hand' },
 };
 
 // lo que lee un lector de pantalla en cada vista
