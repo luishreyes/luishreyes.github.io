@@ -5,6 +5,7 @@ import julianBecerra from './phd/julian-fernando-becerra-encinales';
 import brayanRodriguez from './phd/brayan-rodriguez';
 import andresLeal from './phd/andres-felipe-leal';
 import julianTorres from './phd/julian-daniel-torres-vanegas';
+import marthaDiaz from './phd/martha-liliana-diaz-bustamante';
 
 // Import MS graduates
 import lauraSalgado from './ms/laura-tatiana-salgado';
@@ -50,6 +51,7 @@ export const graduatedStudentsData: {
     ms: GraduatedStudent[];
 } = {
     phd: [
+        marthaDiaz,
         julianBecerra,
         brayanRodriguez,
         andresLeal,

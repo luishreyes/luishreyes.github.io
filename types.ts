@@ -57,7 +57,8 @@ export interface GraduatedStudent {
   startedYear?: number; // Optional: left out when unknown rather than guessed
   currentPosition?: Localized;
   linkedinUrl?: string;
-  thesisTitle: string;
+  /** Left out while the exact title is not at hand: the page then shows only the summary. */
+  thesisTitle?: string;
   laymanSummary: StudentLaymanSummaryPoint[];
   imageUrl: string;
 }

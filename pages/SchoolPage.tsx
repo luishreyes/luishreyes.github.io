@@ -83,6 +83,7 @@ const DOCTORES: { nombre: string; texto: UIKey }[] = [
   { nombre: 'Brayan Rodríguez', texto: 'school.phd.brayan' },
   { nombre: 'Julián Fernando Becerra-Encinales', texto: 'school.phd.becerra' },
   { nombre: 'Andrés Felipe Leal', texto: 'school.phd.leal' },
+  { nombre: 'Martha Liliana Díaz Bustamante', texto: 'school.phd.diaz' },
 ];
 
 // Testimonios de dirigidos. Carlos y Angie ya hablan en su propio bloque; el resto, en este orden.

@@ -94,8 +94,12 @@ const DialogoTesis: React.FC<{ alumno: GraduatedStudent | null; onClose: () => v
               <figcaption className="a-pie">{localize(FOTO_DE_GRADO[alumno.name].alt, lang)}.</figcaption>
             </figure>
           )}
-          <p className="a-s text-tinta-600 mt-8">{t('students.thesis')}</p>
-          <p className="mt-1 font-semibold leading-snug text-tinta-900 max-w-[60ch]">{comillas(alumno.thesisTitle, lang)}</p>
+          {alumno.thesisTitle && (
+            <>
+              <p className="a-s text-tinta-600 mt-8">{t('students.thesis')}</p>
+              <p className="mt-1 font-semibold leading-snug text-tinta-900 max-w-[60ch]">{comillas(alumno.thesisTitle, lang)}</p>
+            </>
+          )}
           <div className="mt-8 space-y-6 border-t-2 border-tinta-900 pt-6">
             {alumno.laymanSummary.map((item, i) => (
               <div key={i}>
@@ -213,9 +217,13 @@ export const StudentsPage = () => {
                       {s.currentPosition && <p className="mt-3 text-tinta-800 max-w-[40ch]">{localize(s.currentPosition, lang)}</p>}
                     </div>
                     <div className="col-span-2 lg:col-span-1">
-                      <p className="a-s text-tinta-600">{t('students.thesis')}</p>
-                      <p className="mt-1 font-semibold leading-snug text-tinta-900 max-w-[52ch]">{comillas(s.thesisTitle, lang)}</p>
-                      <button type="button" onClick={() => setAbierto(s)} className="a-enlace a-s mt-4">
+                      {s.thesisTitle && (
+                        <>
+                          <p className="a-s text-tinta-600">{t('students.thesis')}</p>
+                          <p className="mt-1 font-semibold leading-snug text-tinta-900 max-w-[52ch]">{comillas(s.thesisTitle, lang)}</p>
+                        </>
+                      )}
+                      <button type="button" onClick={() => setAbierto(s)} className={`a-enlace a-s ${s.thesisTitle ? 'mt-4' : ''}`}>
                         {t('students.thesis.show')} <span aria-hidden="true">→</span>
                       </button>
                     </div>

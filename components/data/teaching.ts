@@ -159,7 +159,7 @@ export const testimonials: Testimonial[] = [
       es: "Durante mi doctorado, Luis ha sido una persona fundamental en mi crecimiento como investigadora y también a nivel personal. Siempre ha tenido la paciencia para escuchar mis dudas, acompañarme en los momentos de estancamiento y ayudarme a encontrar nuevas perspectivas cuando no sabía cómo avanzar. Aunque me ha enseñado a asumir mi investigación con independencia y a reconocer que este es mi propio proceso, su acompañamiento ha hecho que el camino se sienta como un verdadero trabajo en equipo. Con él puedo hablar no solo de temas académicos, sino también compartir experiencias personales y expresar lo que pienso sin sentirme juzgada. Su cercanía, paciencia y capacidad para comprender las dificultades que implica hacer un doctorado han hecho que su orientación vaya mucho más allá de lo estrictamente académico. Valoro profundamente todo lo que me ha enseñado, la confianza que ha depositado en mí y, sobre todo, la inspiración que me brinda para querer ser cada día una mejor investigadora."
     },
     name: "Martha Liliana Díaz Bustamante",
-    info: { en: "Doctoral student in Engineering", es: "Doctoranda en Ingeniería" },
+    info: { en: "Doctor of Engineering, 2026", es: "Doctora en Ingeniería, 2026" },
     imageUrl: "/images/testimonials/martha-liliana-diaz-bustamante.jpg",
     context: { en: "Doctoral advising", es: "Dirección de doctorado" },
     category: 'Research Advising'

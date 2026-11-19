@@ -148,7 +148,7 @@ const CASOS: Caso[] = [
     foto: { f: fotos.gradoBrayan, pie: 'rc.case.sound.photo', pos: 'center 35%' },
     estudiantes: [
       { nombre: 'Brayan Rodríguez', nivel: 'rc.lvl.phd.felipe', foto: retrato('brayan-rodriguez') },
-      { nombre: 'Martha Liliana Díaz-Bustamante', nivel: 'rc.lvl.phd.now', foto: '/images/testimonials/martha-liliana-diaz-bustamante.jpg' },
+      { nombre: 'Martha Liliana Díaz-Bustamante', nivel: 'rc.lvl.phd.oscar', foto: retrato('martha-liliana-diaz-bustamante') },
       { nombre: 'Carlos Yesiel González Murcia', nivel: 'rc.lvl.phd.co.now', foto: retrato('carlos-yesiel-gonzalez-murcia') },
     ],
     publicaciones: [

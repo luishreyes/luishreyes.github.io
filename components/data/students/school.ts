@@ -11,7 +11,7 @@ export const schoolFigures = {
   "masters": 41,
   "doctorate": 7,
   "current": {
-    "phd": 3,
+    "phd": 2,
     "ms": 5
   },
   "coauthors": 13,
@@ -45,7 +45,7 @@ export const schoolFigures = {
     ]
   },
   "graduates": {
-    "total": 41,
+    "total": 42,
     "known": 39,
     "destinations": [
       ["industry", 23],
@@ -159,6 +159,17 @@ export const schoolFigures = {
         "2026": 3
       },
       "translations": 3
+    },
+    "Martha Liliana Díaz Bustamante": {
+      "total": 4,
+      "first": 4,
+      "byYear": {
+        "2020": 1,
+        "2022": 1,
+        "2023": 1,
+        "2026": 1
+      },
+      "translations": 0
     }
   },
   "breweries": {
