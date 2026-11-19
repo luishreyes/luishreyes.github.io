@@ -13,11 +13,11 @@ export interface EditedBook {
   publisher: string;
   year: number;
   /** Set while the volume is announced but not out yet. It is not counted among the edited
-   *  books until it comes out: then this line goes and the cover goes in. */
+   *  books until it comes out: then this line goes. */
   inPress?: Localized;
   /** Editors in the order printed on the cover. */
   editors: string[];
-  /** Cover image under public/images/books/. Left out while the publisher's cover is not final. */
+  /** Cover image under public/images/books/. When it is missing, PortadaLibro draws a paper block. */
   cover?: string;
   pages: number;
   /** Chapters in the whole volume, when the publisher lists them. */
@@ -40,6 +40,9 @@ export const editedBooksData: EditedBook[] = [
     year: 2027,
     inPress: { en: 'In press, out in February 2027', es: 'En prensa, sale en febrero de 2027' },
     editors: ['Luis H. Reyes', 'Andrea Sánchez-Camargo', 'Felipe Reinoso-Carvalho', 'Juan C. Cruz'],
+    // The publisher's cover, cut above the editors' names: the preliminary cover still prints
+    // placeholder names. Replace it with the final cover when the book comes out.
+    cover: '/images/books/customer-centered-food.jpg',
     pages: 395,
     chapters: 17,
     authoredChapters: 0,
@@ -175,3 +178,10 @@ export const guestEditorshipsData: GuestEditorship[] = [
     editors: ['Luis H. Reyes', 'Juan C. Cruz'],
   },
 ];
+
+/** Covers of the books he wrote (not edited), keyed by the identifier they carry in
+ *  public/data/products.json (ISBN or ASIN). */
+export const ownBookCovers: Record<string, string> = {
+  '979-8255230075': '/images/books/brewing-yeasts.jpg',
+  B0C17MBMMV: '/images/books/insectopia.jpg',
+};

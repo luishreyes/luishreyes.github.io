@@ -52,6 +52,7 @@ export const research = {
   'products.type.Editorial':         { en: 'Editorial',               es: 'Editorial' },
   'products.type.Outreach Article':  { en: 'Outreach article',        es: 'Artículo de divulgación' },
   'products.type.Book':              { en: 'Book',                    es: 'Libro' },
+  'products.inPress':                { en: 'In press', es: 'En prensa' },
   'products.type.Book Chapter':      { en: 'Book chapter',            es: 'Capítulo de libro' },
   'products.type.Patent':            { en: 'Patent',                  es: 'Patente' },
   'products.type.Preprint':          { en: 'Preprint',                es: 'Preprint' },

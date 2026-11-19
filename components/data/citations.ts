@@ -104,5 +104,8 @@ export const minciencias = {
 
 /** Lo que cuenta como publicación: ni las ponencias ni las patentes. Las traducciones al
  *  español de Palmas tienen DOI propio y cuentan como divulgación. */
-export const esPublicacion = (p: Pick<Product, 'type'>) =>
-  p.type !== 'Conference' && p.type !== 'Patent';
+export const esPublicacion = (p: Pick<Product, 'type' | 'status'>) =>
+  p.type !== 'Conference' && p.type !== 'Patent' && !enPrensa(p);
+
+/** Anunciado por su editorial y todavía sin salir: se lista, pero no se cuenta. */
+export const enPrensa = (p: Pick<Product, 'status'>) => p.status === 'In press';

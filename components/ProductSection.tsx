@@ -37,7 +37,8 @@ export const ProductSection = ({ product, citationCount, cover, showYear = false
         ? t('products.citations.one')
         : fill(t('products.citations.many'), { n: citationCount.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US') })
       : null;
-  const meta = [tipo, product.publicationVenue, product.status, showYear ? ano : null].filter(Boolean).join(' · ');
+  const estado = product.status === 'In press' ? t('products.inPress') : product.status;
+  const meta = [tipo, product.publicationVenue, estado, showYear ? ano : null].filter(Boolean).join(' · ');
 
   // El identificador se nombra por lo que es: solo un DOI enlaza a doi.org.
   const ident = product.doi ?? '';

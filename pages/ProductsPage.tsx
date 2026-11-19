@@ -7,7 +7,7 @@ import { Sube } from '../components/Sube';
 import { useAppData } from '../context/AppDataContext';
 import { useI18n, localize, fill, type UIKey } from '../context/i18n';
 import { researchLinesMap } from '../components/data/research';
-import { editedBooksData } from '../components/data/editorships';
+import { editedBooksData, ownBookCovers } from '../components/data/editorships';
 import { fotos, type Foto } from '../components/data/fotos';
 import { scholar, esPublicacion } from '../components/data/citations';
 import type { Product, ProductType, ResearchArea } from '../types';
@@ -16,10 +16,14 @@ type Orden = 'newest' | 'oldest' | 'cited';
 
 const anoDe = (p: Product) => parseInt(p.publicationDate.slice(0, 4), 10);
 
-// Las portadas que existen en public/images/books, por DOI o ISBN del libro.
-const PORTADAS: Record<string, string> = Object.fromEntries(
-  editedBooksData.flatMap((b) => (b.cover ? [b.doi, b.isbn].filter((x): x is string => !!x).map((id) => [id, b.cover as string]) : [])),
-);
+// Las portadas que existen en public/images/books, por DOI, ISBN o ASIN del libro:
+// las de los libros editados y las de los libros propios.
+const PORTADAS: Record<string, string> = {
+  ...Object.fromEntries(
+    editedBooksData.flatMap((b) => (b.cover ? [b.doi, b.isbn].filter((x): x is string => !!x).map((id) => [id, b.cover as string]) : [])),
+  ),
+  ...ownBookCovers,
+};
 
 // Fotos de los congresos de cada año, solo donde la lista tiene ponencias de ese congreso.
 const FOTOS_DEL_ANO: Record<number, Foto[]> = {

@@ -92,7 +92,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
       title: t('service.editorships.title'),
       desc: t('service.editorships.desc'),
       media: (
-        <div className="grid grid-cols-3 gap-4 items-end">
+        <div className="grid grid-cols-4 gap-3 sm:gap-4 items-end">
           {editedBooksData.filter((book) => book.cover).map((book) => (
             <img
               key={book.title}
