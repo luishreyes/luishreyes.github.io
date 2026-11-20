@@ -10,7 +10,6 @@ export const ROTULOS = [
   ['CONO_T', 'izq', 'Cono de reparto'],
   ['ESPEJO_T', 'izq', 'Espejo de arriba, con\nlas bocas de los tubos'],
   ['VAPOR', 'izq', 'Vapor de calentamiento,\ndel efecto anterior'],
-  ['GUIA', 'izq', 'Guía'],
   // el círculo del detalle: la boca de un tubo
   ['d:D_NIEBLA', 'izq', 'Niebla de jugo'],
   ['d:D_BOCA', 'izq', 'Jugo que entra por el borde'],
@@ -29,6 +28,7 @@ export const ROTULOS = [
   ['PERSONA', 'izq', 'Persona de 1,75 m'],
   // a la derecha: el venteo, los tubos, los apoyos, el separador y la bomba
   ['VENTEO', 'der', 'Venteo de incondensables\ny aromas'],
+  ['GUIA', 'der', 'Guía'],
   ['TUBOS', 'der', 'Tubos: el jugo baja\nen película por la pared'],
   ['OREJA', 'der', 'Oreja de apoyo'],
   ['ESTRUCTURA', 'der', 'Estructura'],

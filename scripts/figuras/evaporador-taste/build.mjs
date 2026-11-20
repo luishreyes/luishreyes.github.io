@@ -592,7 +592,7 @@ const SUP = Array.from({ length: CL.soportes.n }, (_, i) => ({ z: Z.s0 + ((Z.s1 
     const u = sg * 130, nIn = -Math.sqrt((RO + GU.t) ** 2 - (Math.abs(u) - 20) ** 2) - 0.5;
     fp(`est.tirante${i}`, { o: eW(u, 0, 0), a: nE, u: uE, v: ZD3 }, rect(-20, GU.z - 40, 20, GU.z + 40), ST.n + c, nIn, {}, { owner: "cal.guia", cls: "ev-paint" });
   });
-  ANCH.GUIA = eW(-(RO + GU.t), 0, GU.z);
+  ANCH.GUIA = eW(RO + GU.t, 0, GU.z);
 }
 
 /* ====================================================================
