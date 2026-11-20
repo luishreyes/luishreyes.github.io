@@ -276,6 +276,7 @@ function ventana(id, poly) {
   const prism = A.prism(FV, win.map((p) => [G.dot3(p, CAM.R), G.dot3(p, CAM.D)]), -900000, 900000);
   return A.box([-900000, -900000, -900000], [900000, 900000, 900000], { cut: [prism] });
 }
+const tubeF = (t) => ({ o: eW(t.u, t.n, 0), a: ZD3, u: uE, v: nE });
 const nozHole = (deg, z, r) => A.disc({ o: [0, 0, z], a: dE(deg), u: tE(deg), v: ZD3 }, 0, 1200, r - 1);
 const SHELL_SOLID = A.body(FE, [[Z.s0, 0], [Z.s0, RO], [Z.s1, RO], [Z.s1, 0]], { name: "cal.coraza.maciza" });
 
@@ -336,9 +337,9 @@ function flangePair(name, F, s, d, { owner = name } = {}) {
 // una línea que termina en un par de bridas: la ruta (con sus codos) y las bridas al final, en la dirección del último tramo
 function lineaHasta(name, pts, d, rCodo, { owner = name } = {}) {
   const route = pts.length > 2 ? G.fillet(pts, rCodo, 16, { P, tube: d.ro }) : pts;
-  tubeItems(`${name}.pipe`, route, d.ro, { cls: "ev-pipe", owner });
+  tubeItems(`${name}.pipe`, route, d.ro, { cls: "ev-pipe" });
   const end = route[route.length - 1], dir = G.unit3(G.sub3(end, route[route.length - 2]));
-  flangePair(`${name}.end`, G.frameAlong(end, dir), 0, d, { owner });
+  flangePair(`${name}.end`, G.frameAlong(end, dir), 0, d);
   return route;
 }
 
@@ -362,7 +363,6 @@ const SUP = Array.from({ length: CL.soportes.n }, (_, i) => ({ z: Z.s0 + ((Z.s1 
 
 /* 1b · los espejos (el de arriba con las bocas de los tubos de atrás y las de la fila del corte, abiertas), la coraza
    con sus boquillas y los pernos de las dos uniones de bridas */
-const tubeF = (t) => ({ o: eW(t.u, t.n, 0), a: ZD3, u: uE, v: nE });
 {
   const notch = TR.ro + 0.4;
   const espejo = (name, zA, zB, conBocas) => {
@@ -464,12 +464,13 @@ const tubeF = (t) => ({ o: eW(t.u, t.n, 0), a: ZD3, u: uE, v: nE });
   ANCH.VENTURI = eW(-(VT.rg + VT.t) - 4, 0, (Z.ventG0 + Z.ventG1) / 2);
   // la línea del jugo: la brida de la línea, sube, da la vuelta hacia la izquierda y termina en su par de bridas
   disc("lj.fl", FE, Z.ventT, Z.ventT + D4.ft, D4.fl, {}, { owner: "lj", cls: "ev-cast" });
-  const route = lineaHasta("lj", [eW(0, 0, Z.ventT + D4.ft), eW(0, 0, Z.jugo), eW(-760, 0, Z.jugo)], D4, 72, { owner: "lj" });
+  const route = lineaHasta("lj", [eW(0, 0, Z.ventT + D4.ft), eW(0, 0, Z.jugo), eW(-760, 0, Z.jugo)], D4, 72);
   ANCH.JUGO = add(G.pointAlong(route, G.pathLength(route) * 0.75), [0, 0, D4.ro]);
-  // los pernos de la brida del cuello
+  // las tuercas de la unión del Venturi con el cuello (la mitad de atrás: cuatro de ocho)
   for (let q = 0; q < 4; q++) {
-    const deg = 180 + 22.5 + 45 * q, c = ePol(D1.bc, deg, 0), F = FZ(c[0], c[1], 0);
-    disc(`cal.pernoT${q}`, F, Z.cuelloT1 - 10, Z.ventD1 + 12, 8, {}, { owner: "vent", cls: "ev-trim", n: 12 });
+    const deg = 180 + 22.5 + 45 * q, c = ePol(D1.bc, deg, 0), F = FZ(c[0], c[1], 0), rot = deg * D2R - AZ * D2R;
+    fp(`cal.tuercaV${q}`, F, HEX(hexR(24), rot), Z.ventD1, Z.ventD1 + 14, {}, { owner: "vent", cls: "ev-trim" });
+    fp(`cal.tuercaVb${q}`, F, HEX(hexR(24), rot), Z.cuelloT1 - 14, Z.cuelloT1, {}, { owner: "vent", cls: "ev-trim" });
   }
 }
 
@@ -550,8 +551,10 @@ const tubeF = (t) => ({ o: eW(t.u, t.n, 0), a: ZD3, u: uE, v: nE });
   ANCH.VENTEO = add(vv.body, [0, 0, vv.r1 * 0.8]);
   const c = nozzle("cal.cond", SHELL_SOLID, CO.deg, zCond, D4, CO.cuello);
   disc("cal.cond.fl2", c.F, c.s, c.s + D4.ft, D4.fl, {}, { owner: "cal.cond", cls: "ev-cast" });
-  const p0 = G.pointOf(c.F, c.s + D4.ft, 0, 0), p1 = G.pointOf(c.F, c.s + D4.ft + 170, 0, 0);
-  lineaHasta("cal.cond", [p0, p1, [p1[0], p1[1], zCond - 520]], D4, 72, { owner: "cal.cond" });
+  // la línea sale derecho hasta pasar la columna de la estructura y ahí baja
+  const sOut = (CL.estructura.du + CL.estructura.col / 2 + 200) / Math.cos(CO.deg * D2R);
+  const p0 = G.pointOf(c.F, c.s + D4.ft, 0, 0), p1 = G.pointOf(c.F, sOut, 0, 0);
+  lineaHasta("cal.cond", [p0, p1, [p1[0], p1[1], zCond - 520]], D4, 72);
   ANCH.CONDENSADO = add(G.pointOf(c.F, c.s + D4.ft + 60, 0, 0), [0, 0, -D4.ro]);
 }
 
@@ -573,7 +576,7 @@ const tubeF = (t) => ({ o: eW(t.u, t.n, 0), a: ZD3, u: uE, v: nE });
   const FcolAt = (u, n) => ({ o: eW(u, n, 0), a: ZD3, u: uE, v: nE });
   [-1, 1].forEach((sg, i) => {
     const u = sg * ST.du, n = ST.n;
-    fp(`est.base${i}`, FcolAt(u, n), rect(-c - 60, -c - 60, c + 60, c + 60), 0, 20, {}, { owner: `est${i}`, cls: "ev-paint" });
+    fp(`est.base${i}`, FcolAt(u, n), rect(-c - 60, -c - 60, c + 60, c + 60), 0, 20, {}, { owner: `est${i}`, cls: "ev-paint", ground: true });
     fp(`est.col${i}`, FcolAt(u, n), rect(-c, -c, c, c), 20, ST.alto, {}, { owner: `est${i}`, cls: "ev-paint" });
     // la ménsula: de la columna hacia adelante, bajo la oreja, con su cartela
     const nArm = -RO * Math.abs(Math.sin(LG.degs[i] * D2R)) + 70;
@@ -581,12 +584,12 @@ const tubeF = (t) => ({ o: eW(t.u, t.n, 0), a: ZD3, u: uE, v: nE });
     fp(`est.cartela${i}`, { o: eW(u, 0, 0), a: uE, u: nE, v: ZD3 }, [[n + c, zl0 - b - 600], [n + c, zl0 - b], [n + c + 520, zl0 - b]], -12, 12, {}, { owner: `est${i}`, cls: "ev-paint" });
   });
   const GU = CL.guia;
-  fp("est.viga", { o: eW(0, ST.n, 0), a: uE, u: nE, v: ZD3 }, rect(-c, GU.z - b / 2, c, GU.z + b / 2), -ST.du - c, ST.du + c, {}, { owner: "est0", cls: "ev-paint" });
+  fp("est.viga", { o: eW(0, ST.n, 0), a: uE, u: nE, v: ZD3 }, rect(-c, GU.z - b / 2, c, GU.z + b / 2), -ST.du + c, ST.du - c, {}, { owner: "est0", cls: "ev-paint" });
   ANCH.ESTRUCTURA = eW(ST.du + c, ST.n, 6200);
   // la guía: media banda alrededor de la coraza, con dos tirantes hasta la viga
   bridaCorte("cal.guia", GU.z - GU.alto / 2, GU.z + GU.alto / 2, RO, RO + GU.t, { owner: "cal.guia", cls: "ev-paint" });
   [-1, 1].forEach((sg, i) => {
-    const u = sg * 130, nIn = -Math.sqrt((RO + GU.t) ** 2 - (u + sg * 20) ** 2) + 1;
+    const u = sg * 130, nIn = -Math.sqrt((RO + GU.t) ** 2 - (Math.abs(u) - 20) ** 2) - 0.5;
     fp(`est.tirante${i}`, { o: eW(u, 0, 0), a: nE, u: uE, v: ZD3 }, rect(-20, GU.z - 40, 20, GU.z + 40), ST.n + c, nIn, {}, { owner: "cal.guia", cls: "ev-paint" });
   });
   ANCH.GUIA = eW(-(RO + GU.t), 0, GU.z);
@@ -602,7 +605,9 @@ const FS = { o: sepXY, a: ZD3, u: uE, v: nE };
   const rTop = D3.ro;
   const sTop = Z.sepCil1 + HDs * Math.sqrt(1 - (rTop / RSo) ** 2);
   for (let i = 1; i <= 16; i++) { const s = Z.sepCil1 + ((sTop - Z.sepCil1) * i) / 16; prof.push([s, RSo * Math.sqrt(Math.max(0, 1 - ((s - Z.sepCil1) / HDs) ** 2)), i < 16 ? 1 : 0]); }
-  turned("sep.cuerpo", FS, prof, {}, { owner: "sep", cls: "ev-ss", smooth: true });
+  // el cono con el cilindro y, aparte, el fondo de arriba
+  turned("sep.cuerpo", FS, prof.slice(0, 3), {}, { owner: "sep", cls: "ev-ss" });
+  turned("sep.cabeza", FS, prof.slice(2).map((q, i) => (i === 0 ? [q[0], q[1], 1] : q)), {}, { owner: "sep", cls: "ev-ss", smooth: true });
   const SEP_SOLID = A.solid(FS, prof, { name: "sep.macizo" });
   ANCH.SEPARADOR = eW(uS + RSo, nS, (Z.sepCono1 + Z.sepCil1) / 2 + 150);
   ANCH.SEP_CONO = eW(uS + RSo * 0.6, nS, (Z.sepCono0 + Z.sepCono1) / 2);
@@ -615,7 +620,7 @@ const FS = { o: sepXY, a: ZD3, u: uE, v: nE };
   disc("sep.vapor.fl", FS, zV1, zV1 + D3.ft, D3.fl, {}, { owner: "sep", cls: "ev-ss" });
   disc("lv.fl", FS, zV1 + D3.ft, zV1 + 2 * D3.ft, D3.fl, {}, { owner: "lv", cls: "ev-cast" });
   const z0 = zV1 + 2 * D3.ft;
-  const rv = lineaHasta("lv", [add(sepXY, [0, 0, z0]), add(sepXY, [0, 0, z0 + 620]), add(eW(uS + 1050, nS, 0), [0, 0, z0 + 620])], D3, 457, { owner: "lv" });
+  const rv = lineaHasta("lv", [add(sepXY, [0, 0, z0]), add(sepXY, [0, 0, z0 + 900]), add(eW(uS + 1050, nS, 0), [0, 0, z0 + 900])], D3, 457);
   ANCH.VAPOR_SIG = add(G.pointAlong(rv, G.pathLength(rv) * 0.82), [0, 0, D3.ro]);
   // la entrada tangencial: el cuello sale de la pared hacia la calandria, con su eje a eSep del eje del separador
   const Fin = { o: eW(uS, 0, Z.duct), a: mul(uE, -1), u: nE, v: ZD3 };
@@ -639,7 +644,7 @@ const FS = { o: sepXY, a: ZD3, u: uE, v: nE };
     fp(`sep.oreja${i}.g`, { o: sepXY, a: tg, u: ax, v: ZD3 }, [[RSo - 0.5, zl + PT.pad.t], [rLeg + 66, zl + PT.pad.t], [rLeg + 66, zl + PT.pad.t + 40], [RSo - 0.5, zl + PT.pad.h]], -PT.pad.t / 2, PT.pad.t / 2, {}, { owner: "sep", cls: "ev-ss" });
     const Fleg = { o: add(sepXY, mul(ax, rLeg)), a: ZD3, u: ax, v: tg };
     disc(`sep.pata${i}`, Fleg, 16, zl, PT.r, {}, { owner: `sep.pata${i}`, cls: "ev-ss" });
-    fp(`sep.pata${i}.base`, Fleg, rect(-90, -90, 90, 90), 0, 16, {}, { owner: `sep.pata${i}`, cls: "ev-ss" });
+    fp(`sep.pata${i}.base`, Fleg, rect(-90, -90, 90, 90), 0, 16, {}, { owner: `sep.pata${i}`, cls: "ev-ss", ground: true });
   }
   ANCH.SEP_PATA = add(add(sepXY, mul(dE(PT.fase + 120), RSo + 70 + PT.r)), [0, 0, 600]);
 }
@@ -655,7 +660,7 @@ const FS = { o: sepXY, a: ZD3, u: uE, v: nE };
   const C_ = BM.casco, sS = BM.succion, nc = sS + 110 + C_.ancho / 2;   // la cara de la brida de succión y el centro del caracol
   const s1 = nc + C_.ancho / 2, s2 = s1 + BM.soporte, s3 = s2 + 100, s4 = s3 + BM.motor.largo;
   // la base, el pie del caracol y el soporte de los rodamientos
-  fp("bomba.base", F0, rect(-230, 0, 230, BM.base.alto), sS - 60, s4 + 120, {}, { owner: "bomba", cls: "ev-paint" });
+  fp("bomba.base", F0, rect(-230, 0, 230, BM.base.alto), sS - 60, s4 + 120, {}, { owner: "bomba", cls: "ev-paint", ground: true });
   fp("bomba.pie", F0, rect(-70, BM.base.alto, 70, BM.z - C_.r + 6), nc - 40, nc + 40, {}, { owner: "bomba", cls: "ev-cast" });
   // el caracol (un disco grueso), la succión con su brida y la descarga arriba, hacia un lado del eje
   disc("bomba.casco", F, nc - C_.ancho / 2, nc + C_.ancho / 2, C_.r, {}, { owner: "bomba", cls: "ev-cast" });
@@ -679,7 +684,7 @@ const FS = { o: sepXY, a: ZD3, u: uE, v: nE };
   ANCH.MOTOR = G.pointOf(F, (s3 + s4) / 2, RM, PI / 2);
   // la succión: del separador baja, viene hacia el lector, da la vuelta y entra a la brida de la bomba
   disc("ls.fl", FS, Z.sepSalida - D5.ft, Z.sepSalida, D5.fl, {}, { owner: "ls", cls: "ev-cast" });
-  const rs = G.fillet([add(sepXY, [0, 0, Z.sepSalida - D5.ft]), add(sepXY, [0, 0, BM.z]), pF(0), pF(sS - D5.ft)], 76, 16, { P, tube: D5.ro });
+  const rs = G.fillet([add(sepXY, [0, 0, Z.sepSalida - D5.ft]), add(sepXY, [0, 0, BM.z]), pF(0), pF(sS - D5.ft)], 150, 20, { P, tube: D5.ro });
   tubeItems("ls.pipe", rs, D5.ro, { cls: "ev-pipe" });
   disc("ls.fl2", F, sS - D5.ft, sS, D5.fl, {}, { owner: "ls", cls: "ev-cast" });
   ANCH.SUCCION = add(sepXY, [0, 0, (Z.sepSalida + BM.z) / 2 + 60]);
@@ -748,15 +753,18 @@ if (DET) {
   const FT = { o: eW(0, 0, 0), a: ZD3, u: uE, v: nE };
   // el espejo: la mitad de atrás de un bloque, con la muesca del tubo y los agujeros de los vecinos (que no se cortan)
   {
-    const half = 120, poly = [[-half, 0], [-half, -110], [half, -110], [half, 0], ...Array.from({ length: 25 }, (_, i) => { const t = (PI * i) / 24; return [ro * Math.cos(t), -ro * Math.sin(t)]; })];
+    // un trozo del espejo de 200 × 110 mm (la mitad de atrás), con las muescas del tubo y de sus dos vecinos de la fila
+    // del corte
+    const half = 100, cs = [TR.p, 0, -TR.p], poly = [[-half, 0], [-half, -110], [half, -110], [half, 0]];
+    for (const c of cs) for (let i = 0; i <= 24; i++) { const t = (PI * i) / 24; poly.push([c + ro * Math.cos(t), -ro * Math.sin(t)]); }
     const vecinos = TB.atras.filter((t) => Math.abs(t.u) < half + ro && t.n > -110 - ro);
     const clip = `evDetEsp`;
     DEFS.push(`<clipPath id="${clip}"><path d="${pth1([[-half, 0], [half, 0], [half, -110], [-half, -110]].map(([u, n]) => pr(eW(u, n, zT + 0.5))))}"/></clipPath>`);
     const mouths = vecinos.map((t) => pth1(circ(tubeF(t), zT + 0.3, ro, 40).map(pr))).join("");
     const bores = vecinos.map((t) => pth1(circ(tubeF(t), zT + 0.4, ri, 40).map(pr))).join("");
-    fp("det.espejo", FT, poly, z0 - 10, zT, {}, { owner: "det.espejo", cls: "ev-ss", extra: `<g clip-path="url(#${clip})"><path class="ev-tubo-boca" d="${mouths}"/><path class="ev-bore-dk" d="${bores}"/></g>` });
+    fp("det.espejo", FT, poly, zt0, zT, {}, { owner: "det.espejo", cls: "ev-ss", extra: `<g clip-path="url(#${clip})"><path class="ev-tubo-boca" d="${mouths}"/><path class="ev-bore-dk" d="${bores}"/></g>` });
     // la cara del corte del espejo, a los dos lados del tubo
-    const faces = [rect(-half, z0 - 10, -ro, zT), rect(ro, z0 - 10, half, zT)];
+    const faces = [rect(-half, zt0, -TR.p - ro, zT), rect(-TR.p + ro, zt0, -ro, zT), rect(ro, zt0, TR.p - ro, zT), rect(TR.p + ro, zt0, half, zT)];
     const d = faces.map((p) => pth1(p.map(([u, z]) => pr(eW(u, 0, z))))).join("");
     put("det.espejo.corte", eW(0, 0, zT - 20), `<g class="iso-solid ev-cut"><path class="iso-fill" d="${d}"/><path class="iso-shade" data-shade="3" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/></g>`,
       faces.map((p) => record(A.prism(FYE, p, -0.3, 0, { name: "det.espejo.corte", owner: "det.espejo" }))));
@@ -850,9 +858,9 @@ if (DET) {
     }
     for (const sg of [-1, 1]) {
       const F = { o: eW(sg * TR.p, 0, 0), a: ZD3, u: uE, v: nE };
-      put(`det.corte${sg}`, eW(sg * TR.p, -ri * 0.6, (z0 - 10 + zt0) / 2), toned((o) => surface(cP(ri, z0 - 10, zt0, sg * TR.p), cN(-1), PI, TAU, 64, 1, o), "ev-in"),
-        [record(A.body(F, [[z0 - 10, ri], [zt0, ri], [zt0, ro], [z0 - 10, ro]], { name: `det.corte${sg}`, owner: `det.corte${sg}`, cut: [FRONT_E] }))]);
-      const faces = [rect(sg * TR.p + ri, z0 - 10, sg * TR.p + ro, zt0), rect(sg * TR.p - ro, z0 - 10, sg * TR.p - ri, zt0)];
+      put(`det.corte${sg}`, eW(sg * TR.p, -ri * 0.6, (z0 - 10 + zT) / 2), toned((o) => surface(cP(ri, z0 - 10, zT, sg * TR.p), cN(-1), PI, TAU, 64, 1, o), "ev-in"),
+        [record(A.body(F, [[z0 - 10, ri], [zT, ri], [zT, ro], [z0 - 10, ro]], { name: `det.corte${sg}`, owner: `det.corte${sg}`, cut: [FRONT_E] }))]);
+      const faces = [rect(sg * TR.p + ri, z0 - 10, sg * TR.p + ro, zT), rect(sg * TR.p - ro, z0 - 10, sg * TR.p - ri, zT)];
       const d = faces.map((p) => pth1(p.map(([u, z]) => pr(eW(u, 0, z))))).join("");
       put(`det.corte${sg}.cara`, eW(sg * TR.p, 0, zt0 - 30), `<g class="iso-solid ev-cut1"><path class="iso-fill" d="${d}"/><path class="iso-shade" data-shade="3" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/></g>`,
         faces.map((p) => record(A.prism(FYE, p, -0.6, -0.3, { name: `det.corte${sg}.cara`, owner: `det.corte${sg}` }))));

@@ -27,7 +27,7 @@ export const EV = {
     ts: 40, RF: 290,                      // espejos (se extienden como bridas): espesor y radio
     tube: { ro: 25.4, ri: 24, p: 63.5, Rb: 208.5 },          // tubos de 2 in en triángulo; radio del haz
     // las posiciones del triángulo que se dejan sin tubo bajo la boquilla del vapor, para la placa de choque
-    sinTubo: [[-127, -110], [-31.75, -165]],
+    sinTubo: [[-158.75, -55], [-127, -110]],
     soportes: { n: 3, t: 8, cut: 0.4, gap: 1.6 },             // placas soporte: número, espesor, corte y holgura
     bolts: { bc: 258, n: 16, af: 30, h: 18 },                 // los pernos de las bridas del cuerpo
     // la cámara de reparto, arriba: brida, cilindro y cono (60° de ángulo incluido) hasta el cuello DN 100
@@ -37,14 +37,14 @@ export const EV = {
     // el tubo reducido con Venturi sobre el cono: entrada DN 40, garganta y salida DN 100
     venturi: { conv: 60, garganta: 20, rg: 10, div: 250, t: 6 },
     // el vapor de calentamiento entra arriba de la coraza (a 400 mm del espejo), con su placa de choque; el venteo,
-    // arriba (a 110 mm del espejo); el condensado, abajo, a ras del espejo
-    vapor: { deg: 240, dz: 400, cuello: 160, choque: { r: 186, t: 6, media: 26, alto: 300, gap: 0 } },
+    // arriba (a 110 mm del espejo); el condensado, abajo, casi a ras del espejo (su brida libra las tuercas)
+    vapor: { deg: 210, dz: 400, cuello: 160, choque: { r: 186, t: 6, media: 26, alto: 300, gap: 0 } },
     venteo: { deg: 330, dz: 110, cuello: 120 },
-    condensado: { deg: 315, dz: 45, cuello: 120 },
+    condensado: { deg: 345, dz: 90, cuello: 45 },
     // las orejas sobre la estructura y la guía de arriba
     orejas: { degs: [196, 344], w: 180, h: 220, t: 14, z: 10000 },
     guia: { z: 15600, alto: 120, t: 10 },
-    estructura: { du: 400, n: -560, col: 160, viga: 160, alto: 15800 },
+    estructura: { du: 440, n: -560, col: 160, viga: 160, alto: 15800 },
     // el detalle: la boca del tubo del centro, M veces más grande en un círculo de radio R (unidades de la vista)
     detalle: { M: 20, R: 115 },
   },
@@ -56,16 +56,16 @@ export const EV = {
     cyl: 1700, cabeza: 0.25,              // cilindro y fondo 2:1 de arriba
     conoAng: 30,                          // el cono de abajo: medio ángulo desde la vertical
     salida: 850,                          // la cara de la brida de la salida del jugo, sobre el piso
-    cuelloSalida: 100, cuelloVapor: 180,
+    cuelloSalida: 100, cuelloVapor: 400,
     entradaDz: 260,                       // el eje de la entrada tangencial, bajo la tangente de arriba
-    patas: { n: 3, r: 44.45, fase: 30, pad: { w: 140, h: 220, t: 12 } },   // tres patas de 3 in sobre el cilindro
+    patas: { n: 3, r: 44.45, fase: 60, pad: { w: 140, h: 220, t: 12 } },   // tres patas de 3 in sobre el cilindro
   },
   /* la línea de la mezcla: del cuello de abajo de la calandria baja un tramo, un codo de radio largo y sigue derecho a la
      entrada tangencial */
   mezcla: { carrete: 150, codo: 457 },
   /* la bomba centrífuga del jugo, de succión axial, delante del separador, con su eje a lo largo del corte: la succión
      baja del separador, viene hacia el lector y entra por la izquierda; el motor, a la derecha */
-  bomba: { z: 330, n: 650, succion: 160, casco: { r: 120, ancho: 110 }, soporte: 260, motor: { r: 105, largo: 330 }, base: { alto: 120 } },
+  bomba: { z: 330, n: 900, succion: 400, casco: { r: 120, ancho: 110 }, soporte: 260, motor: { r: 105, largo: 330 }, base: { alto: 120 } },
   /* la persona de referencia (../persona.mjs, 1,75 m), de pie en el piso, al pie del separador */
   persona: { u: 720, n: 500, rumbo: 160 },
 };
