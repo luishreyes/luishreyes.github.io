@@ -131,6 +131,19 @@ export const CLASES = {
   // el círculo del detalle: la película de condensado, las gotas de aceite, el agua de la coraza de fondo y el marco
   'ca-pelicula': { fill: 'agua.sombras.0', 'fill-opacity': 0.55 }, 'ca-gota-aceite': { fill: 'aceite.oscuro' }, 'ca-brillo': { fill: 'aceite.tapa' },
   'ca-det-fondo': { fill: 'agua.cara' }, 'ca-det-marco': { stroke: 'tinta-2' }, 'ca-det-marca': { stroke: 'tinta-2' }, 'ca-det-linea': { stroke: 'tinta-2' },
+  // una etapa del TASTE (capítulo 24): la calandria, el separador y las líneas de acero inoxidable (el corte en la
+  // sombra más honda; los tubos cortados dentro de un corte, en la siguiente), las válvulas y la bomba de fundición, la
+  // estructura y el motor pintados, la guarda del acople amarilla; el jugo en los tonos del aceite (no hay un material
+  // «jugo»): la película translúcida, la niebla muy tenue, las gotas en el tono oscuro; el jugo y su vapor en el azul,
+  // el vapor de calentamiento en el naranja; el fondo del círculo del detalle en la zona
+  ...corte('ev'), 'ev-cut1': 'acero/corte1', 'ev-ss': 'acero', 'ev-in': 'acero/dentro', 'ev-tubo': 'acero', 'ev-pipe': 'acero',
+  'ev-trim': 'acero', 'ev-cast': 'fundicion', 'ev-lever': 'fundicion', 'ev-paint': 'pintado', 'ev-motor': 'pintado', 'ev-yel': 'amarillo',
+  'ev-bore': { fill: 'hueco.claro' }, 'ev-bore-dk': { fill: 'hueco.oscuro' }, 'ev-tubo-boca': { fill: 'acero.sombras.2', stroke: 'hueco.medio' },
+  'ev-pelicula': { fill: 'aceite.sombras.0', 'fill-opacity': 0.5 }, 'ev-pelicula-sec': { fill: 'aceite.sombras.0', 'fill-opacity': 0.9 },
+  'ev-niebla': { fill: 'aceite.sombras.0', 'fill-opacity': 0.2 }, 'ev-gota': { fill: 'aceite.oscuro' }, 'ev-brillo': { fill: 'aceite.tapa' },
+  '.ev-jugo .iso-line[data-tone="lo"]': { stroke: 'aceite.oscuro' },
+  'ev-vapor': { stroke: 'naranja' }, 'ev-vapor-p': { fill: 'naranja' }, 'ev-jugo-flujo': { stroke: 'azul' }, 'ev-jugo-flujo-p': { fill: 'azul' },
+  'ev-det-fondo': { fill: 'zona' }, 'ev-det-marco': { stroke: 'tinta-2' }, 'ev-det-marca': { stroke: 'tinta-2' }, 'ev-det-linea': { stroke: 'tinta-2' },
   // termosifón vertical y fondo de la columna: los equipos y las líneas del proceso de acero inoxidable (el corte en la
   // sombra más honda); el vapor, el condensado, la trampa y las válvulas de fundición; el faldón, las patas y la palanca
   // pintados; los cimientos de concreto; las juntas de caucho; el líquido en el corte con la opacidad de siempre, la mezcla
@@ -342,6 +355,7 @@ export const VISTAS = {
   'calor-en-equipos/_linea-vapor': {},
   'condensacion-y-ebullicion/_condensador-arrastre': {},
   'condensacion-y-ebullicion/_termosifon': {},
+  'evaporacion/_taste': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
   'filtracion/_prensa-tornillo': {},
   'intercambiadores-de-calor/_aeroenfriador': {},
