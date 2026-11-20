@@ -46,7 +46,7 @@ export const EV = {
     guia: { z: 15600, alto: 120, t: 10 },
     estructura: { du: 440, n: -560, col: 160, viga: 160, alto: 15800 },
     // el detalle: la boca del tubo del centro, M veces más grande en un círculo de radio R (unidades de la vista)
-    detalle: { M: 20, R: 115 },
+    detalle: { M: 22, R: 130 },
   },
   /* el separador ciclónico: el diámetro de Souders y Brown con el K de diseño del caso; la entrada tangencial de la
      mezcla, la salida del vapor arriba y la del jugo por el cono de abajo */
@@ -58,7 +58,7 @@ export const EV = {
     salida: 850,                          // la cara de la brida de la salida del jugo, sobre el piso
     cuelloSalida: 100, cuelloVapor: 400,
     entradaDz: 260,                       // el eje de la entrada tangencial, bajo la tangente de arriba
-    patas: { n: 3, r: 44.45, fase: 60, pad: { w: 140, h: 220, t: 12 } },   // tres patas de 3 in sobre el cilindro
+    patas: { n: 3, r: 44.45, fase: 30, pad: { w: 140, h: 220, t: 12 } },   // tres patas de 3 in sobre el cilindro
   },
   /* la línea de la mezcla: del cuello de abajo de la calandria baja un tramo, un codo de radio largo y sigue derecho a la
      entrada tangencial */

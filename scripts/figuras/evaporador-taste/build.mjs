@@ -75,7 +75,7 @@ const PMAIN = k.fitProjection(EXT, W, H, { pad: 14, azimuth: AZ, elevation: EL }
 /* el detalle: la boca del tubo del centro (en el plano del corte), MDET veces más grande, dentro de un círculo de radio
    RDET (en las unidades de la vista); CDET es el punto que se amplía, en el eje del tubo */
 const DT = CL.detalle;
-const CDET = eW(0, 0, Z.top - 18), MDET = DT.M, RDET = DT.R;
+const CDET = eW(0, 0, Z.top - 4), MDET = DT.M, RDET = DT.R;
 const WD = 2 * RDET + 8;
 const P = DET ? (() => { const Q = { origin: [0, 0], scale: PMAIN.scale * MDET, azimuth: AZ, elevation: EL }; const c = k.iso(CDET, Q); Q.origin = [WD / 2 - c[0], WD / 2 - c[1]]; return Q; })() : PMAIN;
 const C = X.xCam(P);
@@ -389,7 +389,7 @@ const SUP = Array.from({ length: CL.soportes.n }, (_, i) => ({ z: Z.s0 + ((Z.s1 
   const bores = eBore(R - 0.4, VP.deg, zVap, D25.ri, "ev-bore-dk") + eBore(R - 0.4, VT.deg, zVent, D2.ri, "ev-bore-dk") + eBore(R - 0.4, CO.deg, zCond, D4.ri, "ev-bore-dk");
   envolvente("cal.coraza", Z.s0, R, Z.s1, R, { holes, bores });
   ANCH.CORAZA = eW(-RO, 0, Z.s0 + 2200);
-  ANCH.CALANDRIA = eW(RO, 0, Z.s0 + 4800);
+  ANCH.CALANDRIA = eW(-RO, 0, Z.s0 + 4800);
   const Bt = CL.bolts;
   for (let q = 0; q < Bt.n / 2; q++) {
     const deg = 180 + 180 / Bt.n + (360 / Bt.n) * q, c = ePol(Bt.bc, deg, 0), F = FZ(c[0], c[1], 0), rot = deg * D2R - AZ * D2R;
@@ -610,7 +610,7 @@ const FS = { o: sepXY, a: ZD3, u: uE, v: nE };
   turned("sep.cabeza", FS, prof.slice(2).map((q, i) => (i === 0 ? [q[0], q[1], 1] : q)), {}, { owner: "sep", cls: "ev-ss", smooth: true });
   const SEP_SOLID = A.solid(FS, prof, { name: "sep.macizo" });
   ANCH.SEPARADOR = eW(uS + RSo, nS, (Z.sepCono1 + Z.sepCil1) / 2 + 150);
-  ANCH.SEP_CONO = eW(uS + RSo * 0.6, nS, (Z.sepCono0 + Z.sepCono1) / 2);
+  ANCH.SEP_CONO = eW(uS + D5.fl, nS, Z.sepSalida + D5.ft / 2);
   // la salida del jugo: el cuello DN 50 y su brida
   disc("sep.salida.cuello", FS, Z.sepSalida + D5.ft, Z.sepCono0 + 4, D5.ro, {}, { owner: "sep", cls: "ev-ss" });
   disc("sep.salida.fl", FS, Z.sepSalida, Z.sepSalida + D5.ft, D5.fl, {}, { owner: "sep", cls: "ev-ss" });
@@ -749,26 +749,28 @@ const FS = { o: sepXY, a: ZD3, u: uE, v: nE };
 if (DET) {
   const ri = TR.ri, ro = TR.ro, zT = Z.top, zt0 = Z.s1, zc = CDET[2];
   const z0 = zc - 80, z1 = zc + 80;
-  const df = 2.2;                                                 // la película que se dibuja (la real, de 0,7 a 0,8 mm)
+  const df = 2;                                                   // la película que se dibuja (la real, de 0,7 a 0,8 mm)
   const FT = { o: eW(0, 0, 0), a: ZD3, u: uE, v: nE };
   // el espejo: la mitad de atrás de un bloque, con la muesca del tubo y los agujeros de los vecinos (que no se cortan)
   {
     // un trozo del espejo de 200 × 110 mm (la mitad de atrás), con las muescas del tubo y de sus dos vecinos de la fila
     // del corte
-    const half = 100, cs = [TR.p, 0, -TR.p], poly = [[-half, 0], [-half, -110], [half, -110], [half, 0]];
+    const half = 100, back = 260, cs = [TR.p, 0, -TR.p], poly = [[-half, 0], [-half, -back], [half, -back], [half, 0]];
     for (const c of cs) for (let i = 0; i <= 24; i++) { const t = (PI * i) / 24; poly.push([c + ro * Math.cos(t), -ro * Math.sin(t)]); }
-    const vecinos = TB.atras.filter((t) => Math.abs(t.u) < half + ro && t.n > -110 - ro);
+    const vecinos = TB.atras.filter((t) => Math.abs(t.u) < half + ro && t.n > -back - ro);
     const clip = `evDetEsp`;
-    DEFS.push(`<clipPath id="${clip}"><path d="${pth1([[-half, 0], [half, 0], [half, -110], [-half, -110]].map(([u, n]) => pr(eW(u, n, zT + 0.5))))}"/></clipPath>`);
-    const mouths = vecinos.map((t) => pth1(circ(tubeF(t), zT + 0.3, ro, 40).map(pr))).join("");
-    const bores = vecinos.map((t) => pth1(circ(tubeF(t), zT + 0.4, ri, 40).map(pr))).join("");
-    fp("det.espejo", FT, poly, zt0, zT, {}, { owner: "det.espejo", cls: "ev-ss", extra: `<g clip-path="url(#${clip})"><path class="ev-tubo-boca" d="${mouths}"/><path class="ev-bore-dk" d="${bores}"/></g>` });
+    DEFS.push(`<clipPath id="${clip}"><path d="${pth1([[-half, 0], [half, 0], [half, -back], [-half, -back]].map(([u, n]) => pr(eW(u, n, zT + 0.5))))}"/></clipPath>`);
+    // las bocas de los vecinos de atrás: el extremo del tubo, el hueco y el jugo que entra por el borde, en anillo
+    const mouths = vecinos.map((t) => pth1(circ(tubeF(t), zT + 0.3, ro, 48).map(pr))).join("");
+    const bores = vecinos.map((t) => pth1(circ(tubeF(t), zT + 0.4, ri, 48).map(pr))).join("");
+    const rings = vecinos.map((t) => pth1(circ(tubeF(t), zT + 0.5, ri, 48).map(pr)) + pth1(circ(tubeF(t), zT + 0.5, ri - 2, 48).map(pr).reverse())).join("");
+    fp("det.espejo", FT, poly, zt0, zT, {}, { owner: "det.espejo", cls: "ev-ss", ground: true, extra: `<g clip-path="url(#${clip})"><path class="ev-tubo-boca" d="${mouths}"/><path class="ev-bore" d="${bores}"/><path class="ev-pelicula-sec" d="${rings}"/></g>` });
     // la cara del corte del espejo, a los dos lados del tubo
     const faces = [rect(-half, zt0, -TR.p - ro, zT), rect(-TR.p + ro, zt0, -ro, zT), rect(ro, zt0, TR.p - ro, zT), rect(TR.p + ro, zt0, half, zT)];
     const d = faces.map((p) => pth1(p.map(([u, z]) => pr(eW(u, 0, z))))).join("");
     put("det.espejo.corte", eW(0, 0, zT - 20), `<g class="iso-solid ev-cut"><path class="iso-fill" d="${d}"/><path class="iso-shade" data-shade="3" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/></g>`,
       faces.map((p) => record(A.prism(FYE, p, -0.3, 0, { name: "det.espejo.corte", owner: "det.espejo" }))));
-    ANCH.D_ESPEJO = eW(-half * 0.62, 0, zT - 22);
+    ANCH.D_ESPEJO = eW(-(ro + TR.p - ro) / 2, 0, zT - 14);
     ANCH.D_BOCA = eW(TB.atras.find((t) => t.fila === -1 && t.u < 0 && t.u > -64)?.u ?? -31.75, -55 + ro, zT);
   }
   // la pared del tubo: la cara de adentro de la mitad de atrás y las dos caras del corte (desde la cara de arriba del
@@ -782,11 +784,11 @@ if (DET) {
     const d = faces.map((p) => pth1(p.map(([u, z]) => pr(eW(u, 0, z))))).join("");
     put("det.pared.corte", eW(0, 0, zt0), `<g class="iso-solid ev-cut1"><path class="iso-fill" d="${d}"/><path class="iso-shade" data-shade="3" d="${d}"/><path class="iso-line iso-edge" data-tone="mid" d="${d}"/></g>`,
       faces.map((p) => record(A.prism(FYE, p, -0.6, -0.3, { name: "det.pared.corte", owner: "det.tubo" }))));
-    ANCH.D_PARED = eW(ro - 0.7, 0, zT - 52);
+    ANCH.D_PARED = eW(-(ri + ro) / 2, 0, zT - 44);
   }
   // el jugo: una capa sobre el espejo que entra por el borde de la boca, y la película que baja por la pared y engruesa
   {
-    const dfAt = (z) => (z >= zT - 2 ? 0.9 : Math.min(df, 0.9 + (df - 0.9) * Math.min(1, (zT - z) / 30)));
+    const dfAt = (z) => (z >= zT - 1 ? 0.6 : Math.min(df, 0.6 + (df - 0.6) * Math.min(1, (zT - z) / 25)));
     const NF = 48, zs = Array.from({ length: 25 }, (_, i) => zT - ((zT - (z0 - 10)) * i) / 24);
     // la superficie de la película sobre la mitad de atrás (translúcida)
     const surf = [];
@@ -794,30 +796,24 @@ if (DET) {
     const outline = [...zs.map((z) => eW((ri - dfAt(z)) * Math.cos(PI), 0, z)), ...Array.from({ length: NF + 1 }, (_, i) => { const f = PI + (PI * i) / NF; const r = ri - dfAt(z0 - 10); return eW(r * Math.cos(f), r * Math.sin(f), z0 - 10); }), ...zs.slice().reverse().map((z) => eW(ri - dfAt(z), 0, z)), ...Array.from({ length: NF + 1 }, (_, i) => { const f = TAU - (PI * i) / NF; return eW(ri * 0.98 * Math.cos(f), ri * 0.98 * Math.sin(f), zT); })];
     // las caras de la película en el corte, a los dos lados (más gruesas abajo)
     const strip = (sg) => [...zs.map((z) => [sg * ri, z]), ...zs.slice().reverse().map((z) => [sg * (ri - dfAt(z)), z])];
-    // la capa sobre el espejo: de unos 0,9 mm, que se va hacia el borde de la boca
-    const capa = [[-118, zT + 0.9], [-ri - 3, zT + 0.9], [-ri, zT], [-118, zT]];
-    const capaD = [capa, capa.map(([u, z]) => [-u, z])].map((p) => pth1(p.map(([u, z]) => pr(eW(u, 0.05, z))))).join("");
-    const capaTop = [[-118, -100], [118, -100], [118, 0], [-118, 0]];
     let waves = "";
     for (let q = 0; q < 5; q++) {
       const zw = zT - 18 - q * 14, amp = 0.7;
       waves += path3(Array.from({ length: 49 }, (_, i) => { const f = PI + (PI * i) / 48; const r = ri - dfAt(zw); return eW(r * Math.cos(f), r * Math.sin(f), zw + amp * Math.sin(3 * f + q)); }));
     }
-    const shapes = [A.prism(FT, halfRing(ri - df, ri, 32), z0 - 10, zT, { name: "det.pelicula", owner: "det.tubo" }), A.prism(FT, capaTop, zT, zT + 0.9, { name: "det.pelicula", owner: "det.espejo" })];
-    const topD = pth1(capaTop.map(([u, n]) => pr(eW(u, n, zT + 0.9))));
+    const shapes = [A.prism(FT, halfRing(ri - df, ri, 32), z0 - 10, zT, { name: "det.pelicula", owner: "det.tubo" })];
     // la flecha de la película, sobre ella: baja por la pared
     const fa = 1.5 * PI - 0.5, rr = ri - df - 0.4, flecha = arrowSvg([[0, zT - 14], [0, zT - 58]], (a, z) => eW(rr * Math.cos(fa), rr * Math.sin(fa), z), "ev-jugo-flujo").svg;
-    put("det.pelicula", eW(0, -ri * 0.6, zT - 40), `<g class="ev-jugo"><path class="ev-capa" d="${topD}"/><path class="ev-pelicula" d="${pth1(outline.map(pr))}"/><path class="ev-pelicula-sec" d="${pth1(strip(1).map(([u, z]) => pr(eW(u, 0.05, z))))}${pth1(strip(-1).map(([u, z]) => pr(eW(u, 0.05, z))))}${capaD}"/>${Ln(waves, { tone: "lo" })}${flecha}</g>`, shapes);
-    ANCH.D_PELICULA = eW(-(ri - df / 2), 0.05, zT - 46);
-    ANCH.D_CAPA = eW(-70, -40, zT + 0.9);
+    put("det.pelicula", eW(0, -ri * 0.6, zT - 40), `<g class="ev-jugo"><path class="ev-pelicula" d="${pth1(outline.map(pr))}"/><path class="ev-pelicula-sec" d="${pth1(strip(1).map(([u, z]) => pr(eW(u, 0.05, z))))}${pth1(strip(-1).map(([u, z]) => pr(eW(u, 0.05, z))))}"/>${Ln(waves, { tone: "lo" })}${flecha}</g>`, shapes);
+    ANCH.D_PELICULA = eW(-(ri - df / 2), 0.05, zT - 28);
   }
   // la niebla: gotas de varios tamaños que bajan del cono, más juntas sobre la boca, y unas que chocan con la pared
   {
     let dG = "", dB = "";
     const shapes = [];
     const placed = [];
-    for (let i = 0; i < 2000 && placed.length < 130; i++) {
-      const u = (rnd() * 2 - 1) * 120, n = -rnd() * 110, z = zT + 3 + rnd() * (z1 - zT + 20);
+    for (let i = 0; i < 4000 && placed.length < 190; i++) {
+      const u = (rnd() * 2 - 1) * 110, n = -rnd() * 200, z = zT + 3 + rnd() * (z1 - zT + 20);
       if (Math.hypot(u, n) < 4) continue;
       const r = 0.35 + 1.4 * rnd() ** 2;
       const p = eW(u, n, z);
@@ -825,7 +821,7 @@ if (DET) {
       placed.push([p, r]);
     }
     // dentro del tubo, unas cuantas gotas que siguen bajando con el vapor
-    for (let i = 0; i < 300 && placed.length < 150; i++) {
+    for (let i = 0; i < 300 && placed.length < 210; i++) {
       const f = PI + PI * rnd(), rr = (ri - df - 3) * Math.sqrt(rnd()), z = zT - 6 - rnd() * 60, r = 0.3 + 0.6 * rnd();
       const p = eW(rr * Math.cos(f), rr * Math.sin(f), z);
       if (placed.some((q) => G.len3(G.sub3(q[0], p)) < q[1] + r + 1.2)) continue;
@@ -839,8 +835,10 @@ if (DET) {
       shapes.push(A.ball(p, r, { name: "det.niebla", owner: "det.niebla" }));
     }
     put("det.niebla", eW(0, -50, zT + 40), `<g class="ev-jugo"><path class="ev-gota" d="${dG}"/><path class="ev-brillo" d="${dB}"/></g>`, shapes);
-    const gr = placed.filter(([p]) => p[2] > zT + 20).sort((a, b) => b[1] - a[1])[0];
-    ANCH.D_NIEBLA = gr ? gr[0] : eW(-60, -30, zT + 40);
+    // el ancla: una gota grande arriba a la izquierda, dentro del círculo
+    const c0 = at(CDET), Rv = RDET * 0.78;
+    const gr = placed.filter(([p, r]) => { const q = at(p); return q[0] < c0[0] - RDET * 0.2 && q[1] < c0[1] - RDET * 0.45 && Math.hypot(q[0] - c0[0], q[1] - c0[1]) < Rv && r > 0.8; }).sort((a, b) => b[1] - a[1])[0];
+    ANCH.D_NIEBLA = gr ? gr[0] : eW(-40, -20, zT + 30);
   }
   // las flechas: la niebla baja hacia la boca y el vapor del jugo baja por el centro
   arrows([
@@ -848,7 +846,7 @@ if (DET) {
     ["det.flujo.n1", "ev-jugo-flujo", [[34, z1 + 4], [12, zT + 22], [4, zT - 26]]],
     ["det.flujo.v", "ev-jugo-flujo", [[0, zT - 30], [0, z0 + 6]]],
   ], (u, z) => eW(u, -2, z), 0.6);
-  ANCH.D_VAPOR = eW(0.4, -2, zT - 52);
+  ANCH.D_VAPOR = eW(0.4, -2, zT - 56);
   // bajo el espejo, del lado de la coraza: el tubo de atrás vecino, entero, y el vapor de calentamiento (la flecha)
   {
     const sec = Array.from({ length: 40 }, (_, i) => { const a = (TAU * i) / 40; return [ro * Math.cos(a), ro * Math.sin(a)]; });
@@ -858,7 +856,8 @@ if (DET) {
     }
     for (const sg of [-1, 1]) {
       const F = { o: eW(sg * TR.p, 0, 0), a: ZD3, u: uE, v: nE };
-      put(`det.corte${sg}`, eW(sg * TR.p, -ri * 0.6, (z0 - 10 + zT) / 2), toned((o) => surface(cP(ri, z0 - 10, zT, sg * TR.p), cN(-1), PI, TAU, 64, 1, o), "ev-in"),
+      const film = `<path class="ev-pelicula" d="${pth1([...eArc(ri - 0.6, zT, PI, TAU, 36, sg * TR.p), ...eArc(ri - df, z0 - 10, TAU, PI, 36, sg * TR.p)].map(pr))}"/>`;
+      put(`det.corte${sg}`, eW(sg * TR.p, -ri * 0.6, (z0 - 10 + zT) / 2), toned((o) => surface(cP(ri, z0 - 10, zT, sg * TR.p), cN(-1), PI, TAU, 64, 1, o), "ev-in") + film,
         [record(A.body(F, [[z0 - 10, ri], [zT, ri], [zT, ro], [z0 - 10, ro]], { name: `det.corte${sg}`, owner: `det.corte${sg}`, cut: [FRONT_E] }))]);
       const faces = [rect(sg * TR.p + ri, z0 - 10, sg * TR.p + ro, zT), rect(sg * TR.p - ro, z0 - 10, sg * TR.p - ri, zT)];
       const d = faces.map((p) => pth1(p.map(([u, z]) => pr(eW(u, 0, z))))).join("");
@@ -866,7 +865,7 @@ if (DET) {
         faces.map((p) => record(A.prism(FYE, p, -0.6, -0.3, { name: `det.corte${sg}.cara`, owner: `det.corte${sg}` }))));
     }
     arrows([["det.flujo.cal", "ev-vapor", [[-ro - 6.5, zt0 - 8], [-ro - 6.5, zt0 - 48]]]], (u, z) => eW(u, -1, z), 0.6);
-    ANCH.D_CALEFACCION = eW(-ro - 6.5, -1, zt0 - 30);
+    ANCH.D_CALEFACCION = eW(-ro - 6.5, -1, zt0 - 22);
   }
 }
 
@@ -901,7 +900,7 @@ const CSS_EV = `.ev-cut{${shades("#c9ced3", "#c9ced3", "#c9ced3", "#c9ced3", "#c
 .ev-yel{${shades("#f3e9a6", "#f3e9a6", "#f8f1c4", "#dccf7e", "#e4d88d", "#ebe09a", "#efe5a1")}}
 .ev-bore{fill:#9fadb8;stroke:none}.ev-bore-dk{fill:#5f6a74;stroke:none}.ev-tubo-boca{fill:#d5d9dd;stroke:#8d969e;stroke-width:.3px}
 .ev-pelicula{fill:#e3cf7a;fill-opacity:.5;stroke:none}.ev-pelicula-sec{fill:#e3cf7a;fill-opacity:.9;stroke:none}
-.ev-capa{fill:#e3cf7a;fill-opacity:.42;stroke:none}.ev-niebla{fill:#e3cf7a;fill-opacity:.2;stroke:none}
+.ev-niebla{fill:#e3cf7a;fill-opacity:.2;stroke:none}
 .ev-gota{fill:#b08a1e;stroke:none}.ev-brillo{fill:#f7f0d2;stroke:none}
 .ev-jugo .iso-line[data-tone="lo"]{stroke:#b08a1e}
 .ev-vapor{fill:none;stroke:#c8452b;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
