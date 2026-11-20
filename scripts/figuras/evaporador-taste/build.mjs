@@ -797,8 +797,8 @@ if (DET) {
     // las caras de la película en el corte, a los dos lados (más gruesas abajo)
     const strip = (sg) => [...zs.map((z) => [sg * ri, z]), ...zs.slice().reverse().map((z) => [sg * (ri - dfAt(z)), z])];
     let waves = "";
-    for (let q = 0; q < 5; q++) {
-      const zw = zT - 18 - q * 14, amp = 0.7;
+    for (let q = 0; q < 4; q++) {
+      const zw = zT - 16 - q * 13, amp = 0.7;
       waves += path3(Array.from({ length: 49 }, (_, i) => { const f = PI + (PI * i) / 48; const r = ri - dfAt(zw); return eW(r * Math.cos(f), r * Math.sin(f), zw + amp * Math.sin(3 * f + q)); }));
     }
     const shapes = [A.prism(FT, halfRing(ri - df, ri, 32), z0 - 10, zT, { name: "det.pelicula", owner: "det.tubo" })];
@@ -846,7 +846,7 @@ if (DET) {
     ["det.flujo.n1", "ev-jugo-flujo", [[34, z1 + 4], [12, zT + 22], [4, zT - 26]]],
     ["det.flujo.v", "ev-jugo-flujo", [[0, zT - 30], [0, z0 + 6]]],
   ], (u, z) => eW(u, -2, z), 0.6);
-  ANCH.D_VAPOR = eW(0.4, -2, zT - 56);
+  ANCH.D_VAPOR = eW(0.4, -2, zT - 34);
   // bajo el espejo, del lado de la coraza: el tubo de atrás vecino, entero, y el vapor de calentamiento (la flecha)
   {
     const sec = Array.from({ length: 40 }, (_, i) => { const a = (TAU * i) / 40; return [ro * Math.cos(a), ro * Math.sin(a)]; });
@@ -865,7 +865,7 @@ if (DET) {
         faces.map((p) => record(A.prism(FYE, p, -0.6, -0.3, { name: `det.corte${sg}.cara`, owner: `det.corte${sg}` }))));
     }
     arrows([["det.flujo.cal", "ev-vapor", [[-ro - 6.5, zt0 - 8], [-ro - 6.5, zt0 - 48]]]], (u, z) => eW(u, -1, z), 0.6);
-    ANCH.D_CALEFACCION = eW(-ro - 6.5, -1, zt0 - 22);
+    ANCH.D_CALEFACCION = eW(-ro - 6.5, -1, zt0 - 30);
   }
 }
 
