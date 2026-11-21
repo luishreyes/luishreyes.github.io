@@ -16,7 +16,8 @@ import { pou202620Course } from './pou-2026-20';
 //     heredados de 2026-20. Ya son propios de 2027-10: el reto, los módulos
 //     y el material de las semanas 1 a 3, más la Lectura 12 (filtración y
 //     winterización), que reemplaza a la Lectura 09 de pectina.
-//   · El equipo de asistentes y la monitoría están por confirmar. Las fechas
+//   · El equipo docente ya está (21 nov 2026): Andrés F. Infante sigue de
+//     asistente y Eduardo Perea Castillo es el monitor. Las fechas
 //     ya siguen el calendario académico de 2027-10 (clases del 25 de enero al
 //     22 de mayo, receso del 22 al 27 de marzo): el `cronograma` lo escribe
 //     scripts/pou-2027-10-cronograma.mjs, que también llena la tabla de sesiones
@@ -77,11 +78,6 @@ const DESCRIPCIONES: Record<string, string> = {
     'Qué distingue a un equipo que funciona, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase.',
 };
 
-// Lo que todavía no se sabe de 2027-10 (equipo de asistentes, fechas) va
-// «por confirmar», y las entregas se fijan por semana hasta que salga el
-// calendario.
-const POR_CONFIRMAR = 'Por confirmar';
-
 export const pou202710Course: Course = {
   ...pou202620Course,
 
@@ -99,10 +95,16 @@ export const pou202710Course: Course = {
   identidad: 'uniandes',
   duration: '16 semanas y la de finales, con los pósters',
 
+  // El horario de 2026-20 decía «BloqueNeón» y «Magistral»: en 2027-10 son clases.
+  schedule: [
+    { label: 'Clase', detail: 'Martes 11:00 a.m. a 12:20 p.m. · Salón según Bloque Neón' },
+    { label: 'Clase', detail: 'Jueves 11:00 a.m. a 12:20 p.m. · Salón según Bloque Neón' },
+  ],
+
   team: [
     pou202620Course.team[0],
-    { name: POR_CONFIRMAR, role: 'Asistente', email: '' },
-    { name: POR_CONFIRMAR, role: 'Monitoría', email: '' },
+    pou202620Course.team[1],
+    { name: 'Eduardo Perea Castillo', role: 'Monitor', email: 'e.pereac@uniandes.edu.co' },
   ],
 
   // Los mismos objetivos del programa de 2027-10.
@@ -301,7 +303,7 @@ export const pou202710Course: Course = {
       ...p,
       items: p.items.map((it) =>
         it.startsWith('Correo del curso:')
-          ? 'Correo del curso: lh.reyes@uniandes.edu.co. Los correos del equipo de asistentes se publican al iniciar el semestre.'
+          ? 'Correo del curso: lh.reyes@uniandes.edu.co, af.infante@uniandes.edu.co, e.pereac@uniandes.edu.co.'
           : it.startsWith('La asistencia a las sesiones magistrales')
           ? 'La asistencia a las clases es obligatoria (control diario).'
           : it.startsWith('Talleres y documento final')

@@ -7,14 +7,20 @@
 //     // CRONOGRAMA_START y // CRONOGRAMA_END;
 //   · la tabla del programa por sesiones de public/classroom/iqya-2031-2027-10/programa.html,
 //     entre <!-- SESIONES_START --> y <!-- SESIONES_END -->;
-//   · los datos del cronograma interactivo, public/classroom/iqya-2031-2027-10/cronograma.html.
+//   · los datos del cronograma interactivo, public/classroom/iqya-2031-2027-10/cronograma.html;
+//   · la Presentación del curso (slides/Presentacion_del_Curso/): la línea de tiempo,
+//     entre <!-- CRONOGRAMA_DECK_START --> y <!-- CRONOGRAMA_DECK_END -->, y cada fecha
+//     escrita como <span data-crono="clave">, con las claves sesion-N, quiz-N, taller-N,
+//     lab-N, examen-N, bitacora-N y memo-N (data-mayus pone la inicial en mayúscula,
+//     data-anio agrega el año y data-forma="semana" escribe el número de la semana).
 //
 // Calendario académico 2027-10: clases del 25 de enero al 22 de mayo de 2027,
 // receso del 22 al 27 de marzo (Semana Santa) y finales del 24 al 29 de mayo.
 // POU va martes y jueves. Ningún festivo cae en esos días.
 //
-// Uso: node scripts/pou-2027-10-cronograma.mjs   (y después regenerar el PDF del programa:
-//      CURSO=iqya-2031-2027-10 node scripts/build-pou-programa-pdf.mjs)
+// Uso: node scripts/pou-2027-10-cronograma.mjs   (y después regenerar los PDF del programa y
+//      de la presentación: CURSO=iqya-2031-2027-10 node scripts/build-pou-programa-pdf.mjs y
+//      CURSO=iqya-2031-2027-10 node scripts/build-deck-doc.mjs Presentacion_del_Curso)
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -23,6 +29,7 @@ const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TS = path.join(RAIZ, 'components/data/classroom/pou-2027-10.ts');
 const PROGRAMA = path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/programa.html');
 const CRONO = path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/cronograma.html');
+const DECK = path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/slides/Presentacion_del_Curso/Presentacion_del_Curso.html');
 const HOY = new Date().toISOString().slice(0, 10);
 
 // ── Las sesiones ────────────────────────────────────────────────
@@ -85,6 +92,7 @@ const ENTREGAS = [
 // ── Utilidades ──────────────────────────────────────────────────
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const MESES_LARGOS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const fecha = (iso) => new Date(iso + 'T12:00:00');
 const dia = (iso) => DIAS[fecha(iso).getDay()];
 const corta = (iso) => `${dia(iso).slice(0, 3)} ${fecha(iso).getDate()} ${MESES[fecha(iso).getMonth()]}`;
@@ -160,4 +168,125 @@ crono = crono.replace(/(<script id="cronograma-data" type="application\/json">)[
   (_, a, b) => a + JSON.stringify(datos).replace(/</g, '\\u003c') + b);
 writeFileSync(CRONO, crono);
 
-console.log(`${SESIONES.length} sesiones · ${datos.meta.quices} quices · ${datos.meta.talleres} talleres · ${datos.meta.laboratorios} laboratorios · ${datos.meta.examenes} exámenes`);
+// ── 4. Presentación del curso: línea de tiempo y fechas ─────────
+// Semanas cortas para la línea de tiempo: dos renglones de unos diez caracteres.
+const SEMANAS = {
+  1: ['Inicio', 'y equipos'], 2: ['Diagramas', 'PFD y P&ID'], 3: ['Sólidos y', 'desgarrado'],
+  4: ['Arrastre', 'de vapor'], 5: ['Laboratorio', 'Clevenger'], 6: ['Bombas y', 'válvulas'],
+  7: ['Agitación', 'y emulsión'], 8: ['Taller 3 y', 'Examen 1'], 9: ['Condensar', 'y decantar'],
+  10: ['Frío y', 'filtración'], 11: ['Servicios', 'y Taller 4'], 12: ['Examen 2', 'y retro'],
+  13: ['Lotes y', 'Air Still'], 14: ['Vacío y', 'azeótropos'], 15: ['Platos y', 'empaques'],
+  16: ['Examen 3', 'y retro'], 17: ['Pósters', 'y cierre'],
+};
+const MODULOS = [
+  { de: 1, a: 2, t: 'M1 · Diagramas', c: '#19222F' }, { de: 3, a: 3, t: 'M2', c: '#6E6A00' },
+  { de: 4, a: 5, t: 'M3 · Arrastre', c: '#525C64' }, { de: 6, a: 6, t: 'M4', c: '#19222F' },
+  { de: 7, a: 7, t: 'M5', c: '#6E6A00' }, { de: 8, a: 8, t: 'Examen', c: '#FFF500', osc: true },
+  { de: 9, a: 11, t: 'M6 y M7', c: '#525C64' }, { de: 12, a: 12, t: 'Examen', c: '#FFF500', osc: true },
+  { de: 13, a: 16, t: 'M8 · Destilación del producto', c: '#19222F' }, { de: 17, a: 17, t: 'Cierre', c: '#6E6A00' },
+];
+const X0 = 160, CW = 78, PASO = 84, REC = 40;
+const colX = (s) => X0 + (s - 1) * PASO + (s >= 9 ? REC : 0);
+const diaX = (iso, s) => { const d = fecha(iso).getDay(); return colX(s) + (d === 2 ? 20 : d === 4 ? 58 : d === 0 ? 70 : d === 1 ? 8 : 39); };
+const lunes = (s) => {
+  if (s >= 17) return '24 may';
+  const x = SESIONES.find((y) => y.s === s); const d = fecha(x.f); d.setDate(d.getDate() - (d.getDay() - 1));
+  return `${d.getDate()} ${MESES[d.getMonth()]}`;
+};
+const FILAS = [['Quices', 256], ['Talleres', 306], ['Laboratorios', 356], ['Exámenes', 406], ['Entregas', 456]];
+const fy = Object.fromEntries(FILAS.map(([n, y]) => [n, y]));
+const svg = [];
+svg.push('<svg class="crono" viewBox="0 0 1680 604" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Línea de tiempo de 2027-10: módulos, quices, talleres, laboratorios, exámenes y entregas por semana.">');
+for (const m of MODULOS) {
+  const a = colX(m.de), b = colX(m.a) + CW;
+  svg.push(`  <rect x="${a}" y="8" width="${b - a}" height="28" fill="${m.c}"/><text class="cr-mod${m.osc ? ' osc' : ''}" x="${(a + b) / 2}" y="28">${esc(m.t)}</text>`);
+}
+for (let s = 1; s <= 17; s++) {
+  const x = colX(s), c = x + CW / 2, [t1, t2] = SEMANAS[s];
+  const num = s >= 17 ? `<text class="cr-wk" x="${c}" y="84" style="font-size:19px">Finales</text>` : `<text class="cr-wk" x="${c}" y="86">${s}</text>`;
+  svg.push(`  <rect class="cr-cell" x="${x}" y="46" width="${CW}" height="160"/>${num}<text class="cr-fe" x="${c}" y="110">${lunes(s)}</text><text class="cr-tema" x="${c}" y="148">${esc(t1)}</text><text class="cr-tema" x="${c}" y="168">${esc(t2)}</text>`);
+}
+const rx = colX(8) + CW + 6;
+svg.push(`  <rect x="${rx}" y="46" width="${REC - 12}" height="435" fill="#E4E7EA"/><text class="cr-rec" transform="translate(${rx + (REC - 12) / 2 + 6} 264) rotate(-90)" text-anchor="middle">RECESO · 22 A 27 MAR</text>`);
+for (const [n, y] of FILAS) svg.push(`  <line class="cr-rule" x1="0" y1="${y - 25}" x2="1680" y2="${y - 25}"/><text class="cr-lane" x="0" y="${y + 7}">${n}</text>`);
+svg.push(`  <line class="cr-rule" x1="0" y1="481" x2="1680" y2="481"/>`);
+for (const x of SESIONES) {
+  const px = diaX(x.f, x.s);
+  if (x.quiz) svg.push(`  <circle cx="${px}" cy="${fy.Quices}" r="9" fill="#19222F"/>`);
+  else if (x.s === 1 && /práctica/i.test((x.det || []).join(' '))) svg.push(`  <circle cx="${px}" cy="${fy.Quices}" r="8" fill="none" stroke="#19222F" stroke-width="3"/>`);
+  if (x.taller) svg.push(`  <rect x="${px - 13}" y="${fy.Talleres - 13}" width="26" height="26" fill="#6E6A00"/><text class="cr-mk" x="${px}" y="${fy.Talleres + 5}">${x.taller.replace(/\D/g, '')}</text>`);
+  if (x.lab) svg.push(`  <rect x="${px - 15}" y="${fy.Laboratorios - 13}" width="30" height="26" fill="#FFF500" stroke="#19222F" stroke-width="2"/><text class="cr-mk osc" x="${px}" y="${fy.Laboratorios + 5}">L${x.lab.replace(/\D/g, '')}</text>`);
+  if (x.examen) svg.push(`  <rect x="${px - 15}" y="${fy['Exámenes'] - 13}" width="30" height="26" fill="#19222F"/><text class="cr-mk" x="${px}" y="${fy['Exámenes'] + 5}">E${x.examen.replace(/\D/g, '')}</text>`);
+  if (x.tipo === 'retro') svg.push(`  <circle cx="${px}" cy="${fy.Entregas - 4}" r="9" fill="none" stroke="#6E6A00" stroke-width="3"/>`);
+}
+for (const e of ENTREGAS.filter((y) => y.k === 'entrega')) {
+  const bit = e.t.match(/Bitácora (\d)/), memo = e.t.match(/Laboratorio (\d)/);
+  const px = e.s >= 17 ? colX(17) + 39 : diaX(e.f, e.s), y = fy.Entregas - 4;
+  if (memo) svg.push(`  <path d="M${px} ${y - 11} l11 11 -11 11 -11 -11 z" fill="#525C64"/><text class="cr-fe" x="${px}" y="${y + 27}">M${memo[1]}</text>`);
+  else svg.push(`  <path d="M${px - 9} ${y - 11} l20 11 -20 11 z" fill="#565200"/><text class="cr-fe" x="${px}" y="${y + 27}">${bit ? 'B' + bit[1] : 'Final'}</text>`);
+}
+const LEYENDA = [
+  ['<circle cx="10" cy="-6" r="9" fill="#19222F"/>', 'Quiz (en blanco, el de práctica)'],
+  ['<rect x="0" y="-18" width="22" height="22" fill="#6E6A00"/>', 'Taller en pareja'],
+  ['<rect x="0" y="-18" width="26" height="22" fill="#FFF500" stroke="#19222F" stroke-width="2"/>', 'Laboratorio'],
+  ['<rect x="0" y="-18" width="26" height="22" fill="#19222F"/>', 'Examen'],
+  ['<path d="M2 -18 l20 11 -20 11 z" fill="#565200"/>', 'Bitácora y documento final'],
+  ['<path d="M11 -18 l11 11 -11 11 -11 -11 z" fill="#525C64"/>', 'Memorando de laboratorio'],
+  ['<circle cx="10" cy="-6" r="9" fill="none" stroke="#6E6A00" stroke-width="3"/>', 'Retroalimentación y sustentación'],
+];
+LEYENDA.forEach(([m, t], i) => {
+  const col = i % 4, fila = Math.floor(i / 4);
+  svg.push(`  <g transform="translate(${col * 420} ${540 + fila * 40})">${m}<text class="cr-leg" x="38" y="0">${esc(t)}</text></g>`);
+});
+svg.push('</svg>');
+
+const largo = (iso) => { const d = fecha(iso); return `${DIAS[d.getDay()].toLowerCase()} ${d.getDate()} de ${MESES_LARGOS[d.getMonth()]}`; };
+const varias = (isos) => {
+  if (isos.length === 1) return largo(isos[0]);
+  const [a, b] = isos.map(fecha);
+  if (a.getMonth() === b.getMonth()) return `${DIAS[a.getDay()].toLowerCase()} ${a.getDate()} y ${DIAS[b.getDay()].toLowerCase()} ${b.getDate()} de ${MESES_LARGOS[b.getMonth()]}`;
+  return `${largo(isos[0])} y ${largo(isos[1])}`;
+};
+function claveCrono(clave) {
+  const [tipo, n] = [clave.replace(/-\d+$/, ''), Number(clave.match(/\d+$/)?.[0])];
+  const buscar = (campo, nombre) => SESIONES.filter((x) => x[campo] === nombre);
+  let isos, semana;
+  if (tipo === 'sesion') { isos = [SESIONES[n - 1]?.f]; semana = SESIONES[n - 1]?.s; }
+  else if (tipo === 'quiz') { const l = buscar('quiz', `Quiz ${n}`); isos = l.map((x) => x.f); semana = l[0]?.s; }
+  else if (tipo === 'taller') { const l = buscar('taller', `Taller ${n}`); isos = l.map((x) => x.f); semana = l[0]?.s; }
+  else if (tipo === 'lab') { const l = buscar('lab', `Laboratorio ${n}`); isos = l.map((x) => x.f); semana = l[0]?.s; }
+  else if (tipo === 'examen') { const l = buscar('examen', `Examen ${n}`); isos = l.map((x) => x.f); semana = l[0]?.s; }
+  else if (tipo === 'bitacora' || tipo === 'memo') {
+    const t = tipo === 'bitacora' ? `Entrega de la Bitácora ${n}` : `Memorando del Laboratorio ${n}`;
+    const e = ENTREGAS.find((y) => y.t === t); isos = e ? [e.f] : []; semana = e?.s;
+  }
+  if (!isos?.length || !isos[0]) throw new Error(`Clave de fecha desconocida en la presentación: ${clave}`);
+  return { texto: varias(isos), semana };
+}
+// En el PDF documento la línea de tiempo no se lee a lo ancho de la hoja: va como tabla.
+const corto = (x) => (x.quiz ? `${x.quiz}: ${x.tema}` : x.tema);
+const tabla = ['<table class="crono-tabla solo-impreso">', '    <thead><tr><th>Sem.</th><th>Semana del</th><th>Martes</th><th>Jueves</th><th>Entregas</th></tr></thead>', '    <tbody>'];
+for (let s = 1; s <= 17; s++) {
+  if (s === 9) tabla.push(`      <tr class="receso"><td></td><td>22 mar</td><td colspan="3">${esc(RECESO.texto)}</td></tr>`);
+  const ses = SESIONES.filter((x) => x.s === s);
+  const mar = ses.filter((x) => fecha(x.f).getDay() === 2).map(corto).join('<br>');
+  const jue = ses.filter((x) => fecha(x.f).getDay() === 4).map(corto).join('<br>');
+  const ent = ENTREGAS.filter((e) => e.s === s && e.k === 'entrega').map((e) => (s >= 17 ? e.t : `${e.t} (${corta(e.f).toLowerCase()})`)).join('<br>');
+  if (s >= 17) tabla.push(`      <tr><td class="sem">Fin.</td><td class="lun">24 may</td><td colspan="2">${esc(ses.map((x) => x.tema).join(' · '))}</td><td>${esc(ent)}</td></tr>`);
+  else tabla.push(`      <tr><td class="sem">${s}</td><td class="lun">${lunes(s)}</td><td>${esc(mar).replace(/&lt;br&gt;/g, '<br>')}</td><td>${esc(jue).replace(/&lt;br&gt;/g, '<br>')}</td><td>${esc(ent).replace(/&lt;br&gt;/g, '<br>')}</td></tr>`);
+}
+tabla.push('    </tbody>', '  </table>');
+let deck = readFileSync(DECK, 'utf8');
+deck = empalmar(deck, '<!-- CRONOGRAMA_DECK_START -->', '<!-- CRONOGRAMA_DECK_END -->',
+  `\n  <div class="desliza">${svg.join('\n')}</div>\n  ${tabla.join('\n')}\n  `, DECK);
+let fechas = 0;
+deck = deck.replace(/<span data-crono="([^"]+)"([^>]*)>[^<]*<\/span>/g, (_, clave, attrs) => {
+  const { texto, semana } = claveCrono(clave);
+  let t = /data-forma="semana"/.test(attrs) ? String(semana) : texto + (/data-anio/.test(attrs) ? ' de 2027' : '');
+  if (/data-mayus/.test(attrs)) t = t.charAt(0).toUpperCase() + t.slice(1);
+  fechas++;
+  return `<span data-crono="${clave}"${attrs}>${t}</span>`;
+});
+writeFileSync(DECK, deck);
+
+console.log(`${SESIONES.length} sesiones · ${datos.meta.quices} quices · ${datos.meta.talleres} talleres · ${datos.meta.laboratorios} laboratorios · ${datos.meta.examenes} exámenes · ${fechas} fechas en la presentación`);
