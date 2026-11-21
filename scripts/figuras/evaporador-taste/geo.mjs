@@ -22,14 +22,15 @@ export const EV = {
      coraza, del haz más la holgura de haz fijo. El jugo baja por los tubos en película; el vapor de calentamiento va
      por la coraza */
   cal: {
-    R: 214.5, tw: 6,                      // coraza: radio interior y pared
+    R: 230.9, tw: 6,                      // coraza: radio interior y pared
     L: 12000,                             // largo de los tubos, de cara de afuera a cara de afuera de los espejos
-    ts: 40, RF: 290,                      // espejos (se extienden como bridas): espesor y radio
-    tube: { ro: 25.4, ri: 24, p: 63.5, Rb: 208.5 },          // tubos de 2 in en triángulo; radio del haz
-    // las posiciones del triángulo que se dejan sin tubo bajo la boquilla del vapor, para la placa de choque
-    sinTubo: [[-158.75, -55], [-127, -110]],
+    ts: 40, RF: 302,                      // espejos (se extienden como bridas): espesor y radio
+    tube: { ro: 25.4, ri: 24, p: 63.5, Rb: 224.65 },         // tubos de 2 in en triángulo; radio del haz
+    // las posiciones del triángulo que se dejan sin tubo bajo la boquilla del vapor, para la placa de choque: las dos
+    // del anillo de 168 mm a los lados de la boquilla y la de 110 mm frente a ella (de 37 posiciones quedan 34)
+    sinTubo: [[-158.75, -55], [-127, -110], [-95.25, -55]],
     soportes: { n: 3, t: 8, cut: 0.4, gap: 1.6 },             // placas soporte: número, espesor, corte y holgura
-    bolts: { bc: 258, n: 16, af: 30, h: 18 },                 // los pernos de las bridas del cuerpo
+    bolts: { bc: 270, n: 16, af: 30, h: 18 },                 // los pernos de las bridas del cuerpo
     // la cámara de reparto, arriba: brida, cilindro y cono (60° de ángulo incluido) hasta el cuello DN 100
     arriba: { flange: 30, cyl: 250, cono: 30, cuello: 100 },
     // la cámara de abajo: brida, cilindro y cono hasta el cuello DN 300 de la mezcla
@@ -38,13 +39,13 @@ export const EV = {
     venturi: { conv: 60, garganta: 20, rg: 10, div: 250, t: 6 },
     // el vapor de calentamiento entra arriba de la coraza (a 400 mm del espejo), con su placa de choque; el venteo,
     // arriba (a 110 mm del espejo); el condensado, abajo, casi a ras del espejo (su brida libra las tuercas)
-    vapor: { deg: 210, dz: 400, cuello: 160, choque: { r: 186, t: 6, media: 26, alto: 300, gap: 0 } },
+    vapor: { deg: 210, dz: 400, cuello: 160, choque: { r: 202, t: 6, media: 23, alto: 300, gap: 0 } },
     venteo: { deg: 330, dz: 110, cuello: 120 },
     condensado: { deg: 345, dz: 90, cuello: 45 },
     // las orejas sobre la estructura y la guía de arriba
     orejas: { degs: [196, 344], w: 180, h: 220, t: 14, z: 10000 },
     guia: { z: 15600, alto: 120, t: 10 },
-    estructura: { du: 440, n: -560, col: 160, viga: 160, alto: 15800 },
+    estructura: { du: 480, n: -560, col: 160, viga: 160, alto: 15800 },
     // el detalle: la boca del tubo del centro, M veces más grande en un círculo de radio R (unidades de la vista)
     detalle: { M: 22, R: 130 },
   },

@@ -531,7 +531,7 @@ const SUP = Array.from({ length: CL.soportes.n }, (_, i) => ({ z: Z.s0 + ((Z.s1 
   tubeItems("cal.vapor.pipe", [G.pointOf(a.F, s0, 0, 0), G.pointOf(a.F, s1, 0, 0)], D25.ro, { cls: "ev-pipe" });
   flangePair("cal.vapor.end", a.F, s1, D25);
   ANCH.VAPOR = add(G.pointOf(a.F, (s0 + s1) / 2, 0, 0), [0, 0, D25.ro]);
-  // la placa de choque: un trozo de cilindro frente a la boca, en el hueco que dejan las dos posiciones sin tubo
+  // la placa de choque: un trozo de cilindro frente a la boca, sobre el hueco que dejan las tres posiciones sin tubo
   {
     const CH = VP.choque, n = 24, f0 = (VP.deg - CH.media) * D2R, f1 = (VP.deg + CH.media) * D2R, poly = [];
     for (let i = 0; i <= n; i++) { const t = f0 + ((f1 - f0) * i) / n; poly.push([CH.r * Math.cos(t), CH.r * Math.sin(t)]); }

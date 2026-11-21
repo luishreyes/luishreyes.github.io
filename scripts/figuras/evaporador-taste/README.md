@@ -12,8 +12,8 @@ un círculo que amplía la boca de un tubo.
   el Venturi (difusor, garganta y convergente, también cortado), con sus tuercas. Adentro, la niebla del jugo (un
   abanico translúcido con gotas) y las flechas que bajan del Venturi a las bocas. La línea del jugo llega de la
   izquierda y baja al Venturi.
-- **La coraza**, cortada, con tres boquillas: el vapor de calentamiento arriba a la izquierda (con su placa de choque en
-  el hueco de dos posiciones sin tubo, que la vista no alcanza a mostrar), el venteo de los incondensables y los
+- **La coraza**, cortada, con tres boquillas: el vapor de calentamiento arriba a la izquierda (con su placa de choque frente
+  al hueco de tres posiciones sin tubo, que la vista no alcanza a mostrar), el venteo de los incondensables y los
   aromas arriba a la derecha, bajo el espejo, con su válvula de bola, y el condensado abajo a la derecha, cerca del
   espejo, cuya línea sale derecho hasta pasar la columna y ahí baja. Las líneas que siguen fuera de la figura terminan
   en un par de bridas.
