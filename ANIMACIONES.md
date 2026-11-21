@@ -1,6 +1,6 @@
-# Animaciones con Manim — Guía
+# Animaciones con Manim (ya no se usan)
 
-> **Leer antes de hacer una animación para una presentación del aula.**
+> **No se hacen animaciones nuevas con Manim** (pedido del profesor, 21 nov 2026: «Mejor crearlas en HTML que los estudiantes vayan dando clic. Como el libro en español. Nunca manim»). Las animaciones son actividades por pasos con el motor del libro: ver `public/classroom/estilo-libro/actividades/README.md` y «Animaciones por pasos» en el `CLAUDE.md`. Esta guía queda como historia de lo que se hizo con Manim.
 
 [Manim Community](https://github.com/ManimCommunity/manim) (v0.22.0, MIT) es la librería de Python con que se hacen los videos de matemáticas al estilo de 3Blue1Brown: gráficas que se mueven, ecuaciones que se transforman, construcciones que se arman paso a paso. Aquí sirve para las diapositivas que hoy explican con una figura quieta algo que en clase se cuenta en movimiento: un punto de operación que se desplaza, una escalera de McCabe-Thiele que se construye, un balance que se despeja.
 

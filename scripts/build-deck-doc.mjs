@@ -22,6 +22,7 @@ import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
+import { actividadesAlFinal } from './lib/actividades-al-final.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../public');
@@ -52,7 +53,8 @@ const foot = '<div style="width:100%;font-family:Arial,Helvetica,sans-serif;font
 
 const browser = await chromium.launch({ args: process.getuid?.() === 0 ? ['--no-sandbox'] : [] });
 try {
-  const page = await browser.newPage({ viewport: LIBRO ? { width: 571, height: 960 } : { width: 1100, height: 1400 } });
+  // Con movimiento reducido, las animaciones por pasos saltan a su final (ver lib/actividades-al-final.mjs).
+  const page = await browser.newPage({ viewport: LIBRO ? { width: 571, height: 960 } : { width: 1100, height: 1400 }, reducedMotion: 'reduce' });
   await page.emulateMedia({ media: 'screen' });
   await page.goto(`${base}/classroom/${SLUG}/slides/${deck}/${htmlName}`, { waitUntil: 'networkidle' });
   if (LIBRO) {
@@ -69,6 +71,8 @@ try {
   try { await page.evaluate(() => document.fonts.ready); } catch {}
   // Los botones con data-doc-final se pulsan hasta el último paso: el PDF muestra el estado completo.
   await page.evaluate(() => document.querySelectorAll('[data-doc-final]').forEach((b) => { for (let i = 0; i < 40 && !b.disabled; i++) b.click(); }));
+  // Las animaciones por pasos, en su último paso y con todas sus frases.
+  await actividadesAlFinal(page);
   await page.waitForTimeout(1500);
   const out = path.join(dir, pdfName);
   if (LIBRO) {

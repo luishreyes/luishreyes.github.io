@@ -1,0 +1,167 @@
+/* Las actividades de un capítulo (figuras/comun/actividades.js): la caja de cada actividad con su cabecera,
+   las animaciones por pasos, las preguntas y los retos, con los colores de la plantilla del libro. El amarillo
+   solo como relleno (lo hecho, el paso en curso); el oliva para los números y lo correcto. */
+.act, .act-resumen {
+  --tinta: #19222F; --tinta-2: #525C64; --guia: #8A96A3; --borde: #D3D9DF; --rejilla: #E3E8EE; --papel: #F6F8FA;
+  --nieve: #FFFFFF; --amarillo: #FFF500; --amarillo-claro: #FFFCCC; --oliva: #6E6A00; --oliva-osc: #565200;
+  --oliva-claro: #F3F2DC; --azul: #2E5E9E; --alerta: #B3261E; --alerta-claro: #FBEAE8;
+  --t-s: 0.875rem; --t-m: 1rem;
+  --letra: "ff-dax-pro", "Archivo Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.act [hidden] { display: none !important; }
+.act { font-size: 0.95rem; line-height: 1.55; }
+.act p { margin: 0 0 8px; }
+.act .katex-display { margin: .4em 0; }
+.act-resumen { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: var(--t-s); color: var(--tinta-2); margin: -4px 0 18px; }
+.act-resumen > span { display: inline-flex; align-items: center; gap: 8px; }
+.act-medidor { width: 72px; height: 6px; border-radius: 3px; background: var(--rejilla); overflow: hidden; position: relative; display: inline-block; }
+.act-medidor > i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 3px; transition: width .4s ease; }
+.act-medidor.part > i { background: var(--oliva); }
+.act-medidor.reto > i { background: var(--azul); }
+.act { margin: 26px 0 30px; border: 1px solid var(--borde); border-radius: 6px; background: var(--nieve); }
+.act-cab { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; padding: 10px 14px; background: var(--papel); border-bottom: 1px solid var(--borde); border-radius: 6px 6px 0 0; }
+.act-tipo { font-size: 0.72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); flex-basis: 100%; }
+.act.reto .act-tipo { color: var(--azul); }
+.act-titulo { font-weight: 650; display: flex; gap: 8px; align-items: baseline; min-width: 0; flex: 1 1 14rem; }
+.act-titulo .n { color: var(--oliva); font-variant-numeric: tabular-nums; flex: none; }
+.act.reto .act-titulo .n { color: var(--azul); }
+.act .marcas { display: flex; gap: 5px; margin-left: auto; flex: none; }
+.act .marcas i { width: 15px; height: 15px; border: 1.5px solid var(--guia); transform: rotate(45deg) scale(.82); display: block; background: var(--nieve); transition: background .25s, border-color .25s; }
+.act .marcas i.si { background: var(--amarillo); border-color: var(--tinta); }
+.act.hecha .act-cab { background: var(--oliva-claro); }
+.act-cuerpo { padding: 16px 16px 18px; }
+.act-intro { margin: 0 0 12px; color: var(--tinta-2); font-size: var(--t-s); }
+
+/* Botones */
+.act .boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 8px 16px;
+  border-radius: 4px; border: 1px solid var(--tinta); background: var(--tinta); color: #fff; font-weight: 600; font-size: var(--t-s); cursor: pointer;
+}
+.act .boton:hover { background: #0E141D; }
+.act .boton.sec { background: var(--nieve); color: var(--tinta); border-color: var(--borde); }
+.act .boton.sec:hover { border-color: var(--tinta); background: var(--nieve); }
+.act .boton[disabled] { opacity: .45; cursor: default; }
+.act .boton svg { width: 18px; height: 18px; flex: none; }
+
+/* Animación */
+.act .anim-lienzo { position: relative; background: var(--papel); border-radius: 4px; overflow: hidden; }
+.act .anim-lienzo .rollo { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.act .anim-lienzo svg { display: block; width: 100%; height: auto; font-family: var(--letra); }
+/* El dibujo no pasa de 720 px aunque la columna crezca (todas las animaciones tienen 640 de ancho de vista):
+   así su letra, de 11,5 a 16 en el dibujo, queda entre 9 y 18 px en pantalla. El recuadro sigue ancho. */
+.act .anim-lienzo svg { max-width: 720px; margin-inline: auto; }
+/* En el teléfono la animación no se encoge hasta volverse ilegible: se desliza de lado. */
+.act .anim-empezar {
+  position: absolute; inset: 0; display: grid; place-items: center; background: rgba(246,248,250,.72); border: 0; cursor: pointer; width: 100%;
+}
+.act .anim-empezar span { display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; background: var(--tinta); color: #fff; border-radius: 4px; font-weight: 650; font-size: var(--t-m); }
+.act .anim-empezar span::before { content: ""; width: 0; height: 0; border-left: 12px solid var(--amarillo); border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+.act .anim-empezar:hover span { background: #0E141D; }
+.act .anim-mandos { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; margin-top: 12px; }
+.act .anim-play { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--tinta); color: #fff; display: grid; place-items: center; cursor: pointer; flex: none; }
+.act .anim-play[disabled] { opacity: .35; cursor: default; }
+.act .anim-play.llama { box-shadow: 0 0 0 0 rgba(255,245,0,.9); animation: llama 1.6s ease-out infinite; }
+@keyframes llama { 0% { box-shadow: 0 0 0 0 rgba(110,106,0,.55); } 100% { box-shadow: 0 0 0 12px rgba(110,106,0,0); } }
+.act .anim-play svg { width: 20px; height: 20px; }
+.act .anim-pasos { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+.act .anim-pasos button {
+  width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--borde); background: var(--nieve); cursor: pointer;
+  font-size: 0.8rem; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--tinta-2);
+}
+.act .anim-pasos button.visto { border-color: var(--tinta-2); color: var(--tinta); }
+.act .anim-pasos button.actual { background: var(--amarillo); border-color: var(--tinta); color: var(--tinta); }
+.act .anim-pasos button[disabled] { cursor: default; opacity: .6; }
+.act .anim-vel { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: var(--t-s); color: var(--tinta-2); cursor: pointer; }
+.act .anim-vel input { width: 18px; height: 18px; accent-color: var(--tinta); }
+.act .anim-texto { margin: 12px 0 0; min-height: 3.2em; padding: 10px 14px; background: var(--papel); border-radius: 4px; display: flex; gap: 12px; align-items: baseline; }
+.act .anim-texto .k { font-weight: 700; color: var(--oliva); font-variant-numeric: tabular-nums; flex: none; }
+.act .anim-texto.vacio { color: var(--tinta-2); }
+.act .anim-frases { margin-top: 10px; font-size: var(--t-s); }
+.act .anim-frases summary { cursor: pointer; color: var(--tinta-2); }
+.act .anim-frases ol { margin: 8px 0 0; padding-left: 1.4em; }
+
+/* Preguntas */
+.act .q { padding: 4px 0 18px; }
+.act .q + .q { border-top: 1px solid var(--rejilla); padding-top: 18px; }
+.act .q-cab { display: flex; gap: 10px; align-items: baseline; }
+.act .q-cab .k { font-weight: 700; color: var(--oliva); flex: none; font-variant-numeric: tabular-nums; }
+.act .q-cab .q-enunciado { min-width: 0; }
+.act .q-enunciado > :last-child { margin-bottom: 8px; }
+.act .q-op { list-style: none; margin: 4px 0 0; padding: 0 0 0 1.6em; display: grid; gap: 6px; }
+.act .q-op li { margin: 0; max-width: none; }
+.act .q-op button {
+  width: 100%; text-align: left; display: flex; gap: 10px; align-items: baseline; padding: 9px 12px; border: 1px solid var(--borde);
+  background: var(--nieve); border-radius: 4px; cursor: pointer; line-height: 1.45;
+}
+.act .q-op button::before { content: ""; width: 14px; height: 14px; border: 1.5px solid var(--guia); border-radius: 50%; flex: none; transform: translateY(2px); }
+.act .q-op button:hover { border-color: var(--tinta-2); }
+.act .q-op button.bien { border-color: var(--oliva); background: var(--oliva-claro); }
+.act .q-op button.bien::before { background: var(--oliva); border-color: var(--oliva); box-shadow: inset 0 0 0 3px var(--oliva-claro); }
+.act .q-op button.mal { border-color: var(--alerta); background: var(--alerta-claro); }
+.act .q-op button.mal::before { background: var(--alerta); border-color: var(--alerta); box-shadow: inset 0 0 0 3px var(--alerta-claro); }
+.act .fb { display: none; margin: 8px 0 0 1.6em; padding: 9px 12px; border-radius: 4px; font-size: 0.95rem; max-width: 68ch; }
+.act .fb.ver { display: block; }
+.act .fb.bien { background: var(--oliva-claro); }
+.act .fb.mal { background: var(--alerta-claro); }
+.act .fb .veredicto { font-weight: 700; margin-right: .35em; }
+.act .fb.bien .veredicto { color: var(--oliva-osc); }
+.act .fb.mal .veredicto { color: var(--alerta); }
+.act .q .fb-src { display: none; }
+.act .corta-fila { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 6px 0 0 1.6em; }
+.act .campo { display: inline-flex; align-items: center; border: 1px solid var(--guia); border-radius: 4px; background: var(--nieve); overflow: hidden; }
+.act .campo:focus-within { border-color: var(--tinta); box-shadow: 0 0 0 2px var(--amarillo); }
+.act .campo input { border: 0; padding: 8px 10px; font: inherit; width: 8.5em; background: transparent; font-variant-numeric: tabular-nums; }
+.act .campo input.texto { width: 13em; }
+.act .campo input:focus { outline: none; }
+.act .campo .u { padding: 0 10px; color: var(--tinta-2); font-size: var(--t-s); background: var(--papel); align-self: stretch; display: grid; place-items: center; border-left: 1px solid var(--borde); }
+.act .campo.bien { border-color: var(--oliva); }
+.act .campo.mal { border-color: var(--alerta); }
+.act .respuesta { margin: 8px 0 0 1.6em; font-size: 0.95rem; }
+.act .emp-fila { display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) 1.4em; gap: 8px 12px; align-items: center; margin: 0 0 8px 1.6em; }
+.act .emp-fila .term { font-weight: 600; }
+.act .emp-fila select { font: inherit; font-size: var(--t-s); padding: 7px 8px; border: 1px solid var(--guia); border-radius: 4px; background: var(--nieve); width: 100%; min-width: 0; }
+.act .emp-fila select.bien { border-color: var(--oliva); background: var(--oliva-claro); }
+.act .emp-fila select.mal { border-color: var(--alerta); background: var(--alerta-claro); }
+.act .emp-fila .ok { color: var(--oliva); font-weight: 700; }
+@media (max-width: 560px) {
+  .act .emp-fila { grid-template-columns: minmax(0, 1fr) 1.4em; margin-left: 0; }
+  .act .emp-fila .term { grid-column: 1 / -1; margin-top: 6px; }
+  .act .q-op, .act .corta-fila, .act .fb, .act .respuesta { margin-left: 0; padding-left: 0; }
+  .act .q-cab { flex-direction: column; gap: 2px; }
+}
+
+/* Reto */
+.act .reto-niveles { display: flex; gap: 6px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.act .reto-niveles .rot { font-size: var(--t-s); color: var(--tinta-2); margin-right: 4px; }
+.act .reto-niveles button {
+  min-width: 34px; height: 34px; border: 1.5px solid var(--borde); background: var(--nieve); border-radius: 4px; cursor: pointer;
+  font-weight: 650; font-variant-numeric: tabular-nums; color: var(--tinta-2);
+}
+.act .reto-niveles button.hecho { background: var(--azul); border-color: var(--azul); color: #fff; }
+.act .reto-niveles button.actual { border-color: var(--tinta); color: var(--tinta); box-shadow: inset 0 -3px 0 var(--amarillo); }
+.act .reto-niveles button[disabled] { opacity: .45; cursor: default; }
+.act .reto-enunciado { margin-bottom: 12px; }
+.act .reto-enunciado > :last-child { margin-bottom: 0; }
+.act .reto-campos { display: grid; gap: 10px; margin-bottom: 14px; }
+.act .reto-campo { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.act .reto-campo .et { min-width: 8.5rem; }
+.act .reto-botones { display: flex; gap: 10px; flex-wrap: wrap; }
+.act .reto-fb { margin-top: 14px; }
+.act .reto-fb .caja { padding: 12px 14px; border-radius: 4px; }
+.act .reto-fb .caja.bien { background: var(--oliva-claro); }
+.act .reto-fb .caja.mal { background: var(--alerta-claro); }
+.act .reto-fb .veredicto { font-weight: 700; }
+.act .reto-fb .caja.bien .veredicto { color: var(--oliva-osc); }
+.act .reto-fb .caja.mal .veredicto { color: var(--alerta); }
+.act .reto-fb .sol { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(25,34,47,.12); }
+.act .reto-fb .sol > :last-child { margin-bottom: 0; }
+.act .reto-fb table.comp { border-collapse: collapse; font-size: var(--t-s); margin: 6px 0; font-variant-numeric: tabular-nums; }
+.act .reto-fb table.comp td, .act .reto-fb table.comp th { padding: 3px 12px 3px 0; text-align: left; }
+.act .reto-fb table.comp th { font-weight: 600; color: var(--tinta-2); }
+
+
+.act .anim-lienzo .rollo { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.act .anim-lienzo svg { display: block; width: 100%; height: auto; }
+@media (max-width: 600px) { .act .anim-lienzo svg { min-width: 560px; } }
+.act .reto-fb, .act .fb, .act .anim-texto { position: relative; }
+@media (prefers-reduced-motion: reduce) { .act *, .act-resumen * { transition: none !important; animation: none !important; } }

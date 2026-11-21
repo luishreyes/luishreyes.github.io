@@ -42,11 +42,21 @@ const Sube: React.FC<{ children: React.ReactNode; delay?: number; className?: st
 );
 
 // La cosa viva: dos líquidos inmiscibles hierven cuando la suma de sus
-// presiones de vapor puras iguala la presión del sistema. Agua: Antoine en
-// mmHg y °C. Limoneno: Antoine en kPa y °C, ajustado a su punto de
-// ebullición normal (176 °C) y a su presión de vapor a 25 °C.
-const pAgua = (t: number) => Math.pow(10, 8.07131 - 1730.63 / (233.426 + t)) * 0.133322;
-const pLim = (t: number) => Math.pow(10, 6.21379 - 1615.9 / (t + 208));
+// presiones de vapor puras iguala la presión del sistema. Son las curvas del
+// libro (capítulo 1) y de la animación del reto (assets/actividades-curso.js):
+// el agua por IAPWS-IF97 (región 4, en kPa) y el d-limoneno por la ecuación de
+// Antoine ajustada a los datos del Perry (mmHg y °C, pasada a kPa).
+const IF97 = [0, 0.11670521452767e4, -0.72421316703206e6, -0.17073846940092e2, 0.12020824702470e5, -0.32325550322333e7,
+  0.14915108613530e2, -0.48232657361591e4, 0.40511340542057e6, -0.23855557567849, 0.65017534844798e3];
+const pAgua = (t: number) => {
+  const tk = t + 273.15;
+  const th = tk + IF97[9] / (tk - IF97[10]);
+  const A = th * th + IF97[1] * th + IF97[2];
+  const B = IF97[3] * th * th + IF97[4] * th + IF97[5];
+  const C = IF97[6] * th * th + IF97[7] * th + IF97[8];
+  return Math.pow((2 * C) / (-B + Math.sqrt(B * B - 4 * A * C)), 4) * 1000;
+};
+const pLim = (t: number) => Math.pow(10, 7.49358 - 1936.23 / (t + 244.4)) * 0.1333224;
 const tEbullicion = (p: number) => {
   let a = 30;
   let b = 110;
@@ -80,12 +90,12 @@ type Fecha = { orden: string; cuando: string; que: string; det?: string; tipo: '
 const PLANTA = 0.013; // kg de aceite por kg de vapor en una planta real
 
 const Equilibrio: React.FC = () => {
-  const [p, setP] = useState(101.3);
+  const [p, setP] = useState(73.7);
   const t = tEbullicion(p);
   const rel = (pLim(t) * 136.24) / (pAgua(t) * 18.02);
   return (
     <div className="equilibrio">
-      <h3>El equilibrio, en vivo</h3>
+      <h3>Calculadora del equilibrio</h3>
       <p className="texto" style={{ marginTop: '10px' }}>
         Mueva la presión del extractor. Vea a qué temperatura hierve la mezcla de agua y limoneno, y cuánto
         aceite arrastraría cada kilo de vapor si mandara el equilibrio.
@@ -113,13 +123,13 @@ const Equilibrio: React.FC = () => {
         </div>
         <div>
           <b>{Math.round(rel / PLANTA)} veces</b>
-          <span>Lo que da la planta: unos 13 gramos por kilo de vapor</span>
+          <span>Lo que saca una planta real, unos 13 gramos por kilo de vapor</span>
         </div>
       </div>
       <p className="eq-nota">
-        En Bogotá la presión es de unos 75 kPa, y la mezcla hierve cerca de 90 °C. Los valores salen de las
-        ecuaciones de Antoine del agua y del limoneno: son orientativos y no reemplazan el modelo termodinámico
-        de ASPEN.
+        A 73,7 kPa, la presión de Bogotá, la mezcla hierve a 88,9 °C, y a nivel del mar, a 97,4 °C. La presión de
+        vapor del agua sale de IAPWS-IF97 y la del limoneno, de una ecuación de Antoine ajustada a los datos del
+        Perry: los valores son orientativos y no reemplazan el modelo termodinámico de ASPEN.
       </p>
     </div>
   );

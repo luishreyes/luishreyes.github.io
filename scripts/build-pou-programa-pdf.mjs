@@ -13,6 +13,7 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { actividadesAlFinal } from './lib/actividades-al-final.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SLUG = process.env.CURSO || 'iqya-2031-2026-20';
@@ -31,10 +32,14 @@ const hf = (left, right) =>
 
 const browser = await chromium.launch({ args: process.getuid?.() === 0 ? ['--no-sandbox'] : [] });
 try {
-  const page = await browser.newPage();
+  // Con movimiento reducido, las animaciones por pasos saltan a su final (ver lib/actividades-al-final.mjs).
+  const page = await browser.newPage({ reducedMotion: 'reduce' });
   // Las rutas absolutas (/classroom/...) se resuelven contra public/.
   await page.route('file:///classroom/**', (r) => r.fulfill({ path: path.resolve(__dirname, '../public' + new URL(r.request().url()).pathname) }));
   await page.goto('file://' + HTML, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(300);
+  const nAnims = await actividadesAlFinal(page);
+  if (nAnims) console.log(`${nAnims} animación(es) llevadas a su último paso`);
   await page.emulateMedia({ media: 'print' });
   try { await page.evaluate(() => document.fonts.ready); } catch {}
   await page.waitForTimeout(1200);
