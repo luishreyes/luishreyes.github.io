@@ -13,6 +13,17 @@
 **Plantilla canónica:** `public/classroom/iqya-2031-2026-20/programa.html` (POU, acento verde).
 Segundo ejemplo con acento distinto: `public/classroom/iqya-3751-2026-20/programa.html` (Narrativas, acento violeta).
 
+## La imagen del libro (desde POU 2027-10)
+
+El programa de POU 2027-10 ya no lleva su CSS adentro: carga `/classroom/estilo-libro/documento.css` (pedido del profesor, 21 nov 2026), que le da en pantalla la imagen del libro de operaciones unitarias en español (riel azul noche con la rampa de azules, encabezado en un campo amarillo, bandas de tono alterno, ceja con la barra amarilla, números en oliva) y al imprimir la de la edición inglesa (página de 7 × 10 in, Source Serif 4 para leer y Archivo para lo demás, apertura con el campo amarillo a sangre, rótulos de sección en el margen, tablas en Archivo angosta con filetes de libro y cornisa con el número de página). Las fuentes, de licencia abierta, van en `/classroom/estilo-libro/fuentes/`.
+
+- El documento declara `<html data-impreso="libro">`: así `scripts/build-pou-programa-pdf.mjs` imprime con el tamaño de página y la cornisa del CSS, sin cabecera ni pie de Playwright.
+- Armazón: `nav.riel` (con `.parte` por grupo de secciones y `.sn-item` por sección), `main.libro`, `header.titulo` con `.banda-titulo` (`.org`, `.badge`, `.numero-impreso`, `h1`), `.subtitle`, `.doc-meta`, `.doc-index` (solo impreso) y `.pagina-impresa`, y `.doc-body` con las secciones. Cada `h2.sec` lleva su número en `<span class="num">`.
+- Los componentes de siempre (`.infobox`, `.qcard`, `ul.objectives`, `.callout--*`, `.steps`, `table.rubrica`, `table.tbl`, `.gradelist`, `ul.body-list`) toman la imagen del libro sin cambiar su HTML.
+- Chromium recorta lo que se sale del área de la página: por eso la primera página no tiene margen (la banda llega al borde) y la columna de notas va dentro del área impresa.
+
+Los programas de los demás cursos siguen con la plantilla de abajo.
+
 ## Cómo crear uno nuevo
 
 1. **Copiar** el `programa.html` de un curso existente como punto de partida.

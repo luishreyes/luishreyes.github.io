@@ -32,11 +32,18 @@ const hf = (left, right) =>
 const browser = await chromium.launch({ args: process.getuid?.() === 0 ? ['--no-sandbox'] : [] });
 try {
   const page = await browser.newPage();
+  // Las rutas absolutas (/classroom/...) se resuelven contra public/.
+  await page.route('file:///classroom/**', (r) => r.fulfill({ path: path.resolve(__dirname, '../public' + new URL(r.request().url()).pathname) }));
   await page.goto('file://' + HTML, { waitUntil: 'networkidle' });
   await page.emulateMedia({ media: 'print' });
   try { await page.evaluate(() => document.fonts.ready); } catch {}
   await page.waitForTimeout(1200);
-  await page.pdf({
+  // Un documento con la imagen del libro (<html data-impreso="libro">, con
+  // /classroom/estilo-libro/documento.css) trae su página de 7 × 10 in, sus
+  // márgenes y su cornisa en el CSS: se imprime tal cual.
+  const libro = await page.evaluate(() => document.documentElement.dataset.impreso === 'libro');
+  if (libro) await page.pdf({ path: OUT, printBackground: true, preferCSSPageSize: true });
+  else await page.pdf({
     path: OUT, format: 'Letter', printBackground: true,
     margin: { top: '0.7in', bottom: '0.62in', left: '0.9in', right: '0.9in' },
     displayHeaderFooter: true,
