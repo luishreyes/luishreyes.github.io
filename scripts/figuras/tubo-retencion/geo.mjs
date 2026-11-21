@@ -47,7 +47,7 @@ export const TR = {
   persona: { x: 1350, y: 760, rumbo: 205 },
   /* el círculo del detalle: la válvula de desvío en corte (el plano y = TR.fdv.y), M veces más grande, vista casi de
      frente al plano del corte (su propia cámara: AZ, EL) */
-  det: { c: [-200, 250, 880], M: 2.6, R: 170, AZ: 75, EL: 20 },   // el círculo mira el corte casi de frente
+  det: { c: [-200, 250, 880], M: 3.5, R: 230, AZ: 75, EL: 20 },   // el círculo mira el corte casi de frente
 };
 
 /* el largo de cada tramo recto: lo que queda de los 23,5 m después de las tres curvas */

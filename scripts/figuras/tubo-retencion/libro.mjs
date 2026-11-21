@@ -32,8 +32,9 @@ const FIG = leer('fig.svg', 'fig_data.json');
 const DETS = { d: leer('detalle.svg', 'detalle_data.json') };
 
 /* ---------- la composición: la vista entera, el detalle y la línea que los une ---------- */
-// dónde va el centro del círculo, en las unidades de la vista entera: abajo a la izquierda, bajo E-201
-const POS = { d: [Number(process.env.TR_DX || 260), Number(process.env.TR_DY || 600)] };
+// dónde va el centro del círculo, en las unidades de la vista entera: abajo, bajo la válvula de desvío y a la izquierda
+// del soporte
+const POS = { d: [Number(process.env.TR_DX || 300), Number(process.env.TR_DY || 900)] };
 const cuerpoDe = (svg) => svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/<style>[^<]*<\/style>/, '');
 const estiloDe = (svg) => (svg.match(/<style>([^<]*)<\/style>/) || [, ''])[1];
 function composicion() {
@@ -130,7 +131,7 @@ function rotulado(lista, pies, { letra, texto, anchoMin = 0 }) {
 function libro() {
   const LIBRO = resolve(arg('--salida', join(REPO_LIBRO, 'libro')));
   const DEST = join(LIBRO, 'figuras/tratamiento-termico');
-  const LETRA = 22;
+  const LETRA = 24;
   const { cuerpo, trazos, caja } = rotulado(ROTULOS, PIES, { letra: LETRA, texto: (t) => t });
   const [vx, vy, x1, y1] = caja, vw = x1 - vx, vh = y1 - vy;
   const estilo = `<style>${estiloDe(FIG.svg)}${CSS_EXTRA}</style>`;

@@ -42,7 +42,7 @@ const bL = FV.bD + (FV.puerto.arriba - FV.puerto.medio);   // su base: su puerto
 const PORT = FV.rb + FV.puerto.largo;          // del eje a la cara de la férula de un puerto
 
 /* ---------- la cámara ---------- */
-const W_ = DET ? 360 : 1100, H_ = DET ? 360 : 760;
+const W_ = DET ? 2 * TR.det.R + 20 : 1100, H_ = DET ? 2 * TR.det.R + 20 : 760;
 const EXT = [
   [E1.xF - E1.t - E1.pack - 90, E1.y0, 0], [E1.xF - E1.t - E1.pack - 160, E1.y1, E1.z1 + 60], [E1.xF, E1.y1, 0], [E1.xF, E1.y0, E1.z1 + 60],
   [LS + TR.Rc + 60, 40, 0], [LS + TR.Rc + 60, YR(3) - 200, 0], [LS + TR.Rc + 60, YR(3) - 60, ZS(TR.L) + 60], [0, YR(3) - 200, ZS(TR.L) + 300],
@@ -463,6 +463,7 @@ if (!DET) {
       for (const yy of [ES.yF, ES.yB]) box(`soporte${iS}.larguero-${yy > 0 ? "f" : "b"}`, [xs + h, yy - h, ES.zStr - h], [xn - h, yy + h, ES.zStr + h], { owner: own, r: 2 });
     }
     if (iS === 0) { ANCH.TRAVESANO = [xs, ES.yF - 120, zcb - ES.leg / 2]; ANCH.POSTE = [xs + h, ES.yF + h, 520]; ANCH.PIE = [xs + F0.r, ES.yF, F0.h]; }
+    if (iS === ES.x.length - 1) { ANCH.PIE_F = [xs + F0.r * 0.7, ES.yF + F0.r * 0.7, F0.h]; ANCH.POSTE_F = [xs + h, ES.yF + h, 420]; ANCH.ABRAZADERA_F = add(MARK[`c0.${xs}`].p, [0, RO + AB.t, 6]); }
   });
   ANCH.ABRAZADERA = add(MARK[`c0.${ES.x[1]}`].p, [0, ROA, 4]);
   ANCH.VARILLA = [ES.x[1], 0, zTramo(0, ES.x[1]) - 70];
@@ -668,7 +669,7 @@ function fdv({ cut }) {
     ring("mirilla.brida-arriba", Fm, MI[1], MI[1] + 18, 0, 46, { owner: "mirilla" });
     turned("mirilla.vidrio", Fm, [[MI[0], 30], [MI[1], 30], [MI[1], 36], [MI[0], 36]], { owner: "mirilla", cls: "tr-glass" });
     const ang = Math.atan2(V3[1], V3[0]);
-    for (let j = 0; j < 4; j++) { const t = ang + PI / 4 + (j * PI) / 2, c = [xL + 41 * Math.cos(t), FV.y + 41 * Math.sin(t), 0]; disc(`mirilla.tirante${j}`, { o: c, a: ZD, u: XD, v: YD }, MI[0] - 18, MI[1] + 18, 3.5, { owner: "mirilla" }); }
+    for (let j = 0; j < 4; j++) { const t = ang + PI / 4 + (j * PI) / 2, c = [xL + 41 * Math.cos(t), FV.y + 41 * Math.sin(t), 0]; disc(`mirilla.tirante${j}`, { o: c, a: ZD, u: XD, v: YD }, MI[0], MI[1], 3.5, { owner: "mirilla" }); }
     ANCH.MIRILLA = [xL + 36, FV.y + 8, (MI[0] + MI[1]) / 2];
   }
   // el aire de los actuadores: una manguera de cada cabeza de control al colector
@@ -728,11 +729,11 @@ if (DET) {
   line("flujo.desvio", seg([xa, yf, b - 30], [xa, yf, b - 230]), { head: 14, w: 6 });
   ANCH.D_ENTRA = [CDET[0] - 300, FV.y, zIn + RO];
   ANCH.D_JUGO = [xa - 25, FV.y, b + 40];
-  ANCH.D_DESVIO = [xa - RO, FV.y, b - 170];
+  ANCH.D_DESVIO = [xa - RO, FV.y, b - 125];
   ANCH.D_ASIENTO_ABAJO = [xa + 41, FV.y, b + 95];
   ANCH.D_TAPON = [xa + 30, FV.y, b + FV.tapon.arriba + 10];
   ANCH.D_ASIENTO_ARRIBA = [xa - 41, FV.y, b + 175];
-  ANCH.D_CAMARA_ARRIBA = [xa + 20, FV.y, b + 240];
+  ANCH.D_CAMARA_ARRIBA = [xa + PORT - 30, FV.y - RO + 4, b + FV.puerto.arriba - 6];
   ANCH.D_VASTAGO = [xa + 8, FV.y, b + 330];
   ANCH.D_RESORTE = [xa - FV.act.resorte.rm, FV.y, b + 470];
   ANCH.D_PISTON = [xa + 40, FV.y, b + FV.act.pDesvio + 8];
@@ -753,6 +754,7 @@ if (!DET) {
   per.shapes.forEach(record);
   put("persona", per.ref, per.svg, per.shapes);
   ANCH.PERSONA = per.anclas.CABEZA;
+  for (const [k2, v] of Object.entries(per.anclas)) ANCH[`PERSONA_${k2}`] = v;
 }
 
 /* ---------- el detalle: solo lo que cae en el círculo ---------- */
