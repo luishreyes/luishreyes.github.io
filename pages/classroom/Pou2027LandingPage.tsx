@@ -7,10 +7,12 @@ import { useCourseRelease } from '../../components/classroom/courseRelease';
 import { TodayButton } from '../../components/classroom/TodayButton';
 import { Pou27Barra, Pou27Mosaico } from '../../components/classroom/Pou27Cabecera';
 
-// Landing de POU 2027-10. Mismo contenido y misma función que la del semestre
-// anterior (ficha, accesos, reto, alcance, equipo, objetivos, evaluación,
-// metodología, IA y reglas), con la identidad institucional y la dirección
-// «colour chapters» de la skill de diseño. Cada bloque es un capítulo de color.
+// Landing de POU 2027-10, con la identidad institucional y la dirección
+// «colour chapters» de la skill de diseño: cada bloque es un capítulo de color.
+// Ficha, alcance, reto, accesos, objetivos, metodología, evaluación, lo que se
+// hace en el salón (quices, talleres, laboratorios y exámenes), las fechas del
+// semestre, equipo, IA y reglas. Las fechas salen del `cronograma` del curso,
+// que escribe scripts/pou-2027-10-cronograma.mjs.
 
 const A = '/classroom/iqya-2031-2027-10/assets'; // la lámina del reto
 
@@ -56,6 +58,25 @@ const tEbullicion = (p: number) => {
   return (a + b) / 2;
 };
 const coma = (x: number, d: number) => x.toFixed(d).replace('.', ',');
+
+// Las fechas del semestre que no son clases: el receso no está en el cronograma.
+const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const RECESO = { orden: '2027-03-22', cuando: 'Del 22 al 27 de marzo', que: 'Receso de Semana Santa', tipo: 'receso' as const };
+const may = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const largo = (iso: string) => {
+  const d = new Date(`${iso}T12:00:00`);
+  return `${DIAS[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()]}`;
+};
+// «martes 23 y jueves 25 de febrero» si caen en el mismo mes.
+const dosFechas = (a: string, b: string) => {
+  const da = new Date(`${a}T12:00:00`);
+  const db = new Date(`${b}T12:00:00`);
+  return da.getMonth() === db.getMonth()
+    ? `${DIAS[da.getDay()]} ${da.getDate()} y ${DIAS[db.getDay()]} ${db.getDate()} de ${MESES[db.getMonth()]}`
+    : `${largo(a)} y ${largo(b)}`;
+};
+type Fecha = { orden: string; cuando: string; que: string; det?: string; tipo: 'examen' | 'lab' | 'entrega' | 'receso' | 'cierre' };
 const PLANTA = 0.013; // kg de aceite por kg de vapor en una planta real
 
 const Equilibrio: React.FC = () => {
@@ -110,6 +131,7 @@ export const Pou2027LandingPage: React.FC<{ course: Course }> = ({ course }) => 
   const { isItemOpen } = useCourseRelease(course);
   const disponible = course.readings.filter((r) => isItemOpen('reading', r.slug, r.week));
   const cronograma = course.readings.find((r) => r.slug === 'cronograma-interactivo');
+  const programa = course.readings.find((r) => r.slug === 'programa-del-curso');
   const lecturas = disponible.filter((r) => r.category === 'lectura').length;
   const guias = disponible.filter((r) => r.category !== 'lectura' && r.slug !== 'cronograma-interactivo').length;
   const pres = (course.presentations ?? []).filter((p) => isItemOpen('pres', p.id, p.week)).length;
@@ -124,6 +146,38 @@ export const Pou2027LandingPage: React.FC<{ course: Course }> = ({ course }) => 
       }),
     [course.project],
   );
+
+  // Cuántos quices, talleres, laboratorios y exámenes trae el semestre, y cuánto pesan.
+  const crono = course.cronograma ?? [];
+  const cuenta = {
+    quices: crono.filter((e) => e.quiz).length,
+    talleres: crono.filter((e) => e.taller).length,
+    labs: new Set(crono.filter((e) => e.laboratorio).map((e) => e.laboratorio)).size,
+    examenes: crono.filter((e) => e.examen).length,
+  };
+  const peso = (componente: string) => course.evaluation.find((e) => e.component === componente)?.percentage;
+
+  // Lo que tiene fecha y no es una clase: laboratorios, exámenes, bitácoras, receso y cierre.
+  const fechas = useMemo(() => {
+    const out: Fecha[] = [RECESO];
+    const labs = new Map<string, string[]>();
+    crono.forEach((e) => {
+      if (e.laboratorio) labs.set(e.laboratorio, [...(labs.get(e.laboratorio) ?? []), e.date]);
+      if (e.examen) {
+        const [que, det] = e.topic.split(': ');
+        out.push({ orden: e.date, cuando: may(largo(e.date)), que, det, tipo: 'examen' });
+      }
+      const bit = e.proyecto?.match(/(Bitácora \d): (\S+ \d+ de \S+)/);
+      if (bit) out.push({ orden: `${e.date}~`, cuando: may(bit[2]), que: `Entrega de la ${bit[1]}`, tipo: 'entrega' });
+      if (e.week >= 17) out.push({ orden: e.date, cuando: 'Semana de finales', que: 'Documento final y sesión de pósters', tipo: 'cierre' });
+    });
+    labs.forEach((dias) => {
+      const e = crono.find((x) => x.date === dias[0])!;
+      const [que, det] = e.topic.split(': ');
+      out.push({ orden: dias[0], cuando: may(dias.length > 1 ? dosFechas(dias[0], dias[dias.length - 1]) : largo(dias[0])), que, det, tipo: 'lab' });
+    });
+    return out.sort((a, b) => a.orden.localeCompare(b.orden));
+  }, [crono]);
 
   const docLink = (href: string, children: React.ReactNode, className?: string) =>
     isInternalDoc(course.slug, href) ? (
@@ -183,14 +237,16 @@ export const Pou2027LandingPage: React.FC<{ course: Course }> = ({ course }) => 
                 <Sube delay={0.07}>
                   <p className="texto">
                     Aquí las operaciones unitarias no llegan en el orden del libro. Cada una entra la semana en que su
-                    equipo la necesita para cerrar un balance de su propia planta.
+                    equipo la necesita para cerrar un balance de su propia planta, y tres de ellas se miden en el
+                    laboratorio.
                   </p>
                 </Sube>
                 <Sube delay={0.14} className="cifras">
-                  <div><b>16</b><span>Semanas, de la cáscara al aceite rectificado</span></div>
+                  <div><b>16</b><span>Semanas de clase, del 26 de enero al 20 de mayo de 2027</span></div>
                   <div><b>{course.credits}</b><span>Créditos, unas 9 horas de trabajo por semana</span></div>
                   <div><b>4 a 5</b><span>Personas por equipo, fijo todo el semestre</span></div>
-                  {tren.length > 0 && <div><b>{tren.length}</b><span>Etapas de diseño, de la cáscara a la columna</span></div>}
+                  {cuenta.labs > 0 && <div><b>{cuenta.labs}</b><span>Laboratorios que miden datos para su planta</span></div>}
+                  {tren.length > 0 && <div><b>{tren.length}</b><span>Etapas de diseño en la planta</span></div>}
                 </Sube>
               </div>
             </section>
@@ -270,6 +326,18 @@ export const Pou2027LandingPage: React.FC<{ course: Course }> = ({ course }) => 
                 <Sube><h2>Dónde está todo</h2></Sube>
                 <Sube delay={0.07}>
                   <ul className="accesos">
+                    {programa?.href && (
+                      <li>
+                        {docLink(
+                          programa.href,
+                          <>
+                            <span className="q">Programa del curso</span>
+                            <span className="d">La evaluación, las fechas y las reglas, clase por clase y en PDF</span>
+                            <span className="ir" aria-hidden="true">→</span>
+                          </>,
+                        )}
+                      </li>
+                    )}
                     <li>
                       <Link to={`/classroom/${course.slug}/readings`}>
                         <span className="q">Material del curso</span>
@@ -336,21 +404,6 @@ export const Pou2027LandingPage: React.FC<{ course: Course }> = ({ course }) => 
               </div>
             </section>
 
-            {/* ── Evaluación ──────────────────────────────────────────── */}
-            <section className="campo navy" aria-label="Evaluación">
-              <div className="c">
-                <Sube><h2>Cómo se construye la nota</h2></Sube>
-                <Sube delay={0.07} className="cifras">
-                  {course.evaluation.map((e) => (
-                    <div key={e.component}>
-                      <b>{e.percentage} %</b>
-                      <span>{e.component}</span>
-                    </div>
-                  ))}
-                </Sube>
-              </div>
-            </section>
-
             {/* ── Metodología ─────────────────────────────────────────── */}
             <section className="campo papel" aria-label="Metodología">
               <div className="c">
@@ -371,6 +424,117 @@ export const Pou2027LandingPage: React.FC<{ course: Course }> = ({ course }) => 
                 </div>
               </div>
             </section>
+
+            {/* ── Evaluación ──────────────────────────────────────────── */}
+            <section className="campo navy" aria-label="Evaluación">
+              <div className="c">
+                <Sube><h2>Cómo se construye la nota</h2></Sube>
+                <Sube delay={0.05}>
+                  <p className="texto">
+                    Quices y exámenes suman 35 % de la nota y son de cada estudiante. En los talleres y en los
+                    laboratorios también hay una parte individual: el boleto de salida, el prelaboratorio y la pregunta
+                    oral.
+                  </p>
+                </Sube>
+                <Sube delay={0.07} className="cifras">
+                  {course.evaluation.map((e) => (
+                    <div key={e.component}>
+                      <b>{e.percentage} %</b>
+                      <span>{e.component}</span>
+                    </div>
+                  ))}
+                </Sube>
+              </div>
+            </section>
+
+            {/* ── Lo que pasa en el salón ──────────────────────────────── */}
+            <section className="campo nieve" aria-label="Quices, talleres, laboratorios y exámenes">
+              <div className="c">
+                <Sube><h2>Lo que pasa en el salón</h2></Sube>
+                <Sube delay={0.07}>
+                  <p className="texto">
+                    Lo que se califica en clase se hace y se entrega en la misma sesión. Bernoulli, la LMTD y
+                    McCabe-Thiele se ven en Fenómenos de Transporte Macroscópicos, que va el mismo semestre: aquí se
+                    usan, y los exámenes evalúan el diseño de los equipos.
+                  </p>
+                </Sube>
+                <div className="formatos">
+                  <Sube className="formato">
+                    <span className="n">{cuenta.quices}</span>
+                    <h3>Quices</h3>
+                    <span className="k">Individual{peso('Quices') !== undefined && ` · ${peso('Quices')} %`}</span>
+                    <p>
+                      Diez minutos al empezar cada clase de tema, sobre la lectura, en{' '}
+                      <a href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener noreferrer">Bloque Neón</a> con{' '}
+                      <a href="https://web.respondus.com/he/lockdownbrowser/" target="_blank" rel="noopener noreferrer">LockDown Browser</a>.
+                      Una pregunta por página y sin volver atrás. El jueves 28 de enero hay uno de práctica, sin nota.
+                    </p>
+                  </Sube>
+                  <Sube className="formato" delay={0.06}>
+                    <span className="n">{cuenta.talleres}</span>
+                    <h3>Talleres</h3>
+                    <span className="k">En pareja{peso('Talleres en clase') !== undefined && ` · ${peso('Talleres en clase')} %`}</span>
+                    <p>
+                      En papel, con los datos y los catálogos impresos, y se entregan al terminar la sesión. Cada pareja
+                      recibe datos distintos, y antes de salir cada uno responde solo un boleto de salida que vale la
+                      mitad de la nota.
+                    </p>
+                  </Sube>
+                  <Sube className="formato" delay={0.12}>
+                    <span className="n">{cuenta.labs}</span>
+                    <h3>Laboratorios</h3>
+                    <span className="k">En equipo{peso('Laboratorios') !== undefined && ` · ${peso('Laboratorios')} %`}</span>
+                    <p>
+                      El arrastre de vapor en Clevenger, el tamaño de gota de una emulsión en el Mastersizer y una
+                      destilación por lotes en los Air Still Pro. Cada práctica mide un dato que su equipo usa en la
+                      planta, con prelaboratorio, pregunta oral y memorando.
+                    </p>
+                  </Sube>
+                  <Sube className="formato" delay={0.18}>
+                    <span className="n">{cuenta.examenes}</span>
+                    <h3>Exámenes</h3>
+                    <span className="k">Individual y en pareja{peso('Exámenes') !== undefined && ` · ${peso('Exámenes')} %`}</span>
+                    <p>
+                      En papel, con calculadora y sin apuntes. Usted responde solo durante 45 minutos y entrega su hoja;
+                      después, en parejas formadas al azar, responden las mismas preguntas en 25 minutos. Todo se entrega
+                      al final de la clase.
+                    </p>
+                  </Sube>
+                </div>
+              </div>
+            </section>
+
+            {/* ── El semestre en fechas ───────────────────────────────── */}
+            {fechas.length > 1 && (
+              <section className="campo amarillo" aria-label="Fechas del semestre">
+                <div className="c">
+                  <Sube><h2>El semestre en fechas</h2></Sube>
+                  <Sube delay={0.07}>
+                    <p className="texto">
+                      Clases los martes y los jueves, del 26 de enero al 20 de mayo de 2027. Las bitácoras se entregan el
+                      domingo a las 11:59 p.m. y su coevaluación cierra el lunes siguiente.
+                      {cronograma?.href && (
+                        <>
+                          {' '}Cada clase, con lo que se ve y lo que se entrega, está en el{' '}
+                          {docLink(cronograma.href, 'cronograma')}.
+                        </>
+                      )}
+                    </p>
+                  </Sube>
+                  <Sube delay={0.12}>
+                    <ol className="fechas">
+                      {fechas.map((f) => (
+                        <li key={`${f.orden}-${f.que}`} className={`f-${f.tipo}`}>
+                          <span className="cuando">{f.cuando}</span>
+                          <span className="que">{f.que}</span>
+                          {f.det && <span className="det">{may(f.det)}</span>}
+                        </li>
+                      ))}
+                    </ol>
+                  </Sube>
+                </div>
+              </section>
+            )}
 
             {/* ── Equipo docente ─────────────────────────────────────── */}
             <section className="campo nieve" aria-label="Equipo docente">

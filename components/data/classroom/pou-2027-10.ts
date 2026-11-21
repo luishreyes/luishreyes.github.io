@@ -105,7 +105,18 @@ export const pou202710Course: Course = {
     { name: POR_CONFIRMAR, role: 'Monitoría', email: '' },
   ],
 
-  objectives: pou202620Course.objectives.map((o) => o.replace('(BFD, PFD, P&ID)', '(PBD, PFD y P&ID)')),
+  // Los mismos objetivos del programa de 2027-10.
+  objectives: [
+    'Diseñar y dimensionar las operaciones unitarias de un proceso químico completo, que abarca el manejo de sólidos, el transporte de fluidos y la separación final por destilación.',
+    'Elaborar e interpretar diagramas de ingeniería profesionales (PBD, PFD y P&ID) según estándares industriales.',
+    'Calcular y especificar equipos de proceso con criterios técnicos, económicos y de sostenibilidad, a partir de catálogos y hojas de datos.',
+    'Medir en el laboratorio los datos que pide el diseño y juzgar cuánto valen.',
+    'Simular procesos completos en ASPEN Plus y validar con ellos los cálculos manuales.',
+    'Documentar el diseño en bitácoras de cálculo profesionales y reportes ejecutivos.',
+    'Trabajar en equipo, gestionando el tiempo y los recursos con eficacia.',
+    'Aplicar pensamiento crítico al elegir alternativas de diseño y resolver problemas.',
+    'Comunicar resultados técnicos a audiencias distintas mediante informes y presentaciones.',
+  ],
 
   abet: {
     ...pou202620Course.abet,
