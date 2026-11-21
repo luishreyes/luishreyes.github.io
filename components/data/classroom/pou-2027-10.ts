@@ -55,6 +55,8 @@ const RESUMENES: Record<string, string> = {
     'El calendario de 2027-10, semana por semana. Arriba, qué sigue: el próximo quiz, taller, laboratorio, examen y entrega, con cuenta regresiva. Abajo, las 16 semanas con quices, talleres, laboratorios, exámenes, entregas de bitácora, coevaluaciones y retroalimentaciones. Se filtra por tipo y resalta la semana actual.',
   'bitacoras-de-calculo':
     'Qué va en cada una de las cuatro bitácoras de la planta de aceite esencial y cómo se califican: materia prima y diagrama de bloques; PFD, bombas, válvulas y agitación; arrastre de vapor con los datos del piloto y del Laboratorio 1, condensación, winterización y servicios; y la rectificación por lotes al vacío con el costo de la planta. Con la estructura de una bitácora, el formato, el manejo de fuentes, los errores comunes y las fechas de entrega.',
+  'busqueda-bibliografica':
+    'Once plataformas para encontrar, leer y sintetizar literatura científica: Google Scholar, Web of Science y Scopus, y ocho herramientas de IA (ChatGPT, Gemini, Gemini Notebook, Claude, Perplexity, SciSpace, Consensus y Connected Papers) con sus modelos y planes de noviembre de 2026. Trae estrategias de búsqueda con el caso del arrastre de vapor, un flujo de trabajo para el proyecto y la escala AIAS del curso: en las entregas se puede buscar y leer fuentes con IA, declarándolo.',
   'taller-02-analisis-granulometrico':
     'Se resuelve en un cuaderno de Google Colab, que se abre desde la página con un clic. Tres casos de la planta: la cáscara que sale del desgarrador, que se juzga contra tres criterios del extractor; dos equipos de desgarrado que compiten por preparar la carga y donde ninguno domina al otro; y una carta de control del D50 con las muestras de una semana. Incluye el ajuste de los tres modelos clásicos de distribución, log-normal, Rosin-Rammler y Gates-Gaudin-Schuhmann, y cinco preguntas de análisis con sustento bibliográfico en formato IEEE. En parejas, con pareja distinta a la del Taller 1.',
 };
@@ -62,6 +64,7 @@ const RESUMENES: Record<string, string> = {
 // Lecturas reescritas para 2027-10: su tiempo real de lectura y la fecha de la revisión.
 const REVISADAS: Record<string, { readingMinutes: number; date: string; tags?: string[] }> = {
   'lectura-01-operaciones-unitarias': { readingMinutes: 25, date: '2026-10-22' },
+  'busqueda-bibliografica': { readingMinutes: 35, date: '2026-11-21' },
   'lectura-02-diagramas-ingenieria': {
     readingMinutes: 42, date: '2026-10-22',
     tags: ['diagramas', 'PBD', 'PFD', 'P&ID', 'simbología', 'Turton', 'ISO 10628', 'ISA-5.1', 'HDS'],
