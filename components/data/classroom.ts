@@ -134,6 +134,8 @@ export interface CronogramaEntry {
   details?: string[]; // Sub-bullets
   quiz?: string;
   taller?: string;
+  examen?: string;      // 'Examen 1': examen individual en papel
+  laboratorio?: string; // 'Laboratorio 1'
   proyecto?: string;  // Deliverable or coevaluation
 }
 

@@ -16,8 +16,15 @@ import { pou202620Course } from './pou-2026-20';
 //     heredados de 2026-20. Ya son propios de 2027-10: el reto, los módulos
 //     y el material de las semanas 1 a 3, más la Lectura 12 (filtración y
 //     winterización), que reemplaza a la Lectura 09 de pectina.
-//   · `schedule`, `cronograma`, el equipo de asistentes y las fechas esperan
-//     el calendario oficial de 2027-10.
+//   · El equipo de asistentes y la monitoría están por confirmar. Las fechas
+//     ya siguen el calendario académico de 2027-10 (clases del 25 de enero al
+//     22 de mayo, receso del 22 al 27 de marzo): el `cronograma` lo escribe
+//     scripts/pou-2027-10-cronograma.mjs, que también llena la tabla de sesiones
+//     del programa y el cronograma interactivo.
+//   · Evaluación rediseñada (21 nov 2026): quices con LockDown Browser, tres
+//     exámenes en papel (individuales y después en pareja), tres laboratorios
+//     y cinco talleres dentro de la sesión. Lo que da Fenómenos de Transporte
+//     Macroscópicos (Bernoulli, LMTD, NTU, McCabe-Thiele) no se enseña de nuevo.
 //   · Falta el banner propio del semestre: mientras tanto usa el de 2026-20.
 // Material ya reescrito para aceite esencial: vive en /classroom/iqya-2031-2027-10/.
 // Cada semana que se migra suma aquí sus ids y slugs.
@@ -31,7 +38,7 @@ const LECTURAS_PROPIAS = new Set([
   'lectura-02-diagramas-ingenieria', 'taller-01-analisis-de-pfd',
   'lectura-03-reduccion-tamano', 'taller-02-analisis-granulometrico',
   // Material permanente
-  'programa-del-curso', 'bitacoras-de-calculo', 'informe-final',
+  'programa-del-curso', 'cronograma-interactivo', 'bitacoras-de-calculo', 'informe-final',
   'trabajo-en-equipo', 'contrato-de-equipo', 'busqueda-bibliografica',
 ]);
 
@@ -42,7 +49,9 @@ const RESUMENES: Record<string, string> = {
   'lectura-02-diagramas-ingenieria':
     'Por qué los ingenieros de proceso dibujan sus plantas, y cómo se lee ese dibujo en sus tres niveles con una sola unidad: la de hidrodesulfuración del Manual de diagramas, dibujada como PBD con un balance de masa que cierra, como PFD con sus nueve equipos y quince corrientes, y como P&ID del separador V-201. Recorre la historia de las normas ISA-5.1 (edición vigente de 2024), BS 1553 e ISO 10628, los códigos de equipos y de servicios de Turton, la tabla de corrientes, la diferencia entre un PC y una PSV y lo que debe contener el PFD que entrega su equipo.',
   'programa-del-curso':
-    'El programa completo de IQYA-2031 para 2027-10: horarios y equipo, descripción y metodología (PO-PBL y aula invertida), el reto de la planta de aceite esencial, resultados ABET, contenido por módulo, distribución de la nota, entregas por semana, escala AIAS de uso de IA y políticas del curso.',
+    'El programa completo de IQYA-2031 para 2027-10: horarios y equipo, descripción y metodología (PO-PBL y aula invertida), el reto de la planta de aceite esencial, resultados ABET, los ocho módulos, el programa clase por clase, la distribución de la nota, cómo funcionan quices, exámenes, talleres y laboratorios, las fechas clave, la escala AIAS de uso de IA y las políticas del curso.',
+  'cronograma-interactivo':
+    'El calendario de 2027-10, semana por semana. Arriba, qué sigue: el próximo quiz, taller, laboratorio, examen y entrega, con cuenta regresiva. Abajo, las 16 semanas con quices, talleres, laboratorios, exámenes, entregas de bitácora, coevaluaciones y retroalimentaciones. Se filtra por tipo y resalta la semana actual.',
   'taller-02-analisis-granulometrico':
     'Se resuelve en un cuaderno de Google Colab, que se abre desde la página con un clic. Tres casos de la planta: la cáscara que sale del desgarrador, que se juzga contra tres criterios del extractor; dos equipos de desgarrado que compiten por preparar la carga y donde ninguno domina al otro; y una carta de control del D50 con las muestras de una semana. Incluye el ajuste de los tres modelos clásicos de distribución, log-normal, Rosin-Rammler y Gates-Gaudin-Schuhmann, y cinco preguntas de análisis con sustento bibliográfico en formato IEEE. En parejas, con pareja distinta a la del Taller 1.',
 };
@@ -88,7 +97,7 @@ export const pou202710Course: Course = {
   // llegue a la tarjeta ve que el semestre se está armando y no pasa.
   staffOnlyAccess: true,
   identidad: 'uniandes',
-  duration: '16 semanas y la 17 de pósters',
+  duration: '16 semanas y la de finales, con los pósters',
 
   team: [
     pou202620Course.team[0],
@@ -114,14 +123,16 @@ export const pou202710Course: Course = {
     ),
   },
 
+  // Ocho módulos. El 4, el 6 y parte del 8 cambiaron para no repetir lo que
+  // da Fenómenos de Transporte Macroscópicos el mismo semestre.
   modules: [
     {
-      title: 'Módulo 1 · Fundamentos y diagramación',
+      title: 'Módulo 1 · Diagramas',
       topics: [
         'Introducción al proyecto y formación de equipos.',
+        'Materia prima y alcance del proyecto.',
         'Diagramas de ingeniería: PBD, PFD y P&ID. El entregable es el PFD completo; el P&ID se practica en el Taller 1.',
         'Simbología: Turton e ISO 10628 para los equipos, ANSI/ISA-5.1 para los instrumentos.',
-        'Materia prima y alcance del proyecto.',
       ],
     },
     {
@@ -139,69 +150,171 @@ export const pou202710Course: Course = {
         'Equilibrio de líquidos inmiscibles.',
         'Relación de vapor e hidrodifusión del aceite en la cáscara.',
         'Diseño del extractor.',
+        'Laboratorio 1: arrastre de vapor en Clevenger.',
       ],
     },
     {
-      title: 'Módulo 4 · Transporte de fluidos y agitación',
+      title: 'Módulo 4 · Bombas, válvulas y control',
       topics: [
-        'Ecuación de Bernoulli y pérdidas mayores y menores.',
-        'Bombas centrífugas, curvas características y NPSH.',
-        'Servicios de la planta y vapor vivo.',
-        'Agitación del tanque de lavado y del tanque de enfriamiento; criterios de escalado.',
+        'Tipos y mecanismos de bombas: centrífugas y de desplazamiento positivo.',
+        'Selección en catálogo, leyes de afinidad, bombas en serie y en paralelo, corrección por viscosidad.',
+        'Válvulas según el servicio; válvula de control (Cv, característica y autoridad).',
+        'Estrategia de control y sistemas de vacío para la columna.',
       ],
     },
     {
-      title: 'Módulo 5 · Transferencia de calor',
+      title: 'Módulo 5 · Agitación',
       topics: [
-        'El condensador del arrastre, la carga térmica más grande de la planta.',
-        'Método LMTD y efectividad-NTU.',
-        'Selección y dimensionamiento.',
+        'Impulsores y número de potencia.',
+        'Suspensión de sólidos y dispersión de gotas.',
+        'Criterios de escalado del tanque de lavado y del tanque de enfriamiento.',
+        'Laboratorio 2: tamaño de gota de una emulsión contra la velocidad de agitación.',
+      ],
+    },
+    {
+      title: 'Módulo 6 · Calor en la planta',
+      topics: [
+        'El condensador del arrastre: condensación con gases no condensables.',
+        'Refrigeración por compresión de vapor: el enfriado de la winterización.',
+        'Servicios de planta: vapor, trampas y agua de enfriamiento.',
         'Integración energética del proceso.',
       ],
     },
     {
-      title: 'Módulo 6 · Separaciones mecánicas',
+      title: 'Módulo 7 · Separaciones mecánicas',
       topics: [
         'Decantación de aceite y agua en el florentino.',
-        'Teoría de filtración y resistencia del medio filtrante.',
+        'Filtración con torta y resistencia del medio filtrante.',
         'Winterización: el enfriado y el filtro de profundidad del aceite.',
       ],
     },
     {
-      title: 'Módulo 7 · Rectificación al vacío',
+      title: 'Módulo 8 · Destilación del producto',
       topics: [
-        'Equilibrio líquido-vapor (repaso).',
-        'Destilación flash y diferencial.',
-        'Método McCabe-Thiele y efecto de la presión.',
-        'Platos y empaques, con HETP.',
-        'Azeótropos.',
+        'Destilación por lotes y políticas de reflujo.',
+        'Vacío, efecto de la presión y azeótropos.',
+        'Platos y empaques: inundación, diámetro, caída de presión y HETP.',
+        'Laboratorio 3: destilación por lotes en modo de olla y en modo de reflujo.',
       ],
     },
   ],
 
-  evaluation: pou202620Course.evaluation.map((e) =>
-    e.component === 'Presentación final'
-      ? { ...e, description: 'Grupos · Sustentación de pósters en la semana 17.' }
-      : e,
-  ),
+  evaluation: [
+    { component: 'Quices', percentage: 10, description: 'Individual · Trece, al empezar la clase, con LockDown Browser.' },
+    { component: 'Exámenes', percentage: 25, description: 'Individual, con etapa en pareja · Tres, en papel y con calculadora.' },
+    { component: 'Laboratorios', percentage: 15, description: 'Equipo, con prelaboratorio y pregunta oral individuales · Tres prácticas con memorando.' },
+    { component: 'Talleres en clase', percentage: 10, description: 'Parejas, con boleto de salida individual · Cinco, dentro de la sesión.' },
+    { component: 'Bitácoras de cálculo', percentage: 15, description: 'Grupos · 4 entregas durante el semestre.' },
+    { component: 'Sustentaciones de seguimiento', percentage: 10, description: 'Grupos · 4 durante el semestre.' },
+    { component: 'Proyecto final', percentage: 10, description: 'Grupos · Documento técnico.' },
+    { component: 'Póster', percentage: 5, description: 'Grupos · Sesión de pósters en la semana de finales.' },
+  ],
 
-  deliveries: {
-    bitacoras: [3, 7, 10, 15].map((w, i) => ({ label: `Entrega ${i + 1}`, date: `Domingo de la semana ${w}` })),
-    coevaluations: [
-      ...[4, 8, 11, 16].map((w, i) => ({ label: `Coevaluación ${i + 1}`, date: `Lunes de la semana ${w}` })),
-      { label: 'Coevaluación 5', date: 'Semana 17 · documento y pósters' },
+  aias: {
+    ...pou202620Course.aias!,
+    levels: [
+      { level: 1, title: 'Sin IA', description: 'No se permite uso de IA.', application: 'Quices, exámenes, prelaboratorios y talleres en papel.' },
+      { level: 2, title: 'IA para ideas', description: 'IA para generar ideas y estructurar.', application: 'Taller 2, en Colab.' },
+      { level: 3, title: 'IA para edición', description: 'IA para refinar y mejorar claridad.', application: 'Memorandos de laboratorio, bitácoras, proyecto final y póster.' },
+      { level: 4, title: 'IA con evaluación', description: 'IA para tareas con evaluación crítica.', application: 'No aplica en este curso.' },
+      { level: 5, title: 'Uso completo', description: 'IA integral a discreción.', application: 'No aplica en este curso.' },
     ],
-    feedback: [4, 8, 11, 16].map((w, i) => ({ label: `Retroalimentación ${i + 1}`, date: `Semana ${w}` })),
   },
 
-  policies: pou202620Course.policies.map((p) => ({
-    ...p,
-    items: p.items.map((it) =>
-      it.startsWith('Correo del curso:')
-        ? 'Correo del curso: lh.reyes@uniandes.edu.co. Los correos del equipo de asistentes se publican al iniciar el semestre.'
-        : it.replace('BloqueNeón', 'Bloque Neón'),
-    ),
-  })),
+  deliveries: {
+    bitacoras: [
+      { label: 'Entrega 1', date: 'Domingo 14 de febrero' },
+      { label: 'Entrega 2', date: 'Domingo 14 de marzo' },
+      { label: 'Entrega 3', date: 'Domingo 18 de abril' },
+      { label: 'Entrega 4', date: 'Domingo 16 de mayo' },
+    ],
+    coevaluations: [
+      { label: 'Coevaluación 1', date: 'Lunes 15 de febrero' },
+      { label: 'Coevaluación 2', date: 'Lunes 15 de marzo' },
+      { label: 'Coevaluación 3', date: 'Lunes 19 de abril' },
+      { label: 'Coevaluación 4', date: 'Lunes 17 de mayo' },
+      { label: 'Coevaluación 5', date: 'Semana de finales · documento y pósters' },
+    ],
+    feedback: [
+      { label: 'Retroalimentación 1', date: 'Jueves 18 de febrero' },
+      { label: 'Retroalimentación 2', date: 'Martes 30 de marzo' },
+      { label: 'Retroalimentación 3', date: 'Jueves 22 de abril' },
+      { label: 'Retroalimentación 4', date: 'Jueves 20 de mayo' },
+    ],
+  },
+
+  // CRONOGRAMA_START
+  // Escrito por scripts/pou-2027-10-cronograma.mjs: no editar a mano.
+  cronograma: [
+    { date: '2027-01-26', day: 'Martes', week: 1, topic: 'Presentación del curso', details: ['El reto: la planta de aceite esencial', 'Metodología, evaluación y uso de IA'], proyecto: 'Publicación del reto del semestre' },
+    { date: '2027-01-28', day: 'Jueves', week: 1, topic: 'Equipos, coevaluación y contrato', details: ['Quiz de práctica con LockDown Browser, sin nota'] },
+    { date: '2027-02-02', day: 'Martes', week: 2, topic: 'Diagramas de ingeniería: PBD, PFD y P&ID', details: ['Simbología de equipos e instrumentos', 'Codificación de equipos y corrientes'], quiz: 'Quiz 1' },
+    { date: '2027-02-04', day: 'Jueves', week: 2, topic: 'Taller 1: análisis de un PFD con errores', details: ['Un plano distinto por pareja'], taller: 'Taller 1' },
+    { date: '2027-02-09', day: 'Martes', week: 3, topic: 'Sólidos: caracterización, granulometría y reducción de tamaño', details: ['Distribuciones de tamaño', 'Desgarrado de la cáscara húmeda'], quiz: 'Quiz 2' },
+    { date: '2027-02-11', day: 'Jueves', week: 3, topic: 'Taller 2: análisis granulométrico', details: ['En Colab, con datos por pareja'], taller: 'Taller 2', proyecto: 'Bitácora 1: domingo 14 de febrero · Coevaluación: lunes 15 de febrero' },
+    { date: '2027-02-16', day: 'Martes', week: 4, topic: 'Arrastre de vapor', details: ['Equilibrio de líquidos inmiscibles', 'Relación de vapor e hidrodifusión', 'Diseño del extractor'], quiz: 'Quiz 3' },
+    { date: '2027-02-18', day: 'Jueves', week: 4, topic: 'Retroalimentación 1', details: ['Sustentación de la Bitácora 1 por equipos'] },
+    { date: '2027-02-23', day: 'Martes', week: 5, topic: 'Laboratorio 1: arrastre de vapor', details: ['Primera mitad de los equipos', 'Clevenger con cáscara de naranja'], laboratorio: 'Laboratorio 1' },
+    { date: '2027-02-25', day: 'Jueves', week: 5, topic: 'Laboratorio 1: arrastre de vapor', details: ['Segunda mitad de los equipos', 'Clevenger con cáscara de naranja'], laboratorio: 'Laboratorio 1' },
+    { date: '2027-03-02', day: 'Martes', week: 6, topic: 'Bombas: tipos, mecanismos y selección', details: ['Centrífugas y de desplazamiento positivo', 'Leyes de afinidad, serie y paralelo', 'Corrección por viscosidad'], quiz: 'Quiz 4' },
+    { date: '2027-03-04', day: 'Jueves', week: 6, topic: 'Válvulas, control y vacío', details: ['Válvulas según el servicio', 'Válvula de control: Cv, característica y autoridad', 'Sistemas de vacío para la columna'], quiz: 'Quiz 5', proyecto: 'Memorando del Laboratorio 1: domingo 7 de marzo' },
+    { date: '2027-03-09', day: 'Martes', week: 7, topic: 'Agitación y escalado', details: ['Impulsores y número de potencia', 'Suspensión y dispersión de gotas', 'Criterios de escalado'], quiz: 'Quiz 6' },
+    { date: '2027-03-11', day: 'Jueves', week: 7, topic: 'Laboratorio 2: agitación y emulsión', details: ['Todos los equipos', 'Tamaño de gota en el Mastersizer'], laboratorio: 'Laboratorio 2', proyecto: 'Bitácora 2: domingo 14 de marzo · Coevaluación: lunes 15 de marzo' },
+    { date: '2027-03-16', day: 'Martes', week: 8, topic: 'Taller 3: hoja de datos de una bomba y su válvula de control', details: ['Con catálogos impresos'], taller: 'Taller 3' },
+    { date: '2027-03-18', day: 'Jueves', week: 8, topic: 'Examen 1: arrastre de vapor, bombas, válvulas, control y vacío', details: ['En papel: primero individual y después en pareja'], examen: 'Examen 1', proyecto: 'Memorando del Laboratorio 2: domingo 21 de marzo' },
+    { date: '2027-03-30', day: 'Martes', week: 9, topic: 'Retroalimentación 2', details: ['Sustentación de la Bitácora 2 por equipos'] },
+    { date: '2027-04-01', day: 'Jueves', week: 9, topic: 'Condensación y decantación', details: ['El condensador del arrastre', 'Gases no condensables y venteo', 'El decantador florentino'], quiz: 'Quiz 7' },
+    { date: '2027-04-06', day: 'Martes', week: 10, topic: 'Refrigeración', details: ['Ciclo de compresión de vapor', 'El enfriado de la winterización'], quiz: 'Quiz 8' },
+    { date: '2027-04-08', day: 'Jueves', week: 10, topic: 'Filtración y winterización', details: ['Ley de Darcy, torta y medio filtrante', 'Filtración de profundidad'], quiz: 'Quiz 9' },
+    { date: '2027-04-13', day: 'Martes', week: 11, topic: 'Taller 4: el filtro de la winterización y el florentino', details: ['Con datos por pareja'], taller: 'Taller 4' },
+    { date: '2027-04-15', day: 'Jueves', week: 11, topic: 'Servicios de planta e integración energética', details: ['Vapor, trampas y agua de enfriamiento', 'Recuperación de calor'], quiz: 'Quiz 10', proyecto: 'Bitácora 3: domingo 18 de abril · Coevaluación: lunes 19 de abril' },
+    { date: '2027-04-20', day: 'Martes', week: 12, topic: 'Examen 2: condensación, refrigeración, separaciones mecánicas y servicios', details: ['En papel: primero individual y después en pareja'], examen: 'Examen 2' },
+    { date: '2027-04-22', day: 'Jueves', week: 12, topic: 'Retroalimentación 3', details: ['Sustentación de la Bitácora 3 por equipos'] },
+    { date: '2027-04-27', day: 'Martes', week: 13, topic: 'Destilación por lotes', details: ['Ecuación de Rayleigh', 'Políticas de reflujo'], quiz: 'Quiz 11' },
+    { date: '2027-04-29', day: 'Jueves', week: 13, topic: 'Laboratorio 3: destilación por lotes', details: ['Primera mitad de los equipos', 'Air Still Pro en modo de olla y en modo de reflujo'], laboratorio: 'Laboratorio 3' },
+    { date: '2027-05-04', day: 'Martes', week: 14, topic: 'Laboratorio 3: destilación por lotes', details: ['Segunda mitad de los equipos', 'Air Still Pro en modo de olla y en modo de reflujo'], laboratorio: 'Laboratorio 3' },
+    { date: '2027-05-06', day: 'Jueves', week: 14, topic: 'Vacío y azeótropos', details: ['Efecto de la presión', 'Azeótropos y destilación especial'], quiz: 'Quiz 12', proyecto: 'Memorando del Laboratorio 3: domingo 9 de mayo' },
+    { date: '2027-05-11', day: 'Martes', week: 15, topic: 'Platos y empaques', details: ['Inundación y diámetro', 'Caída de presión', 'HETP'], quiz: 'Quiz 13' },
+    { date: '2027-05-13', day: 'Jueves', week: 15, topic: 'Taller 5: ¿platos o empaque para la columna al vacío?', details: ['Con la carta de Fair'], taller: 'Taller 5', proyecto: 'Bitácora 4: domingo 16 de mayo · Coevaluación: lunes 17 de mayo' },
+    { date: '2027-05-18', day: 'Martes', week: 16, topic: 'Examen 3: destilación por lotes, vacío y azeótropos, platos y empaques', details: ['En papel: primero individual y después en pareja'], examen: 'Examen 3' },
+    { date: '2027-05-20', day: 'Jueves', week: 16, topic: 'Retroalimentación 4', details: ['Sustentación de la Bitácora 4 por equipos'] },
+    { date: '2027-05-25', day: 'Martes', week: 17, topic: 'Sesión de pósters', details: ['Semana de finales: fecha y salón según la programación de finales'], proyecto: 'Documento final y póster · Coevaluación 5' },
+  ],
+  // CRONOGRAMA_END
+
+  // Con el nuevo formato, exámenes y talleres se cierran en la sesión, los
+  // laboratorios tienen reglas propias y la demora se penaliza en memorandos
+  // y documento final.
+  policies: [
+    ...pou202620Course.policies.map((p) => ({
+      ...p,
+      items: p.items.map((it) =>
+        it.startsWith('Correo del curso:')
+          ? 'Correo del curso: lh.reyes@uniandes.edu.co. Los correos del equipo de asistentes se publican al iniciar el semestre.'
+          : it.startsWith('La asistencia a las sesiones magistrales')
+          ? 'La asistencia a las clases es obligatoria (control diario).'
+          : it.startsWith('Talleres y documento final')
+          ? 'Memorandos de laboratorio y documento final: -1 unidad por cada 15 minutos de demora.'
+          : it.replace('BloqueNeón', 'Bloque Neón'),
+      ),
+    })),
+    {
+      category: 'Exámenes y talleres',
+      items: [
+        'Se entregan al final de la sesión, sin prórroga.',
+        'Exámenes en papel, con calculadora científica no programable; sin computador, celular ni apuntes.',
+        'La ausencia a un examen se maneja según el Reglamento General de Estudiantes de Pregrado.',
+      ],
+    },
+    {
+      category: 'Laboratorios',
+      items: [
+        'Sin prelaboratorio no se entra a la práctica.',
+        'En el laboratorio se usan bata, gafas y zapato cerrado.',
+        'El memorando parte de la hoja de datos firmada por el asistente; sin ella no se califica.',
+      ],
+    },
+  ],
 
   community: pou202620Course.community.map((c) => ({
     ...c,
@@ -217,7 +330,7 @@ export const pou202710Course: Course = {
   tagline:
     'Diseñe una planta de aceite esencial a partir de cáscara de cítricos',
   description:
-    'En este curso diseñará, dimensionará y simulará una planta de aceite esencial de grado alimentario a partir de cáscara de cítricos, el residuo que deja una juguera. Bajo el enfoque de Diseño Integrado de Productos y Procesos, cada operación unitaria llega la semana en que su equipo la necesita para cerrar un balance: manejo de sólidos, transporte de fluidos, agitación, intercambio de calor, filtración y, sobre todo, destilación, que aquí no recupera un solvente sino que hace el producto. El arrastre de vapor lo extrae de la cáscara y la rectificación al vacío decide su calidad. El modelo es híbrido: aula invertida con lecturas previas, quices al iniciar clase, talleres en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
+    'En este curso diseñará, dimensionará y simulará una planta de aceite esencial de grado alimentario a partir de cáscara de cítricos, el residuo que deja una juguera. Bajo el enfoque de Diseño Integrado de Productos y Procesos, cada operación unitaria llega la semana en que su equipo la necesita para cerrar un balance: manejo de sólidos, transporte de fluidos, agitación, intercambio de calor, filtración y, sobre todo, destilación, que aquí no recupera un solvente sino que hace el producto. El arrastre de vapor lo extrae de la cáscara y la rectificación al vacío decide su calidad. El modelo es híbrido: aula invertida con lecturas previas, quices al iniciar clase, talleres en pareja dentro de la sesión, tres laboratorios, tres exámenes en papel y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
 
   // Hereda el banner de 2026-20 hasta que exista public/classroom/iqya-2031-2027-10/banner.jpg.
   bannerUrl: '/classroom/iqya-2031-2026-20/banner.jpg',
@@ -290,6 +403,8 @@ export const pou202710Course: Course = {
       items: f.items.map((it) =>
         it === 'Aplicación de los conceptos al diseño de la planta de pectina.'
           ? 'Aplicación de los conceptos al diseño de la planta de aceite esencial.'
+          : it === 'Taller en parejas con problemas reales.'
+          ? 'Taller en pareja dentro de la sesión, laboratorio o examen en papel.'
           : it,
       ),
     })),

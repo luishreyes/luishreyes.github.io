@@ -156,6 +156,16 @@ export const TodayButton: React.FC<TodayButtonProps> = ({ course }) => {
                           🔧 {entry.taller}
                         </span>
                       )}
+                      {entry.examen && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                          ✍️ {entry.examen}
+                        </span>
+                      )}
+                      {entry.laboratorio && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          🧪 {entry.laboratorio}
+                        </span>
+                      )}
                       {entry.proyecto && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-yellow/20 text-brand-yellow border border-brand-yellow/30">
                           📦 {entry.proyecto}

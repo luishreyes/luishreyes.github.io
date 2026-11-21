@@ -103,10 +103,13 @@ Los datos de cada curso viven en `components/data/classroom/{slug}.ts` y se impo
 
 ### POU 2027-10 (`iqya-2031-2027-10`): lo que falta y lo ya decidido
 
-**Cuando el profesor pregunte qué falta, recordarle primero el calendario** (pedido del profesor, 22 oct 2026). Con el calendario académico de 2027-10 se ajusta todo lo que hoy dice «por confirmar»:
-- las fechas de cada sesión y de cada entrega (`cronograma`, `schedule` y `deliveries` de `pou-2027-10.ts`, que hoy van por semana);
+**Cuando el profesor pregunte qué falta, recordarle primero el calendario** (pedido del profesor, 22 oct 2026). El calendario académico de 2027-10 ya está aplicado (21 nov 2026: clases del 25 de enero al 22 de mayo, receso del 22 al 27 de marzo, finales del 24 al 29 de mayo; POU martes y jueves). Siguen «por confirmar»:
 - el horario de taller, la semana de retiro, el asistente y la monitoría;
 - la lista de equipos de la diapositiva 10 de «Equipos, coevaluación y contrato», con un recuadro por equipo.
+
+**El cronograma de 2027-10 tiene una sola fuente:** `node scripts/pou-2027-10-cronograma.mjs` escribe el `cronograma` de `pou-2027-10.ts` (entre `// CRONOGRAMA_START/END`), la tabla «Programa por sesiones» de `programa.html` (entre `<!-- SESIONES_START/END -->`) y los datos de `cronograma.html` (el cronograma interactivo de 2027-10). Las fechas se cambian ahí y en ningún otro lado; después, `CURSO=iqya-2031-2027-10 node scripts/build-pou-programa-pdf.mjs`.
+
+**Evaluación de 2027-10** (decisión del profesor, 21 nov 2026; la planeación completa está en el repositorio privado): quices con LockDown Browser en Bloque Neón (sin Respondus Monitor), tres **exámenes** (se llaman exámenes, no parciales, y van en orden: Examen 1, 2 y 3) en papel con calculadora, sin computador ni apuntes, que arrancan individuales y siguen en pareja y se entregan al final de la clase; cinco talleres en pareja dentro de la sesión, con boleto de salida individual; tres laboratorios (arrastre de vapor en Clevenger, agitación y emulsión con el Mastersizer, destilación por lotes en los Air Still Pro). No se evalúa lo que da Fenómenos de Transporte Macroscópicos el mismo semestre (Bernoulli, NPSH, LMTD, NTU, equilibrio, flash y McCabe-Thiele): POU se dedica al diseño de los equipos. Las complementarias desaparecen de la nota. Pendiente: pasar la nota y la escala AIAS nuevas a la Presentación del curso.
 
 También falta, para cuando se escriba la semana del arrastre de vapor: el conjunto de datos de rendimiento contra tiempo que el reto y la guía de bitácoras prometen publicar con esa lectura.
 
