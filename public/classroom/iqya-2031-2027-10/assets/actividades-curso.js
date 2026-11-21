@@ -111,7 +111,7 @@
         { x: 328, y: 46, nom: '3 Arrastre\nde vapor', det: 'a unos 89 °C', f: [[MAS, 2], [CAL, 1]] },
         { x: 484, y: 46, nom: '4 Condensación', det: 'agua de enfriamiento', f: [[CAL]] },
         { x: 484, y: 186, nom: '5 Florentino', det: 'el aceite flota', f: [[MEC]] },
-        { x: 328, y: 186, nom: '6 Winterización', det: '5 °C, 8 h y filtro', f: [[CAL], [MAS], [MEC]] },
+        { x: 328, y: 186, nom: '6 Winterización', det: '5 a 10 °C y filtro', f: [[CAL], [MAS], [MEC]] },
         { x: 172, y: 186, nom: '7 Rectificación\nal vacío', det: '10 a 20 mbar', f: [[MAS]] }
       ];
       S.b = B.map(function (b) { return caja(svg, b.x, b.y, w, h, { nombre: b.nom, detalle: b.det, franja: b.f }); });
@@ -144,7 +144,7 @@
       { texto: 'La cáscara entra a dos operaciones mecánicas: el lavado le quita la tierra, y el desgarrado la corta en trozos de 5 a 10 mm.', dur: 2, ir: function (S, t) { D.ver(S.ent, T(t, 0, 0.3)); D.ver(S.b[0], T(t, 0.1, 0.5)); D.ver(S.f[0], T(t, 0.5, 0.6)); D.ver(S.b[1], T(t, 0.6, 1)); } },
       { texto: 'El arrastre de vapor saca el aceite a unos 89 °C. Mueve masa y calor, y manda la masa.', dur: 1.6, ir: function (S, t) { D.ver(S.f[1], T(t, 0, 0.3)); D.ver(S.b[2], T(t, 0.2, 1)); } },
       { texto: 'El condensador devuelve los vapores a líquido, y en el florentino el aceite, menos denso, flota sobre el agua y sale por rebose.', dur: 2, ir: function (S, t) { D.ver(S.f[2], T(t, 0, 0.2)); D.ver(S.b[3], T(t, 0.1, 0.5)); D.ver(S.f[3], T(t, 0.5, 0.6)); D.ver(S.b[4], T(t, 0.6, 1)); } },
-      { texto: 'La winterización enfría el aceite a 5 °C y lo deja reposar 8 h; el agua que sale de solución se asienta o queda en el filtro: calor, masa y mecánica en un solo paso.', dur: 1.8, ir: function (S, t) { D.ver(S.f[4], T(t, 0, 0.3)); D.ver(S.b[5], T(t, 0.2, 1)); } },
+      { texto: 'La winterización enfría el aceite entre 5 y 10 °C y lo deja reposar 8 h; el agua que sale de solución se asienta o queda en el filtro: calor, masa y mecánica en un solo paso.', dur: 1.8, ir: function (S, t) { D.ver(S.f[4], T(t, 0, 0.3)); D.ver(S.b[5], T(t, 0.2, 1)); } },
       { texto: 'La rectificación, a 10 a 20 mbar, separa los hidrocarburos terpénicos de los compuestos oxigenados.', dur: 1.8, ir: function (S, t) { D.ver(S.f[5], T(t, 0, 0.3)); D.ver(S.b[6], T(t, 0.2, 0.8)); D.ver(S.sal, T(t, 0.7, 1)); } },
       { texto: 'Tres pasos cambian la composición del aceite y son las operaciones clave: el arrastre, la winterización y la rectificación. Los demás son auxiliares. Ninguno es una reacción: la planta mueve, calienta y separa, y no tiene reactor.', dur: 1.6, ir: function (S, t) { D.ver(S.clave, t); } }
     ]

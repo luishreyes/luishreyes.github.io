@@ -354,7 +354,7 @@ export const pou202710Course: Course = {
   bannerUrl: '/classroom/iqya-2031-2026-20/banner.jpg',
 
   challenges: {
-    label: 'Hervir a 98 lo que hierve a 176',
+    label: 'Hervir a 97 lo que hierve a 176',
     term: '2027-10',
     eyebrow: 'Reto del semestre',
     description:
@@ -458,7 +458,7 @@ export const pou202710Course: Course = {
         ? {
             ...r,
             slug: 'reto-aceite-esencial',
-            title: 'Guía del reto: hervir a 98 lo que hierve a 176',
+            title: 'Guía del reto: hervir a 97 lo que hierve a 176',
             summary:
               'La guía del proyecto semestral: diseñar y dimensionar una planta que extrae aceite esencial de la cáscara de cítricos que deja una juguera. Las ocho etapas a integrar, cómo elegir la materia prima, por qué el extractor pide cincuenta veces más vapor que el equilibrio, qué validar en ASPEN Plus y dónde no confiar, las bitácoras y los memorandos de laboratorio con sus fechas, y la rúbrica.',
             date: '2026-10-17',
