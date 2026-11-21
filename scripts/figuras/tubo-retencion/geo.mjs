@@ -23,14 +23,14 @@ export const TR = {
   e201: { xF: -1100, t: 100, y0: -640, y1: 330, z0: 120, z1: 1700, noz: 100, pack: 380, padY: 50, padZ: 60 },
   // las boquillas en la cara de la placa fija: [y, z]; A, salida del calentamiento; B, entrada del regenerador (lado
   // pasteurizado); C, salida del enfriamiento (SUPUESTO: su posición)
-  noz: { A: [0, 1000], B: [-520, 1000], C: [250, 600] },
+  noz: { A: [0, 1000], B: [-520, 1000], C: [250, 720] },
   /* la salida del tubo: TT-204 y TI-204 en el mismo punto (PMO 16p.(B)2.e, p. 99), PSL-207 después y el codo que
      baja; la línea vuelve a E-201 (SUPUESTO: las distancias) */
   sal: { xT: -130, xP: -300, xC: -480 },
   /* la válvula de desvío: dos vástagos (la de desvío y la de detección de fugas), de asiento, con actuador neumático y
      resorte que la lleva a desvío (PMO 16p.(B)2.b, pp. 96–97; figs. 52 y 53, pp. 269–270). SUPUESTO: las medidas */
   fdv: {
-    y: 250, xD: -560, sep: 222, bD: 465,
+    y: 250, xD: -300, sep: 222, bD: 585,
     rb: 51, rbi: 49,                                   // el cuerpo: 102 mm por fuera, pared de 2 mm
     asiento: { r: 30, s: [[90, 100], [170, 180]], ro: 51 },
     tapon: { r: 36, sello: 3, h: 20, arriba: 150, abajo: 100 },   // el tapón, en desvío (arriba) y adelante (abajo)
@@ -45,8 +45,9 @@ export const TR = {
     adelante: 380,                                      // la línea al llenado se corta 380 mm después de su férula
   },
   persona: { x: 1350, y: 760, rumbo: 205 },
-  /* el círculo del detalle: la válvula de desvío en corte (el plano y = TR.fdv.y), MDET veces más grande */
-  det: { c: [-449, 250, 820], M: 3.1, R: 165 },
+  /* el círculo del detalle: la válvula de desvío en corte (el plano y = TR.fdv.y), M veces más grande, vista casi de
+     frente al plano del corte (su propia cámara: AZ, EL) */
+  det: { c: [-200, 250, 880], M: 2.6, R: 170, AZ: 75, EL: 20 },   // el círculo mira el corte casi de frente
 };
 
 /* el largo de cada tramo recto: lo que queda de los 23,5 m después de las tres curvas */

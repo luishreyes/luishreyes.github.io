@@ -51,7 +51,7 @@ const EXT = [
 ];
 const PMAIN = k.fitProjection(EXT, 1100, 760, { pad: 18, azimuth: TR.AZ, elevation: TR.EL });
 const CDET = TR.det.c, MDET = TR.det.M, RDET = TR.det.R;
-const P = DET ? (() => { const Q = { origin: [0, 0], scale: PMAIN.scale * MDET, azimuth: TR.AZ, elevation: TR.EL }; const c = k.iso(CDET, Q); Q.origin = [W_ / 2 - c[0], H_ / 2 - c[1]]; return Q; })() : PMAIN;
+const P = DET ? (() => { const Q = { origin: [0, 0], scale: PMAIN.scale * MDET, azimuth: TR.det.AZ, elevation: TR.det.EL }; const c = k.iso(CDET, Q); Q.origin = [W_ / 2 - c[0], H_ / 2 - c[1]]; return Q; })() : PMAIN;
 const C = X.xCam(P);
 const at = (p) => k.iso(p, P);
 const S = (paths, style) => k.solidSvg(paths, style);
@@ -323,7 +323,7 @@ if (!DET) {
     union(`e201.union${key}`, F, XJ, { owner: own });
   }
   // el colector del aire de los actuadores, en la cara de la placa fija
-  box("aire.colector", [E1.xF, 130, 1480], [E1.xF + 46, 260, 1620], { cls: "tr-cast", owner: own, r: 3 });
+  box("aire.colector", [E1.xF, 120, 1530], [E1.xF + 46, 300, 1690], { cls: "tr-cast", owner: own, r: 3 });
   ANCH.E201 = [xb - E1.pack / 2, py1, pz1 - 120];
   ANCH.E201_PLACA = [E1.xF, E1.y1 - 80, E1.z1 - 220];
   ANCH.BOQ_A = [XJ, 0, 1000 + FE.clamp.r];
@@ -666,8 +666,8 @@ function fdv({ cut }) {
   if (!cut) {
     const CT = FV.ctrl;
     const hA = [FV.xD, FV.y, FV.bD + CT.s1 + CT.domo + 16], hB = [xL, FV.y, bL + CT.s1 + CT.domo + 16];
-    const r1 = G.fillet([hA, [FV.xD, FV.y, 1510], [E1.xF + 140, 165, 1510], [E1.xF + 46, 165, 1510]], 45, 8);
-    const r2 = G.fillet([hB, [xL, FV.y, 1590], [E1.xF + 140, 225, 1590], [E1.xF + 46, 225, 1590]], 45, 8);
+    const r1 = G.fillet([hA, [FV.xD, FV.y, 1570], [E1.xF + 140, 190, 1570], [E1.xF + 46, 190, 1570]], 45, 8);
+    const r2 = G.fillet([hB, [xL, FV.y, 1660], [E1.xF + 140, 190, 1660], [E1.xF + 46, 190, 1660]], 45, 8);
     tubeItems("aire.desvio", r1, 4, { owner: "aire", cls: "tr-hose", limp: true, maxLength: 120 });
     tubeItems("aire.deteccion", r2, 4, { owner: "aire", cls: "tr-hose", limp: true, maxLength: 120 });
     ANCH.AIRE = G.pointAlong(r2, largo(r2) * 0.55);
@@ -699,13 +699,14 @@ function line(name, pts, { r = 2, head = 12, w = 5, cls = "tr-flujo", hcls = "tr
 }
 const seg = (a, b, n = 12) => Array.from({ length: n + 1 }, (_, i) => G.lerp3(a, b, i / n));
 if (DET) {
-  const own = "jugo", y = FV.y + 0.6, xa = FV.xD, b = FV.bD, rbi = FV.rbi, AS = FV.asiento;
+  const own = "jugo", y = FV.y + 0.6, xa = FV.xD, b = FV.bD, rbi = FV.rbi, AS = FV.asiento, TP = FV.tapon;
   // el corte del jugo, en el plano: un solo polígono en (x, z)
   const zLow = FV.lineas.piso, X0 = CDET[0] - 420, s0a = AS.s[0][0], s0b = AS.s[0][1], s1a = AS.s[1][0];
   const poly = [
     [X0, zIn - RI], [xa - rbi, zIn - RI], [xa - rbi, b + s0b], [xa - AS.r, b + s0b], [xa - AS.r, b + s0a], [xa - rbi, b + s0a],
     [xa - rbi, b], [xa - RI, b], [xa - RI, zLow], [xa + RI, zLow], [xa + RI, b], [xa + rbi, b], [xa + rbi, b + s0a],
-    [xa + AS.r, b + s0a], [xa + AS.r, b + s0b], [xa + rbi, b + s0b], [xa + rbi, b + s1a], [xa - rbi, b + s1a], [xa - rbi, zIn + RI], [X0, zIn + RI],
+    [xa + AS.r, b + s0a], [xa + AS.r, b + s0b], [xa + rbi, b + s0b], [xa + rbi, b + s1a], [xa + TP.r + TP.sello, b + s1a],
+    [xa + TP.r + TP.sello, b + TP.arriba], [xa - TP.r - TP.sello, b + TP.arriba], [xa - TP.r - TP.sello, b + s1a], [xa - rbi, b + s1a], [xa - rbi, zIn + RI], [X0, zIn + RI],
   ];
   // los anillos de los asientos van por encima del jugo (el polígono pasa por debajo del de arriba y por el agujero del de abajo)
   const d = pth1(poly.map(([x, z]) => pr([x, y, z])));
