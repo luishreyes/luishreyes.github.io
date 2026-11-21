@@ -283,6 +283,18 @@ export const CLASES = {
   'lv-perfil': { stroke: 'naranja' }, 'lv-perfil-p': { fill: 'naranja' }, 'lv-eje': { stroke: 'tinta-2' }, 'lv-eje-p': { fill: 'tinta-2' },
   'lv-guia': { stroke: 'guia' }, 'lv-det-fondo': { fill: 'blanco' }, 'lv-det-marco': { stroke: 'tinta-2' },
   'lv-det-marca': { stroke: 'tinta-2' }, 'lv-det-linea': { stroke: 'tinta-2' },
+  // tubo de retención de E-201 y su válvula de desvío (capítulo 25): el tubo, las líneas, las válvulas, el soporte y los
+  // vástagos en el acero inoxidable, por dentro (en el corte) con la cara de adentro y el corte en la sombra más honda
+  // (lo que va dentro de otra pieza cortada, en la siguiente); las cabezas de los instrumentos y de control y el
+  // colector del aire en la fundición; el bastidor de E-201 pintado; sellos, mangueras y patas en el caucho; la mirilla
+  // en el vidrio; el jugo en los tonos del aceite, como en el TASTE; el resorte en corte como un alambre de acero; el
+  // jugo que fluye en el azul
+  ...corte('tr'), 'tr-cut1': 'acero/corte1', 'tr-rubber-cut': 'caucho/corte', 'tr-ss': 'acero', 'tr-stem': 'acero', 'tr-spring': 'acero',
+  'tr-plate': 'acero', 'tr-in': 'acero/dentro', 'tr-cast': 'fundicion', 'tr-paint': 'pintado', 'tr-rubber': 'caucho', 'tr-hose': 'caucho',
+  'tr-glass': 'vidrio', 'tr-bore': { fill: 'hueco.oscuro' }, 'tr-disp': { fill: 'tinta', stroke: 'tinta-2' },
+  'tr-jugo': { fill: 'aceite.sombras.0', 'fill-opacity': 0.5 }, 'tr-wire-e': { stroke: 'tinta-2' }, 'tr-wire': { stroke: 'acero.sombras.1' },
+  'tr-wire-hi': { stroke: 'acero.tapa' }, 'tr-flujo': { stroke: 'azul' }, 'tr-flecha': { fill: 'azul' },
+  'tr-det-fondo': { fill: 'blanco' }, 'tr-det-marco': { stroke: 'tinta-2' }, 'tr-det-marca': { stroke: 'tinta-2' }, 'tr-det-linea': { stroke: 'tinta-2' },
   // separador V-102 (edición inglesa, capítulo 2)
   'sv-cav': 'acero/fondo', 'sv-cutface': 'acero/corte', 'sv-mesh': 'acero', 'sv-concrete': 'concreto',
   'sv-tick': { stroke: 'guia' }, 'sv-needle': { stroke: 'tinta' }, 'sv-hub': { fill: 'tinta' },
@@ -389,6 +401,7 @@ export const VISTAS = {
   'separacion-centrifuga/_separadora': {},
   'sedimentacion-y-decantacion/_florentino': {},
   'tamizado-y-analisis-granulometrico/_tamizadora': { granos: { 'tz-grain': RAMPA_GRANO } },
+  'tratamiento-termico/_tubo-retencion': {},
   'valvulas-tuberias-y-medicion-de-flujo/_tanque-llegada': {},
   'valvulas-tuberias-y-medicion-de-flujo/_valvula-control': {},
 };

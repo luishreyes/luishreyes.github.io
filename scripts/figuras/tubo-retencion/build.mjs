@@ -252,7 +252,7 @@ const halfSpaceAt = (n, o) => { n = G.unit3(n); const p = G.unit3(Math.abs(n[2])
 const wedgeCutsF = (F, a0, a1) => { const p0 = a0 * D2R, p1 = a1 * D2R; return [halfSpaceAt(sub(mul(F.u, Math.sin(p0)), mul(F.v, Math.cos(p0))), F.o), halfSpaceAt(add(mul(F.u, -Math.sin(p1)), mul(F.v, Math.cos(p1))), F.o)]; };
 /* una pieza de revolución en sectores de ángulo [[a0, a1], …] (grados, de F.u hacia F.v); prof: polígono en (s, r).
    caps(a0, a1) dice qué va en los extremos del sector: «cut» (la cara del corte), «none» o «end». */
-function revX(name, prof, { F, cls = "tr-ss", cutCls = "tr-cut", owner = name, sectors = [[0, 360]], skip = [], smooth = [], rec = true, ref = null, extras = null, caps = null, noEdge = [], shape = true, whole = false, steps: st = 0 } = {}) {
+function revX(name, prof, { F, cls = "tr-ss", cutCls = "tr-cut", owner = name, sectors = [[0, 360]], skip = [], smooth = [], rec = true, ref = null, extras = null, caps = null, noEdge = [], shape = true, whole = false, steps: st = 0, ground = false } = {}) {
   const sc0 = prof.reduce((q, p) => q + p[0], 0) / prof.length, rmax = Math.max(...prof.map((q) => q[1]));
   const out = [];
   for (const [a0, a1] of sectors) {
@@ -261,7 +261,7 @@ function revX(name, prof, { F, cls = "tr-ss", cutCls = "tr-cut", owner = name, s
     const svg = sweepSvg({ F, profile: prof, a0: a0 * D2R, a1: a1 * D2R, cls, cutCls, capA: cp[0], capB: cp[1], skip, smooth, steps, noEdge }) + (extras ? extras(a0, a1) : "");
     const full = whole || a1 - a0 >= 360 - 1e-6;
     const nm = sectors.length > 1 ? `${name}.${Math.round(a0)}` : name;
-    const sh = A.lathe(F, prof.map(([a, b]) => [a, b]), { name: nm, owner, ...(full ? {} : { cut: wedgeCutsF(F, a0, a1) }) });
+    const sh = A.lathe(F, prof.map(([a, b]) => [a, b]), { name: nm, owner, ...(ground ? { ground: true } : {}), ...(full ? {} : { cut: wedgeCutsF(F, a0, a1) }) });
     if (rec && shape) record(sh);
     const am = (full ? 30 : (a0 + a1) / 2) * D2R, rr = ref ?? rmax * 0.9;
     put(nm, G.pointOf(F, sc0, rr, am), svg, shape ? [sh] : []);
@@ -456,6 +456,7 @@ if (!DET) {
       box(`soporte${iS}.cierre${i}`, [xs - 9, yy - 8, zt + ROA - 1.5], [xs + 9, yy + 8, zt + ROA + 12], { owner: "linea", r: 1 });
       disc(`soporte${iS}.tornillo${i}`, { o: [xs, yy, zt + ROA + 6], a: YD, u: XD, v: ZD }, -14, 14, 3.5, { owner: "linea" });
       if (iS === 0) ANCH[`VARILLA${i}`] = [xs, yy, (zcb + zt - ROA - AB.oreja) / 2];
+      if (iS === ES.x.length - 1) ANCH[`VARILLAF${i}`] = [xs + ES.rod, yy, (zcb + zt - ROA - AB.oreja) / 2];
     }
     if (iS < ES.x.length - 1) {
       const xn = ES.x[iS + 1];
@@ -499,7 +500,8 @@ function cuerpo(nm, xa, b, { cut }) {
         const sg = lado === 180 ? -1 : 1, pts = [];
         for (let i = 0; i <= 24; i++) { const t = (PI * i) / 24, yy = -RI * Math.sin(t), zz = port + RI * Math.cos(t); pts.push([xa + sg * Math.sqrt(rbi * rbi - yy * yy), FV.y + yy, b + zz]); }
         const d = pth1(pts.map(pr));
-        const sh = A.prism({ o: [xa + sg * (rbi - 6), FV.y, b + port], a: XD, u: YD, v: ZD }, [[-RI, -RI], [0, -RI], [0, RI], [-RI, RI]], -0.2, 0.2, { name: `${name}.hueco`, owner: own });
+        const half = Array.from({ length: 13 }, (_, i) => { const t = (PI * i) / 12; return [-RI * Math.sin(t), RI * Math.cos(t)]; });
+        const sh = A.prism({ o: [xa, FV.y, b + port], a: [sg, 0, 0], u: YD, v: ZD }, half, Math.sqrt(rbi * rbi - RI * RI) - 0.5, rbi + 0.2, { name: `${name}.hueco`, owner: own });
         put(`${name}.hueco`, [xa + sg * rbi * 0.9, FV.y - RI * 0.6, b + port], `<path class="tr-bore" d="${d}"/>`, [sh], { bias: 0.02 });
       }
     };
@@ -579,11 +581,17 @@ function interior(nm, xa, b) {
   // el resorte: la mitad de atrás de cada vuelta, como un tubo, y la sección del alambre en el plano del corte
   const RS = AC.resorte, za = AC.s0 + AC.tapa + RS.rw, zb = p0 - RS.rw, nv = RS.vueltas;
   const hel = (t) => [xa + RS.rm * Math.cos(t), FV.y + RS.rm * Math.sin(t), b + za + ((zb - za) * t) / (TAU * nv)];
+  // cada media vuelta de atrás, como un alambre: el borde, el cuerpo y el brillo (trazos); se registra el tubo
+  const wpx = 2 * RS.rw * KS;
   for (let q = 0; q < nv; q++) {
     const t0 = TAU * q + PI, t1 = Math.min(TAU * q + TAU, TAU * nv);
     if (t1 <= t0 + 1e-6) continue;
-    const pts = Array.from({ length: 21 }, (_, i) => hel(t0 + ((t1 - t0) * i) / 20));
-    tubeItems(`${nm}.resorte${q}`, pts, RS.rw, { owner: own, cls: "tr-spring", maxLength: 60, caps: false, limp: true });
+    const pts = Array.from({ length: 25 }, (_, i) => hel(t0 + ((t1 - t0) * i) / 24));
+    const d = pthO(pts.map(pr));
+    const svg = `<path class="tr-wire-e" style="stroke-width:${r10(wpx + 1.1)}px" d="${d}"/><path class="tr-wire" style="stroke-width:${r10(wpx)}px" d="${d}"/><path class="tr-wire-hi" style="stroke-width:${r10(wpx * 0.32)}px" d="${pthO(pts.slice(2, -2).map((p) => pr(add(p, [0, 0, RS.rw * 0.35]))))}"/>`;
+    // se apoya en sus vueltas de los extremos, que caen en la mitad quitada: el tubo va al orden de pintura, no al apoyo
+    const sh = A.tube(pts, RS.rw, { name: `${nm}.resorte${q}`, owner: own });
+    put(`${nm}.resorte${q}`, pts[12], svg, [sh]);
   }
   // las secciones del alambre: en t = kπ (en el plano y = FV.y)
   for (let q = 0; q <= 2 * nv + 1e-6; q++) {
@@ -649,8 +657,9 @@ function fdv({ cut }) {
     const half = (name, F, s0, s1, opts = {}) => revX(name, [[s0, RI], [s1, RI], [s1, RO], [s0, RO]], { F, owner: own, sectors: BACK, caps: capsCut, cls: "tr-in", ...opts });
     half("entrada-fdv", FinB, CDET[0] - 420, XIN);
     half("adelante", FfwB, XFW0, CDET[0] + 520);
-    half("desvio-linea", Fdd, piso, zDV);
-    half("deteccion-linea", Fdl, MI[1] + 18, zDL);
+    // las líneas que bajan siguen hasta TK-201: en el detalle hacen de apoyo
+    half("desvio-linea", Fdd, piso, zDV, { ground: true });
+    half("deteccion-linea", Fdl, MI[1] + 18, zDL, { ground: true });
   }
   // la mirilla de la línea de detección: dos bridas y el vidrio entre ellas, con cuatro tirantes
   const Fm = { o: [xL, FV.y, 0], a: ZD, u: XD, v: YD };
@@ -695,7 +704,8 @@ function line(name, pts, { r = 2, head = 12, w = 5, cls = "tr-flujo", hcls = "tr
   const keep = sc.slice(0, j + 1);
   const body = keep.map(([x, yy], i) => (i ? "L" : "M") + r10(x) + " " + r10(yy)).join("") + "L" + r10(base[0]) + " " + r10(base[1]);
   const svg = `<path class="${cls}" d="${body}"/><path class="${hcls}" d="M${r10(b[0])} ${r10(b[1])}L${r10(base[0] - uy * w)} ${r10(base[1] + ux * w)}L${r10(base[0] + uy * w)} ${r10(base[1] - ux * w)}Z"/>`;
-  put(name, pts[Math.floor(n / 2)], svg, [A.tube(pts, r), A.ball(pts[n - 1], Math.min(r * 3, (w * 0.8) / KS))]);
+  const tip = pts[n - 1], dir3 = G.unit3(sub(pts[n - 1], pts[n - 2])), hw = head / KS;
+  put(name, pts[Math.floor(n / 2)], svg, [A.tube(pts, Math.max(r, 1.2 / KS)), A.ball(sub(tip, mul(dir3, hw * 0.5)), (w * 1.05) / KS)]);
 }
 const seg = (a, b, n = 12) => Array.from({ length: n + 1 }, (_, i) => G.lerp3(a, b, i / n));
 if (DET) {
@@ -788,6 +798,7 @@ const CSS = `.tr-cut{${flat("#C1C6CB")}}.tr-cut1{${flat("#CACFD3")}}.tr-rubber-c
 .tr-paint{${shades(...PINT)}}.tr-rubber,.tr-hose{${shades(...CAUC)}}.tr-glass{${shades(...VIDR)}}
 .tr-bore{fill:#7D8790;stroke:none}.tr-disp{fill:#2B3036;stroke:#525C64;stroke-width:.6px}
 .tr-jugo{fill:#E8C766;fill-opacity:.5;stroke:none}
+.tr-wire-e{fill:none;stroke:#525C64;stroke-linecap:butt;stroke-linejoin:round}.tr-wire{fill:none;stroke:#D6DADE;stroke-linecap:butt;stroke-linejoin:round}.tr-wire-hi{fill:none;stroke:#F7F8F9;stroke-linecap:round}
 .tr-flujo{fill:none;stroke:#2E5E9E;stroke-width:1.6px;stroke-linecap:round;stroke-linejoin:round}.tr-flecha{fill:#2E5E9E;stroke:none}
 .tr-det-fondo{fill:#FFFFFF;stroke:none}.tr-det-marco{fill:none;stroke:#525C64;stroke-width:1px}
 ${CSS_PERSONA}`;
