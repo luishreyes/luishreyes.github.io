@@ -8,8 +8,9 @@
 //   · la tabla del programa por sesiones de public/classroom/iqya-2031-2027-10/programa.html,
 //     entre <!-- SESIONES_START --> y <!-- SESIONES_END -->;
 //   · los datos del cronograma interactivo, public/classroom/iqya-2031-2027-10/cronograma.html;
-//   · la Presentación del curso (slides/Presentacion_del_Curso/): la línea de tiempo,
-//     entre <!-- CRONOGRAMA_DECK_START --> y <!-- CRONOGRAMA_DECK_END -->, y cada fecha
+//   · la Presentación del curso (slides/Presentacion_del_Curso/), la guía del reto y la de
+//     bitácoras: en la presentación, la línea de tiempo,
+//     entre <!-- CRONOGRAMA_DECK_START --> y <!-- CRONOGRAMA_DECK_END -->, y en los tres, cada fecha
 //     escrita como <span data-crono="clave">, con las claves sesion-N, quiz-N, taller-N,
 //     lab-N, examen-N, bitacora-N y memo-N (data-mayus pone la inicial en mayúscula,
 //     data-anio agrega el año y data-forma="semana" escribe el número de la semana).
@@ -30,6 +31,11 @@ const TS = path.join(RAIZ, 'components/data/classroom/pou-2027-10.ts');
 const PROGRAMA = path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/programa.html');
 const CRONO = path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/cronograma.html');
 const DECK = path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/slides/Presentacion_del_Curso/Presentacion_del_Curso.html');
+// Documentos con fechas escritas como <span data-crono="clave"> (además de la presentación).
+const CON_FECHAS = [
+  path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/reto-aceite-esencial.html'),
+  path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/guias/Guia_Bitacoras_Calculo/Guia_Bitacoras_Calculo.html'),
+];
 const HOY = new Date().toISOString().slice(0, 10);
 
 // ── Las sesiones ────────────────────────────────────────────────
@@ -280,13 +286,14 @@ let deck = readFileSync(DECK, 'utf8');
 deck = empalmar(deck, '<!-- CRONOGRAMA_DECK_START -->', '<!-- CRONOGRAMA_DECK_END -->',
   `\n  <div class="desliza">${svg.join('\n')}</div>\n  ${tabla.join('\n')}\n  `, DECK);
 let fechas = 0;
-deck = deck.replace(/<span data-crono="([^"]+)"([^>]*)>[^<]*<\/span>/g, (_, clave, attrs) => {
+const ponerFechas = (html) => html.replace(/<span data-crono="([^"]+)"([^>]*)>[^<]*<\/span>/g, (_, clave, attrs) => {
   const { texto, semana } = claveCrono(clave);
   let t = /data-forma="semana"/.test(attrs) ? String(semana) : texto + (/data-anio/.test(attrs) ? ' de 2027' : '');
   if (/data-mayus/.test(attrs)) t = t.charAt(0).toUpperCase() + t.slice(1);
   fechas++;
   return `<span data-crono="${clave}"${attrs}>${t}</span>`;
 });
-writeFileSync(DECK, deck);
+writeFileSync(DECK, ponerFechas(deck));
+for (const f of CON_FECHAS) writeFileSync(f, ponerFechas(readFileSync(f, 'utf8')));
 
-console.log(`${SESIONES.length} sesiones · ${datos.meta.quices} quices · ${datos.meta.talleres} talleres · ${datos.meta.laboratorios} laboratorios · ${datos.meta.examenes} exámenes · ${fechas} fechas en la presentación`);
+console.log(`${SESIONES.length} sesiones · ${datos.meta.quices} quices · ${datos.meta.talleres} talleres · ${datos.meta.laboratorios} laboratorios · ${datos.meta.examenes} exámenes · ${fechas} fechas en la presentación y las guías`);

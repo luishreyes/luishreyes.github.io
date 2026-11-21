@@ -53,6 +53,8 @@ const RESUMENES: Record<string, string> = {
     'El programa completo de IQYA-2031 para 2027-10: horarios y equipo, descripción y metodología (PO-PBL y aula invertida), el reto de la planta de aceite esencial, resultados ABET, los ocho módulos, el programa clase por clase, la distribución de la nota, cómo funcionan quices, exámenes, talleres y laboratorios, las fechas clave, la escala AIAS de uso de IA y las políticas del curso.',
   'cronograma-interactivo':
     'El calendario de 2027-10, semana por semana. Arriba, qué sigue: el próximo quiz, taller, laboratorio, examen y entrega, con cuenta regresiva. Abajo, las 16 semanas con quices, talleres, laboratorios, exámenes, entregas de bitácora, coevaluaciones y retroalimentaciones. Se filtra por tipo y resalta la semana actual.',
+  'bitacoras-de-calculo':
+    'Qué va en cada una de las cuatro bitácoras de la planta de aceite esencial y cómo se califican: materia prima y diagrama de bloques; PFD, bombas, válvulas y agitación; arrastre de vapor con los datos del piloto y del Laboratorio 1, condensación, winterización y servicios; y la rectificación por lotes al vacío con el costo de la planta. Con la estructura de una bitácora, el formato, el manejo de fuentes, los errores comunes y las fechas de entrega.',
   'taller-02-analisis-granulometrico':
     'Se resuelve en un cuaderno de Google Colab, que se abre desde la página con un clic. Tres casos de la planta: la cáscara que sale del desgarrador, que se juzga contra tres criterios del extractor; dos equipos de desgarrado que compiten por preparar la carga y donde ninguno domina al otro; y una carta de control del D50 con las muestras de una semana. Incluye el ajuste de los tres modelos clásicos de distribución, log-normal, Rosin-Rammler y Gates-Gaudin-Schuhmann, y cinco preguntas de análisis con sustento bibliográfico en formato IEEE. En parejas, con pareja distinta a la del Taller 1.',
 };
@@ -455,7 +457,7 @@ export const pou202710Course: Course = {
             slug: 'reto-aceite-esencial',
             title: 'Guía del reto: hervir a 98 lo que hierve a 176',
             summary:
-              'La guía del proyecto semestral: diseñar y dimensionar una planta que extrae aceite esencial de la cáscara de cítricos que deja una juguera. Las ocho etapas a integrar, cómo elegir la materia prima, por qué el extractor pide cincuenta veces más vapor que el equilibrio, qué validar en ASPEN Plus y dónde no confiar, los entregables y la rúbrica de cada bitácora.',
+              'La guía del proyecto semestral: diseñar y dimensionar una planta que extrae aceite esencial de la cáscara de cítricos que deja una juguera. Las ocho etapas a integrar, cómo elegir la materia prima, por qué el extractor pide cincuenta veces más vapor que el equilibrio, qué validar en ASPEN Plus y dónde no confiar, las bitácoras y los memorandos de laboratorio con sus fechas, y la rúbrica.',
             date: '2026-10-17',
             tags: ['proyecto', 'reto', 'aceite esencial', 'guía'],
             href: '/classroom/iqya-2031-2027-10/reto-aceite-esencial.html',
