@@ -379,6 +379,7 @@ Instalado en `.claude/skills/design-taste-frontend/` desde [Leonxlnx/taste-skill
 - Deploy automático al pushear a `main`
 - Para features grandes, usar rama y mergear cuando esté listo
 - Cuando se trabaja desde un worktree de `.claude/worktrees/*`, pushear con `git push origin HEAD:main` (fast-forward)
+- **Al terminar un encargo, a `main` y el enlace para verlo** (pedido del profesor, 21 nov 2026: «Al final a main y páseme el link para ver. Esa será la forma siempre»): se sube la rama de trabajo, se lleva a `main` por avance rápido, se espera el deploy y se le da al profesor la dirección en vivo de lo que cambió (`https://portfolio.luishreyes.com/...`).
 
 ### Materiales fuente (carpeta `temp/`)
 - Los PDFs originales de cada clase viven en `temp/NN-Nombre-del-tema.pdf` (ej. `temp/06-Reduccion-de-Tamano.pdf`)
