@@ -2,8 +2,10 @@
 
 Copia del motor de actividades del libro de operaciones unitarias (`libro/figuras/comun/` del repositorio
 privado del libro): `actividades.js` (animaciones por pasos, preguntas y retos), `actividades.css`,
-`dibujo.js` (texto con subíndices, ejes, flechas, trazos) y `paleta.js` (los colores del libro). No se
-editan aquí: cuando cambian en el libro se vuelven a copiar.
+`dibujo.js` (texto con subíndices, ejes, flechas, trazos), `paleta.js` (los colores del libro) y `pruebe.js`
+(las piezas de los recuadros «Pruebe» que se arman sobre un diagrama, como «Lea un código» del capítulo 2,
+que usa la presentación de P&ID de 2027-10). No se editan aquí: cuando cambian en el libro se vuelven a
+copiar.
 
 En el curso se usan en lugar de los videos de Manim (pedido del profesor, 21 nov 2026: «Mejor crearlas
 en HTML que los estudiantes vayan dando clic. Como el libro en español. Nunca manim»). Una página carga,

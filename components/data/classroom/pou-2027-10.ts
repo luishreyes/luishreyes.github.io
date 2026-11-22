@@ -133,7 +133,7 @@ const DESCRIPCIONES: Record<string, string> = {
   'diagramas-ingenieria':
     'El diagrama de bloques y el PFD, con la planta de benceno del capítulo 2 del libro y sus figuras: los tres diagramas, los símbolos de la ISO 10628-2, los códigos de los equipos, las corrientes, la tabla de corrientes y sus tres comprobaciones, el balance con cierre de ±1 %, los servicios, los lazos de control, las plantas por lotes, las reglas del dibujo y el PFD de su planta en las bitácoras.',
   'pid-instrumentacion':
-    'Simbología ANSI/ISA-5.1-2024 para instrumentación, lazos de control, seguridad (PSV) y cómo una bomba del PFD se vuelve su P&ID, con la unidad de hidrodesulfuración del Manual de diagramas como ejemplo.',
+    'El P&ID del separador de alta V-102 de la planta de benceno, con las figuras y las animaciones del capítulo 2 del libro: la identificación de las líneas y su clase, la etiqueta de un instrumento y las letras de la ISA-5.1, globos, válvulas y líneas, un lazo del PFD al P&ID, la presión de ajuste de la PSV, un estudio de riesgos, los típicos, la lista de revisión y lo que agrega una planta de alimentos. Con el recuadro interactivo para leer los códigos del plano.',
   'trabajo-en-equipo':
     'La sesión del quiz de práctica: qué distingue a un equipo que funciona, cuánto pesa el equipo en la nota, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase y sube a Bloque Neón.',
 };
