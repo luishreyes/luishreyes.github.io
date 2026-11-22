@@ -43,6 +43,7 @@ const CON_FECHAS = [
   path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/slides/Arrastre_de_Vapor/Presentacion_Arrastre_de_Vapor.html'),
   path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/slides/Bombas/Presentacion_Bombas.html'),
   path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/slides/Valvulas_Control_Vacio/Presentacion_Valvulas_Control_Vacio.html'),
+  path.join(RAIZ, 'public/classroom/iqya-2031-2027-10/slides/Agitacion_y_Mezclado/Presentacion_Agitacion_y_Mezclado.html'),
 ];
 const HOY = new Date().toISOString().slice(0, 10);
 

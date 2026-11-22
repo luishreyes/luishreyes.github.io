@@ -34,6 +34,7 @@ const PRESENTACIONES_PROPIAS = new Set([
   'diagramas-ingenieria', 'pid-instrumentacion',
   'propiedades-solidos-particulados', 'reduccion-de-tamano',
   'arrastre-de-vapor', 'bombas', 'valvulas-control-vacio',
+  'agitacion-y-mezclado',
 ]);
 const LECTURAS_PROPIAS = new Set([
   'lectura-01-operaciones-unitarias',
@@ -141,6 +142,8 @@ const LECTURAS_RETIRADAS = new Set([
 const PRESENTACIONES_RETIRADAS = new Set([
   'intercambiadores-i', 'intercambiadores-ii',
   'equilibrio-de-fases', 'destilacion-flash', 'destilacion-continua',
+  // La de agitación y mezclado de 2027-10 junta en una las dos de pectina.
+  'mezclado-de-fluidos',
 ]);
 // El Explorador del ecofiltro es una actividad de flujo de fluidos. Siguen en
 // la página pública de estrategias de docencia, que junta los de todos los
@@ -150,7 +153,7 @@ const SIMULADORES_RETIRADOS = new Set([
 ]);
 // La semana de 2027-10 de lo heredado que se queda, según su cronograma.
 const SEMANA_2027: Record<string, number> = {
-  agitacion: 7, 'mezclado-de-fluidos': 7, filtracion: 10,
+  filtracion: 10,
   'destilacion-diferencial': 13, 'diseno-de-platos': 15,
   'eficiencias-en-destilacion': 15, 'comunicacion-visual': 16,
   'explorador-agitacion': 7, 'explorador-intercambiadores': 9,
@@ -178,6 +181,8 @@ const DESCRIPCIONES: Record<string, string> = {
     'Cómo se escoge una bomba, con la línea de agua de servicios del capítulo 11 del libro y sus figuras: las dos familias y lo que fija cada una, las ocho por dentro, la centrífuga y sus impulsores, la velocidad específica, la carta del fabricante y la ventana de operación, el punto de operación, la válvula, el variador y el recorte con las leyes de afinidad y lo que cuesta cada manera, la serie y el paralelo con sus riesgos, la corrección por viscosidad, la válvula de alivio, las reciprocantes y las rotatorias, y la selección con su hoja de datos. Con diez animaciones del capítulo.',
   'valvulas-control-vacio':
     'Qué válvula sirve para cada servicio y cómo se dimensiona la válvula de control de una línea con bomba, con la línea de agua del capítulo 13 del libro y la columna de rectificación del 12: las válvulas manuales por dentro y cuánto pierde cada una, la retención, la válvula de control con su posición de falla, el Cv, las características inherente e instalada y la cavitación; la válvula del caso con su carrera, su ganancia y su instalación, y los sistemas de vacío, con la carga de aire y limoneno y la elección para la columna. Con cinco animaciones y los cortes que se mueven de los capítulos.',
+  'agitacion-y-mezclado':
+    'Cómo se arma un tanque agitado y cómo se escala, con el reactor de extracción de los capítulos 14 y 15 del libro y sus figuras: las proporciones, los bafles y la altura que mueve cada impulsor, los siete impulsores en corte y en isométrico, el número de potencia, el motor, el caudal que bombea un impulsor y la escala de Kolmogorov, la suspensión de lo que se hunde y el arrastre de lo que flota, el tamaño de las gotas, el tiempo de mezcla y las reglas de escalado, con diez animaciones de los dos capítulos; cierra con el tanque de lavado de la Bitácora 2 y el Laboratorio 2.',
   'trabajo-en-equipo':
     'La sesión del quiz de práctica: qué distingue a un equipo que funciona, cuánto pesa el equipo en la nota, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase y sube a Bloque Neón.',
 };
@@ -190,6 +195,14 @@ const REEMPLAZOS: Record<string, Presentation> = {
     description: DESCRIPCIONES['arrastre-de-vapor'],
     sessionNumber: 7,
     file: 'Arrastre_de_Vapor/Presentacion_Arrastre_de_Vapor.html',
+  },
+  agitacion: {
+    id: 'agitacion-y-mezclado',
+    week: 7,
+    title: 'Agitación y mezclado',
+    description: DESCRIPCIONES['agitacion-y-mezclado'],
+    sessionNumber: 13,
+    file: 'Agitacion_y_Mezclado/Presentacion_Agitacion_y_Mezclado.html',
   },
   'bombas-centrifugas': {
     id: 'bombas',
