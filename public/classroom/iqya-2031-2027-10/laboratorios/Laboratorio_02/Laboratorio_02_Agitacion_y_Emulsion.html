@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratorio 2 · Agitación y emulsión · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 56ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; line-height: 1.7; }
+  .doc-body li { margin-bottom: 7px; }
+  .doc-body ul ul, .doc-body ol ul { font-size: 16px; margin: 6px 0 4px; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+  a.platform-link { color: var(--teal); font-weight: 600; }
+  a.platform-link::after { content: " ↗"; font-size: .82em; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: .88em; background: var(--gris-5); color: var(--gris-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---- Logo de la herramienta ---- */
+  .tool-logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px;
+    padding: 14px 22px; margin: 4px 0 22px; min-height: 64px;
+  }
+  .tool-logo img { height: 40px; width: auto; max-width: 280px; object-fit: contain; display: block; }
+
+  /* ---- Índice / sumario por partes ---- */
+  .toc-intro { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 30px 0 14px; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 8px; }
+  .part-card {
+    background: var(--papel); border-radius: 8px; padding: 24px 26px;
+    border-top: 5px solid var(--verde);
+  }
+  .part-card .pt-k { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .part-card h3 { font-size: 20px; margin: 5px 0 16px; letter-spacing: -.005em; }
+  .part-card ol { list-style: none; margin: 0; padding: 0; counter-reset: p; display: grid; gap: 9px; font-size: 16px; }
+  .part-card li { counter-increment: p; margin: 0; }
+  .part-card a {
+    display: flex; align-items: baseline; gap: 13px; text-decoration: none; cursor: pointer;
+    color: var(--gris-1); font-size: 16px; font-weight: 600; transition: color .18s ease;
+  }
+  .part-card a::before { content: counter(p, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 13px; min-width: 24px; }
+  .part-card a:hover { color: var(--verde-osc); }
+  .part-card a.is-active { color: var(--verde-osc); font-weight: 700; }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block code { font-size: 13px; word-break: break-word; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+  .block--bad { border-top-color: #DC2626; }
+  .block--bad b { color: #991B1B; }
+  .block--good { border-top-color: var(--verde); }
+  .block--good b { color: var(--verde-osc); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul { font-size: 15.5px; margin: 6px 0 0; padding-left: 20px; color: var(--gris-1); line-height: 1.5; }
+  .callout ul li { margin-bottom: 6px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; font-size: 15px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3, .parts { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .parts { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .parts { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1200px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 8px; padding: 0 4px; }
+  .sn-label.sn-label2 { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gris-4); }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item:target { color: var(--verde-osc); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+  .pts { display: inline-block; margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-osc); background: var(--verde-claro); border-radius: 4px; padding: 3px 9px; vertical-align: middle; }
+
+  /* Acceso al cuaderno */
+  .abrir { display: grid; grid-template-columns: 1fr auto; gap: 22px; align-items: center; border: 2px solid var(--verde); background: var(--verde-claro); border-radius: 8px; padding: 24px 28px; margin: 26px 0 8px; }
+  .abrir h3 { margin: 0 0 6px; font-size: 20px; }
+  .abrir p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--gris-2); }
+  .abrir .botones { display: flex; flex-direction: column; gap: 9px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--tipo); font-size: 13.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-decoration: none !important; border-radius: 5px; padding: 12px 22px; white-space: nowrap; }
+  .btn--primario { background: var(--verde); color: #fff; }
+  .btn--primario:hover { background: var(--verde-osc); }
+  .btn--secundario { border: 2px solid var(--gris-4); color: var(--gris-1); background: var(--blanco); }
+  .btn--secundario:hover { border-color: var(--gris-2); }
+  @media (max-width: 700px) { .abrir { grid-template-columns: 1fr; } }
+  @media print { .abrir { break-inside: avoid; } .btn { border: 1px solid var(--gris-4); } }
+  /* Impresión como la del Taller 1: las secciones pueden partirse entre hojas. */
+  @media print {
+    .side-nav { display: none !important; }
+    .outer-layout { display: block; max-width: none; margin: 0; padding: 0; }
+    .doc-head { padding: 28px 32px 26px; }
+    .doc-body { padding: 0 32px 24px; }
+    .doc-body section { padding-top: 26px; break-inside: auto; }
+    .eyebrow, h2.sec, h3.sub { break-after: avoid; }
+    .doc-body li, .callout, .tbl-wrap { break-inside: avoid; }
+  }
+</style>
+<link rel="stylesheet" href="assets/lectura-curso.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add('incrustado');</script>
+</head>
+<body>
+<header class="barra"><span class="marca">Uniandes · IQYA-2031</span><span class="cual">Laboratorio 2 · Agitación y emulsión</span></header>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">Contenido</p>
+  <a class="sn-item" href="#objetivos"><span class="sn-num">01</span>Objetivos</a>
+  <a class="sn-item" href="#antes"><span class="sn-num">02</span>Antes de la práctica</a>
+  <a class="sn-item" href="#montaje"><span class="sn-num">03</span>El montaje</a>
+  <a class="sn-item" href="#emulsion"><span class="sn-num">04</span>La emulsión</a>
+  <a class="sn-item" href="#procedimiento"><span class="sn-num">05</span>Procedimiento</a>
+  <a class="sn-item" href="#calculos"><span class="sn-num">06</span>Cálculos</a>
+  <a class="sn-item" href="#memorando"><span class="sn-num">07</span>El memorando</a>
+  <a class="sn-item" href="#evaluacion"><span class="sn-num">08</span>Evaluación</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Laboratorio 2 · Proyecto de Operaciones Unitarias</div>
+    <h1>Agitación y emulsión</h1>
+    <p class="subtitle">Cuánta potencia toma cada impulsor y de qué tamaño quedan las gotas de aceite a cada velocidad, en un vaso de 500 mL con impulsores impresos y el Mastersizer. Con eso se escoge la regla para escalar un agitador de la planta.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2027-10</div>
+      <div><b>Modalidad</b>En equipo, con prelaboratorio y pregunta oral individuales</div>
+      <div><b>Sesión</b>Jueves 11 de marzo, todos los equipos: 80 minutos</div>
+      <div><b>Entrega</b>Memorando, domingo 21 de marzo, 11:59 p. m., por <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">Bloque Neón</a></div>
+      <div><b>Nota</b>20 % el prelaboratorio, 20 % el desempeño y la pregunta oral, 60 % el memorando</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">Un tanque agitado hace dos cosas que se pagan: gasta potencia y deja las gotas, las burbujas o los sólidos de un tamaño. En la planta del reto eso importa dos veces. El tanque de lavado de la Bitácora 2 lleva un agitador que hay que dimensionar, y el tamaño de las gotas de aceite decide qué tan rápido suben en el florentino. En este laboratorio cada equipo mide la potencia de un impulsor y el diámetro de Sauter de una emulsión diluida a cuatro velocidades, y el curso junta los datos de los dos impulsores. Con ellos se prueba la ley del tamaño de gota de la sección 14.8 del libro y se decide qué hay que conservar al pasar del vaso al tanque.</p>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>Seguridad</b>
+          <p>Bata, gafas y zapato cerrado durante toda la sesión; sin ellos no se entra. El eje gira a cientos de revoluciones por minuto: pelo recogido, nada colgando y las manos lejos del eje. El agitador se enciende con el impulsor ya sumergido y se apaga antes de subirlo o de tomar una muestra cerca de él. Un derrame de aceite mineral deja el piso resbaloso: se limpia de inmediato.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Sin prelaboratorio no se entra</b>
+          <p>El prelaboratorio es individual, en Bloque Neón, y se cierra cuando empieza la sesión. Quien no lo presentó no entra a la práctica.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="objetivos">
+      <div class="eyebrow">Para qué</div>
+      <h2 class="sec"><span class="secnum">1.</span> Objetivos</h2>
+      <ol>
+        <li>Medir el par de su impulsor a tres velocidades y calcular su potencia y su número de potencia, para compararlo con el del libro.</li>
+        <li>Medir el diámetro de Sauter de una emulsión diluida de aceite mineral en agua con Tween 80 a cuatro velocidades.</li>
+        <li>Probar si el diámetro de las gotas sigue al número de Weber como dice la sección 14.8 del libro, y comparar los dos impulsores con la misma potencia por volumen.</li>
+        <li>Decidir con esos datos qué regla de escalado conserva el tamaño de las gotas en un tanque de la planta.</li>
+      </ol>
+    </section>
+
+    <section id="antes">
+      <div class="eyebrow">Preparación</div>
+      <h2 class="sec"><span class="secnum">2.</span> Antes de la práctica</h2>
+      <ul>
+        <li>Lea en el libro, en <a class="platform-link" href="https://libro.luishreyes.com/agitacion.html" target="_blank" rel="noopener">libro.luishreyes.com</a>, las secciones <a href="https://libro.luishreyes.com/agitacion.html#sec-agi-tanque" target="_blank" rel="noopener">14.1</a> (el tanque), <a href="https://libro.luishreyes.com/agitacion.html#sec-agi-impulsores" target="_blank" rel="noopener">14.2</a> (los impulsores), <a href="https://libro.luishreyes.com/agitacion.html#sec-agi-potencia" target="_blank" rel="noopener">14.3</a> (la potencia), <a href="https://libro.luishreyes.com/agitacion.html#sec-agi-bombeo" target="_blank" rel="noopener">14.4</a> (el caudal que bombea y los remolinos más pequeños) y <a href="https://libro.luishreyes.com/agitacion.html#sec-agi-gotas" target="_blank" rel="noopener">14.8</a> (gotas), y la <a href="https://libro.luishreyes.com/mezclado-y-escalado-de-tanques-agitados.html#sec-mez-escalar" target="_blank" rel="noopener">15.6</a> (escalar).</li>
+        <li>Presente el prelaboratorio en Bloque Neón. Pregunta por el fundamento de la práctica y por los cálculos que va a hacer con sus datos.</li>
+        <li>Repártanse el trabajo antes de llegar: quién opera el agitador y lee el par, quién lleva el tiempo, quién toma y rotula las muestras y quién anota. Todos responden la pregunta oral sobre todo el montaje.</li>
+        <li>Traiga calculadora y la <a href="Laboratorio_02_Hoja_de_datos.pdf" target="_blank" rel="noopener">hoja de datos</a> impresa, una por equipo. El asistente la firma al terminar.</li>
+      </ul>
+    </section>
+
+    <section id="montaje">
+      <div class="eyebrow">El equipo</div>
+      <h2 class="sec"><span class="secnum">3.</span> El montaje</h2>
+      <p>Cada equipo tiene un agitador de banco que muestra la velocidad y el par, un vaso de vidrio de 500 mL con una jaula de cuatro bafles impresa en 3D y uno de dos impulsores, también impresos: una turbina Rushton de seis palas o una turbina de cuatro palas inclinadas a 45°. La mitad de los equipos trabaja con cada uno, y el asistente publica en Bloque Neón los datos de todos, para que cada equipo compare su impulsor con el otro.</p>
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Medida</th><th>Regla</th><th>Con el vaso de 85 mm</th></tr></thead>
+        <tbody>
+          <tr><td>Diámetro del vaso, T</td><td>Se mide con el calibrador y se anota</td><td>85 mm</td></tr>
+          <tr><td>Altura del líquido, H</td><td>H = T, hasta la marca del vaso</td><td>85 mm, unos 480 mL</td></tr>
+          <tr><td>Diámetro del impulsor, D</td><td>D = 0,4 T</td><td>34 mm</td></tr>
+          <tr><td>Altura del impulsor sobre el fondo, C</td><td>C = T/3</td><td>28 mm</td></tr>
+          <tr><td>Ancho de los bafles</td><td>T/10, cuatro bafles</td><td>8,5 mm</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Son las proporciones de la sección 14.1 del libro, con una excepción: el impulsor mide 0,4 T y no T/3. En un vaso tan pequeño el par es de décimas de newton por centímetro, y como crece con D⁵, un impulsor un poco más grande lo deja dentro de lo que el agitador alcanza a leer. El monitor deja montados el vaso, la jaula y el impulsor a su altura.</p>
+    </section>
+
+    <section id="emulsion">
+      <div class="eyebrow">El sistema</div>
+      <h2 class="sec"><span class="secnum">4.</span> La emulsión</h2>
+      <p>La fase continua es agua destilada con Tween 80 al 0,1 % en masa, que el monitor prepara antes de la sesión; es muchas veces su concentración micelar crítica. La fase dispersa es aceite mineral liviano, el 1 % del volumen del líquido: unos 4,8 mL en el vaso de 85 mm. Con tan poco aceite y el tensoactivo por encima de la concentración micelar crítica, las gotas casi no se juntan, y su tamaño lo fija la rotura en la turbulencia, que es el caso de la ecuación de la sección 14.8 (sistemas que no coalescen, fase dispersa diluida).</p>
+      <p>Esa ecuación necesita la tensión interfacial entre el aceite y el agua con Tween 80. No hay una medición publicada para el aceite mineral con Tween 80; la más cercana es de 6,1 mN/m, medida con un aceite de triglicéridos de cadena media y Tween 80 en su concentración micelar crítica, a 20 °C (<a href="https://doi.org/10.1021/acs.langmuir.4c02210" target="_blank" rel="noopener">Risse y Drusch, 2024</a>). Úsela como valor de trabajo: σ = 6 mN/m. Contra agua pura, la del aceite mineral es varias veces más alta, y por eso el tensoactivo cambia tanto el tamaño de las gotas.</p>
+    </section>
+
+    <section id="procedimiento">
+      <div class="eyebrow">En la sesión</div>
+      <h2 class="sec"><span class="secnum">5.</span> Procedimiento</h2>
+      <h3 class="sub">Parte A · La potencia, unos 15 minutos</h3>
+      <ol>
+        <li>Con el impulsor montado y el vaso todavía vacío, lea el par a 800, 1000 y 1200 r/min, después de 30 s en cada una. Es el par en vacío, el del rodamiento y el eje, y se resta.</li>
+        <li>Llene el vaso hasta la marca con la solución de Tween 80, sin el aceite, y lea el par a las mismas tres velocidades, después de 60 s en cada una. Anote la temperatura del líquido. Si aparece un vórtice que llega al impulsor o entra aire, anótelo y no suba más la velocidad.</li>
+      </ol>
+      <h3 class="sub">Parte B · Las gotas, unos 50 minutos</h3>
+      <ol start="3">
+        <li>Ponga el agitador a 400 r/min y agregue el aceite con la jeringa, cerca del impulsor. Ese es el tiempo cero.</li>
+        <li>Agite 12 minutos en cada velocidad, en este orden y sin parar entre una y otra: 400, 550, 700 y 850 r/min. Anote el par en cada una. Las velocidades van de menor a mayor porque una gota que ya se rompió no se vuelve a juntar: cada tramo parte de las gotas del anterior y llega rápido a su nuevo tamaño.</li>
+        <li>Al final de cada tramo, sin parar el agitador, tome 10 mL con la pipeta entre dos bafles, a media altura, y póngalos en un vial rotulado con el equipo, el impulsor, la velocidad y la hora.</li>
+        <li>Anote lo que vea en cada velocidad: aceite en la superficie, burbujas, espuma, el vórtice.</li>
+        <li>Apague el agitador, entregue los cuatro viales al asistente y revisen juntos la hoja de datos; él la firma. Tómele una foto. El técnico mide los viales en el Mastersizer después de la sesión, y el asistente publica en Bloque Neón el diámetro de Sauter y la distribución de cada muestra de todos los equipos.</li>
+        <li>Limpieza: el líquido va al recipiente de residuos que indique el monitor, y el vaso, la jaula y el impulsor quedan enjuagados con agua y jabón.</li>
+      </ol>
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>La pregunta oral</b>
+          <p>Mientras el agitador corre, el profesor o el asistente le hace a cada integrante una pregunta sobre lo que pasa en su vaso. Se responde solo y vale, con el desempeño en la práctica, el 20 % de la nota del laboratorio.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="calculos">
+      <div class="eyebrow">Con los datos</div>
+      <h2 class="sec"><span class="secnum">6.</span> Cálculos</h2>
+      <p>La <a href="Laboratorio_02_Plantilla.xlsx" download>plantilla de Excel</a> trae estos cálculos armados: usted copia ahí los datos de la hoja firmada y los resultados del Mastersizer.</p>
+      <ul>
+        <li>El par neto es el par con líquido menos el par en vacío a la misma velocidad. La potencia que el impulsor le entrega al líquido es P = 2πNτ, con N en revoluciones por segundo y τ en N·m. Con ella salen el número de potencia, N<sub>P</sub> = P/(ρN³D⁵), y el número de Reynolds del impulsor, Re = ρND²/μ (sección 14.3). Compare su N<sub>P</sub> con el de la tabla del libro para su impulsor.</li>
+        <li>La potencia por volumen de cada tramo de la Parte B sale del par que leyó en ese tramo, o de su N<sub>P</sub> si el par era muy pequeño para leerlo bien.</li>
+        <li>Con el diámetro de Sauter de cada muestra, calcule d<sub>32</sub>/D y el número de Weber, We = ρ<sub>c</sub>N²D³/σ, y grafíquelos en escala logarítmica. Ajuste una recta: su pendiente es el exponente del Weber, y la ecuación de Chen, Middleman y Doulah de la sección 14.8 predice −0,6. Compare también la constante.</li>
+        <li>Compare los dos impulsores con la misma potencia por volumen: cuál deja gotas más pequeñas con la misma energía.</li>
+        <li>La ecuación vale para gotas más grandes que la escala de Kolmogorov, η = (ν³/ε)<sup>1/4</sup>, con ε = P/(ρV) (sección 14.4). Calcule η en cada tramo y diga si sus gotas están dentro de ese intervalo.</li>
+        <li>Con el exponente del Weber, calcule cómo tiene que cambiar la velocidad con el diámetro del impulsor para dejar las gotas del mismo tamaño, y compárelo con las reglas de escalado de la sección 15.6.</li>
+      </ul>
+      <p>El valor de σ es incierto. El exponente del Weber no depende de él, porque σ divide a todos los puntos por igual; la constante sí. El memorando tiene que decir qué conclusiones se sostienen con esa incertidumbre y cuáles no.</p>
+    </section>
+
+    <section id="memorando">
+      <div class="eyebrow">La entrega</div>
+      <h2 class="sec"><span class="secnum">7.</span> El memorando</h2>
+      <p>Un memorando técnico de <b>dos páginas</b>, dirigido al jefe de proceso de la planta, que responde qué regla usar para escalar un agitador que dispersa gotas. Lleva, en este orden:</p>
+      <ol>
+        <li>El encabezado, con para, de (los integrantes y su equipo), fecha y asunto.</li>
+        <li>El propósito y el resultado principal, en un párrafo que se pueda leer solo.</li>
+        <li>El método, en un párrafo: el montaje, la emulsión, qué se midió y cómo.</li>
+        <li>Los resultados: una figura del número de potencia contra el Reynolds de los dos impulsores, otra de d<sub>32</sub>/D contra el Weber con la ecuación del libro, y una tabla con los valores.</li>
+        <li>El análisis: cómo se comparan el número de potencia y el exponente medidos con los del libro, qué impulsor dispersa mejor con la misma potencia, si las gotas estaban dentro del intervalo de la ecuación y cuánto valen los datos.</li>
+        <li>La recomendación: qué regla de escalado conserva el tamaño de las gotas, con la velocidad y la potencia que daría en un tanque de la planta.</li>
+      </ol>
+      <p>Anexos, que no cuentan en las dos páginas: la foto de la hoja de datos firmada y la plantilla de Excel con sus cálculos. Un memorando que no parta de la hoja firmada y de los resultados del Mastersizer que publica el asistente no se califica. Se sube a Bloque Neón el domingo 21 de marzo a las 11:59 p. m., uno por equipo, y pierde una unidad de la nota por cada 15 minutos de demora.</p>
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Nivel de uso de IA generativa: 3</b>
+          <p>Se puede usar la IA para buscar, leer y resumir fuentes, verificando cada referencia en Google Scholar, Web of Science o Scopus y declarando el uso al final del memorando. Los cálculos, el análisis y el texto son del equipo.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="evaluacion">
+      <div class="eyebrow">Cómo se califica</div>
+      <h2 class="sec"><span class="secnum">8.</span> Evaluación</h2>
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Parte</th><th>Quién</th><th>Peso</th></tr></thead>
+        <tbody>
+          <tr><td>Prelaboratorio en Bloque Neón</td><td>Individual</td><td>20 %</td></tr>
+          <tr><td>Desempeño en la práctica y pregunta oral</td><td>Individual</td><td>20 %</td></tr>
+          <tr><td>Memorando técnico</td><td>Equipo</td><td>60 %</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3 class="sub">Rúbrica del memorando</h3>
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Criterio</th><th>Qué se espera</th><th>Puntos</th></tr></thead>
+        <tbody>
+          <tr><td>Datos y método</td><td>Los datos salen de la hoja firmada y de los resultados publicados; el método se puede repetir con lo que dice el párrafo.</td><td>15</td></tr>
+          <tr><td>Potencia</td><td>Par neto, potencia, número de potencia y Reynolds bien calculados y comparados con el libro, con la diferencia explicada.</td><td>20</td></tr>
+          <tr><td>Gotas</td><td>d<sub>32</sub>/D contra el Weber bien graficado y ajustado, con el exponente y la constante comparados con la ecuación del libro.</td><td>20</td></tr>
+          <tr><td>Impulsores y límites</td><td>Los dos impulsores comparados con la misma potencia por volumen, y la escala de Kolmogorov y la incertidumbre de σ discutidas.</td><td>15</td></tr>
+          <tr><td>Recomendación</td><td>La regla de escalado que sale de los datos, justificada, con la velocidad y la potencia en un tanque de la planta.</td><td>20</td></tr>
+          <tr><td>Redacción y formato</td><td>Dos páginas, que se leen sin el resto; voz técnica, cifras con sus unidades y declaración del uso de IA.</td><td>10</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Referencia de la tensión interfacial: K. Risse y S. Drusch, «(Non)linear interfacial rheology of Tween, Brij and Span stabilized oil–water interfaces: impact of the molecular structure of the surfactant on the interfacial layer stability», <i>Langmuir</i>, vol. 40, n.º 34, pp. 18283–18296, 2024, <a href="https://doi.org/10.1021/acs.langmuir.4c02210" target="_blank" rel="noopener">doi:10.1021/acs.langmuir.4c02210</a>.</p>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2027-10</span>
+      <span>Laboratorio 2 · Universidad de los Andes</span>
+    </div>
+  </div>
+</article>
+</div>
+
+<script>
+/* ── Barra de progreso ─────────────────────────────────────────────── */
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ── Índice: desplazamiento suave y sección activa (scroll-spy) ────── */
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.side-nav .sn-item'));
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      e.preventDefault();
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+      if (history.replaceState) history.replaceState(null, '', '#' + el.id);
+    });
+  });
+  var sects = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); })
+                   .filter(Boolean);
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + Math.min(220, window.innerHeight * 0.3);
+    var cur = null;
+    for (var i = 0; i < sects.length; i++) {
+      if (sects[i].getBoundingClientRect().top + window.scrollY <= y) cur = sects[i].id;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) cur = sects[sects.length - 1].id;
+    links.forEach(function (a) {
+      var on = cur !== null && a.getAttribute('href') === '#' + cur;
+      a.classList.toggle('is-active', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+</body>
+</html>
