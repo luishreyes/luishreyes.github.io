@@ -1,4 +1,4 @@
-import type { Course, Reading } from '../classroom';
+import type { Course, Presentation, Reading } from '../classroom';
 import { pou202620Course } from './pou-2026-20';
 
 // ── POU · semestre 2027-10 ──────────────────────────────────────
@@ -33,7 +33,7 @@ const PRESENTACIONES_PROPIAS = new Set([
   'presentacion-del-curso', 'trabajo-en-equipo',
   'diagramas-ingenieria', 'pid-instrumentacion',
   'propiedades-solidos-particulados', 'reduccion-de-tamano',
-  'arrastre-de-vapor',
+  'arrastre-de-vapor', 'bombas',
 ]);
 const LECTURAS_PROPIAS = new Set([
   'lectura-01-operaciones-unitarias',
@@ -141,8 +141,29 @@ const DESCRIPCIONES: Record<string, string> = {
     'Cómo se rompe un sólido y cuánta energía pide, con la planta de carbonato del capítulo 7 del libro y sus figuras: los mecanismos de rotura, las leyes de Rittinger, Kick y Bond con el índice de trabajo, las tres etapas, las máquinas por dentro, el molino de bolas, el circuito cerrado, el hierro y el calor que deja el molino, el corte de los alimentos, la pimienta y el calor, los fibrosos y la cáscara de naranja húmeda. Con seis animaciones del capítulo.',
   'arrastre-de-vapor':
     'Por qué el aceite de la cáscara sale con el vapor por debajo de 100 °C y por qué sale tan despacio, con el área 200 del capítulo 32 del libro y sus figuras: las tres formas del arrastre, el Clevenger del laboratorio, el equilibrio de dos líquidos inmiscibles y de un aceite de varios componentes, la hidrodifusión y la brecha con el equilibrio, los dos modelos de rendimiento y su ajuste, los criterios de corte del lote, el extractor por dentro, el escalado, el tiempo muerto, la batería de cuatro extractores, su P&ID y el balance del área. Con cuatro animaciones del capítulo.',
+  'bombas':
+    'Cómo se escoge una bomba, con la línea de agua de servicios del capítulo 11 del libro y sus figuras: las dos familias y lo que fija cada una, las ocho por dentro, la centrífuga y sus impulsores, la velocidad específica, la carta del fabricante y la ventana de operación, el punto de operación, la válvula, el variador y el recorte con las leyes de afinidad y lo que cuesta cada manera, la serie y el paralelo con sus riesgos, la corrección por viscosidad, la válvula de alivio, las reciprocantes y las rotatorias, y la selección con su hoja de datos. Con diez animaciones del capítulo.',
   'trabajo-en-equipo':
     'La sesión del quiz de práctica: qué distingue a un equipo que funciona, cuánto pesa el equipo en la nota, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase y sube a Bloque Neón.',
+};
+
+const REEMPLAZOS: Record<string, Presentation> = {
+  'flujo-de-fluidos': {
+    id: 'arrastre-de-vapor',
+    week: 4,
+    title: 'Arrastre de vapor',
+    description: DESCRIPCIONES['arrastre-de-vapor'],
+    sessionNumber: 7,
+    file: 'Arrastre_de_Vapor/Presentacion_Arrastre_de_Vapor.html',
+  },
+  'bombas-centrifugas': {
+    id: 'bombas',
+    week: 6,
+    title: 'Bombas',
+    description: DESCRIPCIONES['bombas'],
+    sessionNumber: 11,
+    file: 'Bombas/Presentacion_Bombas.html',
+  },
 };
 
 export const pou202710Course: Course = {
@@ -452,18 +473,12 @@ export const pou202710Course: Course = {
   // donde están sus archivos: el sitio arma su ruta con el slug del curso, y
   // copiar `slides/` duplicaría 240 MB. Al actualizar una pieza para 2027-10 y
   // publicarla en la carpeta propia, se le quita `carpeta`.
-  // La semana 4 de 2026-20 era flujo de fluidos, que ahora da Fenómenos de
-  // Transporte Macroscópicos: en 2027-10 la sesión 7 es el arrastre de vapor.
+  // Las que 2027-10 cambia por una nueva: la semana 4 de 2026-20 era flujo de
+  // fluidos, que ahora da Fenómenos de Transporte Macroscópicos, y en 2027-10 la
+  // sesión 7 es el arrastre de vapor; las bombas pasan de la semana 5 a la 6.
   presentations: pou202620Course.presentations.map((p) =>
-    p.id === 'flujo-de-fluidos'
-      ? {
-          id: 'arrastre-de-vapor',
-          week: 4,
-          title: 'Arrastre de vapor',
-          description: DESCRIPCIONES['arrastre-de-vapor'],
-          sessionNumber: 7,
-          file: 'Arrastre_de_Vapor/Presentacion_Arrastre_de_Vapor.html',
-        }
+    REEMPLAZOS[p.id]
+      ? REEMPLAZOS[p.id]
       : PRESENTACIONES_PROPIAS.has(p.id)
       ? { ...p, description: DESCRIPCIONES[p.id] ?? p.description }
       : { ...p, carpeta: 'iqya-2031-2026-20' },
