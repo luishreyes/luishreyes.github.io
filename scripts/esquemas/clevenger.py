@@ -19,6 +19,7 @@ DOCS = [
     CURSO / 'laboratorios/Laboratorio_01/Laboratorio_01_Arrastre_de_Vapor.html',
     CURSO / 'lecturas/Lectura_04/Lectura_04_Arrastre_de_Vapor.html',
     CURSO / 'slides/Presentacion_del_Curso/Presentacion_del_Curso.html',
+    CURSO / 'lecturas/Guias/Guia_Semana_04.html',
 ]
 NAVY, AGUA, CHAQ, ACEITE, CASC, MANTA, MANTA2, GUIA = '#19222F', '#DDE6EE', '#EAF0F5', '#FFF500', '#E0B400', '#6E6A00', '#565200', '#525C64'
 
