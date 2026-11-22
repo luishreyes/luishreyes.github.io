@@ -12,6 +12,8 @@
 //   node scripts/build-taller-pdf.mjs Taller_06
 //   node scripts/build-taller-pdf.mjs Taller_06 http://localhost:8765
 //   CURSO=iqya-2031-2027-10 node scripts/build-taller-pdf.mjs Taller_01
+//   CURSO=iqya-2031-2027-10 SECCION=laboratorios node scripts/build-taller-pdf.mjs Laboratorio_01
+// En una carpeta con varios HTML se toma la guía, no las hojas para imprimir (Hoja_de_…).
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -20,14 +22,15 @@ import fs from 'node:fs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../public');
 const SLUG = process.env.CURSO || 'iqya-2031-2026-20';
+const SECCION = process.env.SECCION || 'talleres';
 const PERIODO = SLUG.match(/\d{4}-\d{2}$/)?.[0] ?? '';
 const folder = process.argv[2];
 const base = process.argv[3] || 'http://localhost:8765';
 if (!folder) { console.error('Uso: node scripts/build-taller-pdf.mjs <Carpeta_del_taller> [url-base]'); process.exit(1); }
 
-const dir = path.join(ROOT, 'classroom', SLUG, 'talleres', folder);
-const htmlName = fs.readdirSync(dir).find((f) => /^Taller_.*\.html$/.test(f));
-if (!htmlName) { console.error('No encontré Taller_*.html en', dir); process.exit(1); }
+const dir = path.join(ROOT, 'classroom', SLUG, SECCION, folder);
+const htmlName = fs.readdirSync(dir).sort().find((f) => /^(Taller|Laboratorio)_.*\.html$/.test(f) && !/Hoja_de_/.test(f));
+if (!htmlName) { console.error('No encontré la guía (Taller_*.html o Laboratorio_*.html) en', dir); process.exit(1); }
 
 const hf = (left, right) =>
   `<div style="width:100%;font-family:Arial,Helvetica,sans-serif;font-size:7.5px;font-weight:600;` +
@@ -38,7 +41,7 @@ const hf = (left, right) =>
 const browser = await chromium.launch({ args: process.getuid?.() === 0 ? ['--no-sandbox'] : [] });
 try {
   const page = await browser.newPage();
-  await page.goto(`${base}/classroom/${SLUG}/talleres/${folder}/${htmlName}`, { waitUntil: 'networkidle' });
+  await page.goto(`${base}/classroom/${SLUG}/${SECCION}/${folder}/${htmlName}`, { waitUntil: 'networkidle' });
   await page.emulateMedia({ media: 'print' });
   try { await page.evaluate(() => document.fonts.ready); } catch {}
   await page.waitForTimeout(1200);

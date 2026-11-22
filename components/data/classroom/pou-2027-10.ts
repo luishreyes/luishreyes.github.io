@@ -534,5 +534,18 @@ export const pou202710Course: Course = {
           }
         : r,
     ),
+    {
+      slug: 'laboratorio-01-arrastre-de-vapor',
+      week: 5,
+      order: 40,
+      title: 'Laboratorio 1: arrastre de vapor en Clevenger',
+      summary:
+        'La guía de la práctica de los días 23 y 25 de febrero: rendimiento de aceite contra tiempo con dos tamaños de cáscara de naranja, el caudal de vapor medido con el condensado y los gramos de aceite por kilo de vapor, comparados con el equilibrio y con el extractor piloto. Con el montaje, la seguridad, el procedimiento, los cálculos, la hoja de datos para imprimir, la plantilla de Excel y la rúbrica del memorando.',
+      date: '2026-11-22',
+      readingMinutes: 15,
+      tags: ['laboratorio', 'arrastre de vapor', 'Clevenger', 'rendimiento', 'memorando'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2027-10/laboratorios/Laboratorio_01/Laboratorio_01_Arrastre_de_Vapor.html',
+    },
   ],
 };
