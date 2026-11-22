@@ -1,4 +1,4 @@
-import type { Course } from '../classroom';
+import type { Course, Reading } from '../classroom';
 import { pou202620Course } from './pou-2026-20';
 
 // ── POU · semestre 2027-10 ──────────────────────────────────────
@@ -45,10 +45,6 @@ const LECTURAS_PROPIAS = new Set([
 
 // Resúmenes de lecturas y talleres que cambiaron de caso para aceite esencial.
 const RESUMENES: Record<string, string> = {
-  'lectura-01-operaciones-unitarias':
-    'Cómo una sola idea ordenó toda la ingeniería química, y cómo se lee con ella la planta de aceite esencial del semestre. El origen del concepto con Davis, Little y el MIT, su evolución en el siglo XX, las dos clasificaciones (por fenómeno de transporte y por tipo de operación) con las siete operaciones de la planta, y los balances de materia y energía con un ejemplo del extractor.',
-  'lectura-02-diagramas-ingenieria':
-    'Por qué los ingenieros de proceso dibujan sus plantas, y cómo se lee ese dibujo en sus tres niveles con una sola unidad: la de hidrodesulfuración del Manual de diagramas, dibujada como PBD con un balance de masa que cierra, como PFD con sus nueve equipos y quince corrientes, y como P&ID del separador V-201. Recorre la historia de las normas ISA-5.1 (edición vigente de 2024), BS 1553 e ISO 10628, los códigos de equipos y de servicios de Turton, la tabla de corrientes, la diferencia entre un PC y una PSV y lo que debe contener el PFD que entrega su equipo.',
   'programa-del-curso':
     'El programa completo de IQYA-2031 para 2027-10: horarios y equipo, descripción y metodología (PO-PBL y aula invertida), el reto de la planta de aceite esencial, resultados ABET, los ocho módulos, el programa clase por clase, la distribución de la nota, cómo funcionan quices, exámenes, talleres y laboratorios, las fechas clave, la escala AIAS de uso de IA y las políticas del curso.',
   'cronograma-interactivo':
@@ -65,7 +61,6 @@ const RESUMENES: Record<string, string> = {
 
 // Lecturas reescritas para 2027-10: su tiempo real de lectura y la fecha de la revisión.
 const REVISADAS: Record<string, { readingMinutes: number; date: string; tags?: string[] }> = {
-  'lectura-01-operaciones-unitarias': { readingMinutes: 25, date: '2026-10-22' },
   'busqueda-bibliografica': { readingMinutes: 35, date: '2026-11-21' },
   'taller-01-analisis-de-pfd': {
     readingMinutes: 15, date: '2026-11-21',
@@ -75,9 +70,37 @@ const REVISADAS: Record<string, { readingMinutes: number; date: string; tags?: s
     readingMinutes: 10, date: '2026-11-22',
     tags: ['tamizado', 'distribución de tamaño', 'D80', 'molienda', 'Colab', 'datos por pareja'],
   },
+};
+
+// Guías de lectura de 2027-10 (decisión del profesor, 22 nov 2026): la lectura de cada
+// semana son secciones del libro en libro.luishreyes.com, que pide usuario y clave; nada
+// del libro va a este sitio. Las guías ocupan las entradas de las lecturas de las semanas
+// 1 a 3; las lecturas largas de antes quedan en sus carpetas, sin entrada en el Material.
+const GUIA = '/classroom/iqya-2031-2027-10/lecturas/Guias/';
+const GUIAS_LECTURA: Record<string, Partial<Reading>> = {
+  'lectura-01-operaciones-unitarias': {
+    title: 'Guía de lectura · Semana 1: las operaciones unitarias',
+    summary:
+      'Qué leer del capítulo 1 del libro (secciones 1.1, 1.3, 1.4 y 1.5): qué es una operación unitaria, cómo se clasifica, qué diferencia aprovecha cada separación y la planta de aceite esencial como secuencia de operaciones. Con las preguntas de la semana y lo que pasa en clase. El quiz de práctica del jueves sale de ahí.',
+    date: '2026-11-22', readingMinutes: 45,
+    tags: ['guía de lectura', 'libro', 'operaciones unitarias', 'clasificación', 'aceite esencial'],
+    href: GUIA + 'Guia_Semana_01.html',
+  },
   'lectura-02-diagramas-ingenieria': {
-    readingMinutes: 42, date: '2026-10-22',
-    tags: ['diagramas', 'PBD', 'PFD', 'P&ID', 'simbología', 'Turton', 'ISO 10628', 'ISA-5.1', 'HDS'],
+    title: 'Guía de lectura · Semana 2: los diagramas de ingeniería',
+    summary:
+      'Qué leer del capítulo 2 del libro (secciones 2.2 a 2.5): los tres diagramas de una planta, el diagrama de bloques, el PFD con sus códigos, corrientes, servicios, lazos y alivios, y el P&ID con la etiqueta de cada instrumento. Con las preguntas de la semana. De ahí salen el Quiz 1 y lo que pide el Taller 1.',
+    date: '2026-11-22', readingMinutes: 60,
+    tags: ['guía de lectura', 'libro', 'PBD', 'PFD', 'P&ID', 'ISA-5.1', 'Turton'],
+    href: GUIA + 'Guia_Semana_02.html',
+  },
+  'lectura-03-reduccion-tamano': {
+    title: 'Guía de lectura · Semana 3: sólidos particulados',
+    summary:
+      'Qué leer de los capítulos 5, 6 y 7 del libro: la distribución de tamaños y sus modelos, el análisis por tamizado paso a paso, las máquinas de reducción de tamaño y cómo se trata la cáscara húmeda. Con las preguntas de la semana. De ahí salen el Quiz 2 y lo que pide el Taller 2.',
+    date: '2026-11-22', readingMinutes: 55,
+    tags: ['guía de lectura', 'libro', 'distribución de tamaños', 'tamizado', 'molienda', 'cáscara'],
+    href: GUIA + 'Guia_Semana_03.html',
   },
 };
 
@@ -457,7 +480,24 @@ export const pou202710Course: Course = {
       href: '/classroom/iqya-2031-2027-10/pagina.html',
     },
     ...pou202620Course.readings.map((r) =>
-      LECTURAS_PROPIAS.has(r.slug)
+      GUIAS_LECTURA[r.slug]
+        ? { ...r, ...GUIAS_LECTURA[r.slug] }
+        : r.slug === 'lectura-04-transporte-liquidos'
+        ? {
+            // La semana 4 de 2027-10 es el arrastre de vapor. Mientras no exista el
+            // capítulo 32 del libro, su lectura es la Lectura 04 completa.
+            ...r,
+            slug: 'lectura-04-arrastre-de-vapor',
+            title: 'Destilación por arrastre de vapor',
+            summary:
+              'Por qué un aceite que hierve a 176 °C sale con el vapor por debajo de 100 °C, por qué la planta saca decenas de veces menos aceite del que permite el equilibrio y cómo se dimensiona un extractor a partir de un ensayo de rendimiento contra tiempo. Con el equilibrio de dos líquidos inmiscibles, la hidrodifusión y los modelos de primer orden y de dos etapas. De aquí sale el Quiz 3.',
+            date: '2026-10-22',
+            readingMinutes: 45,
+            tags: ['arrastre de vapor', 'líquidos inmiscibles', 'hidrodifusión', 'rendimiento', 'extractor', 'aceite esencial'],
+            href: '/classroom/iqya-2031-2027-10/lecturas/Lectura_04/Lectura_04_Arrastre_de_Vapor.html',
+            bannerImg: undefined,
+          }
+        : LECTURAS_PROPIAS.has(r.slug)
         ? {
             ...r,
             summary: RESUMENES[r.slug] ?? r.summary,
