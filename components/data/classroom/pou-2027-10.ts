@@ -563,9 +563,9 @@ export const pou202710Course: Course = {
       order: 6,
       title: 'Guía de lectura · Semana 6: válvulas, control y vacío',
       summary:
-        'Qué leer de los capítulos 13 y 12 del libro: las válvulas manuales y cuánto pierde cada una, la válvula de control por dentro con su coeficiente de flujo y sus características inherente e instalada, la válvula de control del caso y los sistemas de vacío para la columna, con la carga de aire y vapor que tienen que sacar. Con las preguntas de la semana. De ahí sale el Quiz 5.',
+        'Qué leer de los capítulos 13 y 12 del libro: las válvulas manuales y cuánto pierde cada una, la válvula de control por dentro con su coeficiente de flujo, sus características inherente e instalada y la cavitación, la válvula de control del caso y los sistemas de vacío para la columna, con la carga de aire y vapor que tienen que sacar. Con las preguntas de la semana. De ahí sale el Quiz 5.',
       date: '2026-11-22',
-      readingMinutes: 60,
+      readingMinutes: 65,
       tags: ['guía de lectura', 'libro', 'válvulas', 'válvula de control', 'Cv', 'característica instalada', 'vacío'],
       category: 'lectura',
       href: GUIA + 'Guia_Semana_06_Valvulas.html',

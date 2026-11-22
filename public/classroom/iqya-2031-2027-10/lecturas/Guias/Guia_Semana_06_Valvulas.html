@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de lectura · Semana 6 · Válvulas, control y vacío · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 56ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; line-height: 1.7; }
+  .doc-body li { margin-bottom: 7px; }
+  .doc-body ul ul, .doc-body ol ul { font-size: 16px; margin: 6px 0 4px; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+  a.platform-link { color: var(--teal); font-weight: 600; }
+  a.platform-link::after { content: " ↗"; font-size: .82em; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: .88em; background: var(--gris-5); color: var(--gris-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---- Logo de la herramienta ---- */
+  .tool-logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px;
+    padding: 14px 22px; margin: 4px 0 22px; min-height: 64px;
+  }
+  .tool-logo img { height: 40px; width: auto; max-width: 280px; object-fit: contain; display: block; }
+
+  /* ---- Índice / sumario por partes ---- */
+  .toc-intro { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 30px 0 14px; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 8px; }
+  .part-card {
+    background: var(--papel); border-radius: 8px; padding: 24px 26px;
+    border-top: 5px solid var(--verde);
+  }
+  .part-card .pt-k { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .part-card h3 { font-size: 20px; margin: 5px 0 16px; letter-spacing: -.005em; }
+  .part-card ol { list-style: none; margin: 0; padding: 0; counter-reset: p; display: grid; gap: 9px; font-size: 16px; }
+  .part-card li { counter-increment: p; margin: 0; }
+  .part-card a {
+    display: flex; align-items: baseline; gap: 13px; text-decoration: none; cursor: pointer;
+    color: var(--gris-1); font-size: 16px; font-weight: 600; transition: color .18s ease;
+  }
+  .part-card a::before { content: counter(p, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 13px; min-width: 24px; }
+  .part-card a:hover { color: var(--verde-osc); }
+  .part-card a.is-active { color: var(--verde-osc); font-weight: 700; }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block code { font-size: 13px; word-break: break-word; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+  .block--bad { border-top-color: #DC2626; }
+  .block--bad b { color: #991B1B; }
+  .block--good { border-top-color: var(--verde); }
+  .block--good b { color: var(--verde-osc); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul { font-size: 15.5px; margin: 6px 0 0; padding-left: 20px; color: var(--gris-1); line-height: 1.5; }
+  .callout ul li { margin-bottom: 6px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; font-size: 15px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3, .parts { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .parts { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .parts { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1200px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 8px; padding: 0 4px; }
+  .sn-label.sn-label2 { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gris-4); }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item:target { color: var(--verde-osc); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+  .pts { display: inline-block; margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-osc); background: var(--verde-claro); border-radius: 4px; padding: 3px 9px; vertical-align: middle; }
+
+  /* Acceso al cuaderno */
+  .abrir { display: grid; grid-template-columns: 1fr auto; gap: 22px; align-items: center; border: 2px solid var(--verde); background: var(--verde-claro); border-radius: 8px; padding: 24px 28px; margin: 26px 0 8px; }
+  .abrir h3 { margin: 0 0 6px; font-size: 20px; }
+  .abrir p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--gris-2); }
+  .abrir .botones { display: flex; flex-direction: column; gap: 9px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--tipo); font-size: 13.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-decoration: none !important; border-radius: 5px; padding: 12px 22px; white-space: nowrap; }
+  .btn--primario { background: var(--verde); color: #fff; }
+  .btn--primario:hover { background: var(--verde-osc); }
+  .btn--secundario { border: 2px solid var(--gris-4); color: var(--gris-1); background: var(--blanco); }
+  .btn--secundario:hover { border-color: var(--gris-2); }
+  @media (max-width: 700px) { .abrir { grid-template-columns: 1fr; } }
+  @media print { .abrir { break-inside: avoid; } .btn { border: 1px solid var(--gris-4); } }
+  /* Impresión como la del Taller 1: las secciones pueden partirse entre hojas. */
+  @media print {
+    .side-nav { display: none !important; }
+    .outer-layout { display: block; max-width: none; margin: 0; padding: 0; }
+    .doc-head { padding: 28px 32px 26px; }
+    .doc-body { padding: 0 32px 24px; }
+    .doc-body section { padding-top: 26px; break-inside: auto; }
+    .eyebrow, h2.sec, h3.sub { break-after: avoid; }
+    .doc-body li, .callout, .tbl-wrap { break-inside: avoid; }
+  }
+
+  /* Guía de lectura: la tabla de secciones */
+  #leer .tbl-wrap { margin-bottom: 22px; }
+  table.ou td.min { white-space: nowrap; color: var(--gris-2); }
+  table.ou td a { font-weight: 600; }
+  .preguntas li { margin-bottom: 10px; }
+  .preguntas .donde { color: var(--gris-3); font-size: .92em; white-space: nowrap; }
+</style>
+<link rel="stylesheet" href="assets/lectura-curso.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add('incrustado');</script>
+</head>
+<body>
+<header class="barra"><span class="marca">Uniandes · IQYA-2031</span><span class="cual">Guía de lectura · Semana 6 · Válvulas, control y vacío</span></header>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">Contenido</p>
+  <a class="sn-item" href="#leer"><span class="sn-num">01</span>Qué leer</a>
+  <a class="sn-item" href="#reto"><span class="sn-num">02</span>El reto</a>
+  <a class="sn-item" href="#preguntas"><span class="sn-num">03</span>Preguntas de la semana</a>
+  <a class="sn-item" href="#clase"><span class="sn-num">04</span>En clase</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Guía de lectura · Semana 6</div>
+    <h1>Válvulas, control y vacío</h1>
+    <p class="subtitle">Qué válvula sirve para cada servicio, cómo se dimensiona una válvula de control y se revisa que no cavite, y cómo se escoge el sistema que hace el vacío de la columna.</p>
+    <div class="doc-meta">
+      <div><b>Lectura</b>Capítulos 13 y 12 del libro, por secciones</div>
+      <div><b>Tiempo</b>Unos 65 minutos</div>
+      <div><b>Antes de</b>Jueves 4 de marzo</div>
+      <div><b>Quiz</b>Quiz 5, jueves 4 de marzo, al empezar la clase</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">La clase del jueves trata de qué válvula sirve para cada trabajo, cómo se dimensiona la válvula de control de una línea con bomba y qué equipo hace el vacío de una columna. Todo eso aparece en su planta: las líneas de hidrolato y de aceite llevan válvulas de aislamiento, de retención y de control, y la rectificación trabaja entre 10 y 20 mbar con un sistema de vacío que su equipo tiene que escoger.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>El libro</b>
+          <p>El libro del curso está en <a class="platform-link" href="https://libro.luishreyes.com/" target="_blank" rel="noopener">libro.luishreyes.com</a>. Para entrar se necesitan el usuario y la clave que da el profesor el primer día de clase; son para los estudiantes del curso y no se comparten. Esta semana se lee en el <a class="platform-link" href="https://libro.luishreyes.com/valvulas-tuberias-y-medicion-de-flujo.html" target="_blank" rel="noopener">capítulo 13</a>, <a class="platform-link" href="https://libro.luishreyes.com/ventiladores-compresores-y-vacio.html" target="_blank" rel="noopener">capítulo 12</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="leer">
+      <div class="eyebrow">Lectura</div>
+      <h2 class="sec"><span class="secnum">1.</span> Qué leer</h2>
+      <p>Lea estas secciones en orden: tres del capítulo 13 y una del 12. En la 13.2, la introducción y el apartado 13.2.1; la 13.3 completa, con la cavitación y el bloqueo, que la 13.4 usa para revisar la válvula del caso; en la 12.7, los apartados 12.7.1 a 12.7.4.</p>
+      <div class="tbl-wrap">
+      <table class="ou">
+      <thead><tr><th>Sección</th><th>Tema</th><th>Minutos</th></tr></thead>
+      <tbody>
+      <tr><td><a href="https://libro.luishreyes.com/valvulas-tuberias-y-medicion-de-flujo.html#sec-val-manuales" target="_blank" rel="noopener">13.2</a></td><td>Las válvulas manuales para aislar y para estrangular, y cuánto pierde cada una</td><td class="min">10</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/valvulas-tuberias-y-medicion-de-flujo.html#sec-val-control" target="_blank" rel="noopener">13.3</a></td><td>La válvula de control: por dentro, su posición de falla, el C<sub>v</sub>, las características inherente e instalada y la cavitación</td><td class="min">26</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/valvulas-tuberias-y-medicion-de-flujo.html#sec-val-control-caso" target="_blank" rel="noopener">13.4</a></td><td>La válvula de control del caso: el C<sub>v</sub>, la carrera a los tres caudales, la instalación y la cavitación</td><td class="min">14</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/ventiladores-compresores-y-vacio.html#sec-gas-vacio" target="_blank" rel="noopener">12.7</a></td><td>Sistemas de vacío: cuánto vacío, los equipos, la carga de aire y de limoneno y la elección para la columna</td><td class="min">17</td></tr>
+      </tbody>
+      </table>
+      </div>
+      <p>Las preguntas de participación y las animaciones por pasos que aparecen en esas secciones son parte de la lectura: respóndalas y páselas mientras lee. El quiz sale de las secciones de esta tabla.</p>
+      <h3 class="sub">Para ampliar</h3>
+      <p>Lo que sigue no entra en el quiz, pero completa la lectura. La 13.2.2 termina de revisar la línea del caso con la velocidad que abre del todo el disco de la retención; la 13.5 trata las válvulas de una planta de alimentos, y la 12.7.5 dibuja el sistema de vacío en un P&amp;ID, con su control y su alivio.</p>
+      <div class="tbl-wrap">
+      <table class="ou">
+      <thead><tr><th>Sección</th><th>Tema</th><th>Minutos</th></tr></thead>
+      <tbody>
+      <tr><td><a href="https://libro.luishreyes.com/valvulas-tuberias-y-medicion-de-flujo.html#sec-val-manuales" target="_blank" rel="noopener">13.2.2</a></td><td>La retención y la velocidad del agua</td><td class="min">5</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/valvulas-tuberias-y-medicion-de-flujo.html#sec-val-higienicas" target="_blank" rel="noopener">13.5</a></td><td>Las válvulas de una planta de alimentos</td><td class="min">12</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/ventiladores-compresores-y-vacio.html#sec-gas-vacio" target="_blank" rel="noopener">12.7.5</a></td><td>El sistema de vacío en un P&amp;ID</td><td class="min">5</td></tr>
+      </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section id="reto">
+      <div class="eyebrow">El proyecto</div>
+      <h2 class="sec"><span class="secnum">2.</span> El reto</h2>
+      <p>La Bitácora 2, que se entrega el domingo 14 de marzo, le pide escoger las válvulas de cada línea según su servicio y dimensionar la válvula de control de una de ellas con su C<sub>v</sub>, su característica y su autoridad, con los lazos de control dibujados sobre el PFD. Las secciones 13.3 y 13.4 hacen ese cálculo completo para la línea del caso: la caída que deja la bomba, el C<sub>v</sub> con las reducciones, la carrera a los tres caudales, la ganancia instalada y la posición de falla de cada válvula. El Taller 3, el martes 16 de marzo, le pide la hoja de datos de una bomba y de su válvula de control con catálogos impresos, y el Examen 1, el jueves 18, entra con bombas, válvulas, control y vacío.</p>
+      <p>La Bitácora 4 le pide la rectificación por lotes al vacío, entre 10 y 20 mbar, con el sistema de vacío escogido y su carga de incondensables. La sección 12.7 hace esa cuenta con la columna del caso, que rectifica a 15 mbar: el aire que entra por las juntas, el limoneno que sale con él según la temperatura del condensador del tope, el volumen que tiene que mover la bomba y los equipos que llegan a esa presión. Su equipo repite esos pasos con las juntas, el condensador y la presión de su propia columna.</p>
+    </section>
+
+    <section id="preguntas">
+      <div class="eyebrow">Para llegar a clase</div>
+      <h2 class="sec"><span class="secnum">3.</span> Preguntas de la semana</h2>
+      <p>Llegue a clase pudiendo responderlas sin volver al texto. Entre paréntesis, la sección donde está la respuesta.</p>
+      <ol class="preguntas">
+        <li>¿Qué le pide a una válvula el trabajo de aislar, qué le pide el de estrangular y qué válvulas manuales sirven para cada uno? <span class="donde">(13.2)</span></li>
+        <li>¿Qué hace cada pieza de una válvula de control de globo, y cuál de ellas puede estropear el control cuando la válvula no lleva posicionador? <span class="donde">(13.3)</span></li>
+        <li>Con la cabeza que la bomba le deja a una válvula de control a un caudal dado, ¿cómo se halla el C<sub>v</sub> que necesita, y por qué el cálculo se itera cuando la válvula es más pequeña que el tubo? <span class="donde">(13.3 y 13.4)</span></li>
+        <li>¿Por qué un margen sobre el C<sub>v</sub> no dice a qué carrera va a trabajar una válvula de igual porcentaje, y cómo se lee esa carrera? <span class="donde">(13.3 y 13.4)</span></li>
+        <li>¿Qué cuesta darle mucha caída de presión a una válvula de control, y qué le pasa al control si se le da muy poca? <span class="donde">(13.3 y 13.4)</span></li>
+        <li>¿De dónde viene la carga que tiene que sacar la bomba de vacío de una columna, y qué hace el diseño para reducirla? <span class="donde">(12.7)</span></li>
+        <li>En su planta, ¿qué equipo haría el vacío de la rectificación por lotes y qué condensador pondría delante? Estime la carga de incondensables con las juntas de su columna. <span class="donde">(12.7 y la Bitácora 4)</span></li>
+      </ol>
+    </section>
+
+    <section id="clase">
+      <div class="eyebrow">La semana</div>
+      <h2 class="sec"><span class="secnum">4.</span> En clase</h2>
+      <ul>
+        <li>Jueves 4 de marzo: el Quiz 5, al empezar, y la clase de válvulas, control y vacío, con las válvulas según el servicio, la válvula de control con su C<sub>v</sub>, su característica y su autoridad, y los sistemas de vacío para la columna.</li>
+        <li>Domingo 7 de marzo: la entrega del memorando del Laboratorio 1.</li>
+        <li>Martes 16 de marzo: el Taller 3, la hoja de datos de una bomba y su válvula de control, con catálogos impresos. Lo que se lee esta semana y la anterior es lo que se usa ahí.</li>
+      </ul>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2027-10</span>
+      <span>Guía de lectura · Semana 6</span>
+    </div>
+  </div>
+</article>
+</div>
+
+<script>
+/* ── Barra de progreso ─────────────────────────────────────────────── */
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ── Índice: desplazamiento suave y sección activa (scroll-spy) ────── */
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.side-nav .sn-item'));
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      e.preventDefault();
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+      if (history.replaceState) history.replaceState(null, '', '#' + el.id);
+    });
+  });
+  var sects = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); })
+                   .filter(Boolean);
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + Math.min(220, window.innerHeight * 0.3);
+    var cur = null;
+    for (var i = 0; i < sects.length; i++) {
+      if (sects[i].getBoundingClientRect().top + window.scrollY <= y) cur = sects[i].id;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) cur = sects[sects.length - 1].id;
+    links.forEach(function (a) {
+      var on = cur !== null && a.getAttribute('href') === '#' + cur;
+      a.classList.toggle('is-active', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+</body>
+</html>
