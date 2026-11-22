@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de lectura · Semana 4 · Arrastre de vapor · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 56ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; line-height: 1.7; }
+  .doc-body li { margin-bottom: 7px; }
+  .doc-body ul ul, .doc-body ol ul { font-size: 16px; margin: 6px 0 4px; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+  a.platform-link { color: var(--teal); font-weight: 600; }
+  a.platform-link::after { content: " ↗"; font-size: .82em; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: .88em; background: var(--gris-5); color: var(--gris-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---- Logo de la herramienta ---- */
+  .tool-logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px;
+    padding: 14px 22px; margin: 4px 0 22px; min-height: 64px;
+  }
+  .tool-logo img { height: 40px; width: auto; max-width: 280px; object-fit: contain; display: block; }
+
+  /* ---- Índice / sumario por partes ---- */
+  .toc-intro { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 30px 0 14px; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 8px; }
+  .part-card {
+    background: var(--papel); border-radius: 8px; padding: 24px 26px;
+    border-top: 5px solid var(--verde);
+  }
+  .part-card .pt-k { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .part-card h3 { font-size: 20px; margin: 5px 0 16px; letter-spacing: -.005em; }
+  .part-card ol { list-style: none; margin: 0; padding: 0; counter-reset: p; display: grid; gap: 9px; font-size: 16px; }
+  .part-card li { counter-increment: p; margin: 0; }
+  .part-card a {
+    display: flex; align-items: baseline; gap: 13px; text-decoration: none; cursor: pointer;
+    color: var(--gris-1); font-size: 16px; font-weight: 600; transition: color .18s ease;
+  }
+  .part-card a::before { content: counter(p, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 13px; min-width: 24px; }
+  .part-card a:hover { color: var(--verde-osc); }
+  .part-card a.is-active { color: var(--verde-osc); font-weight: 700; }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block code { font-size: 13px; word-break: break-word; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+  .block--bad { border-top-color: #DC2626; }
+  .block--bad b { color: #991B1B; }
+  .block--good { border-top-color: var(--verde); }
+  .block--good b { color: var(--verde-osc); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul { font-size: 15.5px; margin: 6px 0 0; padding-left: 20px; color: var(--gris-1); line-height: 1.5; }
+  .callout ul li { margin-bottom: 6px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; font-size: 15px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3, .parts { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .parts { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .parts { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1200px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 8px; padding: 0 4px; }
+  .sn-label.sn-label2 { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gris-4); }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item:target { color: var(--verde-osc); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+  .pts { display: inline-block; margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-osc); background: var(--verde-claro); border-radius: 4px; padding: 3px 9px; vertical-align: middle; }
+
+  /* Acceso al cuaderno */
+  .abrir { display: grid; grid-template-columns: 1fr auto; gap: 22px; align-items: center; border: 2px solid var(--verde); background: var(--verde-claro); border-radius: 8px; padding: 24px 28px; margin: 26px 0 8px; }
+  .abrir h3 { margin: 0 0 6px; font-size: 20px; }
+  .abrir p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--gris-2); }
+  .abrir .botones { display: flex; flex-direction: column; gap: 9px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--tipo); font-size: 13.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-decoration: none !important; border-radius: 5px; padding: 12px 22px; white-space: nowrap; }
+  .btn--primario { background: var(--verde); color: #fff; }
+  .btn--primario:hover { background: var(--verde-osc); }
+  .btn--secundario { border: 2px solid var(--gris-4); color: var(--gris-1); background: var(--blanco); }
+  .btn--secundario:hover { border-color: var(--gris-2); }
+  @media (max-width: 700px) { .abrir { grid-template-columns: 1fr; } }
+  @media print { .abrir { break-inside: avoid; } .btn { border: 1px solid var(--gris-4); } }
+  /* Impresión como la del Taller 1: las secciones pueden partirse entre hojas. */
+  @media print {
+    .side-nav { display: none !important; }
+    .outer-layout { display: block; max-width: none; margin: 0; padding: 0; }
+    .doc-head { padding: 28px 32px 26px; }
+    .doc-body { padding: 0 32px 24px; }
+    .doc-body section { padding-top: 26px; break-inside: auto; }
+    .eyebrow, h2.sec, h3.sub { break-after: avoid; }
+    .doc-body li, .callout, .tbl-wrap { break-inside: avoid; }
+  }
+
+  /* Guía de lectura: la tabla de secciones */
+  #leer .tbl-wrap { margin-bottom: 22px; }
+  table.ou td.min { white-space: nowrap; color: var(--gris-2); }
+  table.ou td a { font-weight: 600; }
+  .preguntas li { margin-bottom: 10px; }
+  .preguntas .donde { color: var(--gris-3); font-size: .92em; white-space: nowrap; }
+</style>
+<link rel="stylesheet" href="assets/lectura-curso.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add('incrustado');</script>
+</head>
+<body>
+<header class="barra"><span class="marca">Uniandes · IQYA-2031</span><span class="cual">Guía de lectura · Semana 4</span></header>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">Contenido</p>
+  <a class="sn-item" href="#leer"><span class="sn-num">01</span>Qué leer</a>
+  <a class="sn-item" href="#reto"><span class="sn-num">02</span>El reto</a>
+  <a class="sn-item" href="#preguntas"><span class="sn-num">03</span>Preguntas de la semana</a>
+  <a class="sn-item" href="#clase"><span class="sn-num">04</span>En clase</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Guía de lectura · Semana 4</div>
+    <h1>Arrastre de vapor</h1>
+    <p class="subtitle">Por qué el agua y el aceite hierven juntos por debajo del agua sola, por qué el vapor de un extractor sale tan lejos del equilibrio, cómo se ajusta un ensayo de rendimiento y dónde se corta el lote, y qué pide el extractor de la planta.</p>
+    <div class="doc-meta">
+      <div><b>Lectura</b>Capítulo 32 del libro, por secciones</div>
+      <div><b>Tiempo</b>Unos 60 minutos</div>
+      <div><b>Antes de</b>Martes 16 de febrero</div>
+      <div><b>Quiz</b>Quiz 3, martes 16 de febrero, al empezar la clase</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">Esta semana se lee la operación que da nombre a la planta del reto: el arrastre con vapor, que saca el aceite esencial de la cáscara. El limoneno solo hierve a más de 160&nbsp;°C, pero con agua hierve por debajo de 90&nbsp;°C en Bogotá, y el capítulo explica por qué, cuánto aceite podría llevar el vapor y por qué en la planta lleva decenas de veces menos. Después vienen el ensayo de rendimiento contra tiempo, el modelo que se le ajusta, el criterio para cortar el lote y el extractor, con su tiempo muerto y su velocidad de vapor. Con esto su equipo diseña el extractor en la Bitácora 3, y la semana siguiente mide sus propias curvas en el Clevenger del Laboratorio 1.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>El libro</b>
+          <p>El libro del curso está en <a class="platform-link" href="https://libro.luishreyes.com/" target="_blank" rel="noopener">libro.luishreyes.com</a>. Para entrar se necesitan el usuario y la clave que da el profesor el primer día de clase; son para los estudiantes del curso y no se comparten. Esta semana se lee en el <a class="platform-link" href="https://libro.luishreyes.com/arrastre-de-vapor.html" target="_blank" rel="noopener">capítulo 32</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="leer">
+      <div class="eyebrow">Lectura</div>
+      <h2 class="sec"><span class="secnum">1.</span> Qué leer</h2>
+      <p>Lea estas cinco secciones en orden. En la 32.5, la introducción y los apartados «El escalado», «El tiempo muerto» y «La velocidad del vapor y la caída de presión»; «La batería» y «La hoja de datos y el diagrama» quedan para ampliar.</p>
+      <div class="tbl-wrap">
+      <table class="ou">
+      <thead><tr><th>Sección</th><th>Tema</th><th>Minutos</th></tr></thead>
+      <tbody>
+      <tr><td><a href="https://libro.luishreyes.com/arrastre-de-vapor.html#sec-av-formas" target="_blank" rel="noopener">32.1</a></td><td>Las tres formas del arrastre y el aparato de Clevenger</td><td class="min">8</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/arrastre-de-vapor.html#sec-av-equilibrio" target="_blank" rel="noopener">32.2</a></td><td>El equilibrio de dos líquidos inmiscibles, la relación de equilibrio y el aceite de varios componentes</td><td class="min">13</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/arrastre-de-vapor.html#sec-av-hidrodifusion" target="_blank" rel="noopener">32.3</a></td><td>La hidrodifusión en la cáscara y la brecha con el equilibrio</td><td class="min">10</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/arrastre-de-vapor.html#sec-av-rendimiento" target="_blank" rel="noopener">32.4</a></td><td>El rendimiento contra el tiempo, el aceite por kilogramo de vapor y el corte del lote</td><td class="min">12</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/arrastre-de-vapor.html#sec-av-extractor" target="_blank" rel="noopener">32.5</a></td><td>El extractor, el escalado, el tiempo muerto y la velocidad del vapor</td><td class="min">14</td></tr>
+      </tbody>
+      </table>
+      </div>
+      <p>Las preguntas de participación, las animaciones por pasos y los recuadros «Pruebe» que aparecen en esas secciones son parte de la lectura: respóndalas, páselas y mueva sus controles mientras lee. Los retos con números que cambian son para practicar las cuentas. El quiz sale de las secciones de esta tabla.</p>
+      <h3 class="sub">Para ampliar</h3>
+      <p>Lo que sigue no entra en el quiz, pero le sirve para la Bitácora 3. «La batería» explica por qué la planta trabaja con varios extractores desfasados y cómo se cierra el cálculo del vapor de cada uno, y «La hoja de datos y el diagrama», con qué se le pide un extractor a un fabricante y cómo va en el P&amp;ID. La 32.6 hace el balance del área completa, con el hidrolato que vuelve a la caldera, y la 32.7 cuenta de qué está hecho el aceite que sale del florentino.</p>
+      <div class="tbl-wrap">
+      <table class="ou">
+      <thead><tr><th>Sección</th><th>Tema</th><th>Minutos</th></tr></thead>
+      <tbody>
+      <tr><td><a href="https://libro.luishreyes.com/arrastre-de-vapor.html#la-batería" target="_blank" rel="noopener">32.5</a></td><td>La batería, la hoja de datos y el diagrama</td><td class="min">9</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/arrastre-de-vapor.html#sec-av-balance" target="_blank" rel="noopener">32.6</a></td><td>El balance del área 200 y el hidrolato</td><td class="min">5</td></tr>
+      <tr><td><a href="https://libro.luishreyes.com/arrastre-de-vapor.html#sec-av-aceite" target="_blank" rel="noopener">32.7</a></td><td>El aceite destilado y sus moléculas</td><td class="min">4</td></tr>
+      </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section id="reto">
+      <div class="eyebrow">El proyecto</div>
+      <h2 class="sec"><span class="secnum">2.</span> El reto</h2>
+      <p>La Bitácora 3, que se entrega el domingo 18 de abril, pide el extractor de su planta, y casi todo sale de estas secciones. La temperatura del arrastre a la presión de su planta y la relación de equilibrio están en la 32.2; la razón de que la planta saque decenas de veces menos aceite, en la 32.3. Con el modelo de la 32.4 su equipo ajusta los datos del extractor piloto que publica el curso (<a href="/classroom/iqya-2031-2027-10/assets/datos/arrastre_rendimiento_tiempo.csv">rendimiento contra tiempo</a> y <a href="/classroom/iqya-2031-2027-10/assets/datos/arrastre_condiciones.csv">condiciones del ensayo</a>, en CSV) y justifica el tiempo de lote con uno de los criterios de corte. La 32.5 dice qué se conserva al pasar del piloto a la planta, cuánto vapor se queda calentando cada carga antes de la primera gota y cómo se calculan la velocidad del vapor en el lecho y su caída de presión.</p>
+      <p>En el Laboratorio 1, el martes 23 o el jueves 25 de febrero, su equipo hidrodestila cáscara de naranja de dos tamaños en el Clevenger de la 32.1, mide el aceite contra el tiempo y le ajusta a cada curva el modelo de primer orden y el de dos etapas de la 32.4. Esas curvas se comparan después con las del piloto: el Clevenger hidrodestila, con el material en el agua que hierve, y el extractor de la planta trabaja con vapor vivo, y la bitácora pide decir qué cambia esa diferencia.</p>
+    </section>
+
+    <section id="preguntas">
+      <div class="eyebrow">Para llegar a clase</div>
+      <h2 class="sec"><span class="secnum">3.</span> Preguntas de la semana</h2>
+      <p>Llegue a clase pudiendo responderlas sin volver al texto. Entre paréntesis, la sección donde está la respuesta.</p>
+      <ol class="preguntas">
+        <li>¿Qué distingue la hidrodestilación, la destilación con agua y vapor y el arrastre con vapor vivo, y para qué sirve el aparato de Clevenger antes de diseñar un extractor? <span class="donde">(32.1)</span></li>
+        <li>¿Por qué el agua y el limoneno hierven juntos por debajo de la temperatura a la que hierve el agua sola, y por qué esa temperatura no cambia mientras quede algo de cada líquido? <span class="donde">(32.2)</span></li>
+        <li>¿Qué cambia en la relación de equilibrio cuando el aceite tiene varios componentes, y por qué el aceite que queda en la carga se va volviendo más oloroso? <span class="donde">(32.2)</span></li>
+        <li>¿Por qué el vapor de un extractor lleva decenas de veces menos aceite que el equilibrio, y por qué mandar más vapor no cierra esa brecha? <span class="donde">(32.3 y 32.5)</span></li>
+        <li>¿Qué supone el modelo de dos etapas que no supone el de primer orden, y por qué para un extractor de vapor vivo se toma el de primer orden con tiempo muerto? <span class="donde">(32.4)</span></li>
+        <li>¿Por qué el corte por máxima producción está donde la recta que sale de menos el tiempo de carga toca la curva de rendimiento, y qué le pasa al aceite que deja en la carga? <span class="donde">(32.4)</span></li>
+        <li>Su equipo va a llevar el extractor piloto a la planta. ¿Qué conserva del ensayo, qué cambia, qué decide el tiempo muerto del extractor grande y qué pieza no prueba el piloto? <span class="donde">(32.5)</span></li>
+      </ol>
+    </section>
+
+    <section id="clase">
+      <div class="eyebrow">La semana</div>
+      <h2 class="sec"><span class="secnum">4.</span> En clase</h2>
+      <ul>
+        <li>Lunes 15 de febrero: cierra la coevaluación de la Bitácora 1.</li>
+        <li>Martes 16 de febrero: el Quiz 3, al empezar, y la clase de arrastre de vapor, con el equilibrio de los líquidos inmiscibles, la relación del vapor y la hidrodifusión, y el diseño del extractor.</li>
+        <li>Jueves 18 de febrero: la Retroalimentación 1, la sustentación de la Bitácora 1 por equipos.</li>
+        <li>Viernes 19 de febrero: abre el Prelaboratorio 1 en Bloque Neón. El Laboratorio 1 es el martes 23 o el jueves 25, según su mitad del curso, y sin el prelaboratorio no se entra.</li>
+      </ul>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2027-10</span>
+      <span>Guía de lectura · Semana 4</span>
+    </div>
+  </div>
+</article>
+</div>
+
+<script>
+/* ── Barra de progreso ─────────────────────────────────────────────── */
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ── Índice: desplazamiento suave y sección activa (scroll-spy) ────── */
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.side-nav .sn-item'));
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      e.preventDefault();
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+      if (history.replaceState) history.replaceState(null, '', '#' + el.id);
+    });
+  });
+  var sects = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); })
+                   .filter(Boolean);
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + Math.min(220, window.innerHeight * 0.3);
+    var cur = null;
+    for (var i = 0; i < sects.length; i++) {
+      if (sects[i].getBoundingClientRect().top + window.scrollY <= y) cur = sects[i].id;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) cur = sects[sects.length - 1].id;
+    links.forEach(function (a) {
+      var on = cur !== null && a.getAttribute('href') === '#' + cur;
+      a.classList.toggle('is-active', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+</body>
+</html>

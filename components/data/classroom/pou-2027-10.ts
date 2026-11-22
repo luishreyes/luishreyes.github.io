@@ -74,8 +74,8 @@ const REVISADAS: Record<string, { readingMinutes: number; date: string; tags?: s
 
 // Guías de lectura de 2027-10 (decisión del profesor, 22 nov 2026): la lectura de cada
 // semana son secciones del libro en libro.luishreyes.com, que pide usuario y clave; nada
-// del libro va a este sitio. Las guías ocupan las entradas de las lecturas de las semanas
-// 1 a 3; las lecturas largas de antes quedan en sus carpetas, sin entrada en el Material.
+// del libro va a este sitio. Las guías ocupan las entradas de las lecturas de cada
+// semana; las lecturas largas de antes quedan en sus carpetas, sin entrada en el Material.
 const GUIA = '/classroom/iqya-2031-2027-10/lecturas/Guias/';
 const GUIAS_LECTURA: Record<string, Partial<Reading>> = {
   'lectura-01-operaciones-unitarias': {
@@ -510,17 +510,17 @@ export const pou202710Course: Course = {
         ? { ...r, ...GUIAS_LECTURA[r.slug] }
         : r.slug === 'lectura-04-transporte-liquidos'
         ? {
-            // La semana 4 de 2027-10 es el arrastre de vapor. Mientras no exista el
-            // capítulo 32 del libro, su lectura es la Lectura 04 completa.
+            // La semana 4 de 2027-10 es el arrastre de vapor: la guía remite al capítulo 32
+            // del libro (22 nov 2026). La Lectura 04 queda en su carpeta, sin entrada.
             ...r,
             slug: 'lectura-04-arrastre-de-vapor',
-            title: 'Destilación por arrastre de vapor',
+            title: 'Guía de lectura · Semana 4: el arrastre de vapor',
             summary:
-              'Por qué un aceite que hierve a 176 °C sale con el vapor por debajo de 100 °C, por qué la planta saca decenas de veces menos aceite del que permite el equilibrio y cómo se dimensiona un extractor a partir de un ensayo de rendimiento contra tiempo. Con el equilibrio de dos líquidos inmiscibles, la hidrodifusión y los modelos de primer orden y de dos etapas. De aquí sale el Quiz 3.',
-            date: '2026-10-22',
-            readingMinutes: 45,
-            tags: ['arrastre de vapor', 'líquidos inmiscibles', 'hidrodifusión', 'rendimiento', 'extractor', 'aceite esencial'],
-            href: '/classroom/iqya-2031-2027-10/lecturas/Lectura_04/Lectura_04_Arrastre_de_Vapor.html',
+              'Qué leer del capítulo 32 del libro (secciones 32.1 a 32.4 y parte de la 32.5): las tres formas del arrastre y el Clevenger, el equilibrio de dos líquidos inmiscibles, la hidrodifusión y la brecha con el equilibrio, el rendimiento contra el tiempo y el corte del lote, y el extractor con su tiempo muerto. Con las preguntas de la semana y lo que pasa en clase. El Quiz 3 sale de ahí.',
+            date: '2026-11-22',
+            readingMinutes: 60,
+            tags: ['guía de lectura', 'libro', 'arrastre de vapor', 'líquidos inmiscibles', 'hidrodifusión', 'extractor'],
+            href: GUIA + 'Guia_Semana_04.html',
             bannerImg: undefined,
           }
         : LECTURAS_PROPIAS.has(r.slug)
