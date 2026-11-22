@@ -135,7 +135,7 @@ const DESCRIPCIONES: Record<string, string> = {
   'pid-instrumentacion':
     'Simbología ANSI/ISA-5.1-2024 para instrumentación, lazos de control, seguridad (PSV) y cómo una bomba del PFD se vuelve su P&ID, con la unidad de hidrodesulfuración del Manual de diagramas como ejemplo.',
   'trabajo-en-equipo':
-    'Qué distingue a un equipo que funciona, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase.',
+    'La sesión del quiz de práctica: qué distingue a un equipo que funciona, cuánto pesa el equipo en la nota, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase y sube a Bloque Neón.',
 };
 
 export const pou202710Course: Course = {
