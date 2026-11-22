@@ -75,7 +75,7 @@ const RS = [
   ['HIDROLATO', 'Salida del\nhidrolato', 480, 470, 'der'],
   ['MIRILLA', 'Mirilla', 356, 292, 'der'],
   ['TIERRA', 'Puesta\na tierra', 335, 512, 'der'],
-  ['CALDERA', 'Al alambique\n(cohobación)', 520, 738, 'der'],
+  ['CALDERA', 'A la caldera', 520, 738, 'der'],
   ['DESAGUE', 'Al desagüe', 440, 760, 'izq'],
   // la persona de referencia, a la derecha de las válvulas del hidrolato: el rótulo, arriba a la izquierda de la cabeza.
   // Los dos llevan la clase solo-es (ver abajo, la lámina inglesa)
