@@ -102,7 +102,29 @@ const GUIAS_LECTURA: Record<string, Partial<Reading>> = {
     tags: ['guía de lectura', 'libro', 'distribución de tamaños', 'tamizado', 'molienda', 'cáscara'],
     href: GUIA + 'Guia_Semana_03.html',
   },
+  'lectura-05-bombas': {
+    week: 6, order: 5,
+    title: 'Guía de lectura · Semana 6: bombas',
+    summary:
+      'Qué leer del capítulo 11 del libro: las familias de bombas por dentro, la carta del fabricante y dónde debe trabajar una bomba, las leyes de afinidad y lo que cuesta cada manera de regular, el arreglo en serie y en paralelo, los líquidos viscosos, las de desplazamiento positivo con su válvula de alivio y la selección con su hoja de datos. Con las preguntas de la semana. De ahí sale el Quiz 4.',
+    date: '2026-11-22', readingMinutes: 60,
+    tags: ['guía de lectura', 'libro', 'bombas', 'curvas características', 'leyes de afinidad', 'desplazamiento positivo', 'hoja de datos'],
+    href: GUIA + 'Guia_Semana_06_Bombas.html',
+  },
+  'lectura-06-agitacion': {
+    week: 7, order: 7,
+    title: 'Guía de lectura · Semana 7: agitación y escalado',
+    summary:
+      'Qué leer de los capítulos 14 y 15 del libro: el tanque y sus bafles, los impulsores y cuál escoger, el número de potencia, el caudal que bombea un impulsor y los remolinos más pequeños, los sólidos en suspensión, el tamaño de las gotas y las reglas para escalar un tanque agitado. Con las preguntas de la semana. De ahí sale el Quiz 6, y es la base del Laboratorio 2.',
+    date: '2026-11-22', readingMinutes: 65,
+    tags: ['guía de lectura', 'libro', 'agitación', 'impulsores', 'número de potencia', 'gotas', 'escalado'],
+    href: GUIA + 'Guia_Semana_07.html',
+  },
 };
+
+// Lecturas de pectina que no tienen lugar en 2027-10: el mezclado y el escalado
+// (Lectura 07) entran en la guía de la semana 7, con el capítulo 15 del libro.
+const LECTURAS_RETIRADAS = new Set(['lectura-07-mezclado']);
 
 // Descripciones que en 2026-20 hablaban de la planta de pectina.
 const DESCRIPCIONES: Record<string, string> = {
@@ -479,7 +501,7 @@ export const pou202710Course: Course = {
       category: 'guia',
       href: '/classroom/iqya-2031-2027-10/pagina.html',
     },
-    ...pou202620Course.readings.map((r) =>
+    ...pou202620Course.readings.filter((r) => !LECTURAS_RETIRADAS.has(r.slug)).map((r) =>
       GUIAS_LECTURA[r.slug]
         ? { ...r, ...GUIAS_LECTURA[r.slug] }
         : r.slug === 'lectura-04-transporte-liquidos'
@@ -534,6 +556,21 @@ export const pou202710Course: Course = {
           }
         : r,
     ),
+    {
+      // La clase de válvulas, control y vacío no tenía lectura en 2026-20.
+      slug: 'guia-semana-06-valvulas',
+      week: 6,
+      order: 6,
+      title: 'Guía de lectura · Semana 6: válvulas, control y vacío',
+      summary:
+        'Qué leer de los capítulos 13 y 12 del libro: las válvulas manuales y cuánto pierde cada una, la válvula de control por dentro con su coeficiente de flujo y sus características inherente e instalada, la válvula de control del caso y los sistemas de vacío para la columna, con la carga de aire y vapor que tienen que sacar. Con las preguntas de la semana. De ahí sale el Quiz 5.',
+      date: '2026-11-22',
+      readingMinutes: 60,
+      tags: ['guía de lectura', 'libro', 'válvulas', 'válvula de control', 'Cv', 'característica instalada', 'vacío'],
+      category: 'lectura',
+      href: GUIA + 'Guia_Semana_06_Valvulas.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l04.jpg',
+    },
     {
       slug: 'laboratorio-01-arrastre-de-vapor',
       week: 5,
