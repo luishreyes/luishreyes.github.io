@@ -33,7 +33,7 @@ const PRESENTACIONES_PROPIAS = new Set([
   'presentacion-del-curso', 'trabajo-en-equipo',
   'diagramas-ingenieria', 'pid-instrumentacion',
   'propiedades-solidos-particulados', 'reduccion-de-tamano',
-  'arrastre-de-vapor', 'bombas',
+  'arrastre-de-vapor', 'bombas', 'valvulas-control-vacio',
 ]);
 const LECTURAS_PROPIAS = new Set([
   'lectura-01-operaciones-unitarias',
@@ -176,6 +176,8 @@ const DESCRIPCIONES: Record<string, string> = {
     'Por qué el aceite de la cáscara sale con el vapor por debajo de 100 °C y por qué sale tan despacio, con el área 200 del capítulo 32 del libro y sus figuras: las tres formas del arrastre, el Clevenger del laboratorio, el equilibrio de dos líquidos inmiscibles y de un aceite de varios componentes, la hidrodifusión y la brecha con el equilibrio, los dos modelos de rendimiento y su ajuste, los criterios de corte del lote, el extractor por dentro, el escalado, el tiempo muerto, la batería de cuatro extractores, su P&ID y el balance del área. Con cuatro animaciones del capítulo.',
   'bombas':
     'Cómo se escoge una bomba, con la línea de agua de servicios del capítulo 11 del libro y sus figuras: las dos familias y lo que fija cada una, las ocho por dentro, la centrífuga y sus impulsores, la velocidad específica, la carta del fabricante y la ventana de operación, el punto de operación, la válvula, el variador y el recorte con las leyes de afinidad y lo que cuesta cada manera, la serie y el paralelo con sus riesgos, la corrección por viscosidad, la válvula de alivio, las reciprocantes y las rotatorias, y la selección con su hoja de datos. Con diez animaciones del capítulo.',
+  'valvulas-control-vacio':
+    'Qué válvula sirve para cada servicio y cómo se dimensiona la válvula de control de una línea con bomba, con la línea de agua del capítulo 13 del libro y la columna de rectificación del 12: las válvulas manuales por dentro y cuánto pierde cada una, la retención, la válvula de control con su posición de falla, el Cv, las características inherente e instalada y la cavitación; la válvula del caso con su carrera, su ganancia y su instalación, y los sistemas de vacío, con la carga de aire y limoneno y la elección para la columna. Con cinco animaciones y los cortes que se mueven de los capítulos.',
   'trabajo-en-equipo':
     'La sesión del quiz de práctica: qué distingue a un equipo que funciona, cuánto pesa el equipo en la nota, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase y sube a Bloque Neón.',
 };
@@ -517,7 +519,18 @@ export const pou202710Course: Course = {
         : PRESENTACIONES_PROPIAS.has(p.id)
         ? { ...p, description: DESCRIPCIONES[p.id] ?? p.description }
         : { ...p, carpeta: 'iqya-2031-2026-20', week: SEMANA_2027[p.id] ?? p.week },
-    ),
+    )
+    // La clase de válvulas, control y vacío no tenía presentación en 2026-20.
+    .concat([
+      {
+        id: 'valvulas-control-vacio',
+        week: 6,
+        title: 'Válvulas, control y vacío',
+        description: DESCRIPCIONES['valvulas-control-vacio'],
+        sessionNumber: 12,
+        file: 'Valvulas_Control_Vacio/Presentacion_Valvulas_Control_Vacio.html',
+      },
+    ]),
   // Los simuladores se sirven desde 2026-20, salvo los que ya tienen versión
   // 2027-10. El de molienda trae la cáscara húmeda y el molino de cuchillas;
   // el Manual de diagramas es el mismo, con sus ejemplos de pectina pasados a
