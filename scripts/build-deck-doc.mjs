@@ -64,6 +64,13 @@ try {
       document.querySelector('deck-stage').id = 'impreso'; // el prefijo de la hoja: le gana a las reglas de celular
     });
     await page.addStyleTag({ url: `${base}/classroom/estilo-libro/presentacion.css` });
+    // El encabezado de cada página lleva el nombre de la presentación (lo que va antes
+    // del primer « · » de su <title>) y el periodo.
+    const titulo = ((html.match(/<title>([^<]*)<\/title>/) || [])[1] || '').split(' · ')[0].trim();
+    if (titulo) {
+      const texto = `${titulo}${PERIODO ? ' · ' + PERIODO : ''}`.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      await page.addStyleTag({ content: `@page { @top-left { content: "${texto}" "\\2003\\2003" counter(page); } } @page :first { @top-left { content: none; } }` });
+    }
     await page.addStyleTag({ content: 'video.anim{display:none!important}img.anim-impresion{display:block!important}' });
   } else {
     await page.addStyleTag({ content: css });

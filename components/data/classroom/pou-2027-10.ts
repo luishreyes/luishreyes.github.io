@@ -131,7 +131,7 @@ const DESCRIPCIONES: Record<string, string> = {
   'presentacion-del-curso':
     'La sesión inaugural completa: bienvenida y la planta de aceite esencial, equipo docente, objetivos y resultados ABET, las ocho estaciones del proceso, metodología, módulos y ritmo del semestre, evaluación, uso de IA y expectativas.',
   'diagramas-ingenieria':
-    'PBD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología de equipos (Turton e ISO 10628), codificación de equipos y corrientes, balance de masa con cierre de ±1 % y buenas prácticas, con la unidad de hidrodesulfuración del Manual de diagramas como ejemplo.',
+    'El diagrama de bloques y el PFD, con la planta de benceno del capítulo 2 del libro y sus figuras: los tres diagramas, los símbolos de la ISO 10628-2, los códigos de los equipos, las corrientes, la tabla de corrientes y sus tres comprobaciones, el balance con cierre de ±1 %, los servicios, los lazos de control, las plantas por lotes, las reglas del dibujo y el PFD de su planta en las bitácoras.',
   'pid-instrumentacion':
     'Simbología ANSI/ISA-5.1-2024 para instrumentación, lazos de control, seguridad (PSV) y cómo una bomba del PFD se vuelve su P&ID, con la unidad de hidrodesulfuración del Manual de diagramas como ejemplo.',
   'trabajo-en-equipo':
