@@ -161,6 +161,21 @@ export const CLASES = {
   'ts-boca-tubo': { fill: 'hueco.medio' }, 'ts-haz-fondo': { fill: 'hueco.claro' }, 'ts-afuera': { fill: 'blanco' }, 'ts-hueco': { fill: 'hueco.medio' },
   'ts-flujo': { stroke: 'azul' }, 'ts-flujo-v': { stroke: 'azul' }, 'ts-flecha': { fill: 'azul' }, 'ts-flecha-v': { fill: 'azul' },
   'ts-vapor': { stroke: 'naranja' }, 'ts-vapor-p': { fill: 'naranja' }, 'ts-cota': { stroke: 'tinta' }, 'ts-cota-p': { fill: 'tinta' }, 'ts-guia': { stroke: 'tinta-2' },
+  // el extractor de vapor vivo del arrastre (capítulo 32): el recipiente, la canasta, las líneas y la chaqueta del
+  // aislamiento de acero inoxidable (la pared por dentro, un paso más oscura; el corte en la sombra más honda); la lana
+  // en el corte en el amarillo de los aislantes, como la línea de vapor; las válvulas, las abrazaderas, la trampa y las
+  // cabezas de los termopares de fundición; el actuador y la caja del manómetro pintados, el indicador de posición
+  // amarillo, las juntas de caucho; la cáscara en los tonos de la cáscara (el flavedo, el albedo y los huecos oscuros); el
+  // vapor en flechas blancas con borde de tinta, que se leen sobre la cáscara naranja
+  ...corte('ex'), 'ex-wool-cut': 'amarillo/corte1', 'ex-gasket-cut': 'caucho/corte', 'ex-ss': 'acero', 'ex-clad': 'acero',
+  'ex-in': 'acero/dentro', 'ex-cast': 'fundicion', 'ex-lever': 'fundicion', 'ex-act': 'pintado', 'ex-gauge': 'pintado',
+  'ex-ind': 'amarillo', 'ex-gasket': 'caucho', 'ex-dial': { fill: 'acero.cara' },
+  'ex-bore': { fill: 'hueco.claro' }, 'ex-bore-dk': { fill: 'hueco.oscuro' }, 'ex-hole': { fill: 'hueco.oscuro' },
+  'ex-pz-bg': { fill: 'cascara.oscuro' }, 'ex-pz-bgt': { fill: 'cascara.sombras.0' }, 'ex-pz-f': { fill: 'cascara.sombras.0' },
+  'ex-pz-l': { fill: 'cascara.sombras.1' }, 'ex-pz-a': { fill: 'cascara.tapa' }, 'ex-pz-d': { fill: 'cascara.oscuro' },
+  'ex-pz-top': { fill: 'blanco', 'fill-opacity': 0.16 }, 'ex-pz-side': { fill: 'tinta', 'fill-opacity': 0.14 },
+  '.ex-carga .iso-line[data-tone="mid"]': { stroke: 'cascara.oscuro' }, '.ex-carga .iso-line[data-tone="lo"]': { stroke: 'cascara.oscuro' },
+  'ex-vapor-o': { stroke: 'tinta-2' }, 'ex-vapor': { stroke: 'blanco' }, 'ex-vapor-p': { fill: 'blanco', stroke: 'tinta-2' },
   // florentino (capítulo 10): agua abajo, aceite arriba
   ...corte('fl'), 'fl-ss': 'acero', 'fl-in': 'acero/dentro', 'fl-pipe': 'acero', 'fl-trim': 'acero', 'fl-cast': 'fundicion',
   'fl-lever': 'fundicion', 'fl-cu': 'cobre', 'fl-tierra': 'caucho', 'fl-glw': 'agua', 'fl-glo': 'aceite',
@@ -361,6 +376,7 @@ const RAMPA_GRANO = ['solido.oscuro', 'solido.sombras.0', 'solido.sombras.1'];
 export const VISTAS = {
   'agitacion/_impulsores': {},
   'agitacion/_tanque-agitado': {},
+  'arrastre-de-vapor/_extractor': {},
   'bombas/_impulsores': {},
   'bombas/_instalacion': {},
   'bombas/_por-dentro': {},
