@@ -393,7 +393,7 @@ export const pou202710Course: Course = {
     ...c,
     items: c.items.map((it) =>
       it.startsWith('La fecha límite para retirarse')
-        ? 'La fecha límite para retirarse del curso la fija el calendario académico de 2027-10 (por confirmar).'
+        ? 'La fecha límite para retirarse del curso es la semana 11 (12 al 16 de abril), la misma semana del semestre que en 2026-20.'
         : it === 'Informa al profesor en las primeras dos semanas.'
         ? 'Informe al profesor en las primeras dos semanas.'
         : it,
