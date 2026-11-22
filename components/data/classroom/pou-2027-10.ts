@@ -547,5 +547,18 @@ export const pou202710Course: Course = {
       category: 'guia',
       href: '/classroom/iqya-2031-2027-10/laboratorios/Laboratorio_01/Laboratorio_01_Arrastre_de_Vapor.html',
     },
+    {
+      slug: 'laboratorio-02-agitacion-y-emulsion',
+      week: 7,
+      order: 40,
+      title: 'Laboratorio 2: agitación y emulsión',
+      summary:
+        'La guía de la práctica del 11 de marzo: el número de potencia de una turbina Rushton y de una de palas inclinadas, medido con el par del agitador, y el tamaño de gota de una emulsión de aceite mineral en agua con Tween 80 a cuatro velocidades, medido en el Mastersizer y comparado con la ecuación del libro. Con el montaje impreso en 3D, el procedimiento, los cálculos, la hoja de datos para imprimir, la plantilla de Excel y la rúbrica del memorando.',
+      date: '2026-11-22',
+      readingMinutes: 15,
+      tags: ['laboratorio', 'agitación', 'emulsión', 'número de potencia', 'Weber', 'memorando'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2027-10/laboratorios/Laboratorio_02/Laboratorio_02_Agitacion_y_Emulsion.html',
+    },
   ],
 };
