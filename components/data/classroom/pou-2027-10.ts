@@ -60,7 +60,7 @@ const RESUMENES: Record<string, string> = {
   'taller-01-analisis-de-pfd':
     'Se hace en papel, en la sesión del jueves 4 de febrero, en parejas que asigna el profesor. Cada pareja recibe su propio plano de una planta de ron a partir de melaza, con quince errores de dibujo y de ingeniería, y la hoja de consulta con las reglas de la Lectura 02. La pareja describe la planta con su PBD, sigue el azúcar hasta el etanol, encuentra y corrige los errores, analiza el sistema de la columna y dibuja el fermentador como en un P&ID; al final, cada uno responde solo un boleto de salida sobre el plano. La página trae un plano de práctica con su visor.',
   'taller-02-analisis-granulometrico':
-    'Se resuelve en un cuaderno de Google Colab, que se abre desde la página con un clic. Tres casos de la planta: la cáscara que sale del desgarrador, que se juzga contra tres criterios del extractor; dos equipos de desgarrado que compiten por preparar la carga y donde ninguno domina al otro; y una carta de control del D50 con las muestras de una semana. Incluye el ajuste de los tres modelos clásicos de distribución, log-normal, Rosin-Rammler y Gates-Gaudin-Schuhmann, y cinco preguntas de análisis con sustento bibliográfico en formato IEEE. En parejas, con pareja distinta a la del Taller 1.',
+    'Se resuelve en un cuaderno de Google Colab dentro de la sesión del jueves 11 de febrero, en parejas que asigna el profesor, y cada pareja trabaja con sus propios datos, que salen del número que recibe al comenzar. En la Parte A juzga una arena para el lecho de un filtro rápido contra tres criterios de la planta; en la Parte B compara un molino de martillos y uno de rodillos para el maíz de un alimento balanceado, donde ninguno gana en todo. El cuaderno trae la teoría, las funciones y un ejemplo resuelto con harina de trigo, y se sube a Bloque Neón antes de salir. Al final, cada uno responde solo un boleto de salida en papel.',
 };
 
 // Lecturas reescritas para 2027-10: su tiempo real de lectura y la fecha de la revisión.
@@ -70,6 +70,10 @@ const REVISADAS: Record<string, { readingMinutes: number; date: string; tags?: s
   'taller-01-analisis-de-pfd': {
     readingMinutes: 15, date: '2026-11-21',
     tags: ['PFD', 'P&ID', 'errores de dibujo', 'Turton', 'ISA-5.1', 'taller en papel'],
+  },
+  'taller-02-analisis-granulometrico': {
+    readingMinutes: 10, date: '2026-11-22',
+    tags: ['tamizado', 'distribución de tamaño', 'D80', 'molienda', 'Colab', 'datos por pareja'],
   },
   'lectura-02-diagramas-ingenieria': {
     readingMinutes: 42, date: '2026-10-22',
