@@ -405,8 +405,8 @@ export const pou202710Course: Course = {
   description:
     'En este curso diseñará, dimensionará y simulará una planta de aceite esencial de grado alimentario a partir de cáscara de cítricos, el residuo que deja una juguera. Bajo el enfoque de Diseño Integrado de Productos y Procesos, cada operación unitaria llega la semana en que su equipo la necesita para cerrar un balance: manejo de sólidos, transporte de fluidos, agitación, intercambio de calor, filtración y, sobre todo, destilación, que aquí no recupera un solvente sino que hace el producto. El arrastre de vapor lo extrae de la cáscara y la rectificación al vacío decide su calidad. El modelo es híbrido: aula invertida con lecturas previas, quices al iniciar clase, talleres en pareja dentro de la sesión, tres laboratorios, tres exámenes en papel y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
 
-  // Hereda el banner de 2026-20 hasta que exista public/classroom/iqya-2031-2027-10/banner.jpg.
-  bannerUrl: '/classroom/iqya-2031-2026-20/banner.jpg',
+  // Naranjas Ambersweet (Keith Weller, USDA ARS, dominio público), en blanco y negro.
+  bannerUrl: '/classroom/iqya-2031-2027-10/banner.jpg',
 
   challenges: {
     label: 'Hervir a 97 lo que hierve a 176',
