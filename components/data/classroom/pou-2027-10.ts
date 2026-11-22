@@ -125,7 +125,40 @@ const GUIAS_LECTURA: Record<string, Partial<Reading>> = {
 
 // Lecturas de pectina que no tienen lugar en 2027-10: el mezclado y el escalado
 // (Lectura 07) entran en la guía de la semana 7, con el capítulo 15 del libro.
-const LECTURAS_RETIRADAS = new Set(['lectura-07-mezclado']);
+// Lo demás que sale lo decidió el profesor el 22 nov 2026: el equilibrio, el
+// flash y McCabe-Thiele los da Fenómenos de Transporte Macroscópicos; los
+// intercambiadores no tienen sesión propia (de ellos se queda el explorador, en
+// la semana 9, para el condensador), y los talleres de pectina dan paso a los
+// cinco de 2027-10.
+const LECTURAS_RETIRADAS = new Set([
+  'lectura-07-mezclado',
+  'lectura-08-intercambiadores-de-calor', 'lectura-10-equilibrio-de-fases',
+  'lectura-11-destilacion-flash', 'lectura-13-destilacion-continua',
+  'taller-03-seleccion-de-bombas', 'taller-04-suspension-de-solidos',
+  'taller-05-intercambiador-tubo-coraza', 'taller-06-filtracion-de-levadura',
+  'taller-07-rachford-rice', 'taller-08-rayleigh', 'taller-09-mccabe-thiele',
+]);
+const PRESENTACIONES_RETIRADAS = new Set([
+  'intercambiadores-i', 'intercambiadores-ii',
+  'equilibrio-de-fases', 'destilacion-flash', 'destilacion-continua',
+]);
+// El Explorador del ecofiltro es una actividad de flujo de fluidos. Siguen en
+// la página pública de estrategias de docencia, que junta los de todos los
+// semestres.
+const SIMULADORES_RETIRADOS = new Set([
+  'explorador-bernoulli', 'explorador-equilibrio-flash', 'explorador-ecofiltro',
+]);
+// La semana de 2027-10 de lo heredado que se queda, según su cronograma.
+const SEMANA_2027: Record<string, number> = {
+  agitacion: 7, 'mezclado-de-fluidos': 7, filtracion: 10,
+  'destilacion-diferencial': 13, 'diseno-de-platos': 15,
+  'eficiencias-en-destilacion': 15, 'comunicacion-visual': 16,
+  'explorador-agitacion': 7, 'explorador-intercambiadores': 9,
+  'explorador-filtracion': 10, 'explorador-mccabe-thiele': 13,
+  'explorador-destilacion-lotes': 13, 'explorador-torre-de-platos': 15,
+  'explorador-graficos': 16,
+  'lectura-12-destilacion-por-lotes': 13, 'lectura-14-comunicacion-visual': 16,
+};
 
 // Descripciones que en 2026-20 hablaban de la planta de pectina.
 const DESCRIPCIONES: Record<string, string> = {
@@ -476,18 +509,20 @@ export const pou202710Course: Course = {
   // Las que 2027-10 cambia por una nueva: la semana 4 de 2026-20 era flujo de
   // fluidos, que ahora da Fenómenos de Transporte Macroscópicos, y en 2027-10 la
   // sesión 7 es el arrastre de vapor; las bombas pasan de la semana 5 a la 6.
-  presentations: pou202620Course.presentations.map((p) =>
-    REEMPLAZOS[p.id]
-      ? REEMPLAZOS[p.id]
-      : PRESENTACIONES_PROPIAS.has(p.id)
-      ? { ...p, description: DESCRIPCIONES[p.id] ?? p.description }
-      : { ...p, carpeta: 'iqya-2031-2026-20' },
-  ),
+  presentations: pou202620Course.presentations
+    .filter((p) => !PRESENTACIONES_RETIRADAS.has(p.id))
+    .map((p) =>
+      REEMPLAZOS[p.id]
+        ? REEMPLAZOS[p.id]
+        : PRESENTACIONES_PROPIAS.has(p.id)
+        ? { ...p, description: DESCRIPCIONES[p.id] ?? p.description }
+        : { ...p, carpeta: 'iqya-2031-2026-20', week: SEMANA_2027[p.id] ?? p.week },
+    ),
   // Los simuladores se sirven desde 2026-20, salvo los que ya tienen versión
   // 2027-10. El de molienda trae la cáscara húmeda y el molino de cuchillas;
   // el Manual de diagramas es el mismo, con sus ejemplos de pectina pasados a
   // la unidad HDS o al proyecto de cada equipo.
-  simulations: (pou202620Course.simulations ?? []).map((sim) =>
+  simulations: (pou202620Course.simulations ?? []).filter((sim) => !SIMULADORES_RETIRADOS.has(sim.id)).map((sim) =>
     sim.id === 'manual-diagramas'
       ? sim
       : sim.id === 'explorador-molienda'
@@ -496,7 +531,15 @@ export const pou202710Course: Course = {
           description:
             'Seleccione un equipo de reducción de tamaño y véalo operar, con su animación de física de partículas. Arranca con la cáscara cítrica húmeda de la planta de aceite esencial en un molino de cuchillas: el rotor corta contra las cuchillas fijas de la carcasa y la criba fija el tamaño. Esa cáscara no tiene índice de Bond, así que su energía se fija por consumo específico, entre 5 y 20 kWh/t, y se pasa a sólido seco con su agua; si la pone en un molino de impacto o de compresión, el simulador la marca inviable. Con los demás materiales (caliza, carbón, maíz, azúcar, arcilla y cáscara seca) calcula la energía con la Ley de Bond y los factores de Rowland, compara Bond, Kick y Rittinger, lleva la energía hasta el motor estándar IEC y resuelve el balance térmico. La granulometría usa Rosin-Rammler con tamizado ASTM E11 o Tyler y una tamizadora animada.',
         }
-      : { ...sim, carpeta: 'iqya-2031-2026-20' },
+      : sim.id === 'explorador-bombas-centrifugas'
+      ? {
+          // La versión de 2027-10, sin la pectina, en la semana de bombas.
+          ...sim,
+          week: 6,
+          sessionNumber: 11,
+          description: sim.description.replace('o el extracto de pectina del proyecto', 'o un extracto acuoso caliente'),
+        }
+      : { ...sim, carpeta: 'iqya-2031-2026-20', week: SEMANA_2027[sim.id] ?? sim.week },
   ),
 
   // La metodología es la misma; solo cambia de qué planta se habla.
@@ -578,7 +621,7 @@ export const pou202710Course: Course = {
             ...r,
             slug: 'lectura-12-filtracion-winterizacion',
             order: 12,
-            week: 9,
+            week: 10,
             title: 'Filtración industrial y winterización',
             summary:
               'La barrera porosa que separa sólidos y gotas de un líquido: mecanismos de retención, la ley de Darcy con la resistencia de la torta y la del medio, el ensayo a presión constante, la compresibilidad, los equipos, los medios y las ayudas filtrantes. Después, la filtración de profundidad con cartuchos y placas (retención nominal y absoluta, razón beta, caída de presión limpia, ensayos de capacidad y cambio del medio) y la winterización de la planta: enfriar el aceite del florentino a 5-10 °C y pasarlo por un filtro de profundidad para quitarle el agua y la turbidez. No es un desencerado.',
@@ -587,6 +630,8 @@ export const pou202710Course: Course = {
             tags: ['filtración', 'ley de Darcy', 'torta', 'resistencia del medio', 'filtración de profundidad', 'cartuchos', 'placas filtrantes', 'razón beta', 'winterización', 'aceite esencial'],
             href: '/classroom/iqya-2031-2027-10/lecturas/Lectura_12/Lectura_12_Filtracion.html',
           }
+        : SEMANA_2027[r.slug]
+        ? { ...r, week: SEMANA_2027[r.slug] }
         : r,
     ),
     {

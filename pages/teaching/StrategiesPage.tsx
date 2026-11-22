@@ -12,14 +12,21 @@ import { fotos, type Foto } from '../../components/data/fotos';
  *  de Operaciones Unitarias y el material del curso. Las cifras del aula se leen de sus datos. */
 
 const AULA = `/classroom/${pou202620Course.slug}`;
-/** Los simuladores salen del semestre más reciente de Proyecto de Operaciones Unitarias, que hereda los de los
- *  anteriores: uno nuevo aparece aquí en cuanto entra a los datos del curso. Se abren directo, sin el código del aula. */
-const pouReciente = classroomData
+/** Los simuladores de todos los semestres de Proyecto de Operaciones Unitarias, cada uno en su versión más
+ *  reciente y en el orden del último semestre: uno nuevo aparece aquí en cuanto entra a los datos del curso, y
+ *  uno que un semestre deja fuera de su aula (el de Bernoulli, el flash o el ecofiltro en 2027-10) sigue aquí.
+ *  Se abren directo, sin el código del aula. */
+const cursosPou = classroomData
   .filter((c) => c.slug.startsWith('iqya-2031-'))
-  .sort((a, b) => b.term.localeCompare(a.term))[0];
-const simulaciones = pouReciente.simulations ?? [];
+  .sort((a, b) => b.term.localeCompare(a.term));
+const vistos = new Set<string>();
+const simulaciones: Simulation[] = cursosPou.flatMap((c) =>
+  (c.simulations ?? [])
+    .filter((s) => !vistos.has(s.id) && !!vistos.add(s.id))
+    .map((s) => ({ ...s, carpeta: s.carpeta ?? c.slug })),
+);
 const simuladores = simulaciones.filter((s) => s.id !== 'manual-diagramas');
-const urlSimulador = (s: Simulation) => `/classroom/${s.carpeta ?? pouReciente.slug}/simulaciones/${s.file}`;
+const urlSimulador = (s: Simulation) => `/classroom/${s.carpeta}/simulaciones/${s.file}`;
 const material = pou202620Course.readings ?? [];
 // Guías de trabajo: sin el programa ni el cronograma, que son del curso y no del proyecto.
 const guias = material.filter((r) => r.category === 'guia' && !['programa-del-curso', 'cronograma-interactivo'].includes(r.slug));
