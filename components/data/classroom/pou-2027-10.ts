@@ -156,7 +156,7 @@ const SEMANA_2027: Record<string, number> = {
   filtracion: 10,
   'destilacion-diferencial': 13, 'diseno-de-platos': 15,
   'eficiencias-en-destilacion': 15, 'comunicacion-visual': 16,
-  'explorador-agitacion': 7, 'explorador-intercambiadores': 9,
+  'explorador-intercambiadores': 9,
   'explorador-filtracion': 10, 'explorador-mccabe-thiele': 13,
   'explorador-destilacion-lotes': 13, 'explorador-torre-de-platos': 15,
   'explorador-graficos': 16,
@@ -556,6 +556,16 @@ export const pou202710Course: Course = {
           ...sim,
           description:
             'Seleccione un equipo de reducción de tamaño y véalo operar, con su animación de física de partículas. Arranca con la cáscara cítrica húmeda de la planta de aceite esencial en un molino de cuchillas: el rotor corta contra las cuchillas fijas de la carcasa y la criba fija el tamaño. Esa cáscara no tiene índice de Bond, así que su energía se fija por consumo específico, entre 5 y 20 kWh/t, y se pasa a sólido seco con su agua; si la pone en un molino de impacto o de compresión, el simulador la marca inviable. Con los demás materiales (caliza, carbón, maíz, azúcar, arcilla y cáscara seca) calcula la energía con la Ley de Bond y los factores de Rowland, compara Bond, Kick y Rittinger, lleva la energía hasta el motor estándar IEC y resuelve el balance térmico. La granulometría usa Rosin-Rammler con tamizado ASTM E11 o Tyler y una tamizadora animada.',
+        }
+      : sim.id === 'explorador-agitacion'
+      ? {
+          // La versión de 2027-10, con el tanque de lavado y el modelo del libro, en la semana de agitación.
+          ...sim,
+          week: 7,
+          sessionNumber: 13,
+          bannerImg: '/classroom/iqya-2031-2027-10/simuladores-banners/explorador-agitacion.jpg',
+          description:
+            'Mire el tanque por dentro: una vista lateral en perspectiva y una vista en planta donde cientos de partículas siguen la circulación que se calcula para cada geometría (el chorro radial de la Rushton que se parte en dos lazos, el lazo único de la turbina de palas inclinadas, la cinta que sube por la pared), con el giro alrededor del eje, la turbulencia y el vórtice cuando faltan los bafles. Arranca con el tanque de lavado de la planta de aceite esencial, con números supuestos, donde la cáscara flota: súbale la velocidad hasta la que pide Joosten para hundirla y mire lo que cuesta. Inyecte un trazador y vea cómo se mezcla mientras tres sondas miden θ₉₅, comparado con Grenville como en el capítulo 15 del libro. Escoja entre seis impulsores, la geometría, la velocidad y el fluido, y agregue sólidos que se hunden (Zwietering) o que flotan (Joosten) o gas por un anillo distribuidor. Incluye la curva Nₚ-Re con y sin bafles, la potencia y el motor, la potencia por volumen, θ₉₅ contra N, la velocidad que pide el sólido según su densidad, el mapa de régimen del gas con kLa, el escalado según lo que haya que conservar con lo que le pasa a todo lo demás y el calentamiento por la camisa. En su pestaña de configuraciones trae también el vaso del Laboratorio 2 con sus dos impulsores, el reactor de los capítulos 14 y 15 y ejemplos de McCabe y propios.',
         }
       : sim.id === 'explorador-bombas-centrifugas'
       ? {
