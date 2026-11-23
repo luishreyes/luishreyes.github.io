@@ -36,16 +36,16 @@ export const authorship = {
 
 export const scholar = {
   /** Fecha de la foto del perfil (AAAA-MM-DD). */
-  asOf: '2026-11-10',
-  citations: 3314,
+  asOf: '2026-11-23',
+  citations: 3325,
   hIndex: 32,
   i10Index: 64,
-  /** Citas que recibió cada año, según las barras del perfil al 10 de noviembre de 2026.
+  /** Citas que recibió cada año, según las barras del perfil al 23 de noviembre de 2026.
    *  La de 2026 va hasta esa fecha. */
-  perYearAsOf: '2026-11-10',
+  perYearAsOf: '2026-11-23',
   perYear: {
-    2012: 19, 2013: 44, 2014: 74, 2015: 69, 2016: 101, 2017: 84, 2018: 112,
-    2019: 131, 2020: 146, 2021: 214, 2022: 277, 2023: 349, 2024: 441, 2025: 599, 2026: 605,
+    2012: 19, 2013: 44, 2014: 74, 2015: 69, 2016: 101, 2017: 84, 2018: 118,
+    2019: 127, 2020: 147, 2021: 215, 2022: 278, 2023: 349, 2024: 439, 2025: 603, 2026: 613,
   } as Record<number, number>,
 };
 
