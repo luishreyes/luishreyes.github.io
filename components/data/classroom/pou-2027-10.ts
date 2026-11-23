@@ -726,5 +726,20 @@ export const pou202710Course: Course = {
       href: '/classroom/iqya-2031-2027-10/talleres/Taller_03/Taller_03_Bomba_y_Valvula.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l05.jpg',
     },
+    {
+      // La clase de condensación y decantación no tenía lectura propia en 2026-20.
+      slug: 'guia-semana-09-condensacion',
+      week: 9,
+      order: 9,
+      title: 'Guía de lectura · Semana 9: condensación y decantación',
+      summary:
+        'Qué leer de los capítulos 23 y 17 del libro: los gases incondensables y el venteo, las disposiciones de un condensador, el condensador del arrastre con su curva de condensación, su agua de torre y su condensado que baja por gravedad, y el florentino de la planta, con la regla del área, la pierna del agua, las gotas que no se juntan y el hidrolato. Con las preguntas de la semana. De ahí sale el Quiz 7, y es la base del condensador y el florentino de la Bitácora 3.',
+      date: '2026-11-23',
+      readingMinutes: 70,
+      tags: ['guía de lectura', 'libro', 'condensación', 'incondensables', 'venteo', 'florentino', 'hidrolato'],
+      category: 'lectura',
+      href: GUIA + 'Guia_Semana_09.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l08.jpg',
+    },
   ],
 };
