@@ -176,6 +176,21 @@ export const CLASES = {
   'ex-pz-top': { fill: 'blanco', 'fill-opacity': 0.16 }, 'ex-pz-side': { fill: 'tinta', 'fill-opacity': 0.14 },
   '.ex-carga .iso-line[data-tone="mid"]': { stroke: 'cascara.oscuro' }, '.ex-carga .iso-line[data-tone="lo"]': { stroke: 'cascara.oscuro' },
   'ex-vapor-o': { stroke: 'tinta-2' }, 'ex-vapor': { stroke: 'blanco' }, 'ex-vapor-p': { fill: 'blanco', stroke: 'tinta-2' },
+  // el condensador evaporativo de la planta de frío (capítulo 26): la caja, las persianas, el distribuidor, la chimenea,
+  // las aspas y el aro de la malla en el acero (la lámina galvanizada); el haz y los cabezales, las líneas del amoníaco,
+  // las válvulas y el flotador en la fundición (acero al carbono galvanizado o pintado); la bomba, los motores, el puente,
+  // los eliminadores y las boquillas pintados (los dos últimos son de PVC); la losa de concreto; la guarda de la correa
+  // amarilla; la oscuridad de adentro, tras las persianas, en el gris medio de los huecos; el agua translúcida con la
+  // opacidad de siempre y las gotas del rocío en el azul; los alambres de la malla en la tinta; el aire y el agua en
+  // flechas blancas con borde de tinta, como el vapor del extractor
+  'ce-gal': 'acero', 'ce-ss': 'acero', 'ce-pipe': 'acero', 'ce-blade': 'acero',
+  'ce-tube': 'fundicion', 'ce-cast': 'fundicion', 'ce-lever': 'fundicion', 'ce-line': 'fundicion', 'ce-float': 'fundicion',
+  'ce-paint': 'pintado', 'ce-motor': 'pintado', 'ce-pump': 'pintado', 'ce-pvc': 'pintado', 'ce-noz': 'pintado',
+  'ce-conc': 'concreto', 'ce-yel': 'amarillo', 'ce-dark': { plano: 'hueco.medio' },
+  'ce-bore': { fill: 'hueco.claro' }, 'ce-bore-dk': { fill: 'hueco.oscuro' },
+  'ce-agua-cara': { fill: 'agua.sombras.0', 'fill-opacity': LIQ }, 'ce-agua-sup': { fill: 'agua.sombras.0', 'fill-opacity': LIQ_SUP },
+  '.ce-agua .iso-line[data-tone="lo"]': { stroke: 'agua.oscuro' }, 'ce-gota': { fill: 'azul' }, '.ce-malla.iso-line': { stroke: 'tinta-2' },
+  'ce-flujo-o': { stroke: 'tinta-2' }, 'ce-flujo': { stroke: 'blanco' }, 'ce-flujo-p': { fill: 'blanco', stroke: 'tinta-2' },
   // florentino (capítulo 10): agua abajo, aceite arriba
   ...corte('fl'), 'fl-ss': 'acero', 'fl-in': 'acero/dentro', 'fl-pipe': 'acero', 'fl-trim': 'acero', 'fl-cast': 'fundicion',
   'fl-lever': 'fundicion', 'fl-cu': 'cobre', 'fl-tierra': 'caucho', 'fl-glw': 'agua', 'fl-glo': 'aceite',
@@ -383,6 +398,7 @@ export const VISTAS = {
   'calor-en-equipos/_linea-vapor': {},
   'condensacion-y-ebullicion/_condensador-arrastre': {},
   'condensacion-y-ebullicion/_termosifon': {},
+  'refrigeracion-y-congelacion/_condensador-evaporativo': {},
   'evaporacion/_taste': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
   'filtracion/_prensa-tornillo': {},
