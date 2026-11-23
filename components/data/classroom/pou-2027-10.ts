@@ -711,5 +711,20 @@ export const pou202710Course: Course = {
       category: 'guia',
       href: '/classroom/iqya-2031-2027-10/laboratorios/Laboratorio_02/Laboratorio_02_Agitacion_y_Emulsion.html',
     },
+    {
+      // Nuevo en 2027-10: el Taller 3 de 2026-20 (selección de bombas de pectina) salió.
+      slug: 'taller-03-bomba-y-valvula',
+      week: 8,
+      order: 103,
+      title: 'Taller 3 · Hoja de datos de una bomba y su válvula de control',
+      summary:
+        'Se hace en papel, en la sesión del martes 16 de marzo, en parejas que asigna el profesor. Cada pareja recibe una línea de agua de la planta de aceite esencial, el catálogo impreso de bombas centrífugas y válvulas de control y la hoja de consulta. Arma la curva de la línea, calcula el NPSH disponible, escoge la bomba, el impulsor y el motor, dimensiona la válvula de igual porcentaje, revisa si cavita al caudal mínimo y deja todo en dos hojas de datos. Al final, cada integrante responde un boleto de salida. La página trae el catálogo, la hoja de consulta, las hojas de datos en blanco y un servicio de práctica.',
+      date: '2026-11-23',
+      readingMinutes: 15,
+      tags: ['bombas', 'válvula de control', 'hoja de datos', 'NPSH', 'Cv', 'cavitación', 'catálogo', 'taller en papel'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2027-10/talleres/Taller_03/Taller_03_Bomba_y_Valvula.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l05.jpg',
+    },
   ],
 };

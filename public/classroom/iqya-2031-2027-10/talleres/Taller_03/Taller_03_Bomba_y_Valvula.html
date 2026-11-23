@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller 3 · Hoja de datos de una bomba y su válvula de control · Proyecto de Operaciones Unitarias</title>
+<meta name="description" content="Taller 3 de POU 2027-10: una línea de agua de la planta de aceite esencial, un catálogo impreso y dos hojas de datos. La pareja escoge la bomba y la válvula de control y revisa si la válvula cavita.">
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 56ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; line-height: 1.7; }
+  .doc-body li { margin-bottom: 7px; }
+  .doc-body ul ul, .doc-body ol ul { font-size: 16px; margin: 6px 0 4px; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+  a.platform-link { color: var(--teal); font-weight: 600; }
+  a.platform-link::after { content: " ↗"; font-size: .82em; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: .88em; background: var(--gris-5); color: var(--gris-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---- Logo de la herramienta ---- */
+  .tool-logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px;
+    padding: 14px 22px; margin: 4px 0 22px; min-height: 64px;
+  }
+  .tool-logo img { height: 40px; width: auto; max-width: 280px; object-fit: contain; display: block; }
+
+  /* ---- Índice / sumario por partes ---- */
+  .toc-intro { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 30px 0 14px; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 8px; }
+  .part-card {
+    background: var(--papel); border-radius: 8px; padding: 24px 26px;
+    border-top: 5px solid var(--verde);
+  }
+  .part-card .pt-k { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .part-card h3 { font-size: 20px; margin: 5px 0 16px; letter-spacing: -.005em; }
+  .part-card ol { list-style: none; margin: 0; padding: 0; counter-reset: p; display: grid; gap: 9px; font-size: 16px; }
+  .part-card li { counter-increment: p; margin: 0; }
+  .part-card a {
+    display: flex; align-items: baseline; gap: 13px; text-decoration: none; cursor: pointer;
+    color: var(--gris-1); font-size: 16px; font-weight: 600; transition: color .18s ease;
+  }
+  .part-card a::before { content: counter(p, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 13px; min-width: 24px; }
+  .part-card a:hover { color: var(--verde-osc); }
+  .part-card a.is-active { color: var(--verde-osc); font-weight: 700; }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block code { font-size: 13px; word-break: break-word; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+  .block--bad { border-top-color: #DC2626; }
+  .block--bad b { color: #991B1B; }
+  .block--good { border-top-color: var(--verde); }
+  .block--good b { color: var(--verde-osc); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul { font-size: 15.5px; margin: 6px 0 0; padding-left: 20px; color: var(--gris-1); line-height: 1.5; }
+  .callout ul li { margin-bottom: 6px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; font-size: 15px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3, .parts { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .parts { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .parts { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1200px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 8px; padding: 0 4px; }
+  .sn-label.sn-label2 { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gris-4); }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item:target { color: var(--verde-osc); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+  /* ── El diagrama en la página ──────────────────────────────────────
+     El PFD es una hoja A2: a tamaño de página no se lee. Se muestra
+     reducido y se abre en un visor a pantalla completa. */
+  .pfd-caja { position: relative; border: 1px solid var(--gris-4); background: #fff; border-radius: 8px; overflow: hidden; margin: 0; }
+  .pfd-caja > img { display: block; width: 100%; height: auto; cursor: zoom-in; background: #fff; }
+  .pfd-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px 18px; flex-wrap: wrap; border-top: 1px solid var(--gris-4); padding: 12px 14px; font-size: 14px; line-height: 1.45; color: var(--gris-2); background: var(--papel); }
+  .pfd-pie b { color: var(--gris-1); }
+  .pfd-texto { flex: 1 1 300px; min-width: 0; }
+  .pfd-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pfd-abrir, .doc-body a.pfd-bajar { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; box-sizing: border-box; padding: 10px 16px; border-radius: 5px; font-family: var(--tipo); font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
+  .pfd-abrir { color: #fff; background: var(--verde); border: 2px solid var(--verde); }
+  .pfd-abrir:hover { background: var(--verde-osc); border-color: var(--verde-osc); }
+  .doc-body a.pfd-bajar { color: var(--gris-1); background: transparent; border: 2px solid var(--gris-1); }
+  .doc-body a.pfd-bajar:hover { color: #fff; background: var(--gris-1); }
+  .pfd-abrir:focus-visible, .doc-body a.pfd-bajar:focus-visible { outline: 3px solid var(--gris-1); outline-offset: 2px; }
+
+  /* ── Visor a pantalla completa ─────────────────────────────────────
+     La hoja se acerca cambiando su tamaño, no con una transformación, para
+     que el navegador vuelva a dibujar el vector y el texto se vea nítido.
+     Dentro del visor los gestos son del visor (touch-action: none); fuera
+     de él la página conserva el zoom del navegador. */
+  .visor { position: fixed; inset: 0; z-index: 300; display: none; background: #11161E; color: #fff; font-family: var(--tipo); }
+  .visor.abierto { display: block; }
+  .visor-lienzo { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; }
+  .visor-lienzo.arrastrando { cursor: grabbing; }
+  .visor-lienzo img { position: absolute; left: 0; top: 0; max-width: none; background: #fff; pointer-events: none; -webkit-user-drag: none; user-select: none; }
+  .visor-barra { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: rgba(17,22,30,.92); }
+  .visor-tit { flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 600; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .visor-btn { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 44px; box-sizing: border-box; padding: 0 12px; font-family: var(--tipo); font-size: 22px; font-weight: 700; line-height: 1; color: #fff; text-decoration: none; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.32); border-radius: 0; cursor: pointer; }
+  .visor-btn.texto { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+  .visor-btn:hover { background: rgba(255,255,255,.22); }
+  .visor-btn:disabled { opacity: .35; cursor: default; }
+  .visor-btn:disabled:hover { background: rgba(255,255,255,.1); }
+  .visor-btn:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 2px; }
+  .visor-pie { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: rgba(17,22,30,.92); }
+  .visor-mandos { display: flex; align-items: center; gap: 8px; }
+  .visor-nivel { min-width: 60px; text-align: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .visor-ayuda { max-width: 92ch; margin: 0; font-size: 13px; line-height: 1.35; text-align: center; color: rgba(255,255,255,.8); }
+  .ayuda-tactil { display: none; }
+  /* Celular acostado: la hoja necesita la altura. Los mandos suben a la
+     barra de arriba, el título y la ayuda se esconden. */
+  @media (max-height: 500px) {
+    .visor-barra { padding: 6px 12px; }
+    .visor-tit { visibility: hidden; }
+    .visor-pie { top: 0; bottom: auto; right: auto; left: 50%; transform: translateX(-50%); padding: 6px 0; background: transparent; }
+    .visor-ayuda { display: none; }
+  }
+  @media (hover: none) and (pointer: coarse) {
+    .ayuda-raton { display: none; }
+    .ayuda-tactil { display: inline; }
+  }
+
+  /* Puntaje de cada parte */
+  .pts { display: inline-block; margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-osc); background: var(--verde-claro); border-radius: 4px; padding: 3px 9px; vertical-align: middle; }
+  .preg { margin: 0 0 6px; font-weight: 700; color: var(--gris-1); }
+  .preg + ul, .preg + ol { margin-top: 0; }
+
+  /* Tablas para llenar: filas vacías con altura de escritura */
+  table.ou.llenar td { height: 30px; }
+
+  .solo-impreso { display: none; }
+  @media print {
+    .side-nav, .visor, .pfd-pie, .solo-pantalla { display: none !important; }
+    .outer-layout { display: block; max-width: none; margin: 0; padding: 0; }
+    .doc-head { padding: 28px 32px 26px; }
+    .doc-body { padding: 0 32px 24px; }
+    .doc-body section { padding-top: 26px; break-inside: auto; }
+    h2.sec, h3.sub, .preg { break-after: avoid; }
+    .doc-body li, .callout, .tbl-wrap { break-inside: avoid; }
+    p.solo-impreso { display: block; }
+    /* El PFD va solo en una hoja, al final de su sección y girado para que
+       quepa a lo largo: la cabeza del plano queda hacia el lomo, a la izquierda. */
+    #diagrama { display: flex; flex-direction: column; }
+    .pfd-caja { order: 10; break-before: page; break-after: page; height: 9.2in; border: 0; border-radius: 0; overflow: visible; }
+    .pfd-caja > img { position: absolute; left: 50%; top: 50%; width: 9.1in; max-width: none; height: auto; cursor: default; transform: translate(-50%, -50%) rotate(-90deg); }
+  }
+
+  /* La hoja de servicio de práctica */
+  .servicio { border: 1.5px solid #19222F; margin: 8px 0 12px; }
+  .sv-cab { display: flex; justify-content: space-between; align-items: baseline; background: #FFF500; padding: 7px 12px; }
+  .sv-cab b { font-size: 16px; } .sv-cab span { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  table.sv { margin: 0; } table.sv th { width: 30%; font-weight: 600; border-top: none; border-bottom: 1px solid #D3D9DF; padding: 6px 10px 6px 12px; vertical-align: top; }
+  table.sv td { padding: 6px 12px 6px 0; } table.sv tr:last-child th, table.sv tr:last-child td { border-bottom: none; }
+  .servicio table.sv { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .servicio table.sv th { text-align: left; }
+  @media print { .servicio { break-inside: avoid; } .servicio table.sv { font-size: 10pt; } }
+</style>
+<link rel="stylesheet" href="assets/lectura-curso.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add('incrustado');</script>
+</head>
+<body>
+<header class="barra"><span class="marca">Uniandes · IQYA-2031</span><span class="cual">Taller 3 · Hoja de datos de una bomba y su válvula de control</span></header>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">Contenido</p>
+  <a class="sn-item" href="#material"><span class="sn-num">00</span>El servicio y el material</a>
+  <a class="sn-item" href="#p1"><span class="sn-num">01</span>La bomba</a>
+  <a class="sn-item" href="#p2"><span class="sn-num">02</span>La válvula de control</a>
+  <a class="sn-item" href="#boleto"><span class="sn-num">03</span>Boleto de salida</a>
+  <a class="sn-item" href="#entrega"><span class="sn-num">04</span>Entrega</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Taller 3 · Proyecto de Operaciones Unitarias</div>
+    <h1>Hoja de datos de una bomba y su válvula de control</h1>
+    <p class="subtitle">Una línea de agua de la planta de aceite esencial, un catálogo impreso y dos hojas de datos por llenar. La pareja escoge la bomba y la válvula de control de su línea y revisa si la válvula cavita.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2027-10</div>
+      <div><b>Modalidad</b>En parejas que asigna el profesor; la pareja cambia en cada taller</div>
+      <div><b>Sesión</b>Martes 16 de marzo, la primera de la semana 8: 80 minutos</div>
+      <div><b>Entrega</b>En papel, al final de la sesión</div>
+      <div><b>Puntaje</b>100 puntos: 50 de la pareja y 50 del boleto de salida, individual</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">Una bomba se escoge de un catálogo y se pide con una <b>hoja de datos</b>, y la válvula que regula su caudal vive de la cabeza que la bomba da de más. En este taller la pareja hace las dos cosas para una línea de agua de la planta de aceite esencial: arma la curva de la línea, calcula el NPSH disponible, busca la bomba en el catálogo, escoge el motor, dimensiona la válvula de control de igual porcentaje y revisa si cavita al caudal mínimo. Todo queda escrito en dos hojas de datos. Es la práctica de la Bitácora 2, que pide las bombas y las válvulas de la planta, y del Examen 1, el jueves 18 de marzo. Cada pareja tiene su propia línea.</p>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Nivel de uso de IA generativa: 1</b>
+          <p>Sin IA. El taller se hace en papel, sin computador ni celular, con el material impreso y una calculadora.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Cómo se trabaja esta sesión</b>
+          <p>Al comenzar, cada pareja recibe su hoja de servicio, el catálogo, la hoja de consulta y las dos hojas de datos en blanco. Tiene unos 65 minutos para las Partes 1 y 2: los cálculos van en hojas de respuesta y los resultados, en las hojas de datos. Los últimos 12 minutos son para el boleto de salida, que cada integrante responde solo. Sobre la mesa van ese material, calculadora, regla y lápiz: sin apuntes, computador ni celular.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Lo que hay que haber leído</b>
+          <p>Del capítulo 11 del libro, las curvas características y dónde debe trabajar una bomba, la curva del sistema, el NPSH, la selección paso a paso y la hoja de datos; del capítulo 13, la válvula de control: su C<sub>v</sub>, la característica inherente, la instalada, la cavitación y el bloqueo, y la válvula de control del caso. Las guías de lectura de la semana 6 dicen qué secciones son.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="material">
+      <div class="eyebrow">Material</div>
+      <h2 class="sec"><span class="secnum">0.</span> El servicio y el material</h2>
+      <p>La <b>hoja de servicio</b> de la pareja describe su línea: qué lleva y de dónde a dónde, la temperatura normal y la máxima del agua, los caudales mínimo, normal y máximo, la diferencia de altura y la presión en el destino, la fricción de la línea al caudal máximo, el nivel mínimo del tanque de succión, la caída que el proceso le reserva a la válvula de control, la presión a la salida de la válvula y el aire alrededor del motor. Las líneas son de la planta del reto: el agua de lavado de la cáscara, el agua de enfriamiento del condensador, el hidrolato que vuelve del florentino, el agua de alimentación de la caldera y el agua caliente de la limpieza en sitio.</p>
+      <p>El <b>catálogo</b> trae seis modelos de bomba centrífuga, con su carta de cobertura y, de cada modelo, la carta con cinco impulsores y una tabla con la cabeza, la eficiencia, la potencia y el NPSH3; al final, la serie de válvulas de control de globo de jaula. Son equipos inventados para el curso, y sus curvas salen del modelo del capítulo 11 del libro. La <b>hoja de consulta</b> tiene las ecuaciones de los capítulos 11 y 13 y las propiedades del agua. Las <b>hojas de datos</b> son las dos que la pareja llena y entrega.</p>
+      <ul class="solo-pantalla">
+        <li><a href="Taller_03_Catalogo.html" target="_blank" rel="noopener">El catálogo</a> (<a href="Taller_03_Catalogo.pdf" target="_blank" rel="noopener" download>PDF</a>)</li>
+        <li><a href="Taller_03_Hoja_de_consulta.html" target="_blank" rel="noopener">La hoja de consulta</a> (<a href="Taller_03_Hoja_de_consulta.pdf" target="_blank" rel="noopener" download>PDF</a>)</li>
+        <li><a href="Taller_03_Hojas_de_datos.html" target="_blank" rel="noopener">Las hojas de datos en blanco</a> (<a href="Taller_03_Hojas_de_datos.pdf" target="_blank" rel="noopener" download>PDF</a>)</li>
+      </ul>
+      <p class="solo-impreso">El catálogo, la hoja de consulta y las hojas de datos se publican con este taller, en la misma carpeta, y se reparten impresos en la sesión.</p>
+      <p>Para practicar antes de la sesión, este es un <b>servicio de práctica</b>, con la misma forma de la hoja que recibirá la pareja. No le toca a ninguna pareja, así que no sirve memorizar su respuesta: sirve recorrer una vez el catálogo y las ecuaciones.</p>
+      <!-- PRACTICA_START -->
+<div class="servicio"><div class="sv-cab"><b>Taller 3 · Hoja de servicio</b><span>Servicio de práctica</span></div><table class="sv"><tr><th>Servicio</th><td>Agua de lavado: de el tanque de agua tratada, abierto a el tanque de lavado de la cáscara, abierto</td></tr><tr><th>Bomba y válvula de control</th><td>P-201 y FV-201</td></tr><tr><th>Líquido</th><td>agua; 16 °C normal, 25 °C máxima</td></tr><tr><th>Caudales</th><td>mínimo 8,0 m³/h · normal 17,0 m³/h · máximo 21,0 m³/h</td></tr><tr><th>Diferencia de altura Δz</th><td>13,5 m, del nivel del tanque de succión al punto de llegada</td></tr><tr><th>Presión en el destino</th><td>abierto a la atmósfera</td></tr><tr><th>Fricción de la línea al caudal máximo</th><td>h<sub>f,máx</sub> = 7,6 m en total, con las válvulas manuales abiertas y sin la válvula de control; de ellos, h<sub>fs,máx</sub> = 0,35 m en la succión</td></tr><tr><th>Succión</th><td>tanque abierto, en Bogotá; nivel mínimo 1,9 m sobre el eje de la bomba</td></tr><tr><th>Reserva para la válvula</th><td>Δp<sub>v,mín</sub> = 70 kPa al caudal máximo</td></tr><tr><th>Salida de la válvula</th><td>p<sub>2</sub> = 106 kPa absolutos al caudal mínimo</td></tr><tr><th>Motor</th><td>aire alrededor del motor hasta 26 °C; 60 Hz</td></tr></table></div>
+<!-- PRACTICA_END -->
+    </section>
+
+    <section id="p1">
+      <div class="eyebrow">Parte 1</div>
+      <h2 class="sec"><span class="secnum">1.</span> La bomba <span class="pts">25 puntos</span></h2>
+      <p>Use en todo el taller el agua a la temperatura máxima de la hoja de servicio, con la densidad y la presión de vapor de la hoja de consulta. Escriba cada cálculo con sus unidades, en el orden del enunciado, y pase los resultados a la hoja de datos de la bomba.</p>
+
+      <h3 class="sub">1.1 La línea <span class="pts">5 pts</span></h3>
+      <ul>
+        <li>Calcule la cabeza estática de la línea y la cabeza que pide sin la válvula de control a los caudales mínimo, normal y máximo.</li>
+        <li>Calcule la cabeza que tiene que dar la bomba al caudal máximo: la de la línea más la caída que el proceso le reserva a la válvula.</li>
+      </ul>
+
+      <h3 class="sub">1.2 El NPSH disponible <span class="pts">4 pts</span></h3>
+      <p>Calcule el NPSH disponible en el peor caso: la temperatura máxima, el nivel mínimo del tanque y el caudal máximo.</p>
+
+      <h3 class="sub">1.3 La bomba <span class="pts">10 pts</span></h3>
+      <ul>
+        <li>Marque el punto del caudal máximo con su cabeza requerida en la carta de cobertura y diga qué modelo lo cubre. En la carta y la tabla de ese modelo, escoja el impulsor.</li>
+        <li>Revise que el caudal normal quede entre el 70 y el 110 % del caudal del mejor punto de ese impulsor, que el máximo no pase del final de la curva publicada y que el NPSH disponible cumpla el margen de la hoja de consulta al caudal máximo. Si otro modelo también llega a la cabeza, diga por qué lo descarta.</li>
+        <li>Lea la cabeza y la eficiencia de la bomba al caudal normal y calcule la potencia al freno con la densidad del agua de su línea, al caudal normal y al final de la curva.</li>
+        <li>Escoja el motor con la regla de la hoja de consulta, con el factor de la altitud que le corresponde al aire de su motor.</li>
+      </ul>
+
+      <h3 class="sub">1.4 La hoja de datos de la bomba <span class="pts">6 pts</span></h3>
+      <p>Llene la hoja de datos de la bomba. Calcule también la presión manométrica en la brida de succión sin caudal y la presión máxima de descarga, la que queda con la descarga cerrada, y diga cómo se regula el caudal.</p>
+    </section>
+
+    <section id="p2">
+      <div class="eyebrow">Parte 2</div>
+      <h2 class="sec"><span class="secnum">2.</span> La válvula de control <span class="pts">25 puntos</span></h2>
+      <p>La válvula de control va en la descarga de la bomba que escogió, del tamaño del tubo (F<sub>p</sub> = 1), y es de globo de jaula, de igual porcentaje. Pase los resultados a la hoja de datos de la válvula.</p>
+
+      <h3 class="sub">2.1 Lo que le queda a la válvula <span class="pts">5 pts</span></h3>
+      <p>Lea en la tabla del catálogo la cabeza de su impulsor a los caudales mínimo, normal y máximo, réstele la de la línea y pase la diferencia a kilopascales.</p>
+
+      <h3 class="sub">2.2 El C<sub>v</sub> y el tamaño <span class="pts">6 pts</span></h3>
+      <p>Calcule el C<sub>v</sub> que pide la válvula a los tres caudales y escoja la válvula de igual porcentaje más pequeña del catálogo que cubre el del caudal máximo.</p>
+
+      <h3 class="sub">2.3 Las carreras <span class="pts">5 pts</span></h3>
+      <ul>
+        <li>Calcule la carrera de la válvula escogida a los tres caudales, con R<sub>v</sub> = 30, y compárelas con las metas de la hoja de consulta.</li>
+        <li>¿A qué carrera trabajaría al caudal mínimo una válvula lineal del mismo tamaño? ¿Cuál de las dos controlaría mejor ese caudal, y por qué?</li>
+      </ul>
+
+      <h3 class="sub">2.4 ¿Cavita al caudal mínimo? <span class="pts">6 pts</span></h3>
+      <ul>
+        <li>Con la presión a la salida de la válvula de la hoja de servicio, calcule la de la entrada, la caída que bloquea el caudal y la fracción de ella que usa la válvula.</li>
+        <li>Calcule x<sub>F</sub> y el coeficiente de cavitación incipiente estimado, corregido por la presión de entrada, y diga si la válvula cavita y si el caudal se bloquea. Si cavita, diga qué haría.</li>
+      </ul>
+
+      <h3 class="sub">2.5 La hoja de datos de la válvula <span class="pts">3 pts</span></h3>
+      <p>Llene la hoja de datos de la válvula, con su posición de falla y lo que esa posición protege.</p>
+    </section>
+
+    <section id="boleto">
+      <div class="eyebrow">Individual</div>
+      <h2 class="sec"><span class="secnum">3.</span> Boleto de salida <span class="pts">50 puntos</span></h2>
+      <p>En los últimos 12 minutos, cada integrante responde solo, sin hablar con su pareja, un boleto con tres preguntas: el NPSH de la línea de su pareja en una condición distinta, un cálculo corto con números nuevos y una pregunta de criterio sobre la selección o la válvula. Tiene a la mano la hoja de servicio, el catálogo, la hoja de consulta y la calculadora. Los dos integrantes reciben versiones distintas. El boleto vale la mitad de la nota del taller: muestra lo que cada uno entendió, más allá de lo que escribió la pareja.</p>
+    </section>
+
+    <section id="entrega">
+      <div class="eyebrow">Cierre</div>
+      <h2 class="sec"><span class="secnum">4.</span> Entrega</h2>
+      <ul>
+        <li>La pareja entrega, al final de la sesión, las dos hojas de datos llenas, sus hojas de cálculo en el orden del enunciado y el catálogo con lo que haya marcado, con el nombre y el código de los dos y el número de la pareja.</li>
+        <li>Cada integrante entrega su boleto de salida, aparte.</li>
+        <li>No hay entrega en <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">Bloque Neón</a> ni prórroga: lo que no se entrega en la sesión no se califica.</li>
+      </ul>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2027-10</span>
+      <span>Taller 3 · Universidad de los Andes</span>
+    </div>
+
+  </div>
+
+</article>
+</div>
+
+<script>
+/* ── Barra de progreso ─────────────────────────────────────────────── */
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ── Índice: desplazamiento suave y sección activa (scroll-spy) ────── */
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.side-nav .sn-item'));
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      e.preventDefault();
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+      if (history.replaceState) history.replaceState(null, '', '#' + el.id);
+    });
+  });
+  var sects = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); })
+                   .filter(Boolean);
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + Math.min(220, window.innerHeight * 0.3);
+    var cur = null;
+    for (var i = 0; i < sects.length; i++) {
+      if (sects[i].getBoundingClientRect().top + window.scrollY <= y) cur = sects[i].id;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) cur = sects[sects.length - 1].id;
+    links.forEach(function (a) {
+      var on = cur !== null && a.getAttribute('href') === '#' + cur;
+      a.classList.toggle('is-active', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+</body>
+</html>
