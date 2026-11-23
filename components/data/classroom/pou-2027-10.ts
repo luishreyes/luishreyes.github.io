@@ -34,7 +34,7 @@ const PRESENTACIONES_PROPIAS = new Set([
   'diagramas-ingenieria', 'pid-instrumentacion',
   'propiedades-solidos-particulados', 'reduccion-de-tamano',
   'arrastre-de-vapor', 'bombas', 'valvulas-control-vacio',
-  'agitacion-y-mezclado',
+  'agitacion-y-mezclado', 'condensacion-y-decantacion',
 ]);
 const LECTURAS_PROPIAS = new Set([
   'lectura-01-operaciones-unitarias',
@@ -183,6 +183,8 @@ const DESCRIPCIONES: Record<string, string> = {
     'Qué válvula sirve para cada servicio y cómo se dimensiona la válvula de control de una línea con bomba, con la línea de agua del capítulo 13 del libro y la columna de rectificación del 12: las válvulas manuales por dentro y cuánto pierde cada una, la retención, la válvula de control con su posición de falla, el Cv, las características inherente e instalada y la cavitación; la válvula del caso con su carrera, su ganancia y su instalación, y los sistemas de vacío, con la carga de aire y limoneno y la elección para la columna. Con cinco animaciones y los cortes que se mueven de los capítulos.',
   'agitacion-y-mezclado':
     'Cómo se arma un tanque agitado y cómo se escala, con el reactor de extracción de los capítulos 14 y 15 del libro y sus figuras: las proporciones, los bafles y la altura que mueve cada impulsor, los siete impulsores en corte y en isométrico, el número de potencia, el motor, el caudal que bombea un impulsor y la escala de Kolmogorov, la suspensión de lo que se hunde y el arrastre de lo que flota, el tamaño de las gotas, el tiempo de mezcla y las reglas de escalado, con diez animaciones de los dos capítulos; cierra con el tanque de lavado de la Bitácora 2 y el Laboratorio 2.',
+  'condensacion-y-decantacion':
+    'Cómo condensa el vapor que sale de los extractores y cómo se separa el aceite del agua, con el tren de condensación de los capítulos 23 y 17 del libro y sus figuras: la película de condensado, los gases incondensables y el venteo, las disposiciones de un condensador, sus corazas, sus deflectores y el subenfriamiento, la curva de condensación del vapor con aceite, el rocío y la meseta, el agua de torre, E-201 por dentro y por zonas; después el florentino, con la regla del área, la gota de diseño, sus comprobaciones, la pierna del agua, el venteo y la seguridad, las gotas que no se juntan, los coalescedores, el hidrolato y el florentino en corte. Con siete animaciones de los dos capítulos.',
   'trabajo-en-equipo':
     'La sesión del quiz de práctica: qué distingue a un equipo que funciona, cuánto pesa el equipo en la nota, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase y sube a Bloque Neón.',
 };
@@ -542,6 +544,15 @@ export const pou202710Course: Course = {
         description: DESCRIPCIONES['valvulas-control-vacio'],
         sessionNumber: 12,
         file: 'Valvulas_Control_Vacio/Presentacion_Valvulas_Control_Vacio.html',
+      },
+      // La de condensación y decantación ocupa el lugar de las dos de intercambiadores de 2026-20.
+      {
+        id: 'condensacion-y-decantacion',
+        week: 9,
+        title: 'Condensación y decantación',
+        description: DESCRIPCIONES['condensacion-y-decantacion'],
+        sessionNumber: 18,
+        file: 'Condensacion_y_Decantacion/Presentacion_Condensacion_y_Decantacion.html',
       },
     ]),
   // Los simuladores se sirven desde 2026-20, salvo los que ya tienen versión
