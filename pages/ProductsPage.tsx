@@ -6,15 +6,18 @@ import { EncabezadoPagina } from '../components/Apertura';
 import { Sube } from '../components/Sube';
 import { useAppData } from '../context/AppDataContext';
 import { useI18n, localize, fill, type UIKey } from '../context/i18n';
-import { researchLinesMap } from '../components/data/research';
+import { programa, lineaPorId } from '../components/data/researchProgram';
 import { editedBooksData, ownBookCovers } from '../components/data/editorships';
 import { fotos, type Foto } from '../components/data/fotos';
 import { scholar, esPublicacion } from '../components/data/citations';
-import type { Product, ProductType, ResearchArea } from '../types';
+import type { Product, ProductType, ProgramLine } from '../types';
 
 type Orden = 'newest' | 'oldest' | 'cited';
 
 const anoDe = (p: Product) => parseInt(p.publicationDate.slice(0, 4), 10);
+
+// Las líneas que toca un producto: la principal y, si cruza a otra, la segunda.
+const tocaLineas = (p: Product): ProgramLine[] => [p.programLine, p.programLineSecondary].filter((l): l is ProgramLine => !!l);
 
 // Las portadas que existen en public/images/books, por DOI, ISBN o ASIN del libro:
 // las de los libros editados y las de los libros propios.
@@ -46,14 +49,14 @@ export const ProductsPage = () => {
     const t0 = params.get('type');
     return t0 ? [t0 as ProductType] : [];
   });
-  const [linea, setLinea] = useState<string>(() => params.get('area') ?? '');
+  const [linea, setLinea] = useState<string>(() => { const l = params.get('line'); return l && l in lineaPorId ? l : ''; });
   const [desde, setDesde] = useState<number | null>(null);
   const [hasta, setHasta] = useState<number | null>(null);
 
   // La línea y el tipo viajan en la dirección: el programa enlaza aquí cada línea.
   useEffect(() => {
     const next = new URLSearchParams();
-    if (linea) next.set('area', linea);
+    if (linea) next.set('line', linea);
     if (tipos.length === 1) next.set('type', tipos[0]);
     if (next.toString() !== params.toString()) setParams(next, { replace: true });
   }, [linea, tipos, params, setParams]);
@@ -63,19 +66,19 @@ export const ProductsPage = () => {
     const cuentaLinea: Record<string, number> = {};
     for (const p of products) {
       cuentaTipo[p.type] = (cuentaTipo[p.type] ?? 0) + 1;
-      for (const a of p.researchAreas ?? []) cuentaLinea[a] = (cuentaLinea[a] ?? 0) + 1;
+      for (const l of tocaLineas(p)) cuentaLinea[l] = (cuentaLinea[l] ?? 0) + 1;
     }
     const anos = [...new Set<number>(products.map(anoDe).filter((n) => Number.isFinite(n)))].sort((a, b) => b - a);
     return {
       cuentaTipo,
       tiposPorCuenta: (Object.keys(cuentaTipo) as ProductType[]).sort((a, b) => (cuentaTipo[b] ?? 0) - (cuentaTipo[a] ?? 0)),
-      lineas: Object.keys(cuentaLinea).sort((a, b) => cuentaLinea[b] - cuentaLinea[a]),
+      lineas: programa.filter((l) => cuentaLinea[l.id]).map((l) => ({ id: l.id, n: cuentaLinea[l.id] })),
       anos,
       primerAno: anos.length ? anos[anos.length - 1] : null,
     };
   }, [products]);
 
-  const nombreLinea = (a: string) => localize(researchLinesMap[a as ResearchArea]?.title ?? a, lang);
+  const nombreLinea = (id: string) => localize(lineaPorId[id as ProgramLine]?.titulo ?? id, lang);
   const plural = (tipo: ProductType) => t(`products.types.${tipo}` as UIKey);
 
   const lista = useMemo(() => {
@@ -83,7 +86,7 @@ export const ProductsPage = () => {
     const filtrados = products.filter((p) => {
       if (q && !`${p.title} ${p.authors.join(' ')} ${p.keywords.join(' ')}`.toLowerCase().includes(q)) return false;
       if (tipos.length && !tipos.includes(p.type)) return false;
-      if (linea && !(p.researchAreas ?? []).includes(linea as ResearchArea)) return false;
+      if (linea && !tocaLineas(p).includes(linea as ProgramLine)) return false;
       const ano = anoDe(p);
       if (desde && ano < desde) return false;
       if (hasta && ano > hasta) return false;
@@ -203,8 +206,8 @@ export const ProductsPage = () => {
               <span className="a-s text-tinta-600">{t('products.filter.area')}</span>
               <select value={linea} onChange={(e) => setLinea(e.target.value)} className={campo}>
                 <option value="">{t('products.filter.allAreas')}</option>
-                {lineas.map((a) => (
-                  <option key={a} value={a}>{nombreLinea(a)}</option>
+                {lineas.map((l) => (
+                  <option key={l.id} value={l.id}>{nombreLinea(l.id)} ({l.n})</option>
                 ))}
               </select>
             </label>

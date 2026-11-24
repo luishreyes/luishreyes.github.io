@@ -6,13 +6,13 @@ import { Sube } from '../components/Sube';
 import { PortadaLibro } from '../components/PortadaLibro';
 import { useI18n, localize, fill, type UIKey } from '../context/i18n';
 import { useAppData } from '../context/AppDataContext';
-import { researchLinesMap } from '../components/data/research';
+import { programa, lineaPorId } from '../components/data/researchProgram';
 import { editedBooksData } from '../components/data/editorships';
 import { fotos, type Foto } from '../components/data/fotos';
 import { metrics } from '../components/data/metrics';
 import { studentsData, graduatedStudentsData } from '../components/data/students';
 import { esPublicacion } from '../components/data/citations';
-import type { ResearchArea } from '../types';
+import type { ProgramLine } from '../types';
 
 /** Texto con cursivas marcadas entre asteriscos: nombres de especies, genes y libros. */
 const Rico: React.FC<{ texto: string }> = ({ texto }) => (
@@ -193,17 +193,6 @@ const CASOS: Caso[] = [
   },
 ];
 
-const ORDEN_LINEAS: ResearchArea[] = [
-  'Smart Biomaterials & Nanobiotechnology',
-  'Molecular & Synthetic Biology',
-  'Bioprocess Engineering',
-  'Sustainability & Circular Economy',
-  'Computational Biology & AI-Driven Design',
-  'Reverse Engineering of Microorganisms',
-  'Multisensory Experience Design',
-  'Scholarship of Teaching & Learning',
-];
-
 const Externo: React.FC<{ href: string; children: React.ReactNode; className?: string }> = ({ href, children, className = '' }) => (
   <a href={href} target="_blank" rel="noopener noreferrer" className={`a-enlace ${className}`}>
     {children} <span aria-hidden="true">↗</span>
@@ -349,12 +338,12 @@ export const ResearchProgramPage = () => {
     return () => window.clearTimeout(r);
   }, [hash]);
 
-  // Publicaciones de cada línea: sin ponencias, patentes ni la publicación secundaria.
+  // Publicaciones de cada línea del programa, por su línea principal: sin ponencias, patentes ni la publicación secundaria.
   const porLinea = useMemo(() => {
-    const cuenta: Partial<Record<ResearchArea, number>> = {};
+    const cuenta: Partial<Record<ProgramLine, number>> = {};
     for (const p of products) {
-      if (!esPublicacion(p)) continue;
-      for (const a of p.researchAreas ?? []) cuenta[a] = (cuenta[a] ?? 0) + 1;
+      if (!esPublicacion(p) || !p.programLine) continue;
+      cuenta[p.programLine] = (cuenta[p.programLine] ?? 0) + 1;
     }
     return cuenta;
   }, [products]);
@@ -362,7 +351,7 @@ export const ResearchProgramPage = () => {
   // Las líneas de cada libro salen de su ficha en products.json (por DOI o ISBN).
   const lineasDeLibro = (d?: string, isbn?: string) => {
     const ficha = products.find((p) => p.doi === d || p.doi === isbn);
-    return (ficha?.researchAreas ?? []).map((a) => localize(researchLinesMap[a]?.title ?? a, lang));
+    return [ficha?.programLine, ficha?.programLineSecondary].filter((l): l is ProgramLine => !!l).map((l) => localize(lineaPorId[l].titulo, lang));
   };
 
   const graduados = graduatedStudentsData.phd.length + graduatedStudentsData.ms.length;
@@ -447,14 +436,14 @@ export const ResearchProgramPage = () => {
         </div>
       </section>
 
-      {/* ── Las ocho líneas: filas en letra grande, cada una con el enlace a sus productos ── */}
+      {/* ── Las cuatro líneas del programa: filas en letra grande, cada una con su problema, sus herramientas y el enlace a sus productos ── */}
       <section className="a-papel a-campo">
         <div className="a-c">
           <Sube><Cabecera titulo={t('rc.lines.title')} /></Sube>
           <Sube delay={0.06}><p className="mt-8 a-texto">{t('rc.lines.text')}</p></Sube>
           <ul className="mt-10 border-t-2 border-tinta-900">
-            {ORDEN_LINEAS.map((id, i) => {
-              const line = researchLinesMap[id];
+            {programa.map((line, i) => {
+              const id = line.id;
               const n = porLinea[id] ?? 0;
               return (
                 <Sube
@@ -463,11 +452,14 @@ export const ResearchProgramPage = () => {
                   delay={0.04 * Math.min(i, 3)}
                   className="grid gap-x-12 gap-y-5 py-10 border-b-2 border-papel-300 md:grid-cols-[minmax(0,1fr)_9rem] lg:grid-cols-[minmax(0,4fr)_minmax(0,6fr)_10rem]"
                 >
-                  <h3 className="a-h3 max-w-[22ch] md:col-span-2 lg:col-span-1">{localize(line.title, lang)}</h3>
-                  <p className="a-texto text-tinta-800">{localize(line.description, lang)}</p>
+                  <h3 className="a-h3 max-w-[22ch] md:col-span-2 lg:col-span-1">{localize(line.titulo, lang)}</h3>
+                  <div>
+                    <p className="a-texto text-tinta-800">{localize(line.problema, lang)}</p>
+                    <p className="a-s text-tinta-600 mt-3">{t('rc.lines.tools')}: {line.herramientas.map((h) => { const x = localize(h.nombre, lang); return x[0].toLowerCase() + x.slice(1); }).join(', ')}.</p>
+                  </div>
                   {n > 0 && (
                     <Link
-                      to={`/research/products?area=${encodeURIComponent(id)}`}
+                      to={`/research/products?line=${encodeURIComponent(id)}`}
                       className="group block self-start text-tinta-900 no-underline"
                     >
                       <span className="block a-titulo tabular-nums transition-transform duration-200 [@media(hover:hover)]:group-hover:-translate-y-0.5">{n}</span>

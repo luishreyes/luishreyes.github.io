@@ -4,12 +4,12 @@ import { PageWrapper } from '../components/PageWrapper';
 import { StatsSection } from '../components/StatsSection';
 import { Sube } from '../components/Sube';
 import { Apertura, Cabecera } from '../components/Apertura';
-import { useI18n, localize, fill, type UIKey } from '../context/i18n';
+import { useI18n, localize, fill } from '../context/i18n';
 import { metrics } from '../components/data/metrics';
 import { graduatedStudentsData, studentsData } from '../components/data/students';
 import { fotos } from '../components/data/fotos';
 import { BarrasPorAno, type Serie } from '../components/ProductsOverTimeChart';
-import { lineas2020, lineasNuevas, type LineaHoy } from '../components/data/researchLines2020';
+import { programa } from '../components/data/researchProgram';
 import { scholar, publications, publicationsPerYear, SCHOLAR_URL, esPublicacion, webOfScience, authorship } from '../components/data/citations';
 import { useAppData } from '../context/AppDataContext';
 import { ResearchNetworkMap } from '../components/ResearchNetworkMap';
@@ -132,7 +132,7 @@ export const ResearchOverviewPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Las líneas: las cinco de 2020, que siguen abiertas, y las cuatro que se sumaron, cada una con un trabajo de hoy ── */}
+      {/* ── El programa: las cuatro líneas por problema, cada una con sus herramientas (las de 2020 y las nuevas) y un trabajo de hoy ── */}
       <section className="a-oscuro a-campo">
         <div className="a-c">
           <Sube><Cabecera titulo={t('rc.l20.title')} /></Sube>
@@ -142,22 +142,25 @@ export const ResearchOverviewPage: React.FC = () => {
           </div>
           <Sube className="mt-16">
             <figure>
-              {([['rc.l20.open', lineas2020, false], ['rc.l20.new', lineasNuevas, true]] as [UIKey, LineaHoy[], boolean][]).map(([titulo, filas, nueva]) => (
-                <div key={titulo} className={nueva ? 'mt-14' : ''}>
-                  <h3 className="flex items-center gap-3 pb-3 border-b-2 border-papel-100 font-semibold text-white">
-                    {nueva && <span className="inline-block w-3 h-3 bg-resaltador" aria-hidden="true" />}
-                    {t(titulo)}
-                  </h3>
-                  <ul>
-                    {filas.map((f) => (
-                      <li key={localize(f.linea, 'es')} className="grid gap-x-10 gap-y-2 py-5 border-b-2 border-tinta-700 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
-                        <span className="font-semibold text-white leading-snug">{localize(f.linea, lang)}</span>
-                        <span className="text-papel-200 max-w-[70ch]"><Cursiva texto={localize(f.hoy, lang)} /></span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              <ul className="border-t-2 border-papel-100">
+                {programa.map((l) => (
+                  <li key={l.id} className="grid gap-x-10 gap-y-3 py-7 border-b-2 border-tinta-700 md:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
+                    <h3 className="font-semibold text-white text-[length:var(--t-l)] leading-tight">{localize(l.titulo, lang)}</h3>
+                    <div className="space-y-4">
+                      <p className="text-white max-w-[64ch]">{localize(l.problema, lang)}</p>
+                      <ul className="flex flex-wrap gap-2" aria-label={t('rc.l20.open')}>
+                        {l.herramientas.map((h) => (
+                          <li key={localize(h.nombre, 'es')} className="inline-flex items-center gap-2 px-3 py-1 bg-tinta-800 text-papel-100 a-s">
+                            {!h.desde2020 && <span className="inline-block w-2.5 h-2.5 bg-resaltador" aria-hidden="true" />}
+                            {localize(h.nombre, lang)}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-papel-200 max-w-[70ch]"><span className="font-semibold text-white">{t('rc.l20.new')}: </span><Cursiva texto={localize(l.hoy, lang)} /></p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
               <figcaption className="a-s text-tinta-300 mt-6 max-w-[64ch]">{t('rc.l20.caption')}</figcaption>
             </figure>
           </Sube>

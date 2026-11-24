@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import type { Product, ProductType, ResearchArea, LaymanSummaryPoint } from '../types';
+import type { Product, ProductType, ResearchArea, ProgramLine, LaymanSummaryPoint } from '../types';
 
 /**
  * La producción académica (artículos, capítulos, libros, patentes…) vive en
@@ -45,6 +45,8 @@ export const fetchInitialData = async (): Promise<{ products: Product[], dbCitat
                 authors: list<string>(p.authors),
                 keywords: list<string>(p.keywords),
                 researchAreas: list<ResearchArea>(p.researchAreas),
+                programLine: p.programLine as ProgramLine | undefined,
+                programLineSecondary: p.programLineSecondary as ProgramLine | undefined,
                 laymanSummary: list<LaymanSummaryPoint>(p.laymanSummary),
             };
         });
