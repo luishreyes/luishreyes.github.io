@@ -593,6 +593,7 @@ export const pou202710Course: Course = {
       : sim.id === 'explorador-molienda'
       ? {
           ...sim,
+          bannerImg: '/classroom/iqya-2031-2027-10/simuladores-banners/explorador-molienda.jpg',
           description:
             'Seleccione un equipo de reducción de tamaño y véalo operar, con su animación de física de partículas. Arranca con la cáscara cítrica húmeda de la planta de aceite esencial en un molino de cuchillas: el rotor corta contra las cuchillas fijas de la carcasa y la criba fija el tamaño. Esa cáscara no tiene índice de Bond, así que su energía se fija por consumo específico, entre 5 y 20 kWh/t, y se pasa a sólido seco con su agua; si la pone en un molino de impacto o de compresión, el simulador la marca inviable. Con los demás materiales (caliza, carbón, maíz, azúcar, arcilla y cáscara seca) calcula la energía con la Ley de Bond y los factores de Rowland, compara Bond, Kick y Rittinger, lleva la energía hasta el motor estándar IEC y resuelve el balance térmico. La granulometría usa Rosin-Rammler con tamizado ASTM E11 o Tyler y una tamizadora animada.',
         }
@@ -623,7 +624,19 @@ export const pou202710Course: Course = {
           ...sim,
           week: 6,
           sessionNumber: 11,
+          bannerImg: '/classroom/iqya-2031-2027-10/simuladores-banners/explorador-bombas-centrifugas.jpg',
           description: sim.description.replace('o el extracto de pectina del proyecto', 'o un extracto acuoso caliente'),
+        }
+      : sim.id === 'explorador-filtracion'
+      ? {
+          // La versión de 2027-10, con el armazón y la imagen del libro: la winterización y la torta del capítulo 18.
+          ...sim,
+          week: 10,
+          sessionNumber: 20,
+          bannerImg: '/classroom/iqya-2031-2027-10/simuladores-banners/explorador-filtracion.jpg',
+          description:
+            'Abre en la winterización del aceite del capítulo 18 del libro: el enfriado, el reposo del lote en TK-201 y el filtro de placas F-201, con el agua que sale de solución al enfriar, las gotas que alcanzan a caer al fondo y el área de placa por los tres criterios. La segunda parte es la torta: la recta de Ruth con los ensayos de McCabe, la torta compresible, la prensa del lodo de alumbre en isométrico, que se llena a caudal y después a presión constante, y el tambor rotatorio con el perfil de su torta. Cada escena hace una pregunta de diseño, pide una predicción antes de mover los controles y abre «¿Cómo se calcula?», con las ecuaciones, los números que hay en pantalla y los enlaces al libro.',
+          tags: ['filtración', 'winterización', 'filtro de placas', 'reposo', 'ley de Stokes', 'agua disuelta', 'recta de Ruth', 'torta compresible', 'filtro prensa', 'tambor rotatorio'],
         }
       : { ...sim, carpeta: 'iqya-2031-2026-20', week: SEMANA_2027[sim.id] ?? sim.week },
   ),
