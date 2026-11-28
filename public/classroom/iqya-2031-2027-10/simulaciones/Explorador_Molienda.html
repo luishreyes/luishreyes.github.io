@@ -1929,11 +1929,11 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     return a;
   }
   function rotulosMolino(rr, fm, X) {
-    var E = fm.D.ends, id = rr.mill.id, feed = 'F₈₀ = ' + tam(rr.F80), prod = 'P₈₀ = ' + tam(rr.P80), c = capTxt(rr.cap), L;
+    var angosta = (X.slot && X.slot.clientWidth) < 560, E = fm.D.ends, id = rr.mill.id, feed = 'F₈₀ = ' + tam(rr.F80), prod = 'P₈₀ = ' + tam(rr.P80), c = capTxt(rr.cap), L;
     if (id === 'bolas') {
       var b = rr.ball;
       L = [{ p: E.sec, a: 'd', e: 1, t: ['carga, J = ' + un(b.J, 0, '%'), b.reg.toLowerCase() + ', φ = ' + un(b.phi, 0, '%')] },
-        { p: E.gear, a: 'i', e: 1, t: ['corona y piñón', 'N = ' + un(b.N, 1, 'r/min') + ', N<sub>c</sub> = ' + un(b.Nc, 1, 'r/min')] },
+        { p: E.gear, a: 'i', e: 1, t: ['corona y piñón', 'N = ' + un(b.N, 1, 'r/min') + (angosta ? '' : ', N<sub>c</sub> = ' + un(b.Nc, 1, 'r/min'))] },
         { p: E.feed, a: 'd', t: ['alimentación', feed + ', ' + c] },
         { p: E.trommel, a: 'i', t: ['descarga por el trommel', prod] },
         { p: E.motor, a: 'i', t: ['motor', kwMot(rr.motor)] }];
@@ -1960,7 +1960,7 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     }
     // en la pantalla angosta no caben al lado de la máquina: quedan los de la carga del molino de bolas, que van sobre
     // el tambor; lo demás está en los números de la escena
-    if ((X.slot && X.slot.clientWidth) < 560) L = L.filter(function (q) { return q.e; });
+    if (angosta) L = L.filter(function (q) { return q.e; });
     X.rotulos(L.filter(function (q) { return q.p; }).map(function (q) { var p = fm.C.pr(q.p[0], q.p[1], q.p[2]); return { x: p[0], y: p[1], lado: q.a, lineas: q.t }; }));
   }
   // la ranura de la máquina: la isométrica y el corte, con una simulación para las dos vistas
