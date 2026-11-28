@@ -36,6 +36,7 @@
 .br-spec dd.txt { white-space: normal; font-weight: 400; font-size: var(--t-xs); max-width: 220px; }
 .br-cards { display: grid; gap: 10px; }
 .br-cards > div { padding: 10px 12px; background: var(--papel); border-left: 6px solid var(--oliva); }
+.br-cards > div.mal { border-left-color: var(--alerta); }
 .br-cards .k { display: block; font-size: var(--t-xs); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--oliva-osc); }
 .br-cards .v { display: block; font-size: var(--t-l); font-weight: 600; line-height: 1.2; }
 .br-cards .s { display: block; font-size: var(--t-xs); color: var(--sec); }
@@ -568,16 +569,21 @@ function compute(s) {
   // dada y la supuesta sin ella
   var nP = mode === 'operacion' ? pm.count : 1, Phyd = rg * Q * hA / 1000, Pshaft = 0;
   if (mode !== 'gravedad' && !noFlow && eta > 0) Pshaft = Phyd / eta;
-  /* el motor con las reglas del capítulo 11 (sección 11.5 y tabla 11.15): el menor tamaño IEC que, con el factor de la
-     altitud, cubre la mayor potencia al eje de la curva de cada bomba; el factor de servicio queda de reserva. Sin
-     curva (la bomba por calcular), el explorador cubre la potencia del punto de diseño */
+  /* el motor con las reglas del capítulo 11 (sección 11.5 y tabla 11.15), como el Explorador de bombas centrífugas: el
+     mínimo es el menor tamaño IEC que, con el factor de la altitud, cubre la mayor potencia al eje de la curva de cada
+     bomba; el factor de servicio queda de reserva. Sin curva (la bomba por calcular), el explorador cubre la potencia del
+     punto de diseño. El motor instalado es un dato del sistema (s.imotor, su lugar en la serie IEC; el caso lleva el de
+     3,0 kW, como el libro): la potencia eléctrica y la eficiencia del motor salen de él */
   var motor = null;
   if (mode !== 'gravedad' && !noFlow) {
     var Pmax = 0, cubre = 'curva';
     if (mode === 'operacion') { var qe = pm.qEnd(); for (var i = 0; i <= 60; i++) Pmax = Math.max(Pmax, pm.P1(Math.max(qe * i / 60, 1e-7))); }
     else { Pmax = Pshaft; cubre = 'punto'; }
-    var fAlt = factorAltitud(s.alt, s.aire), kw = motorPick(Pmax, fAlt);
-    motor = { kW: kw, fAlt: fAlt, Pmax: Pmax, cubre: cubre, sitio: kw ? kw * fAlt : null, reserva: kw ? kw * fAlt * s.FS : null, FS: s.FS, etaM: kw ? etaMotor(kw) : null };
+    var fAlt = factorAltitud(s.alt, s.aire), min = motorPick(Pmax, fAlt);
+    var im = s.imotor == null ? (min ? IEC_MOTORS.indexOf(min) : IEC_MOTORS.length - 1) : Math.max(0, Math.min(IEC_MOTORS.length - 1, Math.round(s.imotor)));
+    var kw = IEC_MOTORS[im], sitio = kw * fAlt, P1op = Pshaft / nP;
+    motor = { kW: kw, min: min, fAlt: fAlt, Pmax: Pmax, cubre: cubre, sitio: sitio, reserva: sitio * s.FS, FS: s.FS, etaM: etaMotor(kw),
+      ok: sitio >= Pmax - 1e-9, punto: sitio >= P1op - 1e-9, P1op: P1op };
   }
   var Pelec = motor && motor.etaM ? Pshaft / motor.etaM : 0;
   // el NPSH3 y la regla del margen (sección 11.9: el mayor entre 1,25 NPSH3 y NPSH3 + 0,6 m), con la 2×3-8
@@ -673,7 +679,10 @@ function diagnose(R) {
     if (s.corr === 'swamee' && td.Re > RE_LAM && (td.Re < 1e4 || td.Re > 1e8)) add('w', 'Swamee-Jain se usa fuera de su rango de validez (10⁴ < Re < 10⁸). Compare con Colebrook en la escena del factor de fricción.');
     var gl = R.C.fitD.filter(function (o) { return o.ft.id === 'globo' && o.op < 50; });
     if (gl.length) add('w', 'La válvula de globo está estrangulada al ' + fmtN(gl[0].op, 0) + ' %: disipa ' + fmtN(gl[0].K * td.vh, 1) + ' m de cabeza. Un variador de velocidad entregaría el mismo caudal sin ese gasto.');
-    if (R.motor && !R.motor.kW) add('w', 'Ningún motor de la serie IEC del explorador cubre la potencia que pide la curva (' + fmtN(R.motor.Pmax, 1) + ' kW).');
+    var mo = R.motor, fm = function (v) { return fmtN(v, v < 1 ? 2 : (v < 10 || Math.round(v) !== v ? 1 : 0)); };
+    if (mo && mo.min === null) add('c', 'No hay motor de la tabla IEC que dé ' + fmtN(mo.Pmax, 1) + ' kW a ' + fmtN(s.alt, 0) + ' m de altitud.');
+    else if (mo && !mo.punto) add('c', 'El motor instalado, de ' + fm(mo.kW) + ' kW, da ' + fmtN(mo.sitio, 2) + ' kW a ' + fmtN(s.alt, 0) + ' m y la bomba pide ' + fmtN(mo.P1op, 2) + ' kW en el punto: se sobrecarga. La regla del libro pide por lo menos el de ' + fm(mo.min) + ' kW (sección 11.5).');
+    else if (mo && !mo.ok) add('w', 'El motor instalado, de ' + fm(mo.kW) + ' kW, cubre el punto pero no la potencia máxima de la curva: da ' + fmtN(mo.sitio, 2) + ' kW a ' + fmtN(s.alt, 0) + ' m y la curva llega a ' + fmtN(mo.Pmax, 2) + ' kW. Si el punto se corre, se sobrecarga; la regla del libro pide por lo menos el de ' + fm(mo.min) + ' kW (sección 11.5).');
   }
   if (R.geo.clampS || R.geo.clampD) add('w', 'La longitud de ' + (R.geo.clampS ? 'succión' : 'descarga') + ' es menor que el desnivel que debe recorrer; se usa la mínima posible (' + fmtN(R.geo.clampS ? R.geo.LsE : R.geo.LdE, 1) + ' m).');
   var needS = R.geo.cornersS.length, needD = R.geo.cornersD.length;
@@ -735,7 +744,7 @@ function plano(s) {
 var BASE = { mode: 'diseno', fluid: 'agua', T: 25, pMu: 4, cRho: 1000, cMuExp: -3, cPv: 2.3, lQ: Math.log10(25), mat: 'acero', sch: 40, nS: 7, nD: 6, Ls: 9.5, Ld: 24, ent: 'aguda',
   fit: { s: { codoR: 2, compuerta: 1 }, d: { codoR: 3, check: 1, compuerta: 1, globo: 1 } }, op: { s: {}, d: {} },
   z1: 2, P1: 0, dest: 'tanque', z2: 12, P2: 0, alt: 2600, alto: 'si', zA: 13, brida: 'si',
-  bomba: 'carta', D: 190, qB: 25.5, hB: 17.5, eB: 0.73, N: 100, eta: 0.723, pArr: '1', corr: 'colebrook', minor: 'K', aire: 'tibio', FS: 1.15 };
+  bomba: 'carta', D: 190, qB: 25.5, hB: 17.5, eB: 0.73, N: 100, eta: 0.723, pArr: '1', corr: 'colebrook', minor: 'K', aire: 'tibio', FS: 1.15, imotor: IEC_MOTORS.indexOf(3) };
 var CASO = plano(BASE);
 function calcular(e) { return compute(anidado(e)); }
 window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, anidado: anidado, plano: plano,
@@ -817,6 +826,7 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
     eB: { etiqueta: 'Eficiencia en el mejor punto', min: 0.35, max: 0.9, paso: 0.01, formato: function (v) { return pct(v); }, ver: function (e) { return e.mode === 'operacion' && e.bomba !== 'carta'; } },
     N: { etiqueta: 'Velocidad con el variador', min: 40, max: 110, paso: 1, decimales: 0, unidad: '%', nota: 'leyes de afinidad', ver: function (e) { return e.mode === 'operacion'; } },
     aire: { etiqueta: 'Aire alrededor del motor', tipo: 'opciones', opciones: [{ valor: 'frio', texto: 'Bajo 30 °C' }, { valor: 'tibio', texto: 'Entre 30 y 40 °C' }], nota: 'reduce el motor con la altitud', ver: function (e) { return e.mode !== 'gravedad'; } },
+    imotor: { etiqueta: 'Motor instalado', min: 0, max: M.IEC_MOTORS.length - 1, paso: 1, decimales: 0, formato: function (i) { return kWm(M.IEC_MOTORS[Math.round(i)]); }, nota: 'potencia de placa, serie IEC', ver: function (e) { return e.mode !== 'gravedad'; } },
     FS: { etiqueta: 'Factor de servicio del motor', tipo: 'opciones', columnas: 3, opciones: [{ valor: 1, texto: '1,0' }, { valor: 1.15, texto: '1,15' }, { valor: 1.25, texto: '1,25' }], nota: 'queda de reserva', ver: function (e) { return e.mode !== 'gravedad'; } },
     nS: { etiqueta: 'Diámetro de la succión', min: 0, max: 13, paso: 1, formato: function (v) { return npsTxt(v, est().sch); } },
     nD: { etiqueta: 'Diámetro de la descarga', min: 0, max: 13, paso: 1, formato: function (v) { return npsTxt(v, est().sch); } },
@@ -900,7 +910,10 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
     fit: { s: { codoB: 2, compuerta: 1 }, d: { codoB: 3, check: 1, compuerta: 1, globo: 1, teL: 1 } }, op: { s: {}, d: {} }, z1: 2, z2: 4, P2: 150, qB: 6, hB: 21, eB: 0.62, corr: 'colebrook' }));
   var C_GRAV = sinLiquido(viejo({ mode: 'gravedad', mat: 'pvc', nS: 5, nD: 5, Ls: 10, Ld: 40, z1: 8, z2: 1, fit: { s: { codoB: 2, compuerta: 1 }, d: { codoB: 2, compuerta: 1 } }, op: { s: {}, d: {} }, corr: 'colebrook' }));
   var C_CAVITA = sinLiquido(viejo({ lQ: Math.log10(12), nS: 5, nD: 4, Ls: 8, Ld: 30, z1: -3, z2: 10, fit: { s: { codoR: 2, pie: 1 }, d: { codoB: 2, check: 1, compuerta: 1 } }, op: { s: {}, d: {} }, corr: 'colebrook' }));
-  var R_CASO = con({}), R_PUNTO = con(C_PUNTO), R_ACEITE = con(C_ACEITE), R_REBOSE = con(C_REBOSE), R_VIEJO = con(VIEJO);
+  // las tarjetas que no usan la 2×3-8 del caso instalan el motor mínimo que pide la regla para su sistema
+  function conMin(c) { var r = con(c); return r.motor && r.motor.min ? Object.assign({}, c, { imotor: M.IEC_MOTORS.indexOf(r.motor.min) }) : c; }
+  var C_VIEJO = conMin(VIEJO); C_FILTRO = conMin(C_FILTRO); C_CAVITA = conMin(C_CAVITA);
+  var R_CASO = con({}), R_PUNTO = con(C_PUNTO), R_ACEITE = con(C_ACEITE), R_REBOSE = con(C_REBOSE), R_VIEJO = con(C_VIEJO);
   var AGUA25 = { fluid: 'agua', T: 25 };
   var R_FILTRO = con(C_FILTRO, { fluid: 'acuoso', T: 85 }), R_FILTRO_A = con(C_FILTRO, AGUA25), R_GRAV = con(C_GRAV, AGUA25);
   var R_CAV = [25, 50, 60].map(function (T) { return con(C_CAVITA, { fluid: 'agua', T: T }); });
@@ -914,8 +927,8 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
       fija: 'La línea del caso con aceite ISO VG 32 a 20 °C, de ' + un(R_ACEITE.P.nu * 1e6, 0, 'cSt') + ': la descarga pasa a laminar, con Re = ' + fRe(R_ACEITE.sc.td.Re) + ', y pierde ' + hm(hfd(R_ACEITE)) + ' con los K laminares del libro, contra ' + hm(hfd(R_CASO) - R_CASO.sc.hbD) + ' con agua. Como el ejemplo, sin la ampliación de la brida.' },
     { id: 'rebose', ceja: 'Capítulo 10 · ejemplo 10.4', titulo: 'Un rebose por gravedad', cambios: C_REBOSE, conserva: PROPIO, resultado: resCfg, alerta: critico,
       fija: '30 m de tubo de acero de 2 in entre dos niveles con 10 m de diferencia, con entrada viva, cuatro codos estándar, una compuerta y la salida, que suman K = 4,67, como el ejemplo. Bajan ' + Qu(R_REBOSE.Q) + '.' },
-    { id: 'tanque', ceja: 'Ejemplo del explorador · Swamee y Jain', titulo: 'Bombeo a un tanque elevado', cambios: VIEJO, conserva: PROPIO, resultado: resCfg, alerta: critico,
-      fija: 'De un tanque abierto a otro 18 m más arriba, 36 m³/h de agua a 25 °C por 120 m de tubo de acero de 2 in con seis codos de radio largo y dos compuertas. Pide ' + hm(R_VIEJO.hA) + ' y ' + kW(R_VIEJO.Pshaft) + ' al eje con 70 % de eficiencia; la descarga va a ' + un(R_VIEJO.sc.td.v, 1, 'm/s') + ', muy por encima de la tabla 10.7.' },
+    { id: 'tanque', ceja: 'Ejemplo del explorador · Swamee y Jain', titulo: 'Bombeo a un tanque elevado', cambios: C_VIEJO, conserva: PROPIO, resultado: resCfg, alerta: critico,
+      fija: 'De un tanque abierto a otro 18 m más arriba, 36 m³/h de agua a 25 °C por 120 m de tubo de acero de 2 in con seis codos de radio largo y dos compuertas. Pide ' + hm(R_VIEJO.hA) + ' y ' + kW(R_VIEJO.Pshaft) + ' al eje con 70 % de eficiencia, con un motor de ' + kWm(R_VIEJO.motor.kW) + '; la descarga va a ' + un(R_VIEJO.sc.td.v, 1, 'm/s') + ', muy por encima de la tabla 10.7.' },
     { id: 'filtro', ceja: 'Datos supuestos', titulo: 'Bombeo a un filtro prensa', cambios: C_FILTRO, resultado: resCfg, alerta: critico,
       fija: 'De un tanque de proceso al filtro prensa, presurizado a 150 kPa, por inoxidable con retención, globo y una te, con una bomba genérica que tiene su mejor punto en 6 m³/h y 21 m. Con la solución acuosa a 85 °C entrega ' + Qu(R_FILTRO.Q) + ' con ' + hm(R_FILTRO.npsha) + ' de NPSH disponible; con agua a 25 °C, ' + Qu(R_FILTRO_A.Q) + '.' },
     { id: 'gravedad', ceja: 'Ejemplo del explorador', titulo: 'Trasiego entre tanques por gravedad', cambios: C_GRAV, resultado: resCfg, alerta: critico,
@@ -1857,14 +1870,16 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
   }
   function motorTxt(r) {
     var m = r.motor; if (!m) return '';
-    if (!m.kW) return 'ninguno de la serie cubre ' + kW(m.Pmax);
-    return 'el menor IEC que, al ' + pct(m.fAlt) + ' por la altitud, cubre ' + kW(m.Pmax) + (m.cubre === 'curva' ? ', lo máximo de la curva' : ', la del punto');
+    if (!m.min) return 'ninguno de la tabla alcanza ' + kW(m.Pmax);
+    return 'da ' + kW(m.sitio) + ' aquí, al ' + pct(m.fAlt) + ' por la altitud · la regla pide ' + kWm(m.min) + (m.ok ? '' : ': se queda corto');
   }
+  // si la bomba nueva pide más motor del instalado, el botón pone el mínimo de la regla
+  function conMotor(X, p) { var r = M.calcular(Object.assign({}, X.estado(), p)), m = r.motor; return m && m.min && !m.ok ? Object.assign({}, p, { imotor: M.IEC_MOTORS.indexOf(m.min) }) : p; }
   function htmlPunto(r) {
     var m = modo(r), h = '<div class="br-html"><div class="br-cards">';
     h += '<div><span class="k">Punto de ' + (m === 'diseno' ? 'diseño' : 'operación') + '</span><span class="v">' + (r.noFlow ? 'sin flujo' : Qu(r.Q)) + '</span><span class="s">' + (m === 'gravedad' ? 'por gravedad' : hm(r.hA) + ' de cabeza') + '</span></div>';
     h += '<div><span class="k">Potencia al freno</span><span class="v">' + (r.Pshaft > 0 ? kW(r.Pshaft) : 'sin bomba') + '</span><span class="s">' + (r.Phyd > 0 ? 'hidráulica ' + kW(r.Phyd) + ' · η ' + pct(r.eta) : '') + '</span></div>';
-    h += '<div><span class="k">' + (r.nP > 1 ? 'Motor de cada bomba' : 'Motor') + '</span><span class="v">' + (r.motor && r.motor.kW ? (r.nP > 1 ? r.nP + ' × ' : '') + kWm(r.motor.kW) : 'sin motor') + '</span><span class="s">' + motorTxt(r) + '</span></div></div>';
+    h += '<div' + (r.motor && !r.motor.ok ? ' class="mal"' : '') + '><span class="k">' + (r.nP > 1 ? 'Motor instalado en cada bomba' : 'Motor instalado') + '</span><span class="v">' + (r.motor ? (r.nP > 1 ? r.nP + ' × ' : '') + kWm(r.motor.kW) : 'sin motor') + '</span><span class="s">' + motorTxt(r) + '</span></div></div>';
     var pm = r.pm, quien = r.s.bomba === 'carta' ? 'La 2×3‑8 con su impulsor de ' + un(r.s.D, 0, 'mm') : 'La bomba genérica';
     if (m === 'diseno') h += '<p class="br-nota">La línea pide ' + hm(r.Hs(r.Qd)) + ' a ' + Qu(r.Qd) + '. El botón pone la 2×3‑8 del libro con el impulsor que da ese punto, o una genérica con su mejor punto ahí si la 2×3‑8 no sirve; vea dónde cruza.</p><button type="button" class="xl-b xl-b--navy br-b" data-accion="aOper">Poner una bomba para este punto</button>';
     else if (m === 'operacion') h += '<p class="br-nota">' + quien + ' tiene su mejor punto en ' + Qu(pm.qBn() ) + ' y ' + hm(pm.H1(pm.qBn())) + (pm.count > 1 ? ', cada una' : '') + '. El proceso pide ' + Qu(r.Qd) + ', y la línea ' + hm(r.Hs(r.Qd)) + ' a ese caudal.</p><button type="button" class="xl-b xl-b--navy br-b" data-accion="ajustar">Escoger la bomba para el caudal del proceso</button>';
@@ -1874,9 +1889,9 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
   function accionPunto(ev, X) {
     var b = ev.target.closest('[data-accion]'); if (!b) return;
     var r = X.R(), p = bombaPara(r, r.Qd, r.Hs(r.Qd));
-    if (b.dataset.accion === 'aOper') X.app.ponerVarios(Object.assign({ mode: 'operacion' }, p));
+    if (b.dataset.accion === 'aOper') X.app.ponerVarios(conMotor(X, Object.assign({ mode: 'operacion' }, p)));
     // con la bomba ya dada, la misma regla: el impulsor de la 2×3-8 o la genérica
-    else if (b.dataset.accion === 'ajustar') X.app.ponerVarios(p);
+    else if (b.dataset.accion === 'ajustar') X.app.ponerVarios(conMotor(X, p));
   }
   var PUNTO = figHtml({ titulo: 'El punto y la bomba', vista: [400, 400], alt: 'El punto de diseño o de operación, la potencia al freno con su eficiencia y el motor estándar, con un botón para poner o ajustar la bomba.' }, htmlPunto, accionPunto);
 
@@ -1907,7 +1922,7 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
   function accionReg(ev, X) {
     var b = ev.target.closest('[data-accion]'); if (!b) return;
     var r = X.R(), th = r.thr;
-    if (b.dataset.accion === 'aOper') X.app.ponerVarios(Object.assign({ mode: 'operacion' }, bombaPara(r, r.Qd, r.Hs(r.Qd))));
+    if (b.dataset.accion === 'aOper') X.app.ponerVarios(conMotor(X, Object.assign({ mode: 'operacion' }, bombaPara(r, r.Qd, r.Hs(r.Qd)))));
     else if (b.dataset.accion === 'valvula' && th && th.globeOpen) X.app.ponerVarios({ od_globo: Math.max(10, Math.min(100, Math.round(th.globeOpen))), N: 100 });
     else if (b.dataset.accion === 'variador' && th) X.app.ponerVarios({ N: Math.max(40, Math.min(110, Math.round(100 * th.nV))), od_globo: 100 });
   }
@@ -1975,7 +1990,7 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
       '<li>Diámetros internos de ASME B36.10M en cédulas 40 y 80; el PVC con las mismas medidas (ASTM D1785). Rugosidades de la tabla 10.2 y velocidades de partida de la tabla 10.7.</li>' +
       '<li>Agua: IAPWS‑95 y, la viscosidad, IAPWS 2008, en las tablas del libro. Etanol: Andrade y Antoine; glicerina: Segur y Oberstar; aceite ISO VG 32: Walther (ASTM D341). Presión atmosférica de la atmósfera estándar.</li>' +
       '<li>La bomba dada: la 2×3‑8 del capítulo 11, con el modelo del Explorador de bombas centrífugas, o una genérica del explorador, con H = H₀n² − aQ², H₀ = 1,25 H<sub>BEP</sub>, y η = η<sub>BEP</sub>(2x − x²).</li>' +
-      '<li>El motor y el NPSH con las reglas del capítulo 11: el menor motor IEC que, reducido por la altitud, cubre la mayor potencia al eje de la curva, con el factor de servicio de reserva; el NPSH disponible de la ecuación 11.18, por lo menos el mayor entre 1,25 NPSH3 y NPSH3 + 0,6 m. Sin curva, el motor cubre la potencia del punto, regla del explorador.</li></ul></div>';
+      '<li>El motor y el NPSH con las reglas del capítulo 11: el mínimo es el menor motor IEC que, reducido por la altitud, cubre la mayor potencia al eje de la curva, con el factor de servicio de reserva; el instalado es un dato del sistema (el caso lleva el de 3,0 kW, como el libro) y de él salen la eficiencia del motor y la potencia eléctrica. El NPSH disponible de la ecuación 11.18, por lo menos el mayor entre 1,25 NPSH3 y NPSH3 + 0,6 m. Sin curva, el mínimo cubre la potencia del punto, regla del explorador.</li></ul></div>';
   });
 
   /* ================= Las escenas ================= */
@@ -2010,11 +2025,10 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
       libro: L(TUB + 'eq-tub-energia', 'Libro, ecuación 10.1') };
   }
 
-  // la nota del motor bajo la potencia
+  // la nota del motor bajo la potencia: el instalado, y si se queda corto
   function motorNota(r) {
     if (!r.motor) return 'sin bomba';
-    if (!r.motor.kW) return 'ningún motor de la serie la cubre';
-    return (r.nP > 1 ? r.nP + ' motores de ' : 'motor de ') + kWm(r.motor.kW) + ' · η ' + pct(r.eta);
+    return (r.nP > 1 ? r.nP + ' motores de ' : 'motor de ') + kWm(r.motor.kW) + (r.motor.ok ? ' · η ' + pct(r.eta) : ', corto');
   }
   // el punto de operación con la bomba dada: la 2×3-8 del capítulo 11 o la genérica
   function pasoPunto(r) {
@@ -2032,22 +2046,30 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
       fuente: 'La forma de la curva es del explorador; el capítulo 11 trabaja con la carta de la 2×3‑8, que se escoge en el control de la bomba.',
       libro: L(BOM + 'sec-bombas-curva-sistema', 'Libro, sección 11.6') };
   }
-  // el motor y la potencia eléctrica, con las reglas del capítulo 11
+  // el motor y la potencia eléctrica, con las reglas del capítulo 11: el mínimo de la regla y el motor instalado, como
+  // el paso «El motor» del Explorador de bombas centrífugas
   function pasosMotor(r) {
-    var m = r.motor, out = [];
-    if (!m.kW) return [{ titulo: 'El motor', texto: 'Ningún motor de la serie IEC del explorador, que llega a 1000 kW, cubre ' + kW(m.Pmax) + '.' }];
-    var dec = m.kW < 1 ? 2 : 1;
+    var m = r.motor, s = r.s, fa = m.fAlt, curva = m.cubre === 'curva', dm = function (v) { return kn(v, v < 1 ? 2 : 1); }, out = [];
+    var pm = curva ? 'P_{eje,\\text{máx}}' : 'P_{eje}';
+    var nm = (curva ? 'P_{eje} = ' + kn(m.P1op, 3) + '\\ \\mathrm{kW}\\ \\text{en el punto},\\quad ' : '') + pm + ' = ' + kn(m.Pmax, 3) + '\\ \\mathrm{kW},\\quad f_{alt} = ' + kn(fa, 2) + '\\ \\text{a}\\ ' + kn(s.alt, 0) + '\\ \\mathrm{m} \\\\ ' +
+      (m.min ? '\\text{mínimo: } ' + kn(fa, 2) + '\\times ' + dm(m.min) + ' = ' + kn(fa * m.min, 2) + '\\ \\mathrm{kW} \\ge ' + kn(m.Pmax, 3) + '\\ \\mathrm{kW}' : '\\text{ningún motor de la tabla alcanza}') + ' \\\\ ' +
+      '\\text{instalado: } ' + kn(fa, 2) + '\\times ' + dm(m.kW) + ' = ' + kn(m.sitio, 2) + '\\ \\mathrm{kW}\\ ' + (m.ok ? '\\ge' : '<') + '\\ ' + kn(m.Pmax, 3) + '\\ \\mathrm{kW}';
     out.push({ titulo: 'El motor',
-      texto: m.cubre === 'curva' ? 'El motor no se escoge con el punto de operación: su potencia nominal tiene que cubrir la mayor potencia al eje que la bomba puede pedir a lo largo de su curva publicada, con la densidad del líquido' + (r.nP > 1 ? ', la de cada bomba' : '') + '. Por encima de 1000 m de altitud la potencia nominal se reduce; el factor de servicio queda de reserva y no entra en la selección.'
-        : 'Sin curva de bomba no hay potencia máxima que cubrir: el explorador cubre la potencia al eje del punto de diseño, reducida por la altitud. Con la bomba escogida, la regla del libro pide cubrir la mayor potencia de toda su curva.',
-      ec: 'P_{nom}\\,f_{alt} \\ge P_{eje,max}',
-      num: 'P_{eje,max} = ' + kn(m.Pmax, 3) + '\\ \\mathrm{kW},\\quad f_{alt} = ' + kn(m.fAlt, 2) + ' \\\\ ' + kn(m.kW, dec) + ' \\times ' + kn(m.fAlt, 2) + ' = ' + kn(m.sitio, 2) + '\\ \\\mathrm{kW} \\;\\Rightarrow\\; ' + kn(m.kW, dec) + '\\ \\mathrm{kW},\\quad \\text{con el factor de servicio, }' + kn(m.sitio * m.FS, 2) + '\\ \\mathrm{kW}',
-      fuente: 'El factor de la altitud interpola la tabla del fabricante que usa el libro: en Bogotá, 95 % con aire de menos de 30 °C y 89 % entre 30 y 40 °C.' + (m.cubre === 'punto' ? ' Cubrir el punto, y no la curva, es regla del explorador.' : (r.s.bomba === 'carta' ? ' El caso del libro instala un motor de 3,0 kW, que también cumple.' : '')),
+      texto: (curva ? 'El motor tiene que cubrir la mayor potencia al freno que la bomba pueda pedir en su curva publicada, con la densidad real' + (r.nP > 1 ? ', la de cada bomba' : '') + ', y no solo la del punto de operación, porque el punto puede correrse.'
+        : 'Sin curva de bomba no hay potencia máxima que cubrir: el explorador aplica la regla a la potencia al freno del punto de diseño. Con la bomba escogida, la regla del libro pide cubrir la mayor potencia de toda su curva.') +
+        ' Por encima de 1000 m el aire enfría menos y el motor da solo una parte de su potencia de placa. Con esa regla sale el motor más pequeño de la serie IEC que sirve; el instalado, que es un dato del sistema, puede ser ese o uno mayor, y el explorador revisa que cumpla. El factor de servicio no entra en la cuenta: queda de reserva para las sobrecargas ocasionales.',
+      ec: 'f_{alt}\\,P_{mot} \\ge ' + pm,
+      num: nm,
+      res: !m.min ? 'Ningún motor de la tabla alcanza: hace falta otra bomba u otra velocidad.' :
+        m.ok ? (m.kW > m.min ? 'El instalado, de ' + kWm(m.kW) + ', cumple con holgura: la regla aceptaba desde el de ' + kWm(m.min) + '.' : 'El instalado es el mínimo que pide la regla.') + ' Su factor de servicio de ' + num(m.FS, 2) + ' queda de reserva: hasta ' + kW(m.reserva) + ' en sobrecargas ocasionales.' :
+        'El instalado, de ' + kWm(m.kW) + ', se queda corto' + (curva ? (m.punto ? ' si el punto se corre' : ' ya en el punto') : '') + ': hace falta por lo menos el de ' + kWm(m.min) + '.',
+      fuente: 'La regla y la reducción por altitud son las del libro: la potencia de placa vale hasta 1000 m y 40 °C, y a 2600 m el libro toma el 95 % con aire de menos de 30 °C y el 89 % entre 30 y 40 °C, de la tabla de un fabricante que el explorador interpola para las demás altitudes. El caso del libro lleva un motor de 3,0 kW, que da 2,67 kW en Bogotá; la regla aceptaba desde el de 2,2 kW.' + (curva ? '' : ' Cubrir el punto de diseño, y no la curva, es regla del explorador.'),
       libro: L(BOM + 'sec-bombas-curvas', 'Libro, sección 11.5, y ejemplo 11.2') });
     out.push({ titulo: 'La potencia eléctrica',
-      texto: 'La red entrega más que el eje, porque el motor también pierde. Su eficiencia crece con el tamaño; el explorador la interpola en línea recta entre los valores de la tabla del libro.',
+      texto: 'La red entrega más que el eje, porque el motor también pierde. La eficiencia es la del motor instalado: crece con el tamaño, y el explorador la interpola en línea recta entre los valores de la tabla del libro.',
       ec: 'P_{el} = \\frac{P_{eje}}{\\eta_m}',
-      num: '\\eta_m(' + kn(m.kW, dec) + '\\ \\mathrm{kW}) = ' + kn(100 * m.etaM, 1) + '\\ \\% \\qquad P_{el} = \\frac{' + kn(r.Pshaft, 3) + '}{' + kn(m.etaM, 3) + '} = ' + kn(r.Pelec, 3) + '\\ \\mathrm{kW}',
+      num: '\\eta_m(' + dm(m.kW) + '\\ \\mathrm{kW}) = ' + kn(100 * m.etaM, 1) + '\\ \\% \\qquad P_{el} = \\frac{' + kn(r.Pshaft, 3) + '}{' + kn(m.etaM, 3) + '} = ' + kn(r.Pelec, 3) + '\\ \\mathrm{kW}',
+      fuente: 'El ejemplo 11.2 del libro da 83 % para el motor de 3,0 kW del caso y 1,72/0,83 = 2,07 kW.',
       libro: L(BOM + 'eq-potencia-electrica', 'Libro, ecuación 11.5, y tabla 11.15') });
     return out;
   }
@@ -2056,14 +2078,14 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
   var SISTEMA = {
     id: 'sistema', titulo: 'La línea en operación', corto: 'La línea',
     pregunta: '¿Cuánta cabeza le pide la línea a la bomba para mover el caudal?',
-    controles: ['mode', 'lQ', 'z2'], mas: ['eta', 'bomba', 'D', 'fluid', 'T', 'z1', 'P1', 'P2', 'dest', 'alto', 'zA', 'brida', 'alt', 'aire', 'FS', 'Ls', 'Ld'], datos: ['lQ', 'z2', 'eta'],
+    controles: ['mode', 'lQ', 'z2'], mas: ['eta', 'bomba', 'D', 'imotor', 'fluid', 'T', 'z1', 'P1', 'P2', 'dest', 'alto', 'zA', 'brida', 'alt', 'aire', 'FS', 'Ls', 'Ld'], datos: ['lQ', 'z2', 'eta'],
     kpis: function (r) {
       var m = modo(r);
       return [
         { etiqueta: 'Caudal', valor: r.noFlow ? '0' : fQ(r.Q), unidad: 'm³/h', nota: { diseno: 'lo pide el proceso', operacion: 'el punto de operación', gravedad: 'el que baja por gravedad' }[m] },
         m === 'gravedad' ? { etiqueta: 'Desnivel disponible', valor: num(-r.H0sys, 1), unidad: 'm', nota: 'lo gastan las pérdidas', alerta: r.noFlow }
           : { etiqueta: 'Cabeza de la bomba', valor: r.noFlow ? 'sin dato' : num(r.hA, 1), unidad: 'm', nota: m === 'diseno' ? 'la que pide la línea' : 'en el punto de operación', alerta: r.noFlow },
-        { etiqueta: 'Potencia al freno', valor: num(r.Pshaft, r.Pshaft < 10 ? 2 : 1), unidad: 'kW', nota: motorNota(r) }
+        { etiqueta: 'Potencia al freno', valor: num(r.Pshaft, r.Pshaft < 10 ? 2 : 1), unidad: 'kW', nota: motorNota(r), alerta: !!r.motor && !r.motor.ok }
       ];
     },
     veredicto: function (r) {
@@ -2423,7 +2445,7 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
   var CURVA = {
     id: 'curva', titulo: 'La curva del sistema', corto: 'Curva',
     pregunta: '¿Dónde se cruzan la curva de la línea y la de la bomba?',
-    controles: ['mode', 'lQ', 'eta', 'bomba', 'D'], mas: ['N', 'qB', 'hB', 'eB', 'pArr', 'z2', 'P2', 'z1', 'aire', 'FS'], datos: ['lQ', 'D', 'N'],
+    controles: ['mode', 'lQ', 'eta', 'bomba', 'D'], mas: ['N', 'qB', 'hB', 'eB', 'pArr', 'z2', 'P2', 'z1', 'imotor', 'aire', 'FS'], datos: ['lQ', 'D', 'N'],
     kpis: function (r) {
       var m = modo(r), x = m === 'operacion' && !r.noFlow ? r.x : null;
       return [
@@ -2499,13 +2521,13 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
   var ARREGLOS = {
     id: 'arreglos', titulo: 'Serie y paralelo', corto: 'Arreglos',
     pregunta: '¿Cuánto caudal y cuánta cabeza dan dos bombas iguales en serie o en paralelo?',
-    controles: ['mode', 'pArr', 'bomba', 'D'], mas: ['qB', 'hB', 'eB', 'N', 'lQ', 'z2'], datos: ['pArr', 'D'],
+    controles: ['mode', 'pArr', 'bomba', 'D'], mas: ['qB', 'hB', 'eB', 'N', 'imotor', 'lQ', 'z2'], datos: ['pArr', 'D'],
     kpis: function (r) {
       var oper = modo(r) === 'operacion';
       return [
         { etiqueta: 'Caudal', valor: r.noFlow ? '0' : fQ(r.Q), unidad: 'm³/h', nota: oper ? M.ARRS[r.s.pArr] : NOM_MODO[modo(r)] },
         { etiqueta: 'Cabeza', valor: r.noFlow ? 'sin dato' : num(modo(r) === 'gravedad' ? 0 : r.hA, 1), unidad: 'm', nota: oper && r.pm.count > 1 ? (r.s.pArr === 'serie' ? 'la mitad en cada bomba' : 'la misma en las dos') : '', alerta: r.noFlow },
-        { etiqueta: 'Potencia al freno', valor: num(r.Pshaft, r.Pshaft < 10 ? 2 : 1), unidad: 'kW', nota: motorNota(r) }
+        { etiqueta: 'Potencia al freno', valor: num(r.Pshaft, r.Pshaft < 10 ? 2 : 1), unidad: 'kW', nota: motorNota(r), alerta: !!r.motor && !r.motor.ok }
       ];
     },
     veredicto: function (r) {
@@ -2679,7 +2701,7 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
   var REVISION = {
     id: 'revision', titulo: 'La revisión de la línea', corto: 'Revisión',
     pregunta: '¿Qué le falta a la línea para darla por buena?',
-    controles: ['nS', 'nD', 'z1'], mas: ['lQ', 'mode', 'bomba', 'D', 'fluid', 'T', 'corr', 'aire', 'FS', 'Ls', 'Ld'], datos: ['nS', 'nD', 'z1'],
+    controles: ['nS', 'nD', 'z1'], mas: ['lQ', 'mode', 'bomba', 'D', 'imotor', 'fluid', 'T', 'corr', 'aire', 'FS', 'Ls', 'Ld'], datos: ['nS', 'nD', 'z1'],
     kpis: function (r) {
       var c = r.warn.filter(function (w) { return w.sev === 'c'; }).length, w = r.warn.filter(function (x) { return x.sev === 'w'; }).length, s = sev(r);
       return [
@@ -2706,7 +2728,7 @@ window.Modelo = { CASO: CASO, BASE: BASE, calcular: calcular, compute: compute, 
           { titulo: 'El régimen', texto: 'Un tramo en la transición tiene un factor de fricción incierto: se avisa. Con flujo laminar y accesorios, el codo estándar, la compuerta, la globo y la retención llevan los K laminares del libro; los demás, los de turbulento, que se quedan cortos.', libro: L(TUB + 'sec-tub-regimen', 'Libro, sección 10.2') },
           { titulo: 'La retención', texto: 'Una retención de bisagra abre del todo con más de 35 ρ<sup>−1/2</sup> pies por segundo, con ρ en libras por pie cúbico: con agua, ' + un(r.vmin, 2, 'm/s') + '. Más despacio, pierde más de lo que dice su K.', libro: L(TUB + 'sec-tub-accesorios', 'Libro, sección 10.4') },
           { titulo: 'La ventana de la bomba', texto: 'Con una bomba dada, el punto de operación debe caer entre el 70 y el 110 % del caudal de su mejor punto.', libro: L(BOM + 'tbl-ventana', 'Libro, tabla 11.4') },
-          { titulo: 'El motor', texto: 'El menor motor IEC que, reducido por la altitud, cubre la mayor potencia al eje de la curva de la bomba; el factor de servicio queda de reserva.', libro: L(BOM + 'sec-bombas-curvas', 'Libro, sección 11.5') },
+          { titulo: 'El motor', texto: 'El motor instalado, reducido por la altitud, tiene que cubrir la mayor potencia al eje de la curva de la bomba: crítico si no cubre ni el punto, aviso si no cubre la curva. La regla da el mínimo de la serie IEC; el factor de servicio queda de reserva.' + (r.motor ? ' Aquí: instalado ' + kWm(r.motor.kW) + ', mínimo ' + (r.motor.min ? kWm(r.motor.min) : 'ninguno de la tabla') + '.' : ''), libro: L(BOM + 'sec-bombas-curvas', 'Libro, sección 11.5') },
           { titulo: 'Los codos del trazado', texto: 'El dibujo necesita un codo de 90° en cada cambio de dirección; si la línea declara menos, el explorador avisa. Es una regla del explorador.' }
         ],
         libro: [L(TUB + 'sec-tub-planta', 'Sección 10.11, Lo que falla en planta'), L(BOM + 'sec-bombas-seleccion', 'Sección 11.13, Selección paso a paso')] };
