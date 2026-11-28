@@ -975,6 +975,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
   // los tamaños de motor: 0,75, 3,0, 5,5, 18,5, 22 kW
   function decMotor(v) { return v < 1 ? 2 : v < 10 || Math.round(v) !== v ? 1 : 0; }
   function kW(v) { return un(v, decMotor(v), 'kW'); }
+  function kW2(v) { return un(v, v < 10 ? 2 : 1, 'kW'); }   // potencias que no son tamaños de motor
   function conSigno(x, t) { return (x > 0 ? '+' : '') + t; }
   function casNom(c) { return c.name.replace(/-/g, '‑'); }
   function flu(st) { return M.byId(M.FLUIDS, st.fluid); }
@@ -1056,8 +1057,8 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     if (r.npsha >= r.npsh3 && r.npsha < r.npshB) it('i', 'Puede haber burbujas: NPSHₐ bajo 4 NPSH3, ' + Hu(r.npshB), Hu(r.npsha), 'En un diseño normal, dice el libro, las primeras aparecen entre 4 y 6 veces el NPSH3; la regla del margen las acepta.');
     if (r.npsha >= r.npsh3 && r.uOjo > r.uOjoMax) it('i', 'El ojo gira a más de ' + r.uOjoMax + ' m/s', un(r.uOjo, 1, 'm/s'), 'La regla del margen vale por debajo' + (r.uOjoMax > 10 ? ', con hidrocarburos' : '') + '; aquí el libro pide un margen mayor.');
     if (r.sola) it(r.sola.q1 / pf.qB <= 1.2 ? 'ok' : 'w', 'Si una se apaga, la otra no pasa del 120 % del BEP', pct(r.sola.q1 / pf.qB), r.sola.q1 / pf.qB > 1.2 ? 'Sola se corre a la derecha de su curva y puede cavitar.' : '');
-    it(r.motor ? 'ok' : 'c', 'Motor que cubre la potencia máxima de la curva, ' + kW(r.PmaxCurve), r.motor ? kW(r.motor) : 'no',
-      r.motor ? 'A ' + un(s.alt, 0, 'm') + ' da el ' + pct(r.fAlt) + ': ' + kW(r.motorSitio) + '; el factor de servicio queda de reserva.' : 'No hay motor de la tabla IEC que dé ' + kW(r.PmaxCurve) + ' a esta altitud.');
+    it(r.motor ? 'ok' : 'c', 'Motor que cubre la potencia máxima de la curva, ' + kW2(r.PmaxCurve), r.motor ? kW(r.motor) : 'no',
+      r.motor ? 'A ' + un(s.alt, 0, 'm') + ' da el ' + pct(r.fAlt) + ': ' + kW2(r.motorSitio) + '; el factor de servicio queda de reserva.' : 'No hay motor de la tabla IEC que dé ' + kW2(r.PmaxCurve) + ' a esta altitud.');
     it(r.D < 0.96 * r.Dmax ? 'ok' : 'w', 'Impulsor con margen para crecer', pct(r.D / r.Dmax) + ' del máximo', r.D < 0.96 * r.Dmax ? '' : 'Está en el máximo de la carcasa: no queda margen si sube la demanda.');
     if (r.D < 0.8 * r.Dmax - 1e-9 && r.nq < 40) it('w', 'Recorte que no baja del 80 % del diámetro', pct(r.D / r.Dmax), 'Con n<sub>q</sub> bajo 40 el libro no recomienda recortar más: la entrada queda grande y la bomba recircula.');
     it(!r.hi.on ? 'ok' : (r.hi.valid ? 'w' : 'c'), 'Sin corregir por viscosidad', 'B = ' + num(r.hi.B, 2),
@@ -1628,7 +1629,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     if (r.motor) {
       var ym = ap.Y(r.motorSitio * n);
       h += LN(X0, ym, X1, ym, { stroke: S3, 'stroke-width': 1.5, 'stroke-dasharray': '6 4' });
-      h += TX(X0 + 6, ym - 6, 'motor de ' + kW(r.motor) + (n > 1 ? ' por bomba' : '') + ': da ' + kW(r.motorSitio) + ' aquí', 'f-ts f-halo', null, { style: 'fill:' + S3 });
+      h += TX(X0 + 6, ym - 6, 'motor de ' + kW(r.motor) + (n > 1 ? ' por bomba' : '') + ': da ' + kW2(r.motorSitio) + ' aquí', 'f-ts f-halo', null, { style: 'fill:' + S3 });
     }
     h += TX(X0 - 4, 202, 'potencia al freno, ' + lP(), 'f-t');
     h += TX(392, 368, 'caudal, ' + lQ(), 'f-t', 'end');
@@ -1857,7 +1858,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
   }
   var CASCADA = {
     titulo: 'Los términos', tipo: 'svg', vista: [400, 400], ancha: true,
-    alt: 'Barras que suman los términos del NPSH disponible: la presión atmosférica del sitio, la presión del tanque, el nivel del tanque sobre el eje, menos las pérdidas de la succión y la presión de vapor; abajo, el NPSH disponible contra el NPSH3 de la bomba y la línea del NPSH3 más el margen exigido.',
+    alt: 'Barras que suman los términos del NPSH disponible: la presión atmosférica del sitio, la presión del tanque, el nivel del tanque sobre el eje, menos las pérdidas de la succión y la presión de vapor; abajo, el NPSH disponible contra el NPSH3 de la bomba y la línea de lo que pide la regla del margen del libro.',
     montar: function (g) { this.g = el('g', {}, g); },
     poner: function (r) { this.g.innerHTML = dibCascada(r); }
   };
@@ -2087,8 +2088,8 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
         ['Potencia al freno en el punto' + (nP > 1 ? ', por bomba' : ''), op ? Pu(r.Pshaft1) : 'sin dato'],
         ['La máxima de la curva publicada', Pu(r.PmaxCurve)],
         ['Motor IEC escogido', r.motor ? kW(r.motor) + ' (' + un(r.motor / 0.7457, 1, 'hp') + ')' : 'no hay'],
-        ['Lo que da a ' + un(s.alt, 0, 'm') + ', ' + pct(r.fAlt), r.motor ? kW(r.motorSitio) : 'sin dato'],
-        ['Con el factor de servicio, ' + num(s.FS, 2), r.motor ? kW(r.reserva) + ', de reserva' : 'sin dato'],
+        ['Lo que da a ' + un(s.alt, 0, 'm') + ', ' + pct(r.fAlt), r.motor ? kW2(r.motorSitio) : 'sin dato'],
+        ['Con el factor de servicio, ' + num(s.FS, 2), r.motor ? kW2(r.reserva) + ', de reserva' : 'sin dato'],
         ['Eficiencia del motor (tabla 11.15)', pct(r.etaM, 1)],
         ['Potencia eléctrica' + (nP > 1 ? ', las dos' : ''), op ? Pu(r.Pelec) : 'sin dato'],
         ['Energía en 8000 h al año', op ? un(r.Pelec * 8000, 0, 'kWh') : 'sin dato']
@@ -2684,7 +2685,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     controles: ['aire', 'FS'], mas: ['alt', 'casing', 'D', 'N0', 'T'], datos: ['aire', 'FS', 'alt'],
     kpis: function (r) {
       return [
-        { etiqueta: 'Motor', valor: r.motor ? num(r.motor, decMotor(r.motor)) : 'no hay', unidad: r.motor ? 'kW' : '', nota: r.motor ? 'da ' + kW(r.motorSitio) + ' aquí · η ' + pct(r.etaM, 0) : 'para ' + kW(r.PmaxCurve) + ' con el ' + pct(r.fAlt), alerta: !r.motor },
+        { etiqueta: 'Motor', valor: r.motor ? num(r.motor, decMotor(r.motor)) : 'no hay', unidad: r.motor ? 'kW' : '', nota: r.motor ? 'da ' + kW2(r.motorSitio) + ' aquí · η ' + pct(r.etaM, 0) : 'para ' + kW2(r.PmaxCurve) + ' con el ' + pct(r.fAlt), alerta: !r.motor },
         { etiqueta: 'Potencia eléctrica', valor: r.op ? fp(r.Pelec) : 'sin dato', unidad: lP(), nota: 'la que se toma de la red' },
         { etiqueta: 'Energía al año', valor: r.op ? num(r.Pelec * 8000, 0) : 'sin dato', unidad: 'kWh', nota: 'en 8000 h' }
       ];
@@ -2714,7 +2715,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
       pasos.push({ titulo: 'El motor',
         texto: 'El motor se escoge con la mayor potencia al freno de la curva publicada, no con la del punto de operación, porque el punto puede correrse. Arriba de 1000 m el motor da menos que su potencia de placa, así que se toma el menor tamaño IEC que, ya reducido por la altitud, cubre esa potencia. El factor de servicio queda de reserva, para las sobrecargas ocasionales.',
         ec: 'f_{alt}\\,P_{mot} \\ge P_{eje,\\text{máx}}',
-        num: (r.op ? 'P_{eje} = ' + kn(r.Pshaft1, 3) + '\\ \\mathrm{kW}\\ \\text{en el punto},\\quad ' : '') + 'P_{eje,\\text{máx}} = ' + kn(r.PmaxCurve, 3) + '\\ \\mathrm{kW} \\\\ ' + (r.motor ? kn(r.fAlt, 2) + '\\times ' + kn(r.motor, r.motor < 1 ? 2 : 1) + ' = ' + kn(r.motorSitio, 2) + '\\ \\mathrm{kW} \\;\\Rightarrow\\; ' + kn(r.motor, r.motor < 1 ? 2 : 1) + '\\ \\mathrm{kW} \\\\ \\text{reserva: } ' + kn(s.FS, 2) + '\\times ' + kn(r.motorSitio, 2) + ' = ' + kn(r.reserva, 2) + '\\ \\mathrm{kW}' : '\\text{no hay en la tabla}'),
+        num: (r.op ? 'P_{eje} = ' + kn(r.Pshaft1, 3) + '\\ \\mathrm{kW}\\ \\text{en el punto},\\quad ' : '') + 'P_{eje,\\text{máx}} = ' + kn(r.PmaxCurve, 3) + '\\ \\mathrm{kW} \\\\ ' + (r.motor ? kn(r.fAlt, 2) + '\\times ' + kn(r.motor, r.motor < 1 ? 2 : 1) + ' = ' + kn(r.motorSitio, 2) + '\\ \\mathrm{kW} \\ge ' + kn(r.PmaxCurve, 3) + '\\ \\mathrm{kW} \\;\\Rightarrow\\; ' + kn(r.motor, r.motor < 1 ? 2 : 1) + '\\ \\mathrm{kW} \\\\ \\text{reserva: } ' + kn(s.FS, 2) + '\\times ' + kn(r.motorSitio, 2) + ' = ' + kn(r.reserva, 2) + '\\ \\mathrm{kW}' : '\\text{no hay en la tabla}'),
         fuente: 'La regla es la del libro. La potencia de placa vale hasta 1000 m y 40 °C; a 2600 m el libro toma el 95 % con aire de menos de 30 °C y el 89 % entre 30 y 40 °C, de la tabla de un fabricante que el explorador interpola para las demás altitudes. Los tamaños son los de la serie IEC. El caso del libro lleva un motor de 3,0 kW, que da 2,67 kW en Bogotá: la regla lo acepta, aunque el menor que la cumple es el de 2,2 kW.',
         libro: L('sec-bombas-curvas', 'Libro, sección 11.5') });
       if (r.op) pasos.push({ titulo: 'La potencia eléctrica y la energía',
