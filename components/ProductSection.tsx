@@ -2,6 +2,7 @@ import React, { useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Product } from '../types';
 import { researchLinesMap } from './data/research';
+import { lineaPorId } from './data/researchProgram';
 import { useI18n, localize, fill, type UIKey } from '../context/i18n';
 import { SALE } from './Sube';
 
@@ -61,7 +62,9 @@ export const ProductSection = ({ product, citationCount, cover, showYear = false
     identificador = `${t('products.id.asin')} ${ident}`;
   }
 
-  const lineas = (product.researchAreas ?? []).map((a) => localize(researchLinesMap[a]?.title ?? a, lang));
+  // La línea del programa (y la segunda, si cruza a otra) y los temas finos de researchAreas.
+  const lineas = [product.programLine, product.programLineSecondary].filter((l): l is NonNullable<typeof l> => !!l).map((l) => localize(lineaPorId[l].titulo, lang));
+  const temas = (product.researchAreas ?? []).map((a) => localize(researchLinesMap[a]?.title ?? a, lang));
 
   return (
     <div className={cover ? 'grid grid-cols-[5.5rem_minmax(0,1fr)] sm:grid-cols-[8rem_minmax(0,1fr)] gap-x-5 sm:gap-x-8' : ''}>
@@ -142,8 +145,14 @@ export const ProductSection = ({ product, citationCount, cover, showYear = false
                   </div>
                   {lineas.length > 0 && (
                     <div>
-                      <p className="text-tinta-600">{t('products.lines')}</p>
+                      <p className="text-tinta-600">{t(lineas.length > 1 ? 'products.lines' : 'products.line')}</p>
                       <p className="mt-1">{lineas.join(' · ')}</p>
+                    </div>
+                  )}
+                  {temas.length > 0 && (
+                    <div>
+                      <p className="text-tinta-600">{t('products.topics')}</p>
+                      <p className="mt-1">{temas.join(' · ')}</p>
                     </div>
                   )}
                   {product.keywords.length > 0 && (

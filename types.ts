@@ -22,6 +22,9 @@ export type ResearchArea =
   | 'Multisensory Experience Design'
   | 'Scholarship of Teaching & Learning';
 
+/** Las cuatro líneas del programa de investigación, por el problema que resuelven (components/data/researchProgram.ts). */
+export type ProgramLine = 'Health' | 'Food & Consumer' | 'Environment & Industry' | 'Engineering Education';
+
 /** Una pregunta y su respuesta en palabras sencillas, en los dos idiomas. */
 export interface LaymanSummaryPoint {
   question: Localized;
@@ -42,6 +45,9 @@ export interface Product {
   imageUrl: string;
   status?: string;
   researchAreas?: ResearchArea[];
+  /** La línea del programa a la que pertenece, y la segunda cuando cruza a otra. */
+  programLine?: ProgramLine;
+  programLineSecondary?: ProgramLine;
 }
 
 export interface StudentLaymanSummaryPoint {
