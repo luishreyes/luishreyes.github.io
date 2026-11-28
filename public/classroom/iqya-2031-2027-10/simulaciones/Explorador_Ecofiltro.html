@@ -99,6 +99,8 @@
 .ec-act li::marker { color: var(--oliva-osc); font-weight: 600; }
 .ec-act .ec-supuestos { padding: 10px 12px; background: var(--blanco); border-left: 4px solid var(--navy); font-size: var(--t-xs); line-height: 1.5; }
 .ec-vacio { font-size: var(--t-s); color: var(--sec); }
+/* los datos de cada configuración, debajo de lo que fija */
+.ec-hechos { display: block; margin-top: 6px; font-size: var(--t-xs); color: var(--sec); }
 
 /* Las gráficas en SVG: el texto con halo blanco sobre las curvas, y el cursor que lee la gráfica */
 .ec-ch text { paint-order: stroke; stroke: var(--nieve); stroke-width: 3px; stroke-linejoin: round; }
@@ -1003,8 +1005,8 @@ return FEco;
 <script>
 /* El Explorador del ecofiltro: el armazón (/classroom/explorador-libro.js) pone la página; aquí van los controles, las
    configuraciones y las diez escenas. Las cinco primeras son la planta en el tiempo, la actividad de clase de la versión
-   de 2026-20: el modelo dinámico corre con el reloj de las figuras y sigue corriendo mientras el estudiante pasa de una
-   escena a otra de esa parte. Las cinco últimas son el ecofiltro solo, el explorador completo de esa versión. */
+   de 2026-20: el modelo dinámico corre con el reloj de las figuras y sigue corriendo mientras el estudiante cambia de
+   escena dentro de esa parte. Las cinco últimas son el ecofiltro solo, el explorador completo de esa versión. */
 (function () {
   'use strict';
   var M = window.Modelo;
@@ -1114,7 +1116,7 @@ return FEco;
 
   /* ================= La planta en el tiempo: la corrida ================= */
   /* La corrida es una sola para las cinco escenas de la actividad: la mueve la figura principal de la escena en pantalla,
-     con la pausa y la velocidad de su cabecera, que pasan de una escena a la otra. Con movimiento reducido no corre en
+     con la pausa y la velocidad de su cabecera. Con movimiento reducido no corre en
      el tiempo: cada corrida se calcula entera y se muestra terminada. */
   var SCEN = M.SCEN;
   var VELS = [{ valor: 600, texto: '10 min/s' }, { valor: 3600, texto: '1 h/s' }, { valor: 21600, texto: '6 h/s' }];
@@ -1240,7 +1242,7 @@ return FEco;
   }
   function infoActividad(r) {
     var e = r.e, A = corrida(e), sc = M.byId(SCEN, e.carga), h = '';
-    if (RUN.pausada && !XL.reducido()) h += '<p><b>La corrida está en pausa</b>: sígala desde la escena 1 o la 2.</p>';
+    if (RUN.pausada && !XL.reducido()) h += '<p>La corrida está en <b>pausa</b>: sígala desde la escena 1 o la 2.</p>';
     if (e.modo === 'auto') h += '<p>' + quienManda(A) + '</p>';
     else h += '<p>Usted fija la velocidad: N = ' + num(e.af / FAN.fnom, 2) + ' de la nominal, ' + un(UNOM * e.af / FAN.fnom, 0, 'r/min') + '. Con estos ductos el tanque queda en succión desde <b>' + hz(r.act.piso) + '</b>.</p>';
     h += '<p>' + sc.name + ': ' + min(sc.desc) + '</p>';
@@ -1534,7 +1536,7 @@ return FEco;
     alt: 'La curva del V-101 a la frecuencia de ahora y a 30, 40, 50 y 60 Hz contra la curva del sistema, que se empina donde el ventilador saca más gas del que suelta el agua; el punto de operación y la línea del gas que suelta el agua.',
     dibujar: function () {
       var A = RUN.A, h = A.h, K = A.K;
-      var x0 = 62, x1 = 390, y0 = 30, y1 = 330, qmax = 2, lo = -400, hi = 3600;
+      var x0 = 62, x1 = 382, y0 = 30, y1 = 330, qmax = 2, lo = -400, hi = 3600;
       var X = function (q) { return x0 + q / qmax * (x1 - x0); }, Y = function (v) { return y1 - (entre(v, lo - 200, hi + 200) - lo) / (hi - lo) * (y1 - y0); };
       var out = E('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: C.blanco }), v, q, d, i;
       var qg = M.QGEN / PATM;
@@ -1592,7 +1594,7 @@ return FEco;
     alt: 'El H₂S a la salida del ecofiltro contra el H₂S que llega, con las mismas tres curvas, la diagonal sin remoción, el criterio de 20 ppm y las muestras de la corrida.',
     dibujar: function () {
       var A = RUN.A, cs = curvasRemocion(), pts = muestras(), xmax = xmaxIO(), ymax = bonito(Math.max(100, xmax * 0.5));
-      var b = ejes({ x0: 62, x1: 388, y0: 34, y1: 322, xmin: 0, xmax: xmax, ymin: 0, ymax: ymax, ny: 5, nx: 4, xlab: 'H₂S que llega, ppm', ylab: 'H₂S que sale, ppm', clip: 'ecIOC' });
+      var b = ejes({ x0: 62, x1: 372, y0: 34, y1: 322, xmin: 0, xmax: xmax, ymin: 0, ymax: ymax, ny: 5, nx: 4, xlab: 'H₂S que llega, ppm', ylab: 'H₂S que sale, ppm', clip: 'ecIOC' });
       var o = b.svg;
       o += '<g clip-path="url(#ecIOC)">' + LN(b.X(0), b.Y(0), b.X(Math.min(xmax, ymax)), b.Y(Math.min(xmax, ymax)), 'stroke:' + C.guia + ';stroke-width:1.2;stroke-dasharray:3 4');
       o += LN(b.o.x0, b.Y(CRIT), b.o.x1, b.Y(CRIT), ROJO);
@@ -1609,7 +1611,7 @@ return FEco;
   var AC = { bf: C.aguaO, btf: VERDE, carbon: C.sec, leak: C.alerta };
   function tarjeta(l, v, u, al) { return '<div><span class="k">' + l + '</span><span class="v' + (al ? ' al' : '') + '">' + v + '</span><span class="s">' + u + '</span></div>'; }
   var BALANCE = deActividad(html({
-    titulo: 'El H₂S que salió del agua', ancha: true, vista: [440, 400],
+    titulo: 'El H₂S que salió del agua', ancha: true,
     alt: 'El H₂S que salió del agua en la corrida en pantalla, repartido según a dónde fue: el biofiltro del lazo interno, el ecofiltro, el carbón activado y las fugas del tanque; debajo, seis cifras de la corrida.',
     llenar: function () {
       var A = RUN.A, a = A.acc, tot = a.bf + a.btf + a.carbon + a.leak || 1, hrs = A.t / 3600 || 1;
@@ -1628,7 +1630,7 @@ return FEco;
     }
   }), 'motor');
   var CORRIDAS = deActividad(html({
-    titulo: 'Corridas terminadas', vista: [400, 400],
+    titulo: 'Corridas terminadas',
     alt: 'Las ocho últimas corridas terminadas, para comparar estrategias: la manera de operar, la carga, las fugas, las horas por encima de 20 ppm, el H₂S que llegó al carbón y la energía.',
     llenar: function () {
       if (!RUN.corridas.length) return '<h4>Las ocho últimas</h4><p class="ec-vacio">Cuando termine una corrida, quedará aquí para compararla con las siguientes.</p>';
@@ -1726,7 +1728,8 @@ return FEco;
     var c = Xc.ctx, s = R.s, m = R.m, self = this;
     var col = { ink: C.tinta, paper: '#fff', muted: C.sec, hl: C.azul, red: C.alerta, ok: VERDE };
     var water = AGUA, h2s = H2S;
-    var kpx = 13 / Xc.letra(1e-6, 13), small = kpx < 0.62;
+    // en pantallas chicas las letras no bajan de 13 px y se quitan los rótulos de menos peso (en el celular, casi todos)
+    var kpx = 13 / Xc.letra(1e-6, 13), small = kpx < 0.62, diminuto = kpx < 0.45;
     var X = function (x) { return x; }, Y = function (y) { return y; }, k = 1;
     Xc.limpiar();
     c.fillStyle = col.paper; c.fillRect(-20, -20, 1040, 640);
@@ -1744,8 +1747,8 @@ return FEco;
     [mu, pg].forEach(function (p) { line(p, pipeW + 2, col.ink); line(p, pipeW, col.paper); if (m.Qmu > 0) line(p, pipeW - 1.5, wc, [5, 7], flowOff * 0.5); });
     c.fillStyle = col.paper; c.strokeStyle = col.ink; c.lineWidth = 1.4 * k;
     c.beginPath(); c.moveTo(X(925), Y(292)); c.lineTo(X(941), Y(308)); c.lineTo(X(941), Y(292)); c.lineTo(X(925), Y(308)); c.closePath(); c.fill(); c.stroke();
-    c.beginPath(); c.arc(X(933), Y(278), 8 * k, 0, 2 * Math.PI); c.fill(); c.stroke(); txt('FC', 933, 281, { a: 'center', fs: 8, fw: 700 });
-    if (!small) { txt('Reposición', 990, 284, { a: 'right', fs: 10.5, c: col.muted }); txt(num(s.qmu, 0) + ' L/h', 990, 326, { a: 'right', fs: 10.5, c: col.muted }); }
+    c.beginPath(); c.arc(X(933), Y(278), 8 * k, 0, 2 * Math.PI); c.fill(); c.stroke(); if (!diminuto) txt('FC', 921, 284, { a: 'right', fs: 8, fw: 700 });
+    if (!small) { txt('Reposición', 990, 260, { a: 'right', fs: 10.5, c: col.muted }); txt(num(s.qmu, 0) + ' L/h', 990, 326, { a: 'right', fs: 10.5, c: col.muted }); }
     arrowHead(592, 560, -1, 0, wc); if (!small) txt('Purga · ' + num(s.qmu, 0) + ' L/h', 584, 564, { a: 'right', fs: 10.5, c: col.muted });
     /* columna */
     var x0 = G.cx0, x1 = G.cx1, w = x1 - x0;
@@ -1783,33 +1786,34 @@ return FEco;
     function demister(xc, yc, tag, side) {
       var ww = 30, hh = 74; c.fillStyle = col.paper; c.fillRect(X(xc - ww / 2), Y(yc - hh / 2), ww * k, hh * k); c.lineWidth = 1.8 * k; c.strokeStyle = col.ink; c.strokeRect(X(xc - ww / 2), Y(yc - hh / 2), ww * k, hh * k);
       for (var yy = yc - 14; yy <= yc + 14; yy += 5) line([[xc - ww / 2 + 3, yy], [xc + ww / 2 - 3, yy + 3]], 0.8, col.muted);
+      if (diminuto) return;
       if (side) txt(tag, xc - ww / 2 - 6, yc + 4, { a: 'right', fs: 10, fw: 700 }); else txt(tag, xc, yc + hh / 2 + 16, { a: 'center', fs: 10, fw: 700 });
     }
     demister(126, 446, 'D-101'); demister(796, 100, 'D-102', true);
     rect(620, 462, 70, 74, col.paper, col.ink, 1.8);
     if (liqOn) { c.fillStyle = phc; c.globalAlpha = 0.4; c.fillRect(X(622), Y(484), 66 * k, 50 * k); c.globalAlpha = 1; }
-    txt('TK-103', 655, 454, { a: 'center', fs: 10, fw: 700 });
+    if (!diminuto) txt('TK-103', 655, 454, { a: 'center', fs: 10, fw: 700 });
     if (s.neut) { line([[655, 420], [655, 460]], 1.4, col.ink); arrowHead(655, 460, 0, 1, col.ink); txt('NaOH', 662, 428, { fs: 10, fw: 700 }); }
-    (function pump(xc, yc, tag) { c.beginPath(); c.arc(X(xc), Y(yc), 14 * k, 0, 2 * Math.PI); c.fillStyle = col.paper; c.fill(); c.lineWidth = 1.8 * k; c.strokeStyle = col.ink; c.stroke(); c.beginPath(); c.moveTo(X(xc - 6), Y(yc - 9)); c.lineTo(X(xc + 10), Y(yc)); c.lineTo(X(xc - 6), Y(yc + 9)); c.closePath(); c.stroke(); txt(tag, xc, yc + 32, { a: 'center', fs: 10, fw: 700 }); })(776, 520, 'PS-101');
+    (function pump(xc, yc, tag) { c.beginPath(); c.arc(X(xc), Y(yc), 14 * k, 0, 2 * Math.PI); c.fillStyle = col.paper; c.fill(); c.lineWidth = 1.8 * k; c.strokeStyle = col.ink; c.stroke(); c.beginPath(); c.moveTo(X(xc - 6), Y(yc - 9)); c.lineTo(X(xc + 10), Y(yc)); c.lineTo(X(xc - 6), Y(yc + 9)); c.closePath(); c.stroke(); if (!diminuto) txt(tag, xc, yc + 32, { a: 'center', fs: 10, fw: 700 }); })(776, 520, 'PS-101');
     function fan(xc, yc, tag, run) {
       var r = 26, cc = run ? col.ink : col.muted;
       c.beginPath(); c.arc(X(xc), Y(yc), r * k, 0, 2 * Math.PI); c.fillStyle = col.paper; c.fill(); c.lineWidth = 2 * k; c.strokeStyle = cc; c.stroke();
       var a0 = run ? self.rot : 0.3;
       for (var b = 0; b < 8; b++) { var a = a0 + b * Math.PI / 4; c.beginPath(); c.moveTo(X(xc + Math.cos(a) * 6), Y(yc + Math.sin(a) * 6)); c.quadraticCurveTo(X(xc + Math.cos(a + 0.5) * 16), Y(yc + Math.sin(a + 0.5) * 16), X(xc + Math.cos(a + 0.35) * (r - 4)), Y(yc + Math.sin(a + 0.35) * (r - 4))); c.lineWidth = 1.6 * k; c.strokeStyle = cc; c.stroke(); }
       c.beginPath(); c.arc(X(xc), Y(yc), 5 * k, 0, 2 * Math.PI); c.fillStyle = cc; c.fill();
-      txt(tag, xc, yc - r - 8, { a: 'center', fs: 10, fw: 700, c: run ? col.ink : col.muted });
-      if (run) txt(hz(R.f), xc, yc + r + 17, { a: 'center', fs: 10, c: col.muted });
+      if (run || !diminuto) txt(tag, xc, yc - r - 8, { a: 'center', fs: 10, fw: 700, c: run ? col.ink : col.muted });
+      if (run && !diminuto) txt(hz(R.f), xc, yc + r + 17, { a: 'center', fs: 10, c: col.muted });
     }
     fan(290, 446, 'V-101 A', true); fan(290, 366, 'V-101 B · respaldo', false);
     c.fillStyle = h2s; this.mol.forEach(function (o) { c.beginPath(); c.arc(X(o.x), Y(o.y), 2.6, 0, 2 * Math.PI); c.fill(); });
     this.spark.forEach(function (sp) { c.fillStyle = rgba(col.ok, sp.a); c.beginPath(); c.arc(X(sp.x), Y(sp.y), 2.4, 0, 2 * Math.PI); c.fill(); });
     arrowHead(14, 446, 1, 0, col.ink);
-    if (!small) { txt('Gas del tanque', 16, 410, { fs: 10.5, c: col.muted }); txt('de aquietamiento', 16, 428, { fs: 10.5, c: col.muted }); }
+    if (!small) { txt('Gas del tanque', 16, 380, { fs: 10.5, c: col.muted }); txt('de aquietamiento', 16, 398, { fs: 10.5, c: col.muted }); }
     txt(ppm(s.cin) + ' ppm', 16, 478, { fs: 11, fw: 700 });
     arrowHead(992, 66, 1, 0, col.ink);
     if (!small) txt('Al tanque de adsorción', 990, 88, { a: 'right', fs: 10.5, c: col.muted });
     txt(ppm(R.cout) + ' ppm', 990, 108, { a: 'right', fs: 11, fw: 700, c: R.cout > CRIT ? col.red : col.ink });
-    txt(un(m.QG, 2, 'm³/s'), 360, 474, { a: 'center', fs: 10.5, fw: 600, c: col.muted });
+    if (!diminuto) txt(un(m.QG, 2, 'm³/s'), 360, 474, { a: 'center', fs: 10.5, fw: 600, c: col.muted });
     if (R.e.prof) {
       var p0 = G.prof0, p1 = G.prof1, cmax = m.Cin > 0 ? m.Cin : 1;
       line([[p0, G.bedTop], [p0, G.bedBot], [p1, G.bedBot]], 1.2, col.ink);
@@ -1817,8 +1821,7 @@ return FEco;
       var pts = [[p1, G.bedBot]], eq = [];
       for (i = 0; i < P.N; i++) { var yy2 = G.bedBot - (i + 0.5) / P.N * (G.bedBot - G.bedTop); pts.push([p0 + (p1 - p0) * P.CG[i] / cmax, yy2]); eq.push([p0 + (p1 - p0) * Math.min(P.CL[i] / HENRY / cmax, 1.05), yy2]); }
       line(eq, 1.4, col.muted, [4, 3]); line(pts, 2.4, col.hl);
-      txt('C_G, ppm', p1, G.bedBot + 18, { a: 'right', fs: 10, c: col.muted });
-      txt('0', p0, G.bedBot + 18, { a: 'center', fs: 10, c: col.muted });
+      if (!diminuto) { txt('H₂S en el gas, ppm', p1, G.bedBot + 18, { a: 'right', fs: 10, c: col.muted }); txt('0', p0, G.bedBot + 18, { a: 'center', fs: 10, c: col.muted }); }
       txt(ppm(s.cin), p1, G.bedBot - 6, { a: 'right', fs: 10, fw: 700 });
       txt(ppm(R.cout), p0 + (p1 - p0) * P.Cout / cmax + 4, G.bedTop + 14, { fs: 10, fw: 700, c: R.cout > CRIT ? col.red : col.ink });
       if (!small) txt('20 ppm', p0 + (p1 - p0) * Math.min(crit / cmax, 1) + 3, G.bedTop - 5, { fs: 9.5, c: col.red });
@@ -1832,7 +1835,7 @@ return FEco;
     cuadro: function (dt, r, X) { this.esq.R = r; if (!X.reducido()) this.esq.step(dt); this.esq.draw(X); }
   };
   var HOJA = html({
-    etiqueta: 'Lecturas', titulo: 'Lo que leería la planta', vista: [440, 400],
+    etiqueta: 'Lecturas', titulo: 'Lo que leería la planta',
     alt: 'Lo que leería la planta en el caso en pantalla, en una lista, y el diagnóstico: los problemas, que impiden que el ecofiltro trabaje, y las advertencias.',
     llenar: function (r) {
       var s = r.s, P = r.P, S = r.S;
@@ -1898,7 +1901,7 @@ return FEco;
   });
   function regimen(r) { return r.m.QL <= 0 ? 'sin riego' : (r.P.sat < 0.3 ? 'manda la transferencia' : (r.P.sat > 0.7 ? 'manda la biopelícula' : 'mandan las dos')); }
   var MANDA = html({
-    etiqueta: 'Quién manda', titulo: 'Quién manda', vista: [400, 400],
+    etiqueta: 'Quién manda', titulo: 'Quién manda',
     alt: 'Las cifras de la transferencia de masa en el lecho: la película de gas, la de líquido, cuánta resistencia está en el líquido, el coeficiente global, la película y su retención, qué tan cerca del equilibrio llega el líquido y el techo de la transferencia.',
     llenar: function (r) {
       var k = r.k;
@@ -1929,7 +1932,7 @@ return FEco;
     alt: 'La presión del ventilador contra el caudal a la frecuencia de ahora y a 30, 40, 50 y 60 Hz, la curva del sistema completo, la del lecho solo y el punto de operación. Con el puntero se lee cada caudal.',
     dibujar: function (r) {
       var m = r.m, bc = m.bc, Kd = m.Kd;
-      var a = ejes({ x0: 64, x1: 428, y0: 48, y1: 330, xmin: 0, xmax: 3, ymin: 0, ymax: 4000, nx: 6, ny: 4, xlab: 'Caudal de gas, m³/s', ylab: 'Δp, Pa', clip: 'ecFanC', rejilla: r.e.grid });
+      var a = ejes({ x0: 64, x1: 422, y0: 48, y1: 330, xmin: 0, xmax: 3, ymin: 0, ymax: 4000, nx: 6, ny: 4, xlab: 'Caudal de gas, m³/s', ylab: 'Δp, Pa', clip: 'ecFanC', rejilla: r.e.grid });
       var o = a.svg, curva = function (fn) { var p = []; for (var j = 0; j <= 60; j++) { var q = 3 * j / 60; p.push([a.X(q), a.Y(fn(q))]); } return poly(p); };
       [30, 40, 50, 60].forEach(function (ff) { o += PA(curva(function (q) { return M.fanDP(ff, q); }), GUIA, { 'clip-path': 'url(#ecFanC)' }); o += T(a.X(0) + 5, a.Y(M.fanDP(ff, 0)) - 5, ff + NB + 'Hz', 'f-ts'); });
       var f = Math.min(r.f, 60);
@@ -1955,7 +1958,7 @@ return FEco;
     alt: 'El H₂S a la salida del ecofiltro contra el caudal de gas, con el criterio de 20 ppm y el punto de ahora. Con el puntero se lee cada caudal.',
     dibujar: function (r) {
       var sw = barrido(r), ymax = Math.max(r.cin, 30) * 1.05;
-      var b = ejes({ x0: 62, x1: 388, y0: 48, y1: 330, xmin: 0, xmax: 2.8, ymin: 0, ymax: ymax, nx: 5, ny: 5, xlab: 'Caudal de gas, m³/s', ylab: 'H₂S a la salida, ppm', clip: 'ecSwQ', rejilla: r.e.grid });
+      var b = ejes({ x0: 62, x1: 384, y0: 48, y1: 330, xmin: 0, xmax: 2.8, ymin: 0, ymax: ymax, nx: 5, ny: 5, xlab: 'Caudal de gas, m³/s', ylab: 'H₂S a la salida, ppm', clip: 'ecSwQ', rejilla: r.e.grid });
       this.b = b; this.sw = sw;
       return b.svg + LN(b.o.x0, b.Y(CRIT), b.o.x1, b.Y(CRIT), ROJO) + T(b.o.x1 - 6, b.Y(CRIT) - 6, '20' + NB + 'ppm', 'f-ts f-alerta', 'end') +
         PA(poly(sw.map(function (p) { return [b.X(p.q), b.Y(p.out)]; })), AZUL, { 'clip-path': 'url(#ecSwQ)' }) + pto(b.X(r.Q), b.Y(r.cout), 6);
@@ -1974,7 +1977,7 @@ return FEco;
     alt: 'Los gramos por hora de H₂S que retira el ecofiltro contra el caudal de gas, con el punto de ahora.',
     dibujar: function (r) {
       var sw = barrido(r), jmax = 0; sw.forEach(function (p) { jmax = Math.max(jmax, p.J); });
-      var c = ejes({ x0: 66, x1: 388, y0: 48, y1: 330, xmin: 0, xmax: 2.8, ymin: 0, ymax: Math.max(jmax * 1.1, 10), nx: 5, ny: 5, xlab: 'Caudal de gas, m³/s', ylab: 'H₂S retirado, g/h', ylabOff: 52, rejilla: r.e.grid });
+      var c = ejes({ x0: 66, x1: 384, y0: 48, y1: 330, xmin: 0, xmax: 2.8, ymin: 0, ymax: Math.max(jmax * 1.1, 10), nx: 5, ny: 5, xlab: 'Caudal de gas, m³/s', ylab: 'H₂S retirado, g/h', ylabOff: 52, rejilla: r.e.grid });
       return c.svg + PA(poly(sw.map(function (p) { return [c.X(p.q), c.Y(p.J)]; })), AZUL) + pto(c.X(r.Q), c.Y(r.Jgh), 6) + T(14, 18, 'Ahora: ' + un(r.Jgh, r.Jgh >= 100 ? 0 : 1, 'g/h') + ' con ' + un(r.Q, 2, 'm³/s') + '.', 'f-ts', 'start', 'fill:' + C.tinta);
     }
   });
@@ -1997,7 +2000,7 @@ return FEco;
     return v + '<br>El balance no cierra si la remoción es biológica y completa. O el azufre se queda en el lecho como azufre elemental, que a la larga tapa el empaque y sube la caída de presión, o el H₂S no se está oxidando y la remoción que leen los sensores tiene otra explicación, o las mediciones no son del mismo momento ni del mismo punto. Cerrar el balance obliga a escoger, y a medir lo que falta.';
   }
   var AZUFRE = html({
-    etiqueta: 'Balance', titulo: 'El H₂S que entra, repartido', vista: [440, 400],
+    etiqueta: 'Balance', titulo: 'El H₂S que entra, repartido',
     alt: 'El H₂S que entra al ecofiltro, repartido entre lo que sale con el gas, el sulfato de la purga, el azufre elemental que se queda en el lecho y el H₂S disuelto en la purga; seis cifras del balance y lo que permite concluir lo que midió el laboratorio.',
     llenar: function (r) {
       var S = r.S, s = r.s, m = r.m;
@@ -2016,7 +2019,7 @@ return FEco;
     }
   });
   var LABORATORIO = html({
-    etiqueta: 'Laboratorio', titulo: 'Compare con el laboratorio', vista: [440, 400],
+    etiqueta: 'Laboratorio', titulo: 'Compare con el laboratorio',
     alt: 'Lo que exigiría en la purga la remoción que leen los sensores, frente a lo que midió el laboratorio, y lo que permite concluir.',
     llenar: function (r) { return '<h4>Compare con el laboratorio</h4><p class="ec-veredicto">' + veredictoLab(r) + '</p><p class="ec-nota">Escoja en los controles lo que midió el laboratorio: el sulfato, el pH o los dos.</p>'; }
   });
@@ -2025,7 +2028,7 @@ return FEco;
     alt: 'El pH de la purga contra la fracción del H₂S retirado que llega a sulfato, en escala logarítmica, con el límite de pH 2 del equipo, el punto del caso y, si se escogió, el punto del laboratorio.',
     dibujar: function (r) {
       var S = r.S, s = r.s, alk = s.alk / 1000, Qp = S.Qp, full = isFinite(S.ST) ? (S.J / Qp) * M.MWSO4 * 1000 : NaN;
-      var a = ejes({ x0: 56, x1: 388, y0: 40, y1: 330, xlog: true, xmin: 1e-6, xmax: 1, ymin: 0, ymax: 8, ny: 4, xlab: 'Fracción que llega a sulfato', ylab: 'pH de la purga', ylabOff: 38, clip: 'ecPhC', rejilla: r.e.grid });
+      var a = ejes({ x0: 56, x1: 384, y0: 40, y1: 330, xlog: true, xmin: 1e-6, xmax: 1, ymin: 0, ymax: 8, ny: 4, xlab: 'Fracción que llega a sulfato', ylab: 'pH de la purga', ylabOff: 38, clip: 'ecPhC', rejilla: r.e.grid });
       var o = a.svg, pts = [];
       if (isFinite(S.ST) && S.J > 0) {
         for (var j = 0; j <= 60; j++) { var fx = Math.pow(10, -6 + 6 * j / 60); pts.push([a.X(fx), a.Y(entre(M.pHof(fx * S.J / Qp, alk), 0, 8))]); }
@@ -2083,7 +2086,7 @@ return FEco;
     return rows;
   }
   var NECESIDAD = pesada(html({
-    titulo: 'Para llegar a 20 ppm', ancha: true, vista: [440, 400],
+    titulo: 'Para llegar a 20 ppm', ancha: true,
     alt: 'Una tabla con cada palanca, su valor de hoy y lo que haría falta para que salgan 20 ppm con lo demás como está: la altura del lecho, el caudal de gas, la recirculación, la actividad de la biopelícula y cuántos ecofiltros iguales en serie.',
     llenar: function (r) {
       var rows = necesidades(r);
@@ -2100,7 +2103,7 @@ return FEco;
       alt: 'La salida del ecofiltro contra ' + min(titulo) + ', con el caudal de hoy fijo, el criterio de 20 ppm y el punto de hoy.',
       dibujar: function (r) {
         var sw = barridoD(r, key, xs), ymax = Math.max(r.s.cin, 30) * 1.05, x0 = xs[0], x1 = xs[xs.length - 1];
-        var a = ejes({ x0: 62, x1: 388, y0: 40, y1: 330, xmin: x0, xmax: x1, ymin: 0, ymax: ymax, nx: 5, ny: 5, xlab: xlab, ylab: 'Salida, ppm', clip: 'ecD' + key, rejilla: r.e.grid });
+        var a = ejes({ x0: 62, x1: 378, y0: 40, y1: 330, xmin: x0, xmax: x1, ymin: 0, ymax: ymax, nx: 5, ny: 5, xlab: xlab, ylab: 'Salida, ppm', clip: 'ecD' + key, rejilla: r.e.grid });
         return a.svg + LN(a.o.x0, a.Y(CRIT), a.o.x1, a.Y(CRIT), ROJO) + T(a.o.x1 - 6, a.Y(CRIT) - 6, '20' + NB + 'ppm', 'f-ts f-alerta', 'end') + PA(poly(sw.map(function (p) { return [a.X(p.x), a.Y(p.out)]; })), AZUL, { 'clip-path': 'url(#ecD' + key + ')' }) + pto(a.X(entre(r.s[key], x0, x1)), a.Y(r.cout), 5.5);
       }
     }));
@@ -2112,7 +2115,7 @@ return FEco;
     alt: 'La remoción del ecofiltro contra la actividad de la biopelícula, con el caudal de hoy fijo, el techo de la transferencia y el punto de hoy.',
     dibujar: function (r) {
       var sw = barridoD(r, 'act', serie(0, 5, 30));
-      var c = ejes({ x0: 62, x1: 388, y0: 40, y1: 330, xmin: 0, xmax: 5, ymin: 0, ymax: 100, nx: 5, ny: 5, xlab: 'Actividad, veces la calibrada', ylab: 'Remoción, %', clip: 'ecDact', rejilla: r.e.grid });
+      var c = ejes({ x0: 62, x1: 380, y0: 40, y1: 330, xmin: 0, xmax: 5, ymin: 0, ymax: 100, nx: 5, ny: 5, xlab: 'Actividad, veces la calibrada', ylab: 'Remoción, %', clip: 'ecDact', rejilla: r.e.grid });
       return c.svg + LN(c.o.x0, c.Y(r.ceil * 100), c.o.x1, c.Y(r.ceil * 100), 'stroke:' + C.oliva + ';stroke-width:1.5;stroke-dasharray:6 4') + T(c.o.x1 - 6, c.Y(r.ceil * 100) - 6, 'techo ' + un(r.ceil * 100, 1, '%'), 'f-ts', 'end', 'fill:' + C.oliva) +
         PA(poly(sw.map(function (p) { return [c.X(p.x), c.Y(p.eff * 100)]; })), AZUL, { 'clip-path': 'url(#ecDact)' }) + pto(c.X(entre(r.s.act, 0, 5)), c.Y(r.eff * 100), 5.5);
     }
@@ -2170,7 +2173,19 @@ return FEco;
     return 'Con el modelo calibrado con la planta, el lecho de 6 m retira el ' + un(PROMESA.eff * 100, 1, '%') + ' en ese punto; para el 99,99 % haría falta un lecho de unos ' + un(PROMESA.L, 0, 'm') + '.';
   }
   var CONS_EXP = VISTA.concat(CLAVES_ACT), CONS_ACT = VISTA.concat(CLAVES_EXP);
-  function eco_(o) { o.parte = 'ecofiltro'; o.conserva = CONS_EXP; if (!o.resultado) o.resultado = resEco; return o; }
+  function hechos(cambios) {
+    var st = Object.assign({}, M.CASO, cambios), r = M.calcular(st), s = r.s;
+    var h = [un(s.cin, 0, 'ppm') + ' a la entrada', s.fanMode === 'q' ? 'caudal fijado en ' + un(s.qset, 2, 'm³/s') + ' (' + un(s.qset / CFM, 0, 'cfm') + ')' : hz(s.f) + ' y ' + un(r.Q, 2, 'm³/s'),
+      'lecho de ' + un(s.L, 1, 'm') + ' × ' + un(s.A, 1, 'm²'), 'riego de ' + un(s.qrec, 1, 'L/min') + ' + ' + un(s.qmu, 0, 'L/h') + ', moja el ' + un(s.wet, 0, '%'), 'actividad ×' + num(s.act, 2)];
+    if (s.labSO4 != null) h.push('laboratorio: sulfato < ' + un(s.labSO4, 1, 'mg/L') + ' y pH ' + num(s.labPH, 1));
+    return h.join(' · ') + '.';
+  }
+  function eco_(o) {
+    o.parte = 'ecofiltro'; o.conserva = CONS_EXP; if (!o.resultado) o.resultado = resEco;
+    var desc = o.fija, cache = null;
+    Object.defineProperty(o, 'fija', { get: function () { if (!cache) cache = desc + ' <span class="ec-hechos">' + hechos(o.cambios) + '</span>'; return cache; } });
+    return o;
+  }
   var CONFIGURACIONES = [
     { id: 'corrida', parte: 'planta', conserva: CONS_ACT, ceja: 'La actividad de clase', titulo: 'La semana típica en manual', cambios: {},
       fija: 'Una semana típica de carga, con el V-101 en manual a 45 Hz, la consigna del automático en 20 ppm, el límite de presión puesto y los ductos limpios.',
@@ -2218,7 +2233,7 @@ return FEco;
       ec: 'V_T\\frac{dC_T}{dt} = \\dot n(t) + Q_E\\,C_F - (Q_E + Q + Q_{fuga})\\,C_T',
       num: 'C_T = ' + kc(A.CT, 3) + '\\ \\mathrm{mol/m^3}\\ (' + kn(A.cin, 1) + '\\ \\mathrm{ppm}) \\\\ Q_E + Q + Q_{fuga} = 2{,}04 + ' + kn(h.Q, 3) + ' + ' + kn(h.leak, 3) + ' = ' + kn(PLANT.QE + h.Q + h.leak, 3) + '\\ \\mathrm{m^3/s}',
       res: 'La carga que trae el agua en este instante equivale a ' + un(n, 0, 'ppm') + ' a la extracción de referencia. El ecofiltro deja pasar el ' + un((1 - A.eta) * 100, 0, '%') + ' de lo que le llega.',
-      fuente: 'La tesis de maestría de Jesús Rafael Acevedo Mastrogiacomo: V_T = 7000 m³, Q_E = 2,04 m³/s y el biofiltro B-101 con cinética de orden ½. El libro todavía no trae el balance del tanque: es del explorador.' };
+      fuente: 'La tesis de maestría de Jesús Rafael Acevedo Mastrogiacomo: V<sub>T</sub> = 7000 m³, Q<sub>E</sub> = 2,04 m³/s y el biofiltro B-101 con cinética de orden ½. El libro todavía no trae el balance del tanque: es del explorador.' };
   }
   // la hidráulica de las cuentas: en manual, la de la frecuencia y los ductos escogidos (la corrida la toma en su próximo
   // paso, aunque la capa la tenga en pausa); en automático, la del instante de la corrida
@@ -2308,7 +2323,7 @@ return FEco;
             ec: 'f = \\max(f_{AIC},\\, f_{PIC}),\\qquad f_{AIC} = K_c\\,e + \\frac{K_c}{\\tau_I}\\int e\\,dt',
             num: A.mode === 'auto' ? 'e_{AIC} = ' + kn(A.sp, 0) + ' - ' + kn(A.yOut, 1) + ' = ' + kn(eH, 1) + '\\ \\mathrm{ppm},\\quad e_{PIC} = ' + kn(h.dP, 0) + ' - (-50) = ' + kn(eP, 0) + '\\ \\mathrm{Pa} \\\\ f = ' + kn(A.f, 1) + '\\ \\mathrm{Hz}' : 'f = ' + kn(A.f, 1) + '\\ \\mathrm{Hz\\ (en\\ manual)}',
             res: A.mode === 'auto' ? quienManda(A).replace(/<\/?b>/g, '') : 'En manual la frecuencia es la del control. Pase a automático para ver los dos lazos.',
-            fuente: 'K_c = ' + num(M.CTL.KcH, 1) + ' Hz/ppm y τ_I = ' + num(M.CTL.TiH / 60, 0) + ' min para el H₂S; K_c = ' + num(M.CTL.KcP, 2) + ' Hz/Pa y τ_I = ' + num(M.CTL.TiP / 60, 0) + ' min para la presión; la frecuencia entre 20 y 60 Hz. Sintonía del explorador.' },
+            fuente: 'K<sub>c</sub> = ' + num(M.CTL.KcH, 1) + ' Hz/ppm y τ<sub>I</sub> = ' + num(M.CTL.TiH / 60, 0) + ' min para el H₂S; K<sub>c</sub> = ' + num(M.CTL.KcP, 2) + ' Hz/Pa y τ<sub>I</sub> = ' + num(M.CTL.TiP / 60, 0) + ' min para la presión; la frecuencia entre 20 y 60 Hz. Sintonía del explorador.' },
           { titulo: 'Los analizadores',
             texto: 'El AIT-101 y el AIT-102 no leen el instante: responden con un retraso de primer orden de un minuto. Eso es lo que ve el control, y lo que muestran los números de arriba.',
             ec: 'y_{k+1} = y_k + (c - y_k)\\left(1 - e^{-\\Delta t/\\tau_A}\\right)',
@@ -2398,7 +2413,7 @@ return FEco;
     },
     veredicto: function (r) {
       var A = corrida(r.e), Qn = A.h.Q;
-      return { alerta: A.cout > CRIT, html: 'Con ' + un(Qn, 2, 'm³/s') + ' el ecofiltro retira el <b>' + un(M.etaOf(Qn, 50) * 100, 0, '%') + '</b> de 50 ppm, el ' + un(M.etaOf(Qn, 200) * 100, 0, '%') + ' de 200 y el ' + un(M.etaOf(Qn, 700) * 100, 0, '%') + ' de 700.' };
+      return { alerta: false, html: 'Con ' + un(Qn, 2, 'm³/s') + ' el ecofiltro retira el <b>' + un(M.etaOf(Qn, 50) * 100, 0, '%') + '</b> de 50 ppm, el ' + un(M.etaOf(Qn, 200) * 100, 0, '%') + ' de 200 y el ' + un(M.etaOf(Qn, 700) * 100, 0, '%') + ' de 700.' };
     },
     prediccion: {
       base: { modo: 'man', af: 45 }, llevar: { modo: 'man', af: 40 },
@@ -2419,13 +2434,13 @@ return FEco;
             texto: 'Si la biopelícula consumiera al instante todo lo que se disuelve, el líquido no tendría H₂S y la remoción solo dependería del contacto entre el gas y la película. Depende del caudal y del riego, no de la carga.',
             ec: '\\eta_{max} = 1 - \\exp\\!\\left(-\\frac{K_L a_w\\,H\\,L}{u_G}\\right)',
             num: '\\eta_{max} = 1 - \\exp\\!\\left(-\\frac{' + kn(k.KLa, 4) + '\\times 2{,}54\\times 6}{' + kn(Qn / REF.A, 3) + '}\\right) = ' + kn(ce * 100, 1) + '\\ \\%',
-            fuente: 'H = 2,54 es la constante de Henry adimensional del H₂S a 25 °C (C_L/C_G); el lecho y el riego son los de la operación de referencia. El libro todavía no tiene el capítulo de la transferencia de masa: es del explorador.' },
+            fuente: 'H = 2,54 es la constante de Henry adimensional del H₂S a 25 °C (C<sub>L</sub>/C<sub>G</sub>); el lecho y el riego son los de la operación de referencia. El libro todavía no tiene el capítulo de la transferencia de masa: es del explorador.' },
           { titulo: 'El consumo en la biopelícula',
             texto: 'La cinética de Monod integrada en el espesor de la biopelícula. A las concentraciones de la planta se comporta como de orden ½: si la carga se cuadruplica, el consumo apenas se duplica, y la remoción cae.',
             ec: 'r = k_S\\sqrt{C_L - k_M\\ln\\!\\left(1 + \\frac{C_L}{k_M}\\right)}',
             num: 'k_S = 2{,}4\\times10^{-3}\\ \\mathrm{mol^{1/2}/(m^{3/2}\\,s)},\\qquad k_M = 2\\times10^{-5}\\ \\mathrm{mol/m^3}',
             res: 'Llegan ' + un(A.cin, 0, 'ppm') + ' y el ecofiltro retira el ' + un(A.eta * 100, 0, '%') + '.',
-            fuente: 'Ecuación 4.17 de la tesis de Jesús Rafael Acevedo Mastrogiacomo; k_S y k_M recalibrados por el explorador para reproducir la curva de la tesis con la recirculación.' },
+            fuente: 'Ecuación 4.17 de la tesis de Jesús Rafael Acevedo Mastrogiacomo; k<sub>S</sub> y k<sub>M</sub> recalibrados por el explorador para reproducir la curva de la tesis con la recirculación.' },
           { titulo: 'La tabla de remoción',
             texto: 'Para correr la planta en el tiempo, el ecofiltro va cuasiestacionario: su remoción sale de una tabla calculada con los perfiles estacionarios de la segunda parte, con 45 caudales entre 0,1 y 2,3 m³/s y 37 cargas entre 1 y unos 4000 ppm en escala logarítmica, e interpolada en línea recta en cada dirección.',
             num: '\\eta(' + kn(Qn, 2) + ';\\ ' + kn(A.cin, 0) + '\\ \\mathrm{ppm}) = ' + kn(A.eta * 100, 1) + '\\ \\%',
@@ -2465,7 +2480,7 @@ return FEco;
             ec: '\\begin{gathered}B\\text{-}101 = \\int Q_E\\,(C_T - C_F)\\,M\\,dt,\\qquad E\\text{-}101 = \\int Q\\,C_T\\,\\eta\\,M\\,dt \\\\ \\text{carbón} = \\int Q\\,C_T\\,(1 - \\eta)\\,M\\,dt,\\qquad \\text{fugas} = \\int Q_{fuga}\\,C_T\\,M\\,dt\\end{gathered}',
             num: 'Q\\,C_T\\,\\eta\\,M = ' + kn(h.Q, 3) + '\\times' + kc(CT, 3) + '\\times' + kn(A.eta, 3) + '\\times 34{,}08 = ' + kn(A.Jgh, 1) + '\\ \\mathrm{g/h} \\\\ Q_E\\,(C_T - C_F)\\,M = 2{,}04\\times(' + kc(CT, 3) + ' - ' + kc(CF, 3) + ')\\times 34{,}08\\times 3600 = ' + kn(PLANT.QE * (CT - CF) * MW * 3600, 1) + '\\ \\mathrm{g/h}',
             res: 'En la corrida: ' + kg(a.btf) + ' en el ecofiltro, ' + kg(a.bf) + ' en el biofiltro, ' + kg(a.carbon) + ' al carbón y ' + kg(a.leak) + ' de fugas.',
-            fuente: 'C_F, lo que el biofiltro le devuelve al tanque, con su cinética de orden ½ (tesis). Cálculo del explorador.' },
+            fuente: 'C<sub>F</sub>, lo que el biofiltro le devuelve al tanque, con su cinética de orden ½ (tesis). Cálculo del explorador.' },
           { titulo: 'La energía y las horas',
             texto: 'La energía del V-101 es la potencia al eje integrada en el tiempo. Las horas con fugas cuentan el tiempo con el tanque por encima de la atmosférica, y las horas con más de 20 ppm, el tiempo con la salida del ecofiltro por encima del criterio interno.',
             ec: 'E = \\int W\\,dt',
@@ -2473,7 +2488,7 @@ return FEco;
             fuente: 'La potencia con la eficiencia supuesta de 65 % (escena 3).',
             libro: [LIBRO12 + '#eq-gas-potencia-ventilador', 'Libro, ecuación 12.8'] },
           { titulo: 'Las corridas terminadas',
-            texto: 'Cada corrida que termina queda en la tabla con su nombre: la manera de operar que tuvo después de sus dos primeros minutos, y si en algún momento se ensuciaron los ductos. Si se cambió de manual a automático por el camino, la corrida es mixta.' }
+            texto: 'Cada corrida que termina queda en la tabla con su nombre: la manera de operar que tuvo después de sus dos primeros minutos, y si en algún momento se ensuciaron los ductos. Si se cambió la manera de operar por el camino, la corrida es mixta.' }
         ],
         libro: [[LIBRO12 + '#sec-gas-ventiladores', 'Sección 12.2, Ventiladores y sopladores']]
       };
@@ -2529,12 +2544,12 @@ return FEco;
             texto: 'La remoción es la fracción del H₂S que entra y no sale; lo retirado, los gramos por hora que el gas deja en el lecho.',
             ec: '\\eta = 1 - \\frac{C_{out}}{C_{in}},\\qquad J = Q_G\\,(C_{in} - C_{out})\\,M',
             num: '\\eta = 1 - \\frac{' + kn(r.cout, 1) + '}{' + kn(r.s.cin, 0) + '} = ' + kn(r.eff * 100, 1) + '\\ \\% \\\\ J = ' + kn(r.Q, 3) + '\\times(' + kn(r.m.Cin, 4) + ' - ' + kn(r.P.Cout, 4) + ')\\times 34{,}08\\times 3600 = ' + kn(r.Jgh, 0) + '\\ \\mathrm{g/h}',
-            res: 'Los perfiles a lo largo del lecho, que dan C_out, están en la escena 7.',
+            res: 'Los perfiles a lo largo del lecho, que dan C<sub>out</sub>, están en la escena 7.',
             fuente: 'Masa molar del H₂S, 34,08 g/mol. Cálculo del explorador.' },
           { titulo: 'El diagnóstico',
             texto: 'El explorador revisa el caso contra lo que pide un biopercolador: riego, biopelícula viva, que el ventilador alcance, el criterio interno de 20 ppm a la salida del ecofiltro, el techo de la transferencia, el aspersor, el rango de velocidad de la planta, la purga y su pH, y el tiempo de contacto.',
             res: r.warn.map(function (w) { return nb(w.t); }).join(' '),
-            fuente: 'El criterio de 20 ppm es interno de la planta; el rango de 0,4 a 0,8 de la velocidad nominal es el observado. Reglas del explorador.' },
+            fuente: 'El criterio de 20 ppm es interno de la planta; el rango entre 0,4 y 0,8 de la velocidad nominal es el observado. Reglas del explorador.' },
           { titulo: 'Supuestos y fuentes', texto: SUPUESTOS_EXP }
         ],
         libro: [[LIBRO12 + '#eq-gas-condiciones', 'Ecuación 12.1, la densidad de un gas ideal'], [LIBRO12 + '#sec-gas-explorar', 'Sección 12.10, Para explorar']]
@@ -2545,7 +2560,7 @@ return FEco;
     id: 'perfiles', titulo: 'Los perfiles', corto: 'Perfiles',
     pregunta: '¿Qué frena la remoción: la transferencia de masa o la biopelícula?',
     controles: ['qrec', 'act', 'wet'], mas: masDe(['qrec', 'act', 'wet'], ['grid']), datos: ['qrec', 'act', 'wet', 'cin'],
-    info: function (r) { return 'Riego total de ' + un(r.irr, 2, 'm³/(m²·h)') + '. ' + (r.s.wet < 60 ? 'Buena parte del lecho queda seca. ' : '') + 'Empaque estructurado de referencia tipo Mellapak 250Y: 250 m²/m³, corrugación de 17 mm a 45° y porosidad efectiva de 0,63, la que reproduce los 378 Pa medidos en el lecho. Pruebe a llevar la actividad a 3 y compare la remoción con el techo de la transferencia.'; },
+    info: function (r) { return 'Riego total de ' + un(r.irr, 2, 'm³/(m²·h)') + '. ' + (r.s.wet < 60 ? 'Buena parte del lecho queda seca. ' : '') + 'Empaque estructurado de referencia tipo Mellapak 250Y: 250 m²/m³, corrugación de 17 mm inclinada 45° y porosidad efectiva de 0,63, la que reproduce los 378 Pa medidos en el lecho. Pruebe a llevar la actividad a 3 y compare la remoción con el techo de la transferencia.'; },
     kpis: function (r) {
       return [{ etiqueta: 'Líquido frente al equilibrio', valor: num(r.P.sat * 100, 0), unidad: '%', nota: regimen(r) },
         { etiqueta: 'Resistencia en el líquido', valor: num(r.k.fLiq * 100, 0), unidad: '%', nota: 'del total de la transferencia' }, kpiRemocion(r)];
@@ -2564,7 +2579,7 @@ return FEco;
       instruccion: 'Lleve la recirculación a cero y mire la remoción.',
       cumple: function (e) { return e.qrec === 0; },
       correcta: function (rn, rb) { return rn.eff < rb.eff - 0.002 ? 0 : (rn.eff > rb.eff + 0.002 ? 1 : 2); },
-      explica: function (rn, rb) { return 'Baja al ' + un(rn.eff * 100, 1, '%') + '. La película de líquido adelgaza de ' + un(rb.k.delta * 1e6, 0, 'µm') + ' a ' + un(rn.k.delta * 1e6, 0, 'µm') + ' y k_L cae de ' + un(rb.k.kL * 1e6, 1, 'µm/s') + ' a ' + un(rn.k.kL * 1e6, 1, 'µm/s') + ': la resistencia está en el líquido.'; }
+      explica: function (rn, rb) { return 'Baja al ' + un(rn.eff * 100, 1, '%') + '. La película de líquido queda en ' + un(rn.k.delta * 1e6, 0, 'µm') + ', contra ' + un(rb.k.delta * 1e6, 0, 'µm') + ' con la recirculación, y k<sub>L</sub> baja a ' + un(rn.k.kL * 1e6, 1, 'µm/s') + ', contra ' + un(rb.k.kL * 1e6, 1, 'µm/s') + ': la resistencia está en el líquido.'; }
     },
     figuras: [PERFIL, { titulo: 'La transferencia', alt: 'La transferencia en el lecho.', vistas: [VELOC, MANDA] }],
     calculo: function (r) {
@@ -2582,7 +2597,7 @@ return FEco;
             texto: 'El riego baja y recibe lo que le pasa el gas; la biopelícula consume con la cinética de Monod integrada en su espesor. El líquido que entra arriba es la mezcla del fondo, que devuelve la PS-101, con el agua de reposición.',
             ec: '-\\frac{Q_L}{A}\\frac{dC_L}{dh} = K_La_w(HC_G - C_L) - k_S\\sqrt{C_L - k_M\\ln\\!\\left(1 + \\frac{C_L}{k_M}\\right)}',
             num: '\\frac{Q_L}{A} = ' + kc(m.QL / m.A, 2) + '\\ \\mathrm{m/s},\\qquad k_S = ' + kc(KIN.kS * s.act, 2) + ',\\qquad k_M = 2\\times10^{-5}\\ \\mathrm{mol/m^3}',
-            fuente: 'Ecuación 4.17 de la tesis; k_S y k_M recalibrados por el explorador.' },
+            fuente: 'Ecuación 4.17 de la tesis; k<sub>S</sub> y k<sub>M</sub> recalibrados por el explorador.' },
           { titulo: 'La película de gas',
             texto: 'La correlación de Bravo, Rocha y Fair para empaque estructurado, con el lado de la corrugación como longitud.',
             ec: '\\frac{k_G\\,S}{D_G} = 0{,}0338\\,\\mathrm{Re}_G^{0{,}8}\\,\\mathrm{Sc}_G^{1/3}',
@@ -2602,10 +2617,10 @@ return FEco;
             texto: 'Las dos resistencias en serie, con la constante de Henry. El área que transfiere es la mojada.',
             ec: '\\frac{1}{K_L} = \\frac{1}{k_L} + \\frac{H}{k_G}',
             num: '\\frac{1}{K_L} = \\frac{1}{' + kc(k.kL, 2) + '} + \\frac{2{,}54}{' + kc(k.kG, 2) + '} \\;\\Rightarrow\\; K_La_w = ' + kn(k.KLa, 4) + '\\ \\mathrm{s^{-1}}',
-            res: 'Con a_w = ' + un(k.aw, 0, 'm²/m³') + ' mojados. El ' + un(k.fLiq * 100, 0, '%') + ' de la resistencia está en el líquido.',
+            res: 'Con a<sub>w</sub> = ' + un(k.aw, 0, 'm²/m³') + ' mojados. El ' + un(k.fLiq * 100, 0, '%') + ' de la resistencia está en el líquido.',
             fuente: 'H = 2,54, la constante de Henry adimensional del H₂S a 25 °C (tesis).' },
           { titulo: 'El techo de la transferencia',
-            texto: 'La remoción si la biopelícula consumiera al instante todo lo que se disuelve (C_L = 0).',
+            texto: 'La remoción si la biopelícula consumiera al instante todo lo que se disuelve (C<sub>L</sub> = 0).',
             ec: '\\eta_{max} = 1 - \\exp\\!\\left(-\\frac{K_La_w\\,H\\,L}{u_G}\\right)',
             num: '\\eta_{max} = 1 - \\exp\\!\\left(-\\frac{' + kn(k.KLa, 4) + '\\times 2{,}54\\times' + kn(m.L, 1) + '}{' + kn(uG, 3) + '}\\right) = ' + kn(r.ceil * 100, 1) + '\\ \\%',
             fuente: 'Cálculo del explorador.' }
@@ -2692,7 +2707,7 @@ return FEco;
       var S = r.S;
       if (!isFinite(S.ST) && S.toSO4 > 0) return { alerta: true, html: 'Sin agua de reposición no hay purga: el sulfato se acumula sin límite y el pH no llega a un <b>estado estacionario</b>.' };
       if (r.s.labSO4 != null && isFinite(S.ST) && S.J > 0) { var full = (S.J / S.Qp) * M.MWSO4 * 1000, fr = r.s.labSO4 / full; return { alerta: true, html: 'La remoción que leen los sensores pediría ' + so4(full) + ' de sulfato en la purga; el laboratorio midió ' + so4(r.s.labSO4) + ', el <b>' + (fr < 0.001 ? num(fr * 100, 4) : num(fr * 100, 2)) + NB + '%</b>. El balance no cierra.' }; }
-      return { alerta: isFinite(S.pH) && S.pH < 2, html: 'El ' + un(r.s.fso4, 0, '%') + ' llega a sulfato: la purga lleva <b>' + so4(S.so4) + '</b> y queda en pH ' + num(S.pH, 1) + (S.pH < 2 ? ', por debajo del límite de 2 del equipo.' : '.') };
+      return { alerta: isFinite(S.pH) && S.pH < 2, html: 'El ' + un(r.s.fso4, 0, '%') + ' llega a sulfato: la purga lleva ' + so4(S.so4) + ' y queda en pH <b>' + num(S.pH, 1) + '</b>' + (S.pH < 2 ? ', por debajo del límite de 2 del equipo.' : '.') };
     },
     prediccion: {
       base: { fso4: 100 }, llevar: { fso4: 0 },
@@ -2735,7 +2750,7 @@ return FEco;
     controles: ['L', 'A', 'qrec', 'act'], mas: masDe(['L', 'A', 'qrec', 'act'], ['grid']), datos: ['L', 'qrec', 'act'],
     info: function (r) { return 'Lecho de ' + un(r.m.A * r.m.L, 1, 'm³') + '; la torre de ' + un(r.m.A, 1, 'm²') + ' tiene unos ' + un(Math.sqrt(4 * r.m.A / Math.PI), 2, 'm') + ' de diámetro. Instalados: 6 m y 7,3 m². Pruebe a fijar el caudal y doblar la altura: ¿se dobla la remoción?'; },
     kpis: function (r) { return [kpiSalidaEco(r), kpiRemocion(r), { etiqueta: 'Contacto en lecho vacío', valor: num(r.ebrt, 1), unidad: 's', nota: un(r.m.A * r.m.L, 1, 'm³') + ' de lecho', alerta: r.ebrt < 10 }]; },
-    veredicto: function (r) { return { alerta: r.cout > CRIT, html: 'El <b>' + un(r.k.fLiq * 100, 0, '%') + '</b> de la resistencia está en la película de líquido: aunque las bacterias consumieran al instante, este lecho con este caudal no pasa del ' + un(r.ceil * 100, 1, '%') + ' de remoción.' }; },
+    veredicto: function (r) { return { alerta: false, html: 'El <b>' + un(r.k.fLiq * 100, 0, '%') + '</b> de la resistencia está en la película de líquido: aunque las bacterias consumieran al instante, este lecho con este caudal no pasa del ' + un(r.ceil * 100, 1, '%') + ' de remoción.' }; },
     prediccion: {
       base: { fanMode: 'q', qset: 1.21, L: 6 }, llevar: { fanMode: 'q', qset: 1.21, L: 12 },
       pregunta: function (rb) { return 'Con el caudal fijo en 1,21 m³/s, el lecho de 6 m retira el ' + un(rb.eff * 100, 1, '%') + '. Si el lecho mide 12 m, ¿cuánto retira?'; },
