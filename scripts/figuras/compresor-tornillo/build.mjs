@@ -35,7 +35,8 @@ const AZ = CT.AZ, EL = CT.EL;
 const ZA = CT.zA, YM = CT.yM, YF = CT.yF;
 const ZD = CT.skid.h + CT.pad.h + CT.skid.deck;      // la cara de arriba de la bandeja de la base
 
-const W = DET ? 300 : 680, H = DET ? 300 : 560;
+const W0 = 680, H0 = 560;                                         // la vista entera (el detalle toma su escala)
+const W = DET ? 300 : W0, H = DET ? 300 : H0;
 const XD = [1, 0, 0], YD = [0, 1, 0], ZD3 = [0, 0, 1];
 const D2R = Math.PI / 180, PI = Math.PI, TAU = 2 * Math.PI;
 const ANCH = {};                                                  // los puntos de los rótulos del libro (libro.mjs)
@@ -47,10 +48,12 @@ for (const x of [CT.skid.x0, CT.skid.x1]) for (const y of [-CT.skid.y, CT.skid.y
 EXT.push([CT.suc.inlet - 100, 0, CT.suc.top + 60], [CT.suc.x, 0, CT.suc.valve + 300], [CT.dis.xOut, CT.dis.yEnd - 80, CT.dis.zRun + 100]);
 EXT.push([CT.oc.x + 240, CT.oc.y, 1500], [CT.panel.x1, CT.panel.y0, CT.panel.z1], [CT.panel.x1, CT.panel.y1, CT.panel.z1]);
 EXT.push([CT.persona.x, CT.persona.y, 0], [CT.persona.x, CT.persona.y, 1800], [CT.persona.x + 250, CT.persona.y, 0]);
-const PMAIN = k.fitProjection(EXT, W, H, { pad: 12, azimuth: AZ, elevation: EL });
+const PMAIN = k.fitProjection(EXT, W0, H0, { pad: 12, azimuth: AZ, elevation: EL });
 // el detalle: el compresor abierto, MDET veces más grande, dentro de un círculo de RDET
-const CDET = [20, 0, ZA + 10], MDET = 3.4, RDET = 140;
-const P = DET ? (() => { const Q = { origin: [0, 0], scale: PMAIN.scale * MDET, azimuth: AZ, elevation: EL }; const c = k.iso(CDET, Q); Q.origin = [W / 2 - c[0], H / 2 - c[1]]; return Q; })() : PMAIN;
+const CDET = [15, 0, ZA + 10], MDET = 3.4, RDET = 140;
+// el detalle mira desde más arriba (ELDET), para ver los dos rotores engranados por la carcasa abierta
+const ELDET = Number(process.env.CT_ELDET || 50);
+const P = DET ? (() => { const Q = { origin: [0, 0], scale: PMAIN.scale * MDET, azimuth: AZ, elevation: ELDET }; const c = k.iso(CDET, Q); Q.origin = [W / 2 - c[0], H / 2 - c[1]]; return Q; })() : PMAIN;
 const C = X.xCam(P);
 const at = (p) => k.iso(p, P);
 const S = (paths, style) => k.solidSvg(paths, style);
@@ -91,13 +94,16 @@ function box(name, [x0, y0, z0], [x1, y1, z1], style = {}, { r = 0.4, steps = 2,
   put(name, [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2], wrap(S(k.slabOf(plan, z0, z1 - z0, P, steps, bevel), { tone: "mid", inner, ...style }) + extra, cls), [shape]);
   return shape;
 }
-// prisma en un marco cualquiera (sección en u, v; a lo largo de a)
-function fp(name, F, poly, s0, s1, style = {}, { extra = "", skip = null, cls = "", cut = null, ref = null, cap = "auto", owner, ground, shapes = null, rec = true, after = "" } = {}) {
+// prisma en un marco cualquiera (sección en u, v; a lo largo de a). Con hold no lo pone: devuelve su dibujo y su forma,
+// para pintarlo en la misma pieza que otro (una silla con la banda del recipiente sobre la que se apoya)
+function fp(name, F, poly, s0, s1, style = {}, { extra = "", skip = null, cls = "", cut = null, ref = null, cap = "auto", owner, ground, shapes = null, rec = true, after = "", hold = false } = {}) {
   const sh = A.prism(F, poly, s0, s1, { name, owner, ...(cut ? { cut } : {}), ...(ground ? { ground } : {}) });
   const shape = rec ? record(sh) : sh;
   const cu = poly.reduce((q, p) => q + p[0], 0) / poly.length, cv = poly.reduce((q, p) => q + p[1], 0) / poly.length;
   const centre = ref || G.add3(G.add3(G.add3(F.o, G.mul3(F.a, (s0 + s1) / 2)), G.mul3(F.u, cu)), G.mul3(F.v, cv));
-  put(name, centre, X.prismSvg(C, poly, s0, s1, { F, tone: "mid", ...style, skip, cls, cap }) + after + extra, shapes || [shape]);
+  const svg = X.prismSvg(C, poly, s0, s1, { F, tone: "mid", ...style, skip, cls, cap }) + after + extra;
+  if (hold) return { svg: wrap(svg, ""), shape, centre };
+  put(name, centre, svg, shapes || [shape]);
   return shape;
 }
 function turned(name, F, profile, style = {}, { extra = "", rims, owner, smooth, steps, bevel = 0, cls = "", cut = null, inner = "" } = {}) {
@@ -114,13 +120,6 @@ function disc(name, F, s0, s1, r, style = {}, { extra = "", owner, cls = "", n =
   const poly = Array.from({ length: m }, (_, i) => { const t = (2 * Math.PI * i) / m; return [r * Math.cos(t), r * Math.sin(t)]; });
   const shape = record(A.disc(F, Math.min(s0, s1), Math.max(s0, s1), r, { name, owner, ...(cut ? { cut } : {}) }));
   put(name, G.add3(F.o, G.mul3(F.a, (s0 + s1) / 2)), wrap(X.prismSvg(C, poly, Math.min(s0, s1), Math.max(s0, s1), { F, tone: "mid", cap, ...style }), cls) + extra, [shape]);
-  return shape;
-}
-// un anillo a lo largo de cualquier eje (el aro de un volante): la banda con su hueco
-function ringPart(name, F, s0, s1, rIn, rOut, style = {}, { extra = "", owner, cls = "" } = {}) {
-  const paths = G.ringBand(s0, s1, rIn, rOut, F, P, { hole: [s1, rIn] });
-  const shape = record(A.ring(F, s0, s1, rIn, rOut, { name, owner }));
-  put(name, G.add3(F.o, G.mul3(F.a, (s0 + s1) / 2)), wrap(S(paths, { tone: "mid", ...style }) + extra, cls), [shape]);
   return shape;
 }
 function tubeItems(name, route, r, { tone = "mid", maxLength = 140, gaps = [], cls = "", caps = true, breaks = [], ends = [true, true], touch, spacing = null, owner = name } = {}) {
@@ -145,6 +144,13 @@ function saddle(name, F, a, start, h, style = {}, { owner, cls = "", extra = "",
   return { F, face: G.add3(F.o, G.mul3(F.a, h)), low };
 }
 const rect = (u0, u1, v0, v1) => [[u0, v0], [u1, v0], [u1, v1], [u0, v1]];
+// un sector de anillo en (u, v), de r0 a r1 y del ángulo a0 al a1: el arco de afuera y el de adentro de vuelta
+function sector(r0, r1, a0, a1, n = 24) {
+  const out = [];
+  for (let i = 0; i <= n; i++) { const t = a0 + ((a1 - a0) * i) / n; out.push([r1 * Math.cos(t), r1 * Math.sin(t)]); }
+  for (let i = n; i >= 0; i--) { const t = a0 + ((a1 - a0) * i) / n; out.push([r0 * Math.cos(t), r0 * Math.sin(t)]); }
+  return out.map(([u, v]) => [Math.abs(u) < 1e-9 ? 0 : u, Math.abs(v) < 1e-9 ? 0 : v]);
+}
 const boltDots = (F, s, d, n = d.nb, phase = PI / 4) => Dots(G.dotsOf(F, s, d.bc, n, P, { all: true, phase }), { size: 0.45 });
 
 /* ---------- superficies con tonos suaves (del condensador) ---------- */
@@ -170,7 +176,12 @@ const arcPts = (r, f0, f1, n = 24) => Array.from({ length: n + 1 }, (_, i) => { 
 function handwheel(name, c, axis, R, { owner = name, cls = "ct-wheel", rays = 3, t = 12 } = {}) {
   const F = G.frameAlong(c, axis);
   const rw = Math.max(6, R * 0.09);
-  ringPart(`${name}.rim`, F, -t / 2, t / 2, R - rw * 2, R, { tone: "mid" }, { owner, cls });
+  // el aro en dos mitades, partido en sus siluetas (donde la normal es perpendicular a la vista): la de atrás va antes
+  // de los rayos de atrás y la de adelante después de los de adelante, que llegan a ella por dentro
+  const fv = Math.atan2(G.dot3(V3, F.v), G.dot3(V3, F.u)), nA = 36;
+  for (const [half, f0] of [["B", fv + PI / 2], ["F", fv - PI / 2]]) {
+    fp(`${name}.rim${half}`, F, sector(R - rw * 2, R, f0, f0 + PI, nA), -t / 2, t / 2, { tone: "mid" }, { owner, cls, skip: new Set([nA, 2 * nA + 1]) });
+  }
   disc(`${name}.hub`, F, -t / 2 - 4, t / 2 + 6, Math.max(12, R * 0.18), { tone: "mid" }, { owner, cls });
   for (let q = 0; q < rays; q++) {
     const a = (TAU * q) / rays + 0.3, dir = G.add3(G.mul3(F.u, Math.cos(a)), G.mul3(F.v, Math.sin(a))), side = G.unit3(G.cross3(axis, dir));
@@ -365,39 +376,65 @@ if (!DET) {
   box("stand.deck", [SK.x0, -SK.y, zS1], [SK.x1, SK.y, ZD], { tone: "mid" }, { r: 2, cls: "ct-paint", ground: true, extra: seams });
   ANCH.BASE = [-1100, SK.y, zS0 + 100];
 }
+// las secciones de las sillas: las del separador, una lámina curva bajo el casco, y las del bastidor, sobre el casco,
+// con el borde de abajo en arco contra él y la cara de arriba plana
+function sepSadSec() {
+  const yw = 210, zEdge = SP.z - Math.sqrt(SP.R * SP.R - yw * yw);
+  const sec = [[-yw, ZD + 14], [yw, ZD + 14], [yw, zEdge]];
+  for (let q = 1; q < 24; q++) { const y = yw - (2 * yw * q) / 24; sec.push([y, SP.z - Math.sqrt(SP.R * SP.R - y * y)]); }
+  sec.push([-yw, zEdge]);
+  return sec;
+}
+function mountSadSec() {
+  const yw = MT.y + 35, sec = [[-yw, MT.z0], [yw, MT.z0]];
+  for (let q = 0; q <= 24; q++) { const y = yw - (2 * yw * q) / 24; sec.push([y, SP.z + Math.sqrt(SP.R * SP.R - y * y)]); }
+  return sec;
+}
+const FX0 = { o: [0, 0, 0], a: XD, u: YD, v: ZD3 };
+const OC_X = CT.oc.x, OC_Y = CT.oc.y, OC_R = CT.oc.R;                               // el enfriador de aceite, que tapa la cabeza de +x
+const HH_R = 120, HH_S0 = SP.x1 + SP.hd * Math.sqrt(1 - (HH_R / SP.R) ** 2);   // el cuello del registro y dónde arranca en la cabeza
 {
-  // las sillas del separador: una lámina curva bajo el casco, con su alma y su placa de asiento
-  if (!DET) SP.sad.forEach((xs, i) => {
-    const yw = 210, zEdge = SP.z - Math.sqrt(SP.R * SP.R - yw * yw);
-    const sec = [[-yw, ZD + 14], [yw, ZD + 14], [yw, zEdge]];
-    for (let q = 1; q < 24; q++) { const y = yw - (2 * yw * q) / 24; sec.push([y, SP.z - Math.sqrt(SP.R * SP.R - y * y)]); }
-    sec.push([-yw, zEdge]);
-    box(`sep.sadbase${i}`, [xs - 90, -yw - 20, ZD], [xs + 90, yw + 20, ZD + 14], { tone: "mid" }, { owner: "sep", cls: "ct-paint", extra: Dots([[xs - 70, -yw], [xs + 70, -yw], [xs - 70, yw], [xs + 70, yw]].map(([x, y]) => at([x, y, ZD + 14.3])), { size: 0.5 }) });
-    fp(`sep.sad${i}`, { o: [0, 0, 0], a: XD, u: YD, v: ZD3 }, sec, xs - SP.tw / 2, xs + SP.tw / 2, { tone: "mid" }, { owner: "sep", cls: "ct-paint" });
-  });
   // el recipiente: casco y cabezas, con las costuras de las cabezas
-  const seams = [SP.x0, SP.x1].map((s) => G.arcOf(FSEP, s, SP.R + 0.3, P)).join("");
   if (!DET) {
-    // el recipiente va en bandas, partido en las sillas, para que cada silla quede entre la banda de atrás y la de
-    // adelante; una sola silueta para todo
+    // las sillas del separador (con su placa de asiento) y las del bastidor: cada una se pinta en la misma pieza que
+    // la banda del recipiente que tiene encima o debajo, la de abajo antes de la banda y la de arriba después
+    const held = [];
+    SP.sad.forEach((xs, i) => {
+      const yw = 210;
+      box(`sep.sadbase${i}`, [xs - 90, -yw - 20, ZD], [xs + 90, yw + 20, ZD + 14], { tone: "mid" }, { owner: "sep", cls: "ct-paint", extra: Dots([[xs - 70, -yw], [xs + 70, -yw], [xs - 70, yw], [xs + 70, yw]].map(([x, y]) => at([x, y, ZD + 14.3])), { size: 0.5 }) });
+      held.push({ s0: xs - SP.tw / 2, under: true, ...fp(`sep.sad${i}`, FX0, sepSadSec(), xs - SP.tw / 2, xs + SP.tw / 2, { tone: "mid" }, { owner: "sep", cls: "ct-paint", hold: true }) });
+    });
+    MT.sad.forEach((xs, i) => held.push({ s0: xs - 8, under: false, ...fp(`mount.sad${i}`, FX0, mountSadSec(), xs - 8, xs + 8, { tone: "mid" }, { owner: "mount", cls: "ct-paint", hold: true }) }));
+    // el recipiente va en bandas, partido en las sillas; cada banda lleva su tramo de la silueta (sidesOf), que es una
+    // sola curva a lo largo de todo el recipiente
     const cuts = [SP.x0, SP.x1];
-    for (const xs of SP.sad) cuts.push(xs - SP.tw / 2, xs + SP.tw / 2);
-    for (const xs of MT.sad) cuts.push(xs - 8, xs + 8);
+    for (const h of held) cuts.push(h.s0, h.s0 + (h.under ? SP.tw : 16));
     const SB = G.bandsOf(sepProf, cuts, FSEP, P, { rows: 8 });
     SB.bands.forEach((b, i) => {
       const weld = [SP.x0, SP.x1].some((x) => Math.abs(b.s1 - x) < 1e-6) ? b.seam : "";
       const sh = record(A.solid(FSEP, b.profile, { name: `sep.b${i}`, owner: "sep", radius: SB.radius }));
-      put(`sep.b${i}`, G.add3(FSEP.o, G.mul3(XD, (b.s0 + b.s1) / 2)), wrap(S(b.paths, { tone: "mid", inner: weld }), "ct-vessel"), [sh]);
+      // la silueta de la cabeza de +x baja hacia el registro por detrás del enfriador de aceite: termina donde el
+      // enfriador ya la tapa (su silueta de la derecha, en pantalla), para que lo que se ve acabe en su contorno
+      let sEnd = b.s1;
+      if (b.s1 > SP.x1 + 1) {
+        const xHide = at([OC_X, OC_Y, 0])[0] + OC_R * KS - 1.5, endX = (q) => Math.max(...SB.sidesOf(b.s0, q).points.map((l) => at(l[l.length - 1])[0]));
+        let lo = b.s0 + 1, hi = HH_S0;
+        if (endX(hi) > xHide) { for (let it = 0; it < 30; it++) { const mid = (lo + hi) / 2; if (endX(mid) > xHide) hi = mid; else lo = mid; } sEnd = lo; } else sEnd = HH_S0;
+      }
+      const sd = SB.sidesOf(b.s0, sEnd);
+      const tubes = sd.points.map((list) => record(A.tube(list, 0.4 / KS, { owner: "sep" })));
+      const body = wrap(S(b.paths, { tone: "mid", inner: weld }), "ct-vessel") + Ln(sd.d, { tone: "mid" });
+      const h = held.find((q) => Math.abs(q.s0 - b.s0) < 1e-6);
+      const svg = h ? (h.under ? h.svg + body : body + h.svg) : body;
+      put(`sep.b${i}`, G.add3(FSEP.o, G.mul3(XD, (b.s0 + b.s1) / 2)), svg, [sh, ...tubes, ...(h ? [h.shape] : [])]);
     });
-    const sides = SB.sidesOf(SB.s0, SB.s1);
-    put("sep.sides", [0, 0, SP.z], Ln(sides.d, { tone: "mid" }), sides.points.map((list) => record(A.tube(list, 0.4 / KS, { owner: "sep" }))));
   }
-  ANCH.SEPARADOR = G.pointOf(FSEP, -250, SP.R, 0.45);
+  ANCH.SEPARADOR = G.pointOf(FSEP, -880, SP.R, -0.3);
 }
 if (!DET) {
   // la placa de datos del separador, en el casco, del lado del lector: una lámina delgada curva
   {
-    const a0 = 8, a1 = 32, x0 = -880, x1 = -700, n = 8, pts = [];
+    const a0 = 8, a1 = 32, x0 = -950, x1 = -830, n = 8, pts = [];
     for (let q = 0; q <= n; q++) { const [y, z] = onShell(a0 + ((a1 - a0) * q) / n); pts.push([y + 2 * Math.cos((a0 + ((a1 - a0) * q) / n) * D2R), z]); }
     const sec = [...arcPts(SP.R + 0.2, a0 * D2R, a1 * D2R, n), ...arcPts(SP.R + 2.6, a1 * D2R, a0 * D2R, n)];
     let rules = "";
@@ -405,7 +442,7 @@ if (!DET) {
     fp("sep.plate", FXL(0, SP.z), sec, x0, x1, { tone: "mid" }, { owner: "sep", cls: "ct-ss", extra: Ln(rules, { tone: "lo", free: true }) });
   }
   // el registro de los coalescedores en la cabeza de +x: el cuello y la tapa empernada
-  const rh = 120, sStart = SP.x1 + SP.hd * Math.sqrt(1 - (rh / SP.R) ** 2);
+  const rh = HH_R, sStart = HH_S0;
   saddle("sep.hh", FSEP, rh, () => sStart - 1, SP.x1 + SP.hd + 45, { tone: "mid" }, { owner: "sep", cls: "ct-vessel", hosts: [sepHost] });
   disc("sep.hhfl", FSEP, SP.x1 + SP.hd + 45, SP.x1 + SP.hd + 75, rh + 32, { tone: "mid" }, { owner: "sep", cls: "ct-vessel", extra: Dots(G.dotsOf(FSEP, SP.x1 + SP.hd + 75, rh + 18, 12, P, { all: true }), { size: 0.5 }) });
   disc("sep.hhcap", FSEP, SP.x1 + SP.hd + 75, SP.x1 + SP.hd + 100, rh + 32, { tone: "mid" }, { owner: "sep", cls: "ct-vessel", extra: Dots(G.dotsOf(FSEP, SP.x1 + SP.hd + 100, rh + 18, 12, P, { all: true }), { size: 0.5 }) });
@@ -416,18 +453,14 @@ if (!DET) {
    2 · el bastidor de arriba: los postes de las esquinas, las vigas, los travesaños y las placas de asiento
    ==================================================================== */
 {
-  // las sillas sobre el casco: una lámina con el borde de abajo en arco, contra el casco, y la cara de arriba plana
-  MT.sad.forEach((xs, i) => {
-    if (DET && xs < -400) return;
-    const yw = MT.y + 35, sec = [[-yw, MT.z0], [yw, MT.z0]];
-    for (let q = 0; q <= 24; q++) { const y = yw - (2 * yw * q) / 24; sec.push([y, SP.z + Math.sqrt(SP.R * SP.R - y * y)]); }
-    fp(`mount.sad${i}`, { o: [0, 0, 0], a: XD, u: YD, v: ZD3 }, sec.slice(0, 2).concat(sec.slice(2)), xs - 8, xs + 8, { tone: "mid" }, { owner: "mount", cls: "ct-paint" });
-  });
+  // las sillas sobre el casco (en la vista entera van con las bandas del recipiente; en el detalle, solas)
+  if (DET) MT.sad.forEach((xs, i) => { if (xs > -400) fp(`mount.sad${i}`, FX0, mountSadSec(), xs - 8, xs + 8, { tone: "mid" }, { owner: "mount", cls: "ct-paint" }); });
   // los dos canales: el alma afuera y las alas hacia adentro
   [-1, 1].forEach((sg, i) => {
     const y0 = sg * MT.y, yi = sg * (MT.y - MT.b), w = sg * (MT.y - MT.tw), z0 = MT.z0, z1 = MT.z1;
     const sec = [[y0, z0], [yi, z0], [yi, z0 + MT.tf], [w, z0 + MT.tf], [w, z1 - MT.tf], [yi, z1 - MT.tf], [yi, z1], [y0, z1]];
-    fp(`mount.ch${sg > 0 ? "F" : "B"}`, FXL(0, 0), sg > 0 ? sec : sec.slice().reverse(), DET ? -400 : MT.x0, MT.x1, { tone: "mid" }, { owner: "mount", cls: "ct-paint" });
+    // en el detalle no está la base: los canales son el piso
+    fp(`mount.ch${sg > 0 ? "F" : "B"}`, FXL(0, 0), sg > 0 ? sec : sec.slice().reverse(), DET ? -400 : MT.x0, MT.x1, { tone: "mid" }, { owner: "mount", cls: "ct-paint", ground: DET });
   });
 }
 ANCH.BASTIDOR = [-1150, MT.y, (MT.z0 + MT.z1) / 2];
@@ -446,7 +479,7 @@ if (!DET) {
   }));
   // las aletas: generatrices de la carcasa del lado que se ve
   let fins = "";
-  for (let q = 0; q < 40; q++) { const t = (q / 40) * TAU, n3 = [0, Math.cos(t), Math.sin(t)]; if (G.dot3(n3, V3) < 0.1 || Math.sin(t) < -0.5) continue; fins += path3([[MO.x0 + 20, YM + (MO.R + 0.4) * Math.cos(t), ZA + (MO.R + 0.4) * Math.sin(t)], [MO.x1 - 20, YM + (MO.R + 0.4) * Math.cos(t), ZA + (MO.R + 0.4) * Math.sin(t)]]); }
+  for (let q = 0; q < 40; q++) { const t = (q / 40) * TAU, n3 = [0, Math.cos(t), Math.sin(t)]; if (G.dot3(n3, V3) < 0.1 || Math.sin(t) < -0.5) continue; fins += path3([[MO.x0, YM + (MO.R + 0.4) * Math.cos(t), ZA + (MO.R + 0.4) * Math.sin(t)], [MO.x1, YM + (MO.R + 0.4) * Math.cos(t), ZA + (MO.R + 0.4) * Math.sin(t)]]); }
   turned("motor.cowl", FMO, [[MO.cowl, 150], [MO.cowl + 12, 196], [MO.x0, 196]], { tone: "mid" }, { owner: "motor", cls: "ct-motor" });
   disc("motor.body", FMO, MO.x0, MO.x1, MO.R, { tone: "mid" }, { owner: "motor", cls: "ct-motor", extra: Ln(fins, { tone: "faint" }) });
   disc("motor.de", FMO, MO.x1, MO.de, 172, { tone: "mid" }, { owner: "motor", cls: "ct-motor", extra: Dots(G.dotsOf(FMO, MO.de, 150, 8, P, { all: false }), { size: 0.45 }) });
@@ -531,7 +564,10 @@ function halfSec(sg, part = "all") {
   disc("comp.shaft", FXL(YM, ZA), CP.h2[1], CS.seal[0], 28, { tone: "mid" }, { owner: "comp", cls: "ct-ss" });
   // la caja de la succión, entera
   fp("comp.suc", FC, casOuter, CS.suc[0], CS.suc[1], { tone: "mid" }, { owner: "comp", cls: "ct-comp" });
-  // la carcasa de los rotores, la mitad de abajo, en dos piezas; la cara del corte va aparte, en el tono del corte
+  // la carcasa de los rotores, la mitad de abajo, en dos piezas; la cara del corte va aparte, en el tono del corte.
+  // El piso de la del macho (lo que queda bajo ZWALL) abraza al rotor por debajo: va en la misma pieza que los rotores,
+  // pintado antes que ellos (su cara del extremo, la única que podría tapar al rotor, queda bajo la caja de la descarga)
+  let floorM = null;
   for (const [sg, part] of [[-1, "all"], [1, "floor"], [1, "wall"]]) {
     const sec = halfSec(sg, part), nm = sg < 0 ? "comp.halfF" : part === "wall" ? "comp.wallM" : "comp.floorM";
     // las caras que no se pintan: la del corte (z = 0) y la de y = 0 (la que da a la otra mitad)
@@ -539,7 +575,8 @@ function halfSec(sg, part = "all") {
     sec.forEach((p, j) => { const q = sec[(j + 1) % sec.length]; if ((Math.abs(p[1]) < 1e-6 && Math.abs(q[1]) < 1e-6) || (Math.abs(p[0]) < 1e-6 && Math.abs(q[0]) < 1e-6) || (Math.abs(p[1] - ZWALL) < 1e-6 && Math.abs(q[1] - ZWALL) < 1e-6)) skip.add(j); });
     const yo = sg > 0 ? YM + CS.Ro : YF - CS.Ro, yi = sg > 0 ? YM + CS.Ri : YF - CS.Ri;
     const cut = part === "floor" ? "" : flatFace([[RO.x0, yi, ZA], [RO.x1, yi, ZA], [RO.x1, yo, ZA], [RO.x0, yo, ZA]], ZD3, "ct-cut-c");
-    fp(nm, FC, sec, RO.x0, RO.x1, { tone: "mid" }, { owner: "comp", cls: "ct-comp", skip, after: cut });
+    const h = fp(nm, FC, sec, RO.x0, RO.x1, { tone: "mid" }, { owner: "comp", cls: "ct-comp", skip, after: cut, hold: part === "floor" });
+    if (part === "floor") floorM = h;
   }
   // los rotores
   const det = DET ? { perLobe: 18, land: 4, ns: 52 } : { perLobe: 9, land: 2, ns: 22 };
@@ -547,7 +584,7 @@ function halfSec(sg, part = "all") {
   const shM = A.solid(FXL(YM, ZA), [[RO.x0 + 0.5, 0], [RO.x0 + 0.5, Rmt], [RO.x1 - 0.5, Rmt], [RO.x1 - 0.5, 0]], { name: "rotor.M", owner: "rotor", cut: [A.disc(FXL(YF, ZA), RO.x0 - 5, RO.x1 + 5, Rft)] });
   const shF = A.disc(FXL(YF, ZA), RO.x0 + 0.5, RO.x1 - 0.5, Rft, { name: "rotor.F", owner: "rotor" });
   record(shM); record(shF);
-  put("rotores", [(RO.x0 + RO.x1) / 2, 0, ZA], rotoresSvg(det), [shM, shF]);
+  put("rotores", [(RO.x0 + RO.x1) / 2, 0, ZA], floorM.svg + rotoresSvg(det), [floorM.shape, shM, shF]);
   ANCH.MACHO = [(RO.x0 + RO.x1) / 2 + 20, YM, ZA + Rmt];
   ANCH.HEMBRA = [RO.x0 + 30, YF - 20, ZA + Rft * 0.9];
   // la caja de la descarga y la tapa de los cojinetes, enteras
@@ -585,7 +622,7 @@ const SU = CT.suc, NS = DN[80], ZT = ZA + CS.Ro;
   disc("suc.cover", FYL(SU.x, zc), SU.R + 40, SU.R + 64, 92, { tone: "mid" }, { owner: "strainer", cls: "ct-cast", extra: Dots(G.dotsOf(FYL(SU.x, zc), SU.R + 64, 78, 8, P, { all: true }), { size: 0.5 }) });
   disc("suc.drain", FZ(SU.x - 40, 72, 0), SU.body[0] - 22, SU.body[0], 9, { tone: "mid" }, { owner: "strainer", cls: "ct-ss" });
   disc("suc.sfl1", Fv, SU.body[1], SU.body[1] + SU.fl, NS.fl, { tone: "mid" }, { owner: "strainer", cls: "ct-cast", extra: boltDots(Fv, SU.body[1] + SU.fl, NS) });
-  ANCH.FILTRO_SUC = G.pointOf(Fv, (SU.body[0] + SU.body[1]) / 2 - 50, SU.R, 0.3);
+  ANCH.FILTRO_SUC = G.pointOf(Fv, (SU.body[0] + SU.body[1]) / 2 + 40, SU.R, (AZ - 75) * D2R);   // a la derecha, en pantalla
   // la válvula de ángulo: la brida de salida abajo, el cuerpo, la boca de entrada hacia −x, el bonete y el volante
   const z0 = SU.body[1] + SU.fl, zv = SU.valve, rv = 112;
   disc("sv.fl0", Fv, z0, z0 + NS.ft, NS.fl, { tone: "mid" }, { owner: "sv", cls: "ct-cast", extra: boltDots(Fv, z0 + NS.ft, NS) });
@@ -623,6 +660,8 @@ const DS = CT.dis, NDp = DN[80];
   const zF = zNeck - 70;
   disc("dis.fl0", Fd, zF - NDp.ft, zF, NDp.fl, { tone: "mid" }, { owner: "comp", cls: "ct-comp" });
   disc("dis.fl1", Fd, zF - 2 * NDp.ft, zF - NDp.ft, NDp.fl, { tone: "mid" }, { owner: "dis.p0", cls: "ct-cast", extra: boltDots(Fd, zF - NDp.ft, NDp) });
+  // en el detalle, el tubo que baja al separador sigue hasta salir del círculo
+  if (DET) disc("dis.p0", Fd, zF - 2 * NDp.ft - 260, zF - 2 * NDp.ft, NDp.ro, { tone: "mid" }, { owner: "dis.p0", cls: "ct-pipe" });
   // el tubo baja al separador
   const zSepTop = SP.z + SP.R, zN = zSepTop + 40;
   if (!DET) {
@@ -676,6 +715,11 @@ const INJ = { x: 20, z: ZA - 45, y1: 165 };
   saddle("comp.inj", { o: [INJ.x, YM, INJ.z], a: YD, u: ZD3, v: XD }, a, (t) => Math.sqrt(Math.max(0, CS.Ro * CS.Ro - (dz + a * Math.cos(t)) ** 2)), INJ.y1 - YM, { tone: "mid" }, { owner: "comp", cls: "ct-comp", hosts: [A.prism(FXL(0, ZA), halfSec(1), RO.x0, RO.x1)] });
   disc("comp.injfl", FYL(INJ.x, INJ.z), INJ.y1, INJ.y1 + NO.ft, NO.fl, { tone: "mid" }, { owner: "comp", cls: "ct-comp", extra: boltDots(FYL(INJ.x, INJ.z), INJ.y1 + NO.ft, NO) });
   ANCH.INYECCION = [INJ.x, INJ.y1 + NO.ft, INJ.z + NO.fl];
+  // en el detalle, la brida de la línea del aceite y su tubo, que sigue hasta salir del círculo
+  if (DET) {
+    disc("oil.j.fl1", FYL(INJ.x, INJ.z), INJ.y1 + NO.ft, INJ.y1 + 2 * NO.ft, NO.fl, { tone: "mid" }, { owner: "oil.j.fl", cls: "ct-cast" });
+    disc("oil.j", FYL(INJ.x, INJ.z), INJ.y1 + 2 * NO.ft, INJ.y1 + 2 * NO.ft + 300, NO.ro, { tone: "mid" }, { owner: "oil.j.fl", cls: "ct-pipe" });
+  }
 }
 if (!DET) {
   // la boquilla del aceite en el casco, hacia el lector, y el tramo a la bomba
@@ -695,7 +739,7 @@ if (!DET) {
   disc("pump.cover", Fp, xh1, xh1 + 14, rb + 4, { tone: "mid" }, { owner: "pump", cls: "ct-pump", extra: Dots(G.dotsOf(Fp, xh1 + 14, rb - 6, 8, P, { all: true }), { size: 0.45 }) });
   disc("pump.lantern", Fp, xh0 - 50, xh0, 50, { tone: "mid" }, { owner: "pump", cls: "ct-pump" });
   let fins = "";
-  for (let q = 0; q < 24; q++) { const t = (q / 24) * TAU, n3 = [0, Math.cos(t), Math.sin(t)]; if (G.dot3(n3, V3) < 0.12) continue; fins += path3([[xh0 - 330, OP.y + 85.4 * Math.cos(t), zo + 85.4 * Math.sin(t)], [xh0 - 70, OP.y + 85.4 * Math.cos(t), zo + 85.4 * Math.sin(t)]]); }
+  for (let q = 0; q < 24; q++) { const t = (q / 24) * TAU, n3 = [0, Math.cos(t), Math.sin(t)]; if (G.dot3(n3, V3) < 0.12) continue; fins += path3([[xh0 - 340, OP.y + 85.4 * Math.cos(t), zo + 85.4 * Math.sin(t)], [xh0 - 50, OP.y + 85.4 * Math.cos(t), zo + 85.4 * Math.sin(t)]]); }
   disc("pump.motor", Fp, xh0 - 340, xh0 - 50, 85, { tone: "mid" }, { owner: "pump", cls: "ct-motor", extra: Ln(fins, { tone: "faint" }) });
   disc("pump.cowl", Fp, xh0 - 380, xh0 - 340, 80, { tone: "mid" }, { owner: "pump", cls: "ct-motor" });
   box("pump.tbox", [xh0 - 230, OP.y - 40, zo + 80], [xh0 - 150, OP.y + 40, zo + 132], { tone: "mid" }, { owner: "pump", cls: "ct-motor", r: 3 });
@@ -734,14 +778,15 @@ if (!DET) {
   ANCH.ACEITE_ENFRIADOR = [950, OP.y, zIn + NO.ro];
   // el amoníaco del termosifón: el líquido entra al bonete de abajo y la mezcla sale por arriba
   {
-    const zl = zbb + 36, Fl = { o: [OC.x, OC.y, zl], a: XD, u: YD, v: ZD3 }, xl = 150;
+    // la boquilla del líquido sale del bonete de abajo hacia atrás (−y) y la línea sube detrás del enfriador
+    const zl = zbb + 36, Fl = { o: [OC.x, OC.y, zl], a: [0, -1, 0], u: XD, v: ZD3 }, xl = 150;
     saddle("oc.nl", Fl, NA.ro + 4, () => 100, xl, { tone: "mid" }, { owner: "oc", cls: "ct-cast", hosts: [A.solid(Fc, [[zbb, 70], [zbb + 30, 110], [zb0, 118]])] });
     disc("oc.nlfl", Fl, xl, xl + NA.ft, NA.fl, { tone: "mid" }, { owner: "oc", cls: "ct-cast" });
     disc("ts.l.fl0", Fl, xl + NA.ft, xl + 2 * NA.ft, NA.fl, { tone: "mid" }, { owner: "ts.l.fl", cls: "ct-cast", extra: boltDots(Fl, xl + 2 * NA.ft, NA) });
-    const xr = OC.x + xl + 2 * NA.ft, xv = OC.x + 260, zTop = 1560;
-    pipe("ts.l", [[xr, OC.y, zl], [xv, OC.y, zl], [xv, OC.y, zTop]], NA.ro, { rad: 80 });
-    ANCH.TS_LIQUIDO_END = lineEnd("ts.l.end", FZ(xv, OC.y, 0), zTop, NA, "ts.l");
-    ANCH.TS_LIQUIDO = [xv, OC.y, 1150];
+    const yr = OC.y - xl - 2 * NA.ft, yv = OC.y - 260, zTop = 1560;
+    pipe("ts.l", [[OC.x, yr, zl], [OC.x, yv, zl], [OC.x, yv, zTop]], NA.ro, { rad: 60 });
+    ANCH.TS_LIQUIDO_END = lineEnd("ts.l.end", FZ(OC.x, yv, 0), zTop, NA, "ts.l");
+    ANCH.TS_LIQUIDO = [OC.x + NA.ro * HV[0], yv + NA.ro * HV[1], 800];
     const Ft = FZ(OC.x, OC.y, 0);
     disc("oc.nt", Ft, ztb - 2, ztb + 50, NA.ro + 4, { tone: "mid" }, { owner: "oc", cls: "ct-cast" });
     disc("oc.ntfl", Ft, ztb + 50, ztb + 50 + NA.ft, NA.fl, { tone: "mid" }, { owner: "oc", cls: "ct-cast" });
@@ -769,7 +814,7 @@ if (!DET) {
   // del enfriador al filtro (abajo, por delante del separador) y del filtro al compresor
   const xFi = OF.x + 104 + 2 * NO.ft, xFo = OF.x - 104 - 2 * NO.ft;
   pipe("oil.out", [[xE, OC.y, zOut], [xFi + 160, OC.y, zOut], [xFi + 160, OC.y, zhc], [xFi + 70, OF.y, zhc], [xFi, OF.y, zhc]], NO.ro, { rad: 40 });
-  pipe("oil.j", [[xFo, OF.y, zhc], [-480, OF.y, zhc], [-480, OF.y, INJ.z], [INJ.x, OF.y, INJ.z], [INJ.x, INJ.y1 + 2 * NO.ft, INJ.z]], NO.ro, { rad: 40 });
+  pipe("oil.j", [[xFo, OF.y, zhc], [-520, OF.y, zhc], [-520, OF.y, INJ.z], [INJ.x, OF.y, INJ.z], [INJ.x, INJ.y1 + 2 * NO.ft, INJ.z]], NO.ro, { rad: 40 });
   disc("oil.j.fl1", FYL(INJ.x, INJ.z), INJ.y1 + NO.ft, INJ.y1 + 2 * NO.ft, NO.fl, { tone: "mid" }, { owner: "oil.j.fl", cls: "ct-cast" });
   ANCH.ACEITE_COMPRESOR = [-200, OF.y, INJ.z + NO.ro];
   ANCH.ACEITE_FILTRO = [500, OC.y, zOut + NO.ro];
@@ -873,7 +918,8 @@ if (DET) {
     const [lo, hi] = Array.isArray(bd) ? bd : [bd.min, bd.max];
     const cs = []; for (const x of [lo[0], hi[0]]) for (const y of [lo[1], hi[1]]) for (const z of [lo[2], hi[2]]) cs.push(k.iso([x / U, y / U, z / U], P));
     const x0 = Math.min(...cs.map((c) => c[0])), x1 = Math.max(...cs.map((c) => c[0])), y0 = Math.min(...cs.map((c) => c[1])), y1 = Math.max(...cs.map((c) => c[1]));
-    return x1 > cx - rr && x0 < cx + rr && y1 > cy - rr && y0 < cy + rr;
+    const qx = Math.max(x0, Math.min(cx, x1)), qy = Math.max(y0, Math.min(cy, y1));   // el punto de la caja más cerca del centro
+    return Math.hypot(qx - cx, qy - cy) < rr;
   });
   const keep = R_.items.filter(inView);
   R_.items.splice(0, R_.items.length, ...keep);
@@ -887,12 +933,17 @@ const ACERO = shades("#eef0f2", "#eef0f2", "#f7f8f9", "#c9ced3", "#d6dade", "#e1
 const FUND = shades("#dfe2e5", "#dfe2e5", "#e9ebed", "#c1c6cb", "#cacfd3", "#d3d7da", "#dadde0");
 const PINT = shades("#e4e8ea", "#e4e8ea", "#edf0f1", "#c7cdd1", "#d0d5d8", "#d8dcdf", "#dfe2e4");
 const flat = (c) => shades(c, c, c, c, c, c, c);
-const CSS = `.ct-ss{${ACERO}}.ct-pipe{${ACERO}}.ct-rotor{${ACERO}}.ct-wheel{${ACERO}}
-.ct-cast{${FUND}}.ct-lever{${FUND}}.ct-comp{${FUND}}.ct-vessel{${PINT}}
-.ct-paint{${PINT}}.ct-motor{${PINT}}.ct-pump{${PINT}}
+// el acero al carbono de la tubería del amoníaco y del aceite, las válvulas y la carcasa del compresor van en el tono
+// de la fundición (como las líneas del amoníaco del condensador evaporativo); los rotores, los vástagos, los ejes y el
+// acople, en el acero; el separador, la base, los motores, la bomba y el tablero, pintados
+const CSS = `.ct-ss{${ACERO}}.ct-rotor{${ACERO}}.ct-wheel{${ACERO}}
+.ct-pipe{${FUND}}.ct-cast{${FUND}}.ct-lever{${FUND}}.ct-comp{${FUND}}.ct-psv{${FUND}}.ct-boton{${FUND}}.ct-vessel{${PINT}}
+.ct-paint{${PINT}}.ct-motor{${PINT}}.ct-pump{${PINT}}.ct-panel{${PINT}}.ct-paro{${flat("#B3261E")}}
+.ct-pantalla.iso-line{stroke:#AEB8C2}
 .ct-conc{${shades("#e8e6e1", "#e8e6e1", "#efede9", "#d2cfc8", "#d9d6d0", "#dfddd7", "#e4e2dc")}}
 .ct-yel{${shades("#f3e9a6", "#f3e9a6", "#f8f1c4", "#dccf7e", "#e4d88d", "#ebe09a", "#efe5a1")}}
 .ct-cut-c{${flat("#c1c6cb")}}
+.ct-det-fondo{fill:#FFFFFF;stroke:none}.ct-det-marco{fill:none;stroke:#525C64;stroke-width:1px}
 .ct-bore{fill:#525c64;stroke:none}.ct-dial{fill:#ffffff;stroke:none}.ct-screen{fill:#2b3238;stroke:none}
 .ct-aceite{fill:#d9a441;fill-opacity:.85}.ct-vidrio{fill:#e7edf2;fill-opacity:.7}
 .ct-flujo-o{fill:none;stroke:#525c64;stroke-width:3.4px;stroke-linecap:round;stroke-linejoin:round}

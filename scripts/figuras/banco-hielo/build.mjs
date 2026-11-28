@@ -61,7 +61,7 @@ const EXT = [];
 for (const x of [BH.pl.x0, BH.pl.x1]) for (const y of [BH.pl.y0, BH.pl.y1]) EXT.push([x, y, 0]);
 for (const x of [xo0, xo1]) for (const y of [yo0, yo1]) EXT.push([x, y, zC1]);
 for (const y of [-DR.L / 2 - hD, DR.L / 2 + hD]) EXT.push([xd, y, zDc + rD], [xd, y, zDc - rD]);
-EXT.push([xd, 0, zDc + rD + 380], [4250, 0, 4480], [4250, 1380, 3700], [4600, BH.out.y, BH.out.z + 120], [4600, BH.out.y, BH.out.z - 120]);
+EXT.push([xd, 0, 4960 + 94 + 20], [4230, 2000, 3800], [xd, -DR.L / 2 + 250, zDc + rD + 360], [4250, 0, 4480], [4250, 1380, 3700], [4600, BH.out.y, BH.out.z + 120], [4600, BH.out.y, BH.out.z - 120]);
 EXT.push([BL.x + 300, BL.y + 400, 0], [BL.x, AIR.y, 1150], [-4000, BH.dist.yDrop, 3360]);
 EXT.push([BH.persona.x, BH.persona.y, 0], [BH.persona.x, BH.persona.y, 1800], [BH.persona.x - 250, BH.persona.y, 0]);
 const P = k.fitProjection(EXT, W, H, { pad: 14, azimuth: AZ, elevation: EL });
@@ -266,7 +266,7 @@ box("stand.pad", [BH.pl.x0, BH.pl.y0, 0], [BH.pl.x1, BH.pl.y1, BH.zPl], { tone: 
 }
 // las costuras soldadas de la lámina de adentro, en el costado de atrás
 {
-  const seams = [-1550, 0, 1550].map((x) => path3([[x, yi0 + 0.5, ZF], [x, yi0 + 0.5, zR]])).join("") + path3([[xi0, yi0 + 0.5, 1650], [xi1, yi0 + 0.5, 1650]]);
+  const seams = [-1550, 0, 1550, xi1 - 0.5].map((x) => path3([[x, yi0 + 0.5, ZF], [x, yi0 + 0.5, zR]])).join("") + path3([[xi0, yi0 + 0.5, 1650], [xi1 - 0.5, yi0 + 0.5, 1650]]);
   box("wall.back", [xi0, yo0, BH.zPl], [xi1, yi0, zR], { tone: "mid" }, { owner: "tank", cls: "bh-steel", extra: Ln(seams, { tone: "faint" }) });
 }
 {
@@ -389,8 +389,8 @@ function tubeGroup(runs, r, caps = true) {
       const keep = (m) => m[2] > GEO.zPass(2) + 20 || m[0] > CO.xR - 150 || (j === jF - 1 && m[0] > xw0 - 120 && m[0] < xw1 + 120);
       const runs = groupBy(cutAt(w0, (p) => p[0], [CO.xR - 150, xw0 - 120, xw1 + 120]), (m) => (keep(m) ? "k" : "d")).filter((r) => r.c === "k").map((r) => r.pts);
       const capsOf = (pts) => [pts[0] === first, pts[pts.length - 1] === last];
-      const shapes = runs.map((pts) => record(A.tube(pts, RI, { name: `ice${j}`, owner: "coil" })));
-      put(`ice${j}`, [0, y, (zt + zbP) / 2], `<g class="bh-ice">${tubeGroup(runs, RI, runs.map(capsOf))}</g>`, shapes);
+      // se registra el circuito entero, como es: lo que no se dibuja lo tapa el de adelante
+      put(`ice${j}`, [0, y, (zt + zbP) / 2], `<g class="bh-ice">${tubeGroup(runs, RI, runs.map(capsOf))}</g>`, [record(A.tube(w0, RI, { name: `ice${j}`, owner: "coil" }))]);
       continue;
     }
     // el circuito de adelante: el hielo a cada lado del tramo abierto y, en él, el tubo desnudo
@@ -430,8 +430,8 @@ ANCH.CAB_LIQUIDO = [xD, yH1 - 20, HD.zL - NLH.ro * 0.4];
 // los tramos de cada circuito sobre el agua, hasta su cabezal
 for (let j = 0; j < CO.nc; j++) {
   const y = GEO.yCirc(j);
-  saddle(`stub.v${j}`, { o: [xa, y, HD.zV], a: [0, 0, -1], u: XD, v: YD }, CO.ro, (t) => G.saddleStart(NVH.ro, CO.ro, t), HD.zV - zW, { tone: "mid" }, { owner: "hdr", cls: "bh-tube", hosts: [A.disc(FYL(xa, HD.zV), yH0, yH1, NVH.ro)] });
-  saddle(`stub.l${j}`, { o: [xD, y, HD.zL], a: [0, 0, -1], u: XD, v: YD }, CO.ro, (t) => G.saddleStart(NLH.ro, CO.ro, t), HD.zL - zW, { tone: "mid" }, { owner: "hdr", cls: "bh-tube", hosts: [A.disc(FYL(xD, HD.zL), yH0, yH1, NLH.ro)] });
+  saddle(`stub.v${j}`, { o: [xa, y, HD.zV], a: [0, 0, -1], u: XD, v: YD }, CO.ro, (t) => G.saddleStart(NVH.ro, CO.ro, t), HD.zV - zIce, { tone: "mid" }, { owner: "hdr", cls: "bh-tube", hosts: [A.disc(FYL(xa, HD.zV), yH0, yH1, NVH.ro)] });
+  saddle(`stub.l${j}`, { o: [xD, y, HD.zL], a: [0, 0, -1], u: XD, v: YD }, CO.ro, (t) => G.saddleStart(NLH.ro, CO.ro, t), HD.zL - zIce, { tone: "mid" }, { owner: "hdr", cls: "bh-tube", hosts: [A.disc(FYL(xD, HD.zL), yH0, yH1, NLH.ro)] });
 }
 
 /* ====================================================================
@@ -440,11 +440,20 @@ for (let j = 0; j < CO.nc; j++) {
    ==================================================================== */
 const zA = ZF + NA.ro;                                           // el eje de la tubería del fondo, apoyada en él
 {
-  const hi = G.fillet([[xi1, AIR.y, AIR.zIn], [AIR.xDown, AIR.y, AIR.zIn], [AIR.xDown, AIR.y, zW]], 50, 8);
-  tubeItems("air.in", hi, NA.ro, { cls: "bh-pvc", owner: "air", maxLength: 300 });
-  const lo = G.fillet([[AIR.xDown, AIR.y, zW], [AIR.xDown, AIR.y, zA], [AIR.xEnd, AIR.y, zA]], 70, 8);
-  tubeItems("air.low", lo, NA.ro, { cls: "bh-pvc", owner: "air", maxLength: 420 });
-  disc("air.cap", FXL(AIR.y, zA), AIR.xEnd - 12, AIR.xEnd, NA.ro + 3, { tone: "mid" }, { owner: "air", cls: "bh-pvc" });
+  // una sola tubería, partida en la superficie del agua (lo de arriba va delante de ella, lo de abajo detrás de la cara
+  // del agua); descansa en el fondo del tanque
+  const rt = G.fillet([[xi1, AIR.y, AIR.zIn], [AIR.xDown, AIR.y, AIR.zIn], [AIR.xDown, AIR.y, zA], [AIR.xEnd, AIR.y, zA]], 70, 8);
+  let acc = 0, brk = 0;
+  for (let i = 1; i < rt.length; i++) {
+    const a = rt[i - 1], b = rt[i], L = G.len3(G.sub3(b, a));
+    if (!brk && a[2] >= zW && b[2] < zW) brk = acc + (L * (a[2] - zW)) / (a[2] - b[2]);
+    acc += L;
+  }
+  R_.route("air.main", rt.map((q) => q.map((v) => v * U)), NA.ro * U, { owner: "air", touch: ["floor"], piece: "frame", move: [0, 0, 0], ride: "frame" });
+  tubePieces(rt, NA.ro, P, { maxLength: 420, spacing: Math.max(4, Math.min(20, NA.ro * 0.5)), breaks: [brk] }).forEach((part, index) => {
+    R_.put({ piece: "frame", ride: "frame", at: part.mid.map((v) => v * U), svg: wrap(tubeSvg(part, { tone: "mid" }), "bh-pvc"), move: [0, 0, 0], name: `air.main:${index}`, route: "air.main", chunk: index, shapes: [cm(A.tube(part.points, part.radii))] });
+  });
+  disc("air.cap", FXL(AIR.y, zA), AIR.xEnd - 12, AIR.xEnd, NA.ro + 3, { tone: "mid" }, { owner: "air.cap", cls: "bh-pvc" });
   ANCH.AIRE = [-2200, AIR.y + NA.ro * 0.6, zA + NA.ro * 0.6];
   // los ramales, a lo ancho bajo el haz, con su tapa al fondo
   AIR.laterals.forEach((xl, i) => {
@@ -461,8 +470,10 @@ const zA = ZF + NA.ro;                                           // el eje de la
   box("blower.base", [xB - 330, yB - 230, 0], [xB + 330, yB + 420, 40], { tone: "mid" }, { owner: own, cls: "bh-paint", r: 4 });
   const Fb = FYL(xB, zB);
   let fins = "";
-  for (let q = 0; q < 36; q++) { const t = (q / 36) * TAU; fins += path3([[xB + 110 * Math.cos(t), yB + 60.4, zB + 110 * Math.sin(t)], [xB + (Rb - 18) * Math.cos(t), yB + 60.4, zB + (Rb - 18) * Math.sin(t)]]); }
-  disc("blower.casing", Fb, yB - 60, yB + 60, Rb, { tone: "mid" }, { owner: own, cls: "bh-blower", extra: Ln(fins, { tone: "faint" }) });
+  // las aletas de la cara, del pie de la brida del motor al borde de la carcasa
+  for (let q = 0; q < 36; q++) { const t = (q / 36) * TAU; fins += path3([[xB + 140.4 * Math.cos(t), yB + 60.4, zB + 140.4 * Math.sin(t)], [xB + (Rb - 0.6) * Math.cos(t), yB + 60.4, zB + (Rb - 0.6) * Math.sin(t)]]); }
+  fins += path3(Array.from({ length: 73 }, (_, q) => { const t = (q / 72) * TAU; return [xB + 140.4 * Math.cos(t), yB + 60.4, zB + 140.4 * Math.sin(t)]; }));
+  const casing = disc("blower.casing", Fb, yB - 60, yB + 60, Rb, { tone: "mid" }, { owner: own, cls: "bh-blower", extra: Ln(fins, { tone: "faint" }) });
   box("blower.feet", [xB - 180, yB - 50, 40], [xB + 180, yB + 50, zB - Rb + 30], { tone: "mid" }, { owner: own, cls: "bh-blower", r: 2 });
   disc("blower.flange", Fb, yB + 60, yB + 80, 140, { tone: "mid" }, { owner: own, cls: "bh-motor" });
   let mf = "";
@@ -470,12 +481,12 @@ const zA = ZF + NA.ro;                                           // el eje de la
   disc("blower.motor", Fb, yB + 80, yB + 340, 120, { tone: "mid" }, { owner: own, cls: "bh-motor", extra: Ln(mf, { tone: "faint" }) });
   disc("blower.cowl", Fb, yB + 340, yB + 395, 112, { tone: "mid" }, { owner: own, cls: "bh-motor", extra: Dots(G.dotsOf(Fb, yB + 395, 62, 10, P, { all: true }), { size: 0.5 }) });
   box("blower.mfoot", [xB - 110, yB + 120, 40], [xB + 110, yB + 300, zB - 120 + 3], { tone: "mid" }, { owner: own, cls: "bh-motor", r: 2 });
-  fp("blower.tbox", { o: [0, 0, zB], a: YD, u: XD, v: ZD3 }, rect(-50, 50, 119, 185), yB + 160, yB + 260, { tone: "mid" }, { owner: own, cls: "bh-motor" });
+  fp("blower.tbox", { o: [xB, 0, zB], a: YD, u: XD, v: ZD3 }, rect(-50, 50, 119, 185), yB + 160, yB + 260, { tone: "mid" }, { owner: own, cls: "bh-motor" });
   // las dos bocas en lo alto de la carcasa, con sus silenciadores
   const ports = [[xB + 120, "in"], [xB - 120, "out"]];
   for (const [xp, nm] of ports) {
-    const Fp = FZ(xp, yB, 0), zp0 = zB + Math.sqrt(Rb * Rb - 120 * 120) - 4;
-    disc(`blower.${nm}.neck`, Fp, zp0, zB + Rb + 30, 34, { tone: "mid" }, { owner: own, cls: "bh-blower" });
+    const Fp = FZ(xp, yB, 0), dx = xp - xB;
+    saddle(`blower.${nm}.neck`, Fp, 34, (t) => zB + Math.sqrt(Math.max(0, Rb * Rb - (dx + 34 * Math.cos(t)) ** 2)), zB + Rb + 30, { tone: "mid" }, { owner: own, cls: "bh-blower", hosts: [casing] });
     disc(`blower.${nm}.sil`, Fp, zB + Rb + 30, zB + Rb + 290, 62, { tone: "mid" }, { owner: own, cls: "bh-blower", extra: Ln(path3(arcPts(62.4, zB + Rb + 160, fS - TAU, fSL, 40, xp, yB)), { tone: "faint" }) });
   }
   // la entrada: el filtro, una copa más ancha con su tapa y sus ranuras
@@ -488,10 +499,10 @@ const zA = ZF + NA.ro;                                           // el eje de la
   const xo = xB - 120, zs = zB + Rb + 290, NAo = NA;
   disc("blower.out.fl", FZ(xo, yB, 0), zs, zs + NAo.ft, NAo.fl, { tone: "mid" }, { owner: own, cls: "bh-cast" });
   const xr = xo1 + 90;
-  const rt = G.fillet([[xo, yB, zs + NAo.ft], [xo, yB, 1180], [xr, yB, 1180], [xr, yB, AIR.zIn], [xo1, yB, AIR.zIn]], 80, 8);
-  tubeItems("air.out", rt, NAo.ro, { cls: "bh-pipe", owner: "air.out", maxLength: 420 });
-  // la retención: un cuerpo bridado en el tramo que sube junto a la pared
+  // la retención: un cuerpo bridado en el tramo que sube junto a la pared; la tubería llega a sus dos bridas
   const zc0 = 1500, Fc = FZ(xr, yB, 0);
+  tubeItems("air.out", G.fillet([[xo, yB, zs + NAo.ft], [xo, yB, 1180], [xr, yB, 1180], [xr, yB, zc0]], 80, 8), NAo.ro, { cls: "bh-pipe", owner: "air.out", maxLength: 420 });
+  tubeItems("air.out2", G.fillet([[xr, yB, zc0 + 150 + NAo.ft], [xr, yB, AIR.zIn], [xo1, yB, AIR.zIn]], 80, 8), NAo.ro, { cls: "bh-pipe", owner: "air.out", maxLength: 420 });
   disc("air.check.fl0", Fc, zc0, zc0 + NAo.ft, NAo.fl, { tone: "mid" }, { owner: "air.check", cls: "bh-cast", extra: Dots(G.dotsOf(Fc, zc0 + NAo.ft, NAo.bc, NAo.nb, P, { all: true, phase: PI / 4 }), { size: 0.45 }) });
   turned("air.check.body", Fc, [[zc0 + NAo.ft, 52], [zc0 + 40, 66, 1], [zc0 + 110, 66, 1], [zc0 + 150, 48]], { tone: "mid" }, { owner: "air.check", cls: "bh-cast" });
   disc("air.check.fl1", Fc, zc0 + 150, zc0 + 150 + NAo.ft, NAo.fl, { tone: "mid" }, { owner: "air.check", cls: "bh-cast" });
@@ -516,7 +527,7 @@ const DI = BH.dist, NDI = DN[80], NDR = DN[65];
   // sobre la tapa: el tramo que sube, la curva y la línea del retorno, que termina en un par de bridas
   const zl = 3300;
   const rt = G.fillet([[DI.x, DI.yDrop, zC1], [DI.x, DI.yDrop, zl], [-3560, DI.yDrop, zl]], 110, 10);
-  tubeItems("ret.line", rt, NDR.ro, { cls: "bh-pipe", owner: "ret", maxLength: 300 });
+  tubeItems("ret.line", rt, NDR.ro, { cls: "bh-pipe", owner: "ret.pipe", maxLength: 300 });
   ANCH.RETORNO_END = lineEnd("ret.end", { o: [0, DI.yDrop, zl], a: [-1, 0, 0], u: [0, -1, 0], v: ZD3 }, 3560, NDR, "ret");
   ANCH.RETORNO = [-3300, DI.yDrop, zl + NDR.ro];
 }
@@ -573,7 +584,7 @@ const OU = BH.out, NO = DN[100];
   }
   const svg = `<g class="bh-agua"><path class="bh-agua-cara" d="${pth1(face.map(pr))}"/><path class="bh-agua-sup" d="${pth1(sup.map(pr))}"/>` +
     `<path class="bh-anillo" d="${rings}"/>` +
-    Ln(path3([[xi0, yw, zW], [xi1, yw, zW]]), { tone: "lo" }) + "</g>";
+    Ln(path3([[xi0, yw, zW], [xi1, yw, zW]]) + path3([[xi0 + 0.5, yi0, zW], [xi0 + 0.5, yw, zW]]), { tone: "lo" }) + "</g>";
   put("water", [0, 0, (ZF + zW) / 2], svg, [A.box([xi0, yi0, ZF], [xi1, yw, zW])]);
   ANCH.AGUA = [-2600, yw, 900];
   ANCH.SUPERFICIE = [-1300, 260, zW];
@@ -648,30 +659,30 @@ const drumHost = A.disc(FDr, -L2, L2, rD);
 }
 {
   // la mezcla que vuelve: del cabezal del vapor sube a la tapa (desnuda) y de la tapa al separador (aislada)
-  saddle("ret2.in", { o: [xa, 400, HD.zV], a: ZD3, u: XD, v: YD }, NRT.ro, (t) => G.saddleStart(NVH.ro, NRT.ro, t), zR - HD.zV, { tone: "mid" }, { owner: "hdr", cls: "bh-tube", hosts: [A.disc(FYL(xa, HD.zV), yH0, yH1, NVH.ro)] });
+  saddle("ret2.in", { o: [xa, 400, HD.zV], a: ZD3, u: XD, v: YD }, NRT.ro, (t) => G.saddleStart(NVH.ro, NRT.ro, t), zC1 - HD.zV, { tone: "mid" }, { owner: "hdr", cls: "bh-tube", hosts: [A.disc(FYL(xa, HD.zV), yH0, yH1, NVH.ro)] });
   saddle("ret2.out", { o: [xd, 400, zDc], a: [0, 0, -1], u: XD, v: YD }, NRT.ro + INS, (t) => G.saddleStart(rD, NRT.ro + INS, t), zDc - zC1, { tone: "mid" }, { owner: "drum", cls: "bh-ins", hosts: [drumHost] });
   ANCH.MEZCLA = [xd + (NRT.ro + INS) * HV[0], 400 + (NRT.ro + INS) * HV[1], (zC1 + zDc - rD) / 2];
-  // la pierna de líquido: baja del separador, se corre al cabezal del líquido y baja por su válvula a la tapa
+  /* la pierna de líquido: baja del separador, aislada, a su válvula de corte; después de la válvula sigue desnuda, como
+     los tramos sobre el agua, se corre en diagonal hasta encima del cabezal del líquido y baja a él */
   const yl = -400, zs0 = zDc - rD - 60;
   saddle("leg.top", { o: [xd, yl, zDc], a: [0, 0, -1], u: XD, v: YD }, NLL.ro + INS, (t) => G.saddleStart(rD, NLL.ro + INS, t), zDc - zs0, { tone: "mid" }, { owner: "drum", cls: "bh-ins", hosts: [drumHost] });
-  const zj = zs0 - 80, zv1 = 3360;
-  const rt = G.fillet([[xd, yl, zs0], [xd, yl, zj], [xD, yl, zj], [xD, yl, zv1]], 58, 8);
-  tubeItems("leg.ins", rt, NLL.ro + INS, { cls: "bh-ins", owner: "drum", maxLength: 300, ends: [false, true] });
-  const Fv = { o: [xD, yl, 0], a: [0, 0, -1], u: XD, v: YD };
-  disc("leg.fl", Fv, -zv1, -zv1 + NLL.ft, NLL.fl, { tone: "mid" }, { owner: "leg", cls: "bh-cast" });
-  const v = ballValve("leg.valve", Fv, -zv1 + NLL.ft, NLL, { owner: "leg", stem: XD, lever: 150 });
+  const Fv = { o: [xd, yl, 0], a: [0, 0, -1], u: XD, v: YD };
+  disc("leg.fl", Fv, -zs0, -zs0 + NLL.ft, NLL.fl, { tone: "mid" }, { owner: "leg", cls: "bh-cast" });
+  const v = ballValve("leg.valve", Fv, -zs0 + NLL.ft, NLL, { owner: "leg", stem: [0, -1, 0], lever: 150 });
   disc("leg.fl2", Fv, v.s1, v.s1 + NLL.ft, NLL.fl, { tone: "mid" }, { owner: "leg", cls: "bh-cast" });
-  disc("leg.stub", Fv, v.s1 + NLL.ft, -zC1, NLL.ro, { tone: "mid" }, { owner: "leg", cls: "bh-tube" });
-  saddle("leg.in", { o: [xD, yl, HD.zL], a: ZD3, u: XD, v: YD }, NLL.ro, (t) => G.saddleStart(NLH.ro, NLL.ro, t), zR - HD.zL, { tone: "mid" }, { owner: "hdr", cls: "bh-tube", hosts: [A.disc(FYL(xD, HD.zL), yH0, yH1, NLH.ro)] });
-  ANCH.PIERNA = [xD + (NLL.ro + INS) * HV[0], yl + (NLL.ro + INS) * HV[1], zj];
+  const zb = -(v.s1 + NLL.ft), zTop = HD.zL + 160;
+  saddle("leg.in", { o: [xD, yl, HD.zL], a: ZD3, u: XD, v: YD }, NLL.ro, (t) => G.saddleStart(NLH.ro, NLL.ro, t), zTop - HD.zL, { tone: "mid" }, { owner: "hdr", cls: "bh-tube", hosts: [A.disc(FYL(xD, HD.zL), yH0, yH1, NLH.ro)] });
+  const zj = zb - 100;
+  tubeItems("leg.pipe", G.fillet([[xd, yl, zb], [xd, yl, zj], [xD, yl, zj - 90], [xD, yl, zTop]], 70, 8), NLL.ro, { cls: "bh-tube", owner: "leg.pipe", maxLength: 110 });
+  ANCH.PIERNA = [(xd + xD) / 2 + NLL.ro * HV[0], yl + NLL.ro * HV[1], zj - 45];
   ANCH.VALV_PIERNA = v.top;
 }
 {
   // la succión: sube del separador, aislada, y va hacia +x con su válvula de corte hasta el par de bridas
-  const zs1 = zDc + rD + 100, zh = 4640, own = "suc", ri = NSU.ro + INS;
+  const zs1 = zDc + rD + 260, zh = 4960, own = "suc", ri = NSU.ro + INS;
   saddle("suc.top", { o: [xd, 0, zDc], a: ZD3, u: XD, v: YD }, ri, (t) => G.saddleStart(rD, ri, t), zs1 - zDc, { tone: "mid" }, { owner: "drum", cls: "bh-ins", hosts: [drumHost] });
   const xv0 = 3520;
-  const rt = G.fillet([[xd, 0, zs1], [xd, 0, zh], [xv0, 0, zh]], 130, 10);
+  const rt = G.fillet([[xd, 0, zs1], [xd, 0, zh], [xv0, 0, zh]], 220, 12);
   tubeItems("suc.ins", rt, ri, { cls: "bh-ins", owner: "drum", maxLength: 300, ends: [false, true] });
   const F = FXL(0, zh);
   disc("suc.fl", F, xv0, xv0 + NSU.ft, NSU.fl, { tone: "mid" }, { owner: own, cls: "bh-cast" });
@@ -683,41 +694,42 @@ const drumHost = A.disc(FDr, -L2, L2, rD);
   ANCH.SUCCION = G.pointOf(F, 3300, ri, PI / 2);
 }
 {
-  // el líquido del recibidor: entra por la cabeza de +y; la válvula de nivel (globo con su actuador) y la de corte
-  const own = "feed", d = NFD, yn0 = L2 + hD - 25, yn1 = L2 + hD + 90, zf = zDc - 40;
-  disc("feed.nozzle", FYL(xd, zf), yn0, yn1, d.ro + 4, { tone: "mid" }, { owner: "drum", cls: "bh-tube" });
-  disc("feed.fl", FYL(xd, zf), yn1, yn1 + d.ft, d.fl, { tone: "mid" }, { owner: "drum", cls: "bh-cast" });
-  const yt = yn1 + d.ft;
-  const rt = G.fillet([[xd, yt, zf], [xd, yt + 120, zf], [3160, yt + 120, zf]], 60, 8);
-  tubeItems("feed.p0", rt, d.ro, { cls: "bh-pipe", owner: own, maxLength: 300 });
-  const F = FXL(yt + 120, zf);
+  /* el líquido del recibidor: entra por arriba, entre la succión y el manómetro, sube a un codo y va hacia +x por la
+     válvula de nivel (globo con su actuador) y la de corte */
+  const own = "feed", d = NFD, yr = 350, zn = zDc + rD + 140, zf = zDc + rD + 320;
+  saddle("feed.nozzle", { o: [xd, yr, zDc], a: ZD3, u: XD, v: YD }, d.ro + 4, (t) => G.saddleStart(rD, d.ro + 4, t), zn - zDc, { tone: "mid" }, { owner: "drum", cls: "bh-tube", hosts: [drumHost] });
+  disc("feed.fl", FZ(xd, yr, 0), zn, zn + d.ft, d.fl, { tone: "mid" }, { owner: "drum", cls: "bh-cast" });
+  const cE = [xd, yr, zf], RE = d.ro * 2.4, s0 = 3500, Lg = 184;
+  ball("feed.elbow", cE, RE, { tone: "mid" }, { owner: "feed.elbow", cls: "bh-cast" });
+  pipe("feed.p0", [[xd, yr, zn + d.ft], cE], d.ro, { cls: "bh-pipe", balls: [{ at: "end", c: cE, R: RE }], owner: "feed.pipe" });
+  pipe("feed.p0b", [cE, [s0, yr, zf]], d.ro, { cls: "bh-pipe", balls: [{ at: "start", c: cE, R: RE }], owner: "feed.pipe" });
+  const F = FXL(yr, zf);
   // la válvula de nivel: bridas, cuerpo, bonete, el yugo de dos columnas y el actuador de diafragma
-  const s0 = 3160, Lg = 184;
   disc("feed.lv.fl0", F, s0, s0 + d.ft, d.fl, { tone: "mid" }, { owner: own, cls: "bh-cast" });
   turned("feed.lv.body", F, [[s0 + d.ft, 30], [s0 + 52, 46, 1], [s0 + Lg - 52, 46, 1], [s0 + Lg - d.ft, 30]], { tone: "mid" }, { owner: own, cls: "bh-cast" });
   disc("feed.lv.fl1", F, s0 + Lg - d.ft, s0 + Lg, d.fl, { tone: "mid" }, { owner: own, cls: "bh-cast" });
-  const xm = s0 + Lg / 2, Fu = FZ(xm, yt + 120, 0);
+  const xm = s0 + Lg / 2, Fu = FZ(xm, yr, 0);
   disc("feed.lv.bonnet", Fu, zf + 40, zf + 92, 26, { tone: "mid" }, { owner: own, cls: "bh-cast" });
-  disc("feed.lv.yoke0", FZ(xm - 20, yt + 120, 0), zf + 92, zf + 196, 5, { tone: "mid" }, { owner: own, cls: "bh-ss", n: 10 });
-  disc("feed.lv.yoke1", FZ(xm + 20, yt + 120, 0), zf + 92, zf + 196, 5, { tone: "mid" }, { owner: own, cls: "bh-ss", n: 10 });
+  disc("feed.lv.yoke0", FZ(xm - 20, yr, 0), zf + 92, zf + 196, 5, { tone: "mid" }, { owner: own, cls: "bh-ss", n: 10 });
+  disc("feed.lv.yoke1", FZ(xm + 20, yr, 0), zf + 92, zf + 196, 5, { tone: "mid" }, { owner: own, cls: "bh-ss", n: 10 });
   turned("feed.lv.act", Fu, [[zf + 196, 20], [zf + 206, 92], [zf + 236, 96, 1], [zf + 262, 70, 1], [zf + 276, 18]], { tone: "mid" }, { owner: own, cls: "bh-paint" });
   const s1 = s0 + Lg;
   disc("feed.p1", F, s1, s1 + 70, d.ro, { tone: "mid" }, { owner: own, cls: "bh-pipe" });
   const v = ballValve("feed.valve", F, s1 + 70, d, { owner: own, lever: 120 });
   disc("feed.p2", F, v.s1, 4040, d.ro, { tone: "mid" }, { owner: own, cls: "bh-pipe" });
   ANCH.LIQUIDO_END = lineEnd("feed.end", F, 4040, d, own);
-  ANCH.VALV_NIVEL = [xm, yt + 120, zf + 262];
+  ANCH.VALV_NIVEL = [xm, yr, zf + 262];
 }
 {
-  // la válvula de seguridad, arriba hacia −y, y el manómetro, hacia +y
+  // la válvula de seguridad, arriba hacia −y, con la descarga hacia −x, y el manómetro, hacia +y
   const ys = -L2 + 250, own = "psv";
   saddle("psv.neck", { o: [xd, ys, zDc], a: ZD3, u: XD, v: YD }, 20, (t) => G.saddleStart(rD, 20, t), rD + 70, { tone: "mid" }, { owner: "drum", cls: "bh-tube", hosts: [drumHost] });
   const Fp = FZ(xd, ys, 0), z0 = zDc + rD + 70;
   disc("psv.fl", Fp, z0, z0 + 14, 46, { tone: "mid" }, { owner: own, cls: "bh-cast" });
   turned("psv.body", Fp, [[z0 + 14, 38], [z0 + 40, 48, 1], [z0 + 90, 40, 1], [z0 + 110, 30]], { tone: "mid" }, { owner: own, cls: "bh-cast" });
   turned("psv.bonnet", Fp, [[z0 + 110, 24], [z0 + 250, 18], [z0 + 268, 12]], { tone: "mid" }, { owner: own, cls: "bh-cast" });
-  disc("psv.outlet", FXL(ys, z0 + 62), xd + 40, xd + 150, 22, { tone: "mid" }, { owner: own, cls: "bh-cast" });
-  disc("psv.outfl", FXL(ys, z0 + 62), xd + 150, xd + 162, 40, { tone: "mid" }, { owner: own, cls: "bh-cast" });
+  disc("psv.outlet", FXL(ys, z0 + 62), xd - 150, xd - 40, 22, { tone: "mid" }, { owner: own, cls: "bh-cast" });
+  disc("psv.outfl", FXL(ys, z0 + 62), xd - 162, xd - 150, 40, { tone: "mid" }, { owner: own, cls: "bh-cast" });
   ANCH.SEGURIDAD = [xd, ys, z0 + 200];
   const yg = L2 - 300;
   saddle("pg.stem", { o: [xd, yg, zDc], a: ZD3, u: XD, v: YD }, 8, (t) => G.saddleStart(rD, 8, t), rD + 110, { tone: "mid" }, { owner: "drum", cls: "bh-ss", hosts: [drumHost] });
@@ -805,7 +817,6 @@ const CSS = `.bh-gal{${ACERO}}.bh-ss{${ACERO}}.bh-pipe{${ACERO}}.bh-jk{${ACERO}}
 .bh-ice-cut{${shades("#dfe9f1", "#dfe9f1", "#dfe9f1", "#dfe9f1", "#dfe9f1", "#dfe9f1", "#dfe9f1")}}
 .bh-conc{${shades("#e8e6e1", "#e8e6e1", "#efede9", "#d2cfc8", "#d9d6d0", "#dfddd7", "#e4e2dc")}}
 .bh-pu{${shades("#f3e9a6", "#f3e9a6", "#f8f1c4", "#dccf7e", "#e4d88d", "#ebe09a", "#efe5a1")}}
-.bh-yel{${shades("#f3e9a6", "#f3e9a6", "#f8f1c4", "#dccf7e", "#e4d88d", "#ebe09a", "#efe5a1")}}
 .bh-agua-cara{fill:#bcd0e6;fill-opacity:.45}.bh-agua-sup{fill:#bcd0e6;fill-opacity:.32}
 .bh-agua .iso-line[data-tone="lo"]{stroke:#8fb0cf}
 .bh-anillo{fill:none;stroke:#8fb0cf;stroke-width:.5px}

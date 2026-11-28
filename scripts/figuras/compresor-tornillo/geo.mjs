@@ -16,7 +16,7 @@ export const CT = {
   sep: { z: 674, R: 254, x0: -1000, x1: 1050, hd: 127, sad: [-640, 640], tw: 14 },
   /* el bastidor del tren motor, sobre el separador: dos canales C 150 × 65 a lo largo, a 200 mm del eje, sobre tres
      sillas soldadas al casco; encima, las placas de asiento del motor y las patas del compresor */
-  mount: { y: 200, h: 150, b: 65, tw: 7, tf: 10, x0: -1250, x1: 430, sad: [-1010, -450, 300], z0: 980, sole: 25 },
+  mount: { y: 200, h: 150, b: 65, tw: 7, tf: 10, x0: -1250, x1: 430, sad: [-970, -450, 300], z0: 980, sole: 25 },
   /* el tren motor: el eje del rotor macho, que es el del motor */
   zA: 1380, yM: 50, yF: -50,
   /* los rotores (perfil simétrico de arcos de círculo): el macho de cuatro lóbulos y la hembra de seis canales, con
@@ -37,12 +37,12 @@ export const CT = {
   /* la descarga: del compresor al separador, y del separador al condensador */
   dis: { x: 140, xOut: 850, zRun: 1480, yEnd: -900 },
   /* el enfriador de aceite de termosifón: un casco vertical de 6 in con sus bonetes */
-  oc: { x: 1300, y: 300, R: 84, z0: 520, z1: 1080, fl: 140, ft: 24 },
+  oc: { x: 1320, y: 300, R: 84, z0: 520, z1: 1080, fl: 140, ft: 24 },
   /* la bomba del aceite (con su motor) y el filtro del aceite, al frente */
   op: { x: 860, y: 400, z: 470 },
   of: { x: -330, y: 400, z0: 470, z1: 860, R: 84 },
   /* el visor de nivel del separador */
-  lg: { x: -620, y: 300, z0: 500, z1: 820, oil: 610 },
+  lg: { x: -720, y: 300, z0: 500, z1: 820, oil: 610 },
   /* el tablero, en el extremo de +x, de cara al pasillo */
   panel: { x0: 1490, x1: 1690, y0: -520, y1: -40, z0: 1120, z1: 1840 },
   persona: { x: 2120, y: -250, rumbo: 180 },

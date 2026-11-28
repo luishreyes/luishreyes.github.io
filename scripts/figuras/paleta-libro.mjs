@@ -191,6 +191,40 @@ export const CLASES = {
   'ce-agua-cara': { fill: 'agua.sombras.0', 'fill-opacity': LIQ }, 'ce-agua-sup': { fill: 'agua.sombras.0', 'fill-opacity': LIQ_SUP },
   '.ce-agua .iso-line[data-tone="lo"]': { stroke: 'agua.oscuro' }, 'ce-gota': { fill: 'azul' }, '.ce-malla.iso-line': { stroke: 'tinta-2' },
   'ce-flujo-o': { stroke: 'tinta-2' }, 'ce-flujo': { stroke: 'blanco' }, 'ce-flujo-p': { fill: 'blanco', stroke: 'tinta-2' },
+  // el banco de hielo de la planta de frío (capítulo 26): el forro del tanque, la tapa, los soportes del haz, las líneas
+  // del agua y la chaqueta del aislamiento del separador en el acero; los serpentines desnudos, los cabezales, las
+  // válvulas y las bridas en la fundición (acero galvanizado); la lámina de adentro del tanque, el soplador, su motor,
+  // las vigas, el control del espesor y los tubos de aire de PVC pintados; el pedestal de concreto; el poliuretano de las
+  // paredes y de la tapa, en el corte, en el amarillo de los aislantes, como el congelador; el hielo en los tonos del
+  // vidrio, que el congelador usa para la escarcha, y el anillo de hielo cortado, en la sombra más honda; el agua
+  // translúcida con la opacidad de siempre, sus anillos en el azul oscuro del agua, las burbujas del aire blancas con
+  // borde azul; el agua en flechas blancas con borde de tinta, como en el condensador evaporativo
+  'bh-gal': 'acero', 'bh-ss': 'acero', 'bh-pipe': 'acero', 'bh-jk': 'acero', 'bh-panel': 'acero', 'bh-ins': 'acero',
+  'bh-tube': 'fundicion', 'bh-cast': 'fundicion', 'bh-lever': 'fundicion',
+  'bh-steel': 'pintado', 'bh-paint': 'pintado', 'bh-motor': 'pintado', 'bh-blower': 'pintado', 'bh-pvc': 'pintado',
+  'bh-conc': 'concreto', 'bh-pu': 'amarillo/corte1', 'bh-ice': 'vidrio', 'bh-ice-cut': 'vidrio/corte',
+  'bh-agua-cara': { fill: 'agua.sombras.0', 'fill-opacity': LIQ }, 'bh-agua-sup': { fill: 'agua.sombras.0', 'fill-opacity': LIQ_SUP },
+  '.bh-agua .iso-line[data-tone="lo"]': { stroke: 'agua.oscuro' }, 'bh-anillo': { stroke: 'agua.oscuro' },
+  'bh-burbuja': { fill: 'blanco', stroke: 'azul' }, 'bh-visor-agua': { fill: 'agua.sombras.0' }, 'bh-visor-aire': { fill: 'eje' },
+  'bh-flujo-o': { stroke: 'tinta-2' }, 'bh-flujo': { stroke: 'blanco' }, 'bh-flujo-p': { fill: 'blanco', stroke: 'tinta-2' },
+  // el paquete del compresor de tornillo C-401 (capítulo 26): los rotores, los vástagos, los ejes, el acople y los
+  // volantes en el acero; la tubería del amoníaco y del aceite, las válvulas, la de seguridad, los botones y la carcasa
+  // del compresor en la fundición (acero al carbono y hierro fundido, como las líneas del condensador evaporativo); el
+  // separador, la base, el bastidor, los motores, la bomba y el tablero pintados; la cara del corte de la carcasa en la
+  // sombra más honda de la fundición; la losa de concreto; la guarda del acople amarilla; la parada de emergencia en el
+  // rojo de alerta; las esferas de los manómetros blancas y la pantalla en el gris oscuro de los huecos, con sus
+  // renglones en el gris claro; el vidrio del visor y el aceite que se ve por él; el círculo del detalle y su línea en
+  // la tinta; las flechas blancas con borde de tinta, como en el condensador evaporativo
+  'ct-ss': 'acero', 'ct-rotor': 'acero', 'ct-wheel': 'acero',
+  'ct-pipe': 'fundicion', 'ct-cast': 'fundicion', 'ct-lever': 'fundicion', 'ct-comp': 'fundicion', 'ct-psv': 'fundicion',
+  'ct-boton': 'fundicion', 'ct-cut-c': 'fundicion/corte',
+  'ct-vessel': 'pintado', 'ct-paint': 'pintado', 'ct-motor': 'pintado', 'ct-pump': 'pintado', 'ct-panel': 'pintado',
+  'ct-conc': 'concreto', 'ct-yel': 'amarillo', 'ct-paro': { plano: 'alerta' },
+  'ct-bore': { fill: 'hueco.claro' }, 'ct-dial': { fill: 'blanco' }, 'ct-screen': { fill: 'hueco.oscuro' },
+  '.ct-pantalla.iso-line': { stroke: 'eje' }, 'ct-vidrio': { fill: 'vidrio.sombras.0', 'fill-opacity': 0.7 },
+  'ct-aceite': { fill: 'aceite.sombras.0', 'fill-opacity': 0.85 },
+  'ct-det-fondo': { fill: 'blanco' }, 'ct-det-marco': { stroke: 'tinta-2' }, 'ct-det-marca': { stroke: 'tinta-2' }, 'ct-det-linea': { stroke: 'tinta-2' },
+  'ct-flujo-o': { stroke: 'tinta-2' }, 'ct-flujo': { stroke: 'blanco' }, 'ct-flujo-p': { fill: 'blanco', stroke: 'tinta-2' },
   // florentino (capítulo 10): agua abajo, aceite arriba
   ...corte('fl'), 'fl-ss': 'acero', 'fl-in': 'acero/dentro', 'fl-pipe': 'acero', 'fl-trim': 'acero', 'fl-cast': 'fundicion',
   'fl-lever': 'fundicion', 'fl-cu': 'cobre', 'fl-tierra': 'caucho', 'fl-glw': 'agua', 'fl-glo': 'aceite',
@@ -399,6 +433,8 @@ export const VISTAS = {
   'condensacion-y-ebullicion/_condensador-arrastre': {},
   'condensacion-y-ebullicion/_termosifon': {},
   'refrigeracion-y-congelacion/_condensador-evaporativo': {},
+  'refrigeracion-y-congelacion/_banco-hielo': {},
+  'refrigeracion-y-congelacion/_compresor-tornillo': {},
   'evaporacion/_taste': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
   'filtracion/_prensa-tornillo': {},

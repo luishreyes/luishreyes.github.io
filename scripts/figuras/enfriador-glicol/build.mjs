@@ -4,13 +4,15 @@
    Concepto: un ciclo de compresión de vapor con propano, entero en un gabinete al aire libre. El compresor hermético
    aspira el vapor del evaporador y lo descarga caliente al condensador de tubos aleteados del extremo, por donde el
    ventilador de arriba hace pasar el aire de afuera; el líquido baja al recibidor, pasa por el filtro secador y la
-   mirilla, cruza el tabique y llega a la válvula de expansión termostática, que lo deja entrar al evaporador de placas
-   soldadas según el sobrecalentamiento que mide su bulbo en la succión. En el evaporador hierve el propano y se enfría
+   mirilla y llega a la válvula de expansión termostática, que lo deja entrar al evaporador de placas soldadas según el
+   sobrecalentamiento que mide su bulbo en la succión. En el evaporador hierve el propano y se enfría
    el glicol, que la bomba saca del tanque hacia la camisa de TK-201 y que vuelve por el evaporador al tanque. El
    tablero con el controlador de temperatura arranca y para el compresor, y los presostatos de alta y de baja lo paran
    si la presión se sale de su rango.
-   Corte: se quitó el panel entero del costado largo que mira al lector (y > 0), de la base al techo. Se ven los dos
-   compartimientos: el del condensador a la derecha (+x) y el del glicol a la izquierda (−x), separados por un tabique.
+   Corte: se quitó el panel entero del costado largo que mira al lector (y > 0), de la base al techo. Adentro no hay
+   tabique: el condensador y el compresor van a la derecha (+x), el refrigerante en el medio y el glicol a la izquierda
+   (−x). Lo que queda atrás a la derecha lo tapa el serpentín y lo alto de la pared de atrás lo tapa el techo, así que
+   el evaporador y los presostatos van bajos, y el recibidor y el tablero, adelante (geo.mjs).
    La figura es solo del libro: el equipo es más bajo que una persona, así que lleva la mano de referencia
    (../persona.mjs, manoEnBorde), apoyada en el canto de atrás del techo.
    Uso: node build.mjs [--audit] [--fast]   (EG_ITEM="pieza" lista lo que se cruza con una pieza en pantalla;
@@ -36,7 +38,6 @@ const AZ = EG.AZ, EL = EG.EL;
 const XB = EG.X, YB = EG.Y, T = EG.t;
 const ZP = EG.zPan + T;                          // la cara de arriba de la base
 const ZD = EG.zDeck, ZD1 = ZD + T;               // el techo
-const XP0 = EG.xPart, XP1 = EG.xPart + T;        // el tabique
 const yIn = -YB + T, xInL = -XB + T;             // las caras de adentro de la pared de atrás y del extremo de −x
 
 const W = 900, H = 700;
@@ -55,7 +56,7 @@ const EXT = [];
 for (const x of [-XB - 6, XB + 6]) for (const y of [-YB - 6, YB + 6]) EXT.push([x, y, 0], [x, y, ZD1]);
 for (const x of [EG.pad.x0, EG.pad.x1]) for (const y of [EG.pad.y0, EG.pad.y1]) EXT.push([x, y, 0]);
 EXT.push([FAN.x, FAN.y, 1340], [FAN.x + 120, FAN.y + 120, 1320], [820, -120, 560], [820, 160, 820]);
-EXT.push([-790, 560, 762], [-670, 560, 880], [-790, 560, 700], [-230, -560, 1180]);
+EXT.push([-800, 460, GL.zRet - 40], [-660, 460, GL.zSup + 40], [-230, -560, 1180]);
 const P = k.fitProjection(EXT, W, H, { pad: 14, azimuth: AZ, elevation: EL });
 const C = X.xCam(P);
 const at = (p) => k.iso(p, P);
@@ -124,16 +125,16 @@ function disc(name, F, s0, s1, r, style = {}, { extra = "", owner, cls = "", n =
   put(name, G.add3(F.o, G.mul3(F.a, (s0 + s1) / 2)), wrap(X.prismSvg(C, poly, Math.min(s0, s1), Math.max(s0, s1), { F, tone: "mid", cap, ...style }), cls) + extra, [shape]);
   return shape;
 }
-function tubeItems(name, route, r, { tone = "mid", maxLength = 140, gaps = [], cls = "", caps = true, breaks = [], ends = [true, true], touch, spacing = null, owner = name } = {}) {
-  R_.route(name, route.map((q) => q.map((v) => v * U)), r * U, { owner, gaps: gaps.map(([a, b]) => [a * U, b * U]), ends, touch, piece: "frame", move: [0, 0, 0], ride: "frame" });
+function tubeItems(name, route, r, { tone = "mid", maxLength = 140, gaps = [], cls = "", caps = true, breaks = [], ends = [true, true], touch, spacing = null, owner = name, bundle } = {}) {
+  R_.route(name, route.map((q) => q.map((v) => v * U)), r * U, { owner, bundle, gaps: gaps.map(([a, b]) => [a * U, b * U]), ends, touch, piece: "frame", move: [0, 0, 0], ride: "frame" });
   tubePieces(route, r, P, { maxLength, spacing: spacing ?? Math.max(4, Math.min(20, r * 0.5)), gaps, caps, breaks }).forEach((part, index) => {
     const svg = tubeSvg(part, { tone });
     R_.put({ piece: "frame", ride: "frame", at: part.mid.map((v) => v * U), svg: wrap(svg, cls), move: [0, 0, 0], name: `${name}:${index}`, route: name, chunk: index, shapes: [cm(A.tube(part.points, part.radii))] });
   });
 }
 // un tubo con sus curvas (fillet), de un extremo a otro
-function pipe(name, control, r, R, { cls = "", maxLength = 140, gaps = [], ends = [true, true], owner = name, caps = true } = {}) {
-  const line = G.fillet(control, R, 9, { P, tube: r });
+function pipe(name, control, r, R, { cls = "", maxLength = 140, gaps = [], ends = [true, true], owner = name, caps = true, seg = 24 } = {}) {
+  const line = G.fillet(control, R, seg, { P, tube: r });
   tubeItems(name, line, r, { cls, gaps, maxLength, ends, owner, caps });
   return line;
 }
@@ -242,9 +243,6 @@ box("back", [-XB + T, -YB, ZP], [XB - T, yIn, ZD], { tone: "mid" }, { owner: "ca
   const pass = circleOn([xs, GL.ySup, GL.zSup], YD, ZD3, 22) + circleOn([xs, GL.yRet, GL.zRet], YD, ZD3, 22);
   box("left", [-XB, -YB, ZP], [xInL, YB, ZD], { tone: "mid" }, { owner: "casing", cls: "eg-gal", extra: slots + pass });
 }
-// el tabique entre los dos compartimientos, con los pasamuros de la succión y del líquido
-box("part", [XP0, yIn, ZP], [XP1, YB - 2, ZD], { tone: "mid" }, { owner: "casing", cls: "eg-gal", extra: circleOn([XP1 + 0.4, SU.yA, SU.z], YD, ZD3, SU.ins + 4) + circleOn([XP1 + 0.4, RC.y, LQ.zLo], YD, ZD3, 9) });
-ANCH.TABIQUE = [XP1, 260, 640];
 // el extremo de +x: el marco del condensador (abajo, arriba y a los lados del serpentín)
 box("right.bot", [XB - T, -YB, ZP], [XB, YB, CO.z0 - 5], { tone: "mid" }, { owner: "casing", cls: "eg-gal" });
 box("right.top", [XB - T, -YB, CO.z1 + 5], [XB, YB, ZD], { tone: "mid" }, { owner: "casing", cls: "eg-gal" });
@@ -286,8 +284,8 @@ box("right.r", [XB - T, CO.y1 + 3, CO.z0 - 5], [XB, YB, CO.z1 + 5], { tone: "mid
   const front = flatFace([[-XB, YB, ZD], [XB, YB, ZD], [XB, YB, ZD1], [-XB, YB, ZD1]], YD, "eg-gal");
   const right = flatFace([[XB, -YB, ZD], [XB, YB, ZD], [XB, YB, ZD1], [XB, -YB, ZD1]], XD, "eg-gal");
   const edges = Ln(path3(outer, true) + path3([[-XB, YB, ZD], [XB, YB, ZD], [XB, -YB, ZD]]) + path3([[XB, YB, ZD], [XB, YB, ZD1]]) + path3([[-XB, YB, ZD], [-XB, YB, ZD1]]), { tone: "mid" });
-  const seams = Ln([-330, XP0 + 2].map((x) => path3([[x, -YB, ZD1 + 0.3], [x, YB, ZD1 + 0.3]])).join(""), { tone: "faint" }) +
-    Dots([-330, XP0 + 2].flatMap((x) => [-240, -80, 80, 240].map((y) => at([x + 12, y, ZD1 + 0.3]))), { size: 0.45, tone: "lo" });
+  const seams = Ln([-330, 60].map((x) => path3([[x, -YB, ZD1 + 0.3], [x, YB, ZD1 + 0.3]])).join(""), { tone: "faint" }) +
+    Dots([-330, 60].flatMap((x) => [-240, -80, 80, 240].map((y) => at([x + 12, y, ZD1 + 0.3]))), { size: 0.45, tone: "lo" });
   const shape = record(A.prism(F0, rect(-XB, XB, -YB, YB), ZD, ZD1, { name: "deck", owner: "casing", cut: [A.disc(FZ(FAN.x, FAN.y, 0), ZD - 10, ZD1 + 10, RH)] }));
   put("deck", [0, 0, ZD], front + right + top + seams + edges, [shape]);
   ANCH.TECHO = [-420, -150, ZD1];
@@ -353,7 +351,7 @@ const zT = GEO.zTube;
   // el motor: casco con sus dos tapas; los tres brazos de pletina que lo cuelgan del anillo
   disc("fmot.bot", Fm, FM.z0, FM.z0 + 10, FM.r - 6, { tone: "mid" }, { owner: "fan", cls: "eg-motor" });
   let fins = "";
-  for (let q = 0; q < 24; q++) { const a = (q / 24) * TAU, n3 = [Math.cos(a), Math.sin(a), 0]; if (G.dot3(n3, V3) > 0.12) fins += path3([[cx + (FM.r + 0.4) * Math.cos(a), cy + (FM.r + 0.4) * Math.sin(a), FM.z0 + 16], [cx + (FM.r + 0.4) * Math.cos(a), cy + (FM.r + 0.4) * Math.sin(a), FM.z1 - 14]]); }
+  for (let q = 0; q < 24; q++) { const a = (q / 24) * TAU, n3 = [Math.cos(a), Math.sin(a), 0]; if (G.dot3(n3, V3) > 0.12) fins += path3([[cx + (FM.r + 0.4) * Math.cos(a), cy + (FM.r + 0.4) * Math.sin(a), FM.z0 + 10], [cx + (FM.r + 0.4) * Math.cos(a), cy + (FM.r + 0.4) * Math.sin(a), FM.z1 - 8]]); }
   disc("fmot.body", Fm, FM.z0 + 10, FM.z1 - 8, FM.r, { tone: "mid" }, { owner: "fan", cls: "eg-motor", extra: Ln(fins, { tone: "faint" }) });
   disc("fmot.top", Fm, FM.z1 - 8, FM.z1, FM.r - 6, { tone: "mid" }, { owner: "fan", cls: "eg-motor" });
   [90, 210, 330].forEach((deg, q) => fp(`fan.arm${q}`, { o: [cx, cy, 0], a: radial(deg), u: tangent(deg), v: ZD3 }, rect(-9, 9, FM.z1, FM.z1 + 4), 26, FAN.r, { tone: "mid" }, { owner: "fan", cls: "eg-paint" }));
@@ -381,8 +379,8 @@ const zT = GEO.zTube;
   const zg = ZD1 + 4, rr0 = 52, zw = zg + 7.5;
   ring("guard.rim", rI + 6, rI + 16, zg, zg + 6, "eg-ss", { owner: "fan", cx, cy });
   let wires = "";
-  for (const r of [rr0, 100, 145, 190]) wires += path3(arcPts(r, zw, 0, TAU, 96, cx, cy));
-  for (let q = 0; q < 8; q++) { const d = 22.5 + q * 45; wires += path3([pol(rr0, d, zw, cx, cy), pol(rI + 13, d, zw, cx, cy)]); }
+  for (const r of [rr0, 100, 145, 190]) wires += path3(arcPts(r, zw, 0, TAU, 96, cx, cy).slice(0, -1), true);
+  for (let q = 0; q < 8; q++) { const d = 22.5 + q * 45; wires += path3([pol(rr0, d, zw, cx, cy), pol(rI + 16, d, zw, cx, cy)]); }
   put("guard", [cx, cy, zw], Ln(wires, { tone: "mid", className: "eg-malla" }), [A.disc(FZ(cx, cy, 0), zg + 6, zw + 1.5, rI + 13)]);
   ANCH.MALLA = pol(167, 200, zw, cx, cy);
 }
@@ -424,25 +422,34 @@ saddle("comp.suc", { o: [CP.x, CP.y, CP.zSuc], a: [0, -1, 0], u: XD, v: ZD3 }, C
 }
 
 /* ====================================================================
-   5 · el recibidor de líquido, el filtro secador, la mirilla y la línea de líquido; la descarga y la línea del
-   condensador al recibidor
+   5 · el recibidor de líquido, adelante, sobre su placa; la descarga y la línea del condensador al recibidor
    ==================================================================== */
 const Fr = FZ(RC.x, RC.y, 0);
-const RPROF = [[RC.z0, 0], [RC.z0 + 1, 22, 1], [RC.z0 + 5, 36, 1], [RC.z0 + 12, 46, 1], [RC.z0 + 22, 51, 1], [RC.z0 + 30, RC.r], [RC.z1 - 27, RC.r], [RC.z1 - 19, 51, 1], [RC.z1 - 10, 46, 1], [RC.z1 - 4, 36, 1], [RC.z1 - 1, 22, 1], [RC.z1, 0]];
+// el casco con sus dos fondos semielípticos 2:1
+const RPROF = (() => {
+  const h = RC.r / 2, out = [[RC.z0, 0]];
+  for (let i = 1; i < 8; i++) { const t = (i / 8) * (PI / 2); out.push([RC.z0 + h * (1 - Math.cos(t)), RC.r * Math.sin(t), 1]); }
+  out.push([RC.z0 + h, RC.r], [RC.z1 - h, RC.r]);
+  for (let i = 7; i >= 1; i--) { const t = (i / 8) * (PI / 2); out.push([RC.z1 - h * (1 - Math.cos(t)), RC.r * Math.sin(t), 1]); }
+  out.push([RC.z1, 0]);
+  return out;
+})();
 {
-  disc("rec.foot", Fr, ZP, RC.z0 + 0.3, 20, { tone: "mid" }, { owner: "rec.stand", cls: "eg-paint" });
-  turned("rec.shell", Fr, RPROF, { tone: "mid" }, { owner: "rec", cls: "eg-paint" });
-  // la abrazadera a la pared de atrás
-  ring("rec.band", RC.r, RC.r + 2.5, 360, 380, "eg-paint", { owner: "rec", cx: RC.x, cy: RC.y, inside: false });
-  box("rec.bracket", [RC.x - 14, yIn, 360], [RC.x + 14, RC.y - RC.r - 2.6, 380], { tone: "mid" }, { owner: "rec", cls: "eg-paint" });
+  box("rec.plate", [RC.x - 38, RC.y - 38, ZP], [RC.x + 38, RC.y + 38, ZP + 4], { tone: "mid" }, { owner: "rec.stand", cls: "eg-paint", r: 2,
+    extra: Dots([[-30, -30], [30, -30], [30, 30], [-30, 30]].map(([dx, dy]) => at([RC.x + dx, RC.y + dy, ZP + 4.3])), { size: 0.45 }) });
+  disc("rec.foot", Fr, ZP + 4, RC.z0 + 0.3, 24, { tone: "mid" }, { owner: "rec.stand", cls: "eg-paint" });
+  turned("rec.shell", Fr, RPROF, { tone: "mid" }, { owner: "rec", cls: "eg-paint",
+    extra: Ln(path3(arcPts(RC.r + 0.35, RC.z0 + RC.r / 2 + 2, fS - TAU, fSL, 48, RC.x, RC.y)) + path3(arcPts(RC.r + 0.35, RC.z1 - RC.r / 2 - 2, fS - TAU, fSL, 48, RC.x, RC.y)), { tone: "faint" }) });
   ANCH.RECIBIDOR = G.add3([RC.x, RC.y, 300], G.mul3(radial(150), RC.r));
 }
 const recHost = [A.solid(Fr, RPROF.map(([s, r]) => [s, r]))];
-// la boquilla de entrada, de lado, hacia el lector
-const yRin = RC.y + RC.r + 12;
-saddle("rec.in", { o: [RC.x, RC.y, HD.zOut], a: YD, u: XD, v: ZD3 }, CU[10] + 1.2, (t) => G.saddleStart(RC.r, CU[10] + 1.2, t), yRin - RC.y, { tone: "mid" }, { owner: "rec", cls: "eg-cu", hosts: recHost });
+// la boquilla de entrada, de lado, hacia el condensador: a la altura del cabezal de salida y en su línea (a dy del eje
+// del recibidor), así la línea del condensador llega recta, sin curvas que en la vista se doblen sobre sí mismas
+const dyR = HD.y - RC.y, raR = CU[10] + 1.2, xRin = RC.x + Math.sqrt(RC.r ** 2 - dyR ** 2) + 12;
+if (dyR + raR > RC.r - 3) throw new Error("la boquilla del recibidor se sale del casco");
+saddle("rec.in", { o: [RC.x, HD.y, HD.zOut], a: XD, u: YD, v: ZD3 }, raR, (t) => Math.sqrt(RC.r ** 2 - (dyR + raR * Math.cos(t)) ** 2), xRin - RC.x, { tone: "mid" }, { owner: "rec", cls: "eg-cu", hosts: recHost });
 // la válvula de salida (rotalock) encima: el cuello, el cuerpo hexagonal, la tapa y la salida hacia −x
-const zRv = RC.z1 + 18, xRv = RC.x - 34;
+const zRv = RC.z1 + 18, xRv = RC.x - RC.r - 8;
 {
   disc("rec.neck", Fr, RC.z1 - 1.5, RC.z1 + 4, 13, { tone: "mid" }, { owner: "rec.valve", cls: "eg-brass" });
   fp("rec.vbody", Fr, HEX(18), RC.z1 + 4, RC.z1 + 32, { tone: "mid" }, { owner: "rec.valve", cls: "eg-brass" });
@@ -452,33 +459,11 @@ const zRv = RC.z1 + 18, xRv = RC.x - 34;
 }
 // la descarga: sale por arriba del compresor, sube, va hacia adelante bajo el techo y entra al cabezal de arriba
 pipe("dis", [[CP.x, CP.y, zDisC], [CP.x, CP.y, HD.zIn], [CP.x, HD.y, HD.zIn], [HD.x0, HD.y, HD.zIn]], CU[10], 30, { cls: "eg-cu" });
-ANCH.DESCARGA = [CP.x + CU[10], CP.y, 700];
+ANCH.DESCARGA = [CP.x + CU[10], CP.y, 760];
 // del cabezal de abajo al recibidor
-pipe("cond.out", [[HD.x0, HD.y, HD.zOut], [RC.x, HD.y, HD.zOut], [RC.x, yRin, HD.zOut]], CU[10], 24, { cls: "eg-cu" });
+pipe("cond.out", [[HD.x0, HD.y, HD.zOut], [xRin, HD.y, HD.zOut]], CU[10], 24, { cls: "eg-cu" });
 ANCH.CAB_SALIDA = [470, HD.y, HD.zOut + CU[10]];
-// la línea de líquido: de la válvula del recibidor sube, corre por arriba con el filtro secador, baja por la mirilla
-// y cruza el tabique hacia la válvula de expansión
 const DR = EG.drier, SG = EG.sight, rL = CU[6];
-pipe("liq.a", [[xRv, RC.y, zRv], [LQ.xV, RC.y, zRv], [LQ.xV, RC.y, LQ.zHi], [DR.x1, RC.y, LQ.zHi]], rL, 14, { cls: "eg-cu" });
-{
-  const Fd = FXL(RC.y, LQ.zHi);
-  turned("drier", Fd, [[DR.x0, 4.6], [DR.x0 + 9, 4.6], [DR.x0 + 13, 11, 1], [DR.x0 + 19, 22, 1], [DR.x0 + 26, DR.r], [DR.x1 - 26, DR.r], [DR.x1 - 19, 22, 1], [DR.x1 - 13, 11, 1], [DR.x1 - 9, 4.6], [DR.x1, 4.6]], { tone: "mid" }, { owner: "drier", cls: "eg-paint",
-    extra: Ln(path3([[DR.x1 - 40, RC.y, LQ.zHi + DR.r + 0.4], [DR.x0 + 46, RC.y, LQ.zHi + DR.r + 0.4]]), { tone: "lo", free: true }) + Dots([at([DR.x0 + 40, RC.y, LQ.zHi + DR.r + 0.4])], { size: 0.8, tone: "lo" }) });
-  ANCH.FILTRO = [(DR.x0 + DR.x1) / 2, RC.y + DR.r * 0.5, LQ.zHi + DR.r * 0.8];
-}
-pipe("liq.b", [[DR.x0, RC.y, LQ.zHi], [LQ.xS, RC.y, LQ.zHi], [LQ.xS, RC.y, SG.z + SG.h / 2]], rL, 14, { cls: "eg-cu" });
-{
-  const Fs = FZ(LQ.xS, RC.y, 0), ap = SG.r * Math.cos(PI / 6);
-  fp("sight", Fs, HEX(SG.r, 0), SG.z - SG.h / 2, SG.z + SG.h / 2, { tone: "mid" }, { owner: "sight", cls: "eg-brass" });
-  // la ventana, hacia el lector: el bisel, el vidrio y el indicador de humedad en el centro
-  const Fw = FYL(LQ.xS, SG.z);
-  disc("sight.bezel", Fw, RC.y + ap, RC.y + ap + 5, 10, { tone: "mid" }, { owner: "sight", cls: "eg-brass",
-    extra: `<path class="eg-vidrio-v" d="${pth1(Array.from({ length: 32 }, (_, i) => { const t = (i / 32) * TAU; return pr([LQ.xS + 6.5 * Math.cos(t), RC.y + ap + 5.3, SG.z + 6.5 * Math.sin(t)]); }))}"/>` +
-      Dots([at([LQ.xS, RC.y + ap + 5.4, SG.z])], { size: 1.1, tone: "mid", className: "eg-indicador" }) });
-  ANCH.MIRILLA = [LQ.xS + 10, RC.y + ap + 5, SG.z + 4];
-}
-pipe("liq.c", [[LQ.xS, RC.y, SG.z - SG.h / 2], [LQ.xS, RC.y, LQ.zLo], [XP1, RC.y, LQ.zLo]], rL, 14, { cls: "eg-cu" });
-ANCH.LIQUIDO = [130, RC.y + rL, LQ.zLo];
 
 /* ====================================================================
    6 · el evaporador de placas soldadas, contra la pared de atrás del compartimiento del glicol, con sus soportes y
@@ -494,9 +479,10 @@ const yPort = BP.y1 + BP.portL;
   // las placas: líneas en la cara de la derecha y en la de arriba (dibujadas de a dos), y las dos tapas
   let edges = "", tops = "";
   const n = BP.nPl / 2, ya = BP.y0 + 6, yb = BP.y1 - 6;
-  for (let i = 1; i < n; i++) { const y = ya + ((yb - ya) * i) / n; edges += path3([[x1 + 0.3, y, BP.z0 + 4], [x1 + 0.3, y, BP.z1 - 4]]); tops += path3([[x0 + 4, y, BP.z1 + 0.3], [x1 - 4, y, BP.z1 + 0.3]]); }
-  box("bphe", [x0, BP.y0, BP.z0], [x1, BP.y1, BP.z1], { tone: "mid" }, { owner: "bphe", cls: "eg-ss", r: 6, extra: Ln(edges + tops, { tone: "faint" }) +
-    Ln(path3([[x1 + 0.3, BP.y1 - 6, BP.z0 + 4], [x1 + 0.3, BP.y1 - 6, BP.z1 - 4]]) + path3([[x1 + 0.3, BP.y0 + 6, BP.z0 + 4], [x1 + 0.3, BP.y0 + 6, BP.z1 - 4]]), { tone: "lo" }) });
+  for (let i = 1; i < n; i++) { const y = ya + ((yb - ya) * i) / n; edges += path3([[x1 + 0.3, y, BP.z0], [x1 + 0.3, y, BP.z1]]); tops += path3([[x0, y, BP.z1 + 0.3], [x1, y, BP.z1 + 0.3]]); }
+  // las juntas soldadas con cobre de las placas se ven como líneas color cobre en el canto
+  box("bphe", [x0, BP.y0, BP.z0], [x1, BP.y1, BP.z1], { tone: "mid" }, { owner: "bphe", cls: "eg-ss", r: 6, extra: Ln(edges + tops, { tone: "lo", className: "eg-placa" }) +
+    Ln(path3([[x1 + 0.3, BP.y1 - 6, BP.z0], [x1 + 0.3, BP.y1 - 6, BP.z1]]) + path3([[x1 + 0.3, BP.y0 + 6, BP.z0], [x1 + 0.3, BP.y0 + 6, BP.z1]]), { tone: "lo" }) });
   // las conexiones: el propano a la derecha, el glicol a la izquierda
   [[xRef, zBot, BP.portR, "bphe.rin"], [xRef, zTop, BP.portR, "bphe.rout"], [xGly, zTop, BP.portG, "bphe.gin"], [xGly, zBot, BP.portG, "bphe.gout"]].forEach(([x, z, r, nm]) =>
     disc(nm, FYL(x, z), BP.y1, yPort, r, { tone: "mid" }, { owner: "bphe", cls: "eg-ss", extra: Ln(path3(arcPts(r + 0.3, 0, 0, TAU, 40).map(([u, v]) => [x + u, yPort - 6, z + v])), { tone: "faint" }) }));
@@ -517,70 +503,92 @@ const TX = EG.txv, xTx = xRef, yTx = TX.y, zTx = TX.z;
   fp("txv.eq", FYL(xTx, zTx - 10), HEX(6, 0), yTx + 17, yTx + 27, { tone: "mid" }, { owner: "txv", cls: "eg-brass" });
   ANCH.TXV = [xTx - 20, yTx + 17, zTx + 8];
 }
-// el tramo del líquido del tabique a la válvula
-disc("liq.d", FXL(RC.y, LQ.zLo), xTx + 34, XP0, rL, { tone: "mid" }, { owner: "liq.d", cls: "eg-cu" });
+// la línea de líquido: de la válvula del recibidor va hacia −x, corre hacia atrás a lo largo de y con el filtro secador y
+// la mirilla, y entra a la válvula de expansión por su lado de +x; toda a la altura de la válvula
+if (Math.abs(zRv - zTx) > 0.01) throw new Error("la salida del recibidor y la válvula de expansión van a la misma altura");
+pipe("liq.a", [[xRv, RC.y, zRv], [LQ.x, RC.y, zRv], [LQ.x, DR.y1, zRv]], rL, 28, { cls: "eg-cu" });
+{
+  const Fd = FYL(LQ.x, zRv), n = 4.6;
+  turned("drier", Fd, [[DR.y0, n], [DR.y0 + 9, n], [DR.y0 + 13, 10, 1], [DR.y0 + 18, 19, 1], [DR.y0 + 24, DR.r], [DR.y1 - 24, DR.r], [DR.y1 - 18, 19, 1], [DR.y1 - 13, 10, 1], [DR.y1 - 9, n], [DR.y1, n]], { tone: "mid" }, { owner: "drier", cls: "eg-paint",
+    extra: Ln(path3([[LQ.x, DR.y1 - 32, zRv + DR.r + 0.4], [LQ.x, DR.y0 + 38, zRv + DR.r + 0.4]]), { tone: "lo", free: true }) + Dots([at([LQ.x, DR.y0 + 32, zRv + DR.r + 0.4])], { size: 0.8, tone: "lo" }) });
+  ANCH.FILTRO = [LQ.x + DR.r * 0.5, (DR.y0 + DR.y1) / 2, zRv + DR.r * 0.8];
+}
+pipe("liq.b", [[LQ.x, DR.y0, zRv], [LQ.x, SG.y + SG.h / 2, zRv]], rL, 14, { cls: "eg-cu" });
+{
+  // la mirilla: el cuerpo hexagonal a lo largo de y y la ventana hacia +x (hacia el lector): el bisel, el vidrio y el
+  // indicador de humedad en el centro
+  const Fs = FYL(LQ.x, zRv), ap = SG.r * Math.cos(PI / 6);
+  fp("sight", Fs, HEX(SG.r, PI / 2), SG.y - SG.h / 2, SG.y + SG.h / 2, { tone: "mid" }, { owner: "sight", cls: "eg-brass" });
+  const Fw = FXL(SG.y, zRv);
+  disc("sight.bezel", Fw, LQ.x + ap, LQ.x + ap + 5, 10, { tone: "mid" }, { owner: "sight", cls: "eg-brass",
+    extra: `<path class="eg-vidrio-v" d="${pth1(Array.from({ length: 32 }, (_, i) => { const t = (i / 32) * TAU; return pr([LQ.x + ap + 5.3, SG.y + 6.5 * Math.cos(t), zRv + 6.5 * Math.sin(t)]); }))}"/>` +
+      Dots([at([LQ.x + ap + 5.4, SG.y, zRv])], { size: 1.1, tone: "mid", className: "eg-indicador" }) });
+  ANCH.MIRILLA = [LQ.x + ap + 5, SG.y + 4, zRv + 6];
+}
+pipe("liq.c", [[LQ.x, SG.y - SG.h / 2, zRv], [LQ.x, yTx, zRv], [xTx + 34, yTx, zRv]], rL, 28, { cls: "eg-cu" });
+ANCH.LIQUIDO = [LQ.x + rL, 120, zRv];
 
 /* ====================================================================
-   7 · la succión: del evaporador sube, cruza el tabique y baja al compresor; aislada, salvo en el tramo del bulbo y
-   del igualador, junto al evaporador, y en los extremos
+   7 · la succión: del evaporador sube, corre bajo el techo hacia el compresor y baja a él; aislada, salvo en el tramo
+   del bulbo y del igualador, junto al evaporador, en la toma del presostato de baja y en el tramo que entra al compresor
    ==================================================================== */
 const rS = CU[12], rI = SU.ins;
-const yBulb0 = yPort + 15, yBulb1 = yBulb0 + 56, rB = 9, xBulb = xRef + rS + rB, yEq = -128;
+const yBulb0 = yPort + 15, yBulb1 = yBulb0 + 56, rB = 9, xBulb = xRef + rS + rB, yEq = SU.yA - SU.R - 8;
+const xLp = PS.x0 + 89;                         // la toma del presostato de baja, sobre el presostato (el de la derecha)
 {
-  const line = G.fillet([[xRef, yPort, zTop], [xRef, SU.yA, zTop], [xRef, SU.yA, SU.z], [XP0, SU.yA, SU.z]], SU.R, 9);
-  const s1 = yEq + 6 - yPort, tot = totalOf(line);
-  tubeItems("suc.a", line, rS, { cls: "eg-cu", gaps: [[s1, tot]], ends: [true, false], owner: "suc.a" });
-  tubeItems("suc.a.ins", line, rI, { cls: "eg-ins", gaps: [[0, s1]], ends: [false, true], owner: "suc.a" });
-  ANCH.SUCCION = line[Math.floor(line.length * 0.62)];
+  const line = G.fillet([[xRef, yPort, zTop], [xRef, SU.yA, zTop], [xRef, SU.yA, SU.z], [CP.x, SU.yA, SU.z], [CP.x, SU.yA, CP.zSuc], [CP.x, ySuc, CP.zSuc]], SU.R, 9);
+  // la succión va desnuda junto al evaporador, donde van el bulbo y el igualador, y el aislamiento arranca en la subida
+  const tot = totalOf(line), s1 = lengthTo(line, (q) => q[2] >= zTop + SU.R - 0.5);
+  const sLp = lengthTo(line, (q) => q[2] > SU.z - 0.5 && q[0] >= xLp) - (line.find((q) => q[2] > SU.z - 0.5 && q[0] >= xLp)[0] - xLp);
+  const lp0 = sLp - 22, lp1 = sLp + 22, s2 = tot - 40;
+  // el cobre y su aislamiento son un mismo tubo (bundle): el aislamiento empieza donde el cobre deja de verse
+  tubeItems("suc", line, rS, { cls: "eg-cu", gaps: [[s1, lp0], [lp1, s2]], owner: "suc", bundle: "suc" });
+  tubeItems("suc.ins", line, rI, { cls: "eg-ins", gaps: [[0, s1], [lp0, lp1], [s2, tot]], ends: [false, false], owner: "suc", bundle: "suc" });
+  ANCH.SUCCION = line[Math.floor(line.length * 0.3)];
+  // la toma del presostato de baja, hacia abajo
+  disc("suc.lp", FZ(xLp, SU.yA, 0), SU.z - rS - 12, SU.z - rS + 1.5, 3.4, { tone: "mid" }, { owner: "suc", cls: "eg-brass" });
 }
 {
   // el bulbo, a las 3 en punto sobre el tramo horizontal, con sus dos abrazaderas
   const Fb = FYL(xBulb, zTop);
-  turned("bulb", Fb, [[yBulb0, 0], [yBulb0 + 0.5, 5, 1], [yBulb0 + 2.5, 8, 1], [yBulb0 + 5, rB], [yBulb1 - 5, rB], [yBulb1 - 2.5, 8, 1], [yBulb1 - 0.5, 5, 1], [yBulb1, 0]], { tone: "mid" }, { owner: "suc.a", cls: "eg-cu",
+  turned("bulb", Fb, [[yBulb0, 0], [yBulb0 + 0.5, 5, 1], [yBulb0 + 2.5, 8, 1], [yBulb0 + 5, rB], [yBulb1 - 5, rB], [yBulb1 - 2.5, 8, 1], [yBulb1 - 0.5, 5, 1], [yBulb1, 0]], { tone: "mid" }, { owner: "suc", cls: "eg-cu",
     extra: [yBulb0 + 12, yBulb1 - 12].map((s) => Ln(G.arcOf(Fb, s, rB + 0.35, P), { tone: "mid" })).join("") });
   ANCH.BULBO = [xBulb + rB * 0.7, (yBulb0 + yBulb1) / 2, zTop + rB * 0.5];
 }
 // el capilar del cabezal al bulbo, y el igualador, de la válvula a la succión, después del bulbo
 pipe("cap", [[xTx, yTx, zTx + 47], [xTx, yTx, zTx + 110], [xBulb, yPort + 2, zTx + 160], [xBulb, yPort + 2, zTop], [xBulb, yBulb0, zTop]], CU.cap, 10, { cls: "eg-cu" });
 const rEq = CU[6] * 0.5 + 0.4, zEq = zTop - rS - 6;
-saddle("suc.eqtee", { o: [xTx, yEq, zTop], a: [0, 0, -1], u: XD, v: YD }, rEq + 1.2, (t) => G.saddleStart(rS, rEq + 1.2, t), rS + 6, { tone: "mid" }, { owner: "suc.a", cls: "eg-cu", hosts: [A.disc(FYL(xTx, zTop), yPort, yEq + 20, rS)] });
+saddle("suc.eqtee", { o: [xTx, yEq, zTop], a: [0, 0, -1], u: XD, v: YD }, rEq + 1.2, (t) => G.saddleStart(rS, rEq + 1.2, t), rS + 6, { tone: "mid" }, { owner: "suc", cls: "eg-cu", hosts: [A.disc(FYL(xTx, zTop), yPort, yEq + 20, rS)] });
 pipe("eq", [[xTx, yTx + 27, zTx - 10], [xTx, yEq, zTx - 10], [xTx, yEq, zEq]], rEq, 10, { cls: "eg-cu" });
 ANCH.IGUALADOR = [xTx, yEq, (zTx + zTop) / 2];
-// del tabique al compresor: cerca del tabique, la toma del presostato de baja; al final, el tramo desnudo que entra al
-// compresor
-const xLp = 85;
-{
-  const line = G.fillet([[XP1, SU.yA, SU.z], [CP.x, SU.yA, SU.z], [CP.x, SU.yA, CP.zSuc], [CP.x, ySuc, CP.zSuc]], SU.R, 9);
-  const tot = totalOf(line), s0 = 120 - XP1, s1 = tot - 40;
-  tubeItems("suc.b", line, rS, { cls: "eg-cu", gaps: [[s0, s1]], owner: "suc.b" });
-  tubeItems("suc.b.ins", line, rI, { cls: "eg-ins", gaps: [[0, s0], [s1, tot]], ends: [false, false], owner: "suc.b" });
-  // la toma del presostato de baja, hacia abajo
-  disc("suc.lp", FZ(xLp, SU.yA, 0), SU.z - rS - 12, SU.z - rS + 1.5, 3.4, { tone: "mid" }, { owner: "suc.b", cls: "eg-brass" });
-}
 // la toma del presostato de alta, en la descarga, hacia −x
-const zHp = 842;
+const zHp = PS.zHp;
 disc("dis.hp", FXL(CP.y, zHp), CP.x - CU[10] - 12, CP.x - CU[10] + 1.5, 3.4, { tone: "mid" }, { owner: "dis", cls: "eg-brass" });
 
 /* ====================================================================
-   8 · los presostatos de alta y de baja, en el tabique, con sus capilares
+   8 · los presostatos de baja y de alta, en la pared de atrás, bajo el evaporador de alto, con sus capilares
    ==================================================================== */
 {
-  box("pres.plate", [PS.x, PS.y0, PS.z0], [PS.x + 4, PS.y1, PS.z1], { tone: "mid" }, { owner: "pres", cls: "eg-paint" });
-  const sw = (nm, y0, y1, reset) => {
-    const x0 = PS.x + 4, x1 = x0 + 38, z0 = 830, z1 = 905;
-    // en la cara de adelante, la escala con su aguja; arriba, el tornillo de ajuste
-    const xf = x1 + 0.3, scale = path3([[xf, y0 + 10, z1 - 16], [xf, y1 - 10, z1 - 16], [xf, y1 - 10, z1 - 32], [xf, y0 + 10, z1 - 32]], true);
-    const ticks = Array.from({ length: 7 }, (_, i) => path3([[xf, y0 + 14 + ((y1 - y0 - 28) * i) / 6, z1 - 32], [xf, y0 + 14 + ((y1 - y0 - 28) * i) / 6, z1 - 27]])).join("");
+  const yp = yIn + 4;
+  box("pres.plate", [PS.x0, yIn, PS.z0], [PS.x1, yp, PS.z1], { tone: "mid" }, { owner: "pres", cls: "eg-paint",
+    extra: Dots([[PS.x0 + 6, PS.z0 + 6], [PS.x1 - 6, PS.z0 + 6], [PS.x1 - 6, PS.z1 - 6], [PS.x0 + 6, PS.z1 - 6]].map(([x, z]) => at([x, yp + 0.3, z])), { size: 0.45 }) });
+  const sw = (nm, x0, x1, reset) => {
+    const y0 = yp, y1 = y0 + 38, z0 = PS.z0 + 25, z1 = z0 + 75;
+    // en la cara de adelante, la escala con sus marcas; arriba, el tornillo de ajuste
+    const yf = y1 + 0.3, scale = path3([[x0 + 8, yf, z1 - 16], [x1 - 8, yf, z1 - 16], [x1 - 8, yf, z1 - 32], [x0 + 8, yf, z1 - 32]], true);
+    const ticks = Array.from({ length: 7 }, (_, i) => path3([[x0 + 12 + ((x1 - x0 - 24) * i) / 6, yf, z1 - 32], [x0 + 12 + ((x1 - x0 - 24) * i) / 6, yf, z1 - 27]])).join("");
     box(nm, [x0, y0, z0], [x1, y1, z1], { tone: "mid" }, { owner: "pres", cls: "eg-panel", r: 3, extra: Ln(scale, { tone: "mid" }) + Ln(ticks, { tone: "lo" }) });
     disc(nm + ".adj", FZ((x0 + x1) / 2, (y0 + y1) / 2, 0), z1, z1 + 9, 5, { tone: "mid" }, { owner: "pres", cls: "eg-brass", n: 12 });
-    if (reset) disc(nm + ".reset", FXL(y0 + 16, z0 + 20), x1, x1 + 6, 6, { tone: "mid" }, { owner: "pres", cls: "eg-red" });
+    if (reset) disc(nm + ".reset", FYL(x1 - 14, z0 + 20), y1, y1 + 6, 6, { tone: "mid" }, { owner: "pres", cls: "eg-red" });
     return { x0, x1, y0, y1, z0, z1 };
   };
-  const hp = sw("pres.hp", 220, 280, true), lp = sw("pres.lp", 150, 210, false);
-  ANCH.PRESOSTATOS = [hp.x1, (hp.y0 + hp.y1) / 2, hp.z1 - 8];
-  // los capilares: el de alta a la descarga, el de baja a la succión
-  pipe("cap.hp", [[hp.x1, 266, zHp], [180, 266, zHp], [180, CP.y, zHp], [CP.x - CU[10] - 12, CP.y, zHp]], CU.cap, 10, { cls: "eg-cu" });
-  pipe("cap.lp", [[xLp, lp.y0, lp.z0 + 15], [xLp, SU.yA, lp.z0 + 15], [xLp, SU.yA, SU.z - rS - 12]], CU.cap, 10, { cls: "eg-cu" });
+  const hp = sw("pres.hp", PS.x0 + 10, PS.x0 + 56, true), lp = sw("pres.lp", PS.x0 + 64, PS.x0 + 110, false);
+  ANCH.PRESOSTATOS = [(lp.x0 + lp.x1) / 2 - 6, lp.y1, lp.z1 - 10];
+  // los capilares: el de baja viene adelante y sube a la succión; el de alta corre detrás, por detrás del serpentín, y
+  // vuelve hacia el compresor para llegar a la descarga por su lado de −x (curvas de 20 mm, que en la vista no se doblan)
+  const xHp = (hp.x0 + hp.x1) / 2, yHp2 = hp.y1 + 49, xHp2 = 250;
+  pipe("cap.lp", [[xLp, lp.y1, lp.z0 + 15], [xLp, SU.yA, lp.z0 + 15], [xLp, SU.yA, SU.z - rS - 12]], CU.cap, 20, { cls: "eg-cu" });
+  pipe("cap.hp", [[xHp, hp.y1, zHp], [xHp, yHp2, zHp], [xHp2, yHp2, zHp], [xHp2, CP.y, zHp], [CP.x - CU[10] - 12, CP.y, zHp]], CU.cap, 20, { cls: "eg-cu" });
 }
 
 /* ====================================================================
@@ -618,15 +626,19 @@ const thG = 52;
 {
   const xs = TK.x + 70, ys = TK.y + 40;
   fp("probe.gland", FZ(xs, ys, 0), HEX(10), TK.z1 + 8, TK.z1 + 22, { tone: "mid" }, { owner: "probe", cls: "eg-brass" });
-  const yg = (PN.y0 + PN.y1) / 2, xg = PN.x0 + 40;
-  fp("panel.gland", FZ(xg, yg, 0), HEX(8), PN.z0 - 12, PN.z0, { tone: "mid" }, { owner: "panel", cls: "eg-brass" });
-  pipe("probe.cable", [[xs, ys, TK.z1 + 22], [xs, ys, 700], [xg, ys, 700], [xg, yg, 700], [xg, yg, PN.z0 - 12]], 3, 30, { cls: "eg-cable" });
+  // el prensaestopas del tablero, en su costado de atrás, y el cable: sube, pasa sobre el tanque y por encima del
+  // retorno del glicol, y llega al costado del tablero
+  const xg = (xInL + PN.x1) / 2, zg = 700;
+  fp("panel.gland", FYL(xg, zg), HEX(8), PN.y0 - 12, PN.y0, { tone: "mid" }, { owner: "panel", cls: "eg-brass" });
+  pipe("probe.cable", [[xs, ys, TK.z1 + 22], [xs, ys, zg], [xs, 60, zg], [xg, 60, zg], [xg, PN.y0 - 12, zg]], 3, 30, { cls: "eg-cable" });
   ANCH.SONDA = [xs, ys, TK.z1 + 18];
 }
 // las boquillas del tanque: la salida a la bomba (hacia el lector) y la entrada del glicol que vuelve del evaporador
-const yTo = TK.y + TK.r + 25, xTi = TK.x + TK.r + 15;
+// la entrada va a un lado del eje del tanque, en la línea que viene del evaporador (GL.yTank), para que su curva quede
+// lejos del igualador en la vista
+const raT = DN[20].ro + 2.5, dyT = GL.yTank - TK.y, yTo = TK.y + TK.r + 25, xTi = TK.x + Math.sqrt(TK.r ** 2 - dyT ** 2) + 15;
 saddle("tank.out", { o: [TK.x, TK.y, PU.z], a: YD, u: XD, v: ZD3 }, 16.7, (t) => G.saddleStart(TK.r, 16.7, t), yTo - TK.y, { tone: "mid" }, { owner: "tank", cls: "eg-ss", hosts: [A.disc(Ft, TK.z0, TK.z1, TK.r)] });
-saddle("tank.in", { o: [TK.x, TK.y, zBot], a: XD, u: YD, v: ZD3 }, DN[20].ro + 2.5, (t) => G.saddleStart(TK.r, DN[20].ro + 2.5, t), xTi - TK.x, { tone: "mid" }, { owner: "tank", cls: "eg-ss", hosts: [A.disc(Ft, TK.z0, TK.z1, TK.r)] });
+saddle("tank.in", { o: [TK.x, GL.yTank, zBot], a: XD, u: YD, v: ZD3 }, raT, (t) => Math.sqrt(TK.r ** 2 - (dyT + raT * Math.cos(t)) ** 2), xTi - TK.x, { tone: "mid" }, { owner: "tank", cls: "eg-ss", hosts: [A.disc(Ft, TK.z0, TK.z1, TK.r)] });
 // la bomba centrífuga, con el eje a lo largo de y: la unión de la succión, la voluta, el soporte, el motor y su tapa
 const FPy = { o: [PU.x, 0, PU.z], a: YD, u: XD, v: ZD3 };
 const yV0 = yTo + 28, yV1 = yV0 + 58, yDisP = (yV0 + yV1) / 2, zDisP = PU.z + PU.R + 30;
@@ -656,43 +668,48 @@ const yV0 = yTo + 28, yV1 = yV0 + 58, yDisP = (yV0 + yV1) / 2, zDisP = PU.z + PU
 /* ====================================================================
    10 · las líneas del glicol: de la bomba sube y sale por el extremo hacia la camisa de TK-201; la que vuelve entra
    por el extremo al evaporador y del evaporador baja al tanque; afuera, cada una dobla hacia el lector, con su
-   válvula de bola y un par de bridas donde sigue
+   válvula de bola roscada y la unión donde sigue
    ==================================================================== */
 const DG = DN[20];
 pipe("gly.sup", [[PU.x, GL.ySup, zDisP], [PU.x, GL.ySup, GL.zSup], [xInL, GL.ySup, GL.zSup]], DG.ro, 40, { cls: "eg-pipe" });
 pipe("gly.ret", [[xInL, GL.yRet, GL.zRet], [xGly, GL.yRet, GL.zRet], [xGly, yPort, GL.zRet]], DG.ro, 40, { cls: "eg-pipe" });
-pipe("gly.tank", [[xGly, yPort, zBot], [xGly, TK.y, zBot], [xTi, TK.y, zBot]], DG.ro, 30, { cls: "eg-pipe" });
+pipe("gly.tank", [[xGly, yPort, zBot], [xGly, GL.yTank, zBot], [xTi, GL.yTank, zBot]], DG.ro, 30, { cls: "eg-pipe" });
 ANCH.GLY_IN = [-300, GL.yRet + DG.ro * 0.6, GL.zRet + 6];
-// válvula de bola bridada: F.a es el sentido del flujo y la cara de entrada está en s0; con palanca
-function ballValve(name, F, s0, d, { stem = null, owner = name, lever = 130 } = {}) {
-  const Lv = 165, ft = d.ft, r0 = d.fl * 0.56, r1 = d.fl * 0.84, s1 = s0 + Lv;
-  disc(`${name}.fl0`, F, s0, s0 + ft, d.fl, { tone: "mid" }, { owner, cls: "eg-cast", extra: Dots(G.dotsOf(F, s0, d.bc, d.nb, P, { all: true, phase: PI / 4 }), { size: 0.45 }) });
-  const vm = (s0 + s1) / 2, half = Lv / 2 - ft;
+// válvula de bola roscada de ¾ in (un equipo así lleva las conexiones roscadas, no bridadas): F.a es el sentido del
+// flujo y la cara de entrada está en s0; dos hexágonos, el cuerpo abombado, el cuello, el vástago y la palanca
+function ballValve(name, F, s0, { stem = null, owner = name, lever = 110 } = {}) {
+  const hx = 20, Lh = 13, Lb = 48, s1 = s0 + 2 * Lh + Lb, r0 = 16, r1 = 24;
+  fp(`${name}.h0`, F, HEX(hx, 0), s0, s0 + Lh, { tone: "mid" }, { owner, cls: "eg-cast" });
+  const vm = (s0 + s1) / 2, half = Lb / 2;
   const bulge = (s) => r0 + (r1 - r0) * Math.cos(((s - vm) / half) * (PI / 2));
-  const prof = Array.from({ length: 13 }, (_, i) => { const s = s0 + ft + ((Lv - 2 * ft) * i) / 12; return [s, bulge(s), i > 0 && i < 12 ? 1 : 0]; });
+  const prof = Array.from({ length: 13 }, (_, i) => { const s = s0 + Lh + (Lb * i) / 12; return [s, bulge(s), i > 0 && i < 12 ? 1 : 0]; });
   turned(`${name}.body`, F, prof, { tone: "mid" }, { owner, cls: "eg-cast" });
-  disc(`${name}.fl1`, F, s1 - ft, s1, d.fl, { tone: "mid" }, { owner, cls: "eg-cast", extra: Dots(G.dotsOf(F, s1, d.bc, d.nb, P, { all: true, phase: PI / 4 }), { size: 0.45 }) });
+  fp(`${name}.h1`, F, HEX(hx, 0), s1 - Lh, s1, { tone: "mid" }, { owner, cls: "eg-cast" });
   const st = stem || ZD3;
   const c = G.add3(F.o, G.mul3(F.a, vm)), FS = { o: c, a: st, u: G.unit3(G.cross3(st, F.a)), v: F.a };
-  disc(`${name}.neck`, FS, Math.sqrt(r1 * r1 - 12 * 12) - 2, r1 + 22, 12, { tone: "mid" }, { owner, cls: "eg-cast" });
-  disc(`${name}.stem`, FS, r1 + 22, r1 + 32, 5.5, { tone: "mid" }, { owner, cls: "eg-ss" });
-  const lv = F.a, FL2 = { o: G.add3(c, G.mul3(st, r1 + 32)), a: lv, u: st, v: G.unit3(G.cross3(lv, st)) };
-  fp(`${name}.lever`, FL2, [[0, -8], [5, -8], [5, 8], [0, 8]], -14, lever, { tone: "mid" }, { owner, cls: "eg-lever" });
-  return { end: G.add3(F.o, G.mul3(F.a, s1)), body: c, r1, s1, top: G.add3(c, G.mul3(st, r1 + 22)) };
+  disc(`${name}.neck`, FS, Math.sqrt(r1 * r1 - 9 * 9) - 2, r1 + 14, 9, { tone: "mid" }, { owner, cls: "eg-cast" });
+  fp(`${name}.nut`, FS, HEX(7, 0), r1 + 14, r1 + 20, { tone: "mid" }, { owner, cls: "eg-ss" });
+  const lv = F.a, FL2 = { o: G.add3(c, G.mul3(st, r1 + 20)), a: lv, u: st, v: G.unit3(G.cross3(lv, st)) };
+  fp(`${name}.lever`, FL2, [[0, -7], [4, -7], [4, 7], [0, 7]], -12, lever, { tone: "mid" }, { owner, cls: "eg-lever" });
+  return { end: G.add3(F.o, G.mul3(F.a, s1)), body: c, r1, s1, top: G.add3(c, G.mul3(st, r1 + 14)) };
 }
-// un par de bridas donde sigue la línea, con un tramo corto y su brida
-function lineEnd(name, F, s, d, owner) {
-  disc(`${name}.e0`, F, s, s + d.ft, d.fl, { tone: "mid" }, { owner, cls: "eg-cast" });
-  disc(`${name}.e1`, F, s + d.ft, s + 2 * d.ft, d.fl, { tone: "mid" }, { owner: owner + "2", cls: "eg-cast" });
-  disc(`${name}.stub`, F, s + 2 * d.ft, s + 2 * d.ft + 60, d.ro, { tone: "mid" }, { owner: owner + "2", cls: "eg-pipe" });
-  disc(`${name}.e2`, F, s + 2 * d.ft + 60, s + 3 * d.ft + 60, d.fl, { tone: "mid" }, { owner: owner + "2", cls: "eg-cast", extra: Dots(G.dotsOf(F, s + 3 * d.ft + 60, d.bc, d.nb, P, { all: true, phase: PI / 4 }), { size: 0.45 }) });
-  return G.add3(F.o, G.mul3(F.a, s + 3 * d.ft + 60));
+// donde sigue la línea: un niple, una unión universal (tuerca, anillo y hexágono) y el niple con su copla, donde se
+// enrosca la línea que va a la camisa de TK-201
+function lineEnd(name, F, s, owner) {
+  const ro = DN[20].ro;
+  disc(`${name}.nip0`, F, s, s + 30, ro, { tone: "mid" }, { owner, cls: "eg-pipe" });
+  fp(`${name}.nut`, F, HEX(23, 0), s + 30, s + 46, { tone: "mid" }, { owner, cls: "eg-cast" });
+  disc(`${name}.ring`, F, s + 46, s + 52, 21, { tone: "mid" }, { owner: owner + "2", cls: "eg-cast" });
+  fp(`${name}.tail`, F, HEX(19, 0), s + 52, s + 64, { tone: "mid" }, { owner: owner + "2", cls: "eg-cast" });
+  disc(`${name}.nip1`, F, s + 64, s + 104, ro, { tone: "mid" }, { owner: owner + "2", cls: "eg-pipe" });
+  fp(`${name}.cpl`, F, HEX(19, 0), s + 104, s + 120, { tone: "mid" }, { owner: owner + "2", cls: "eg-cast" });
+  return G.add3(F.o, G.mul3(F.a, s + 120));
 }
 const outLine = (nm, y, z, xTurn, yValve) => {
   pipe(`${nm}.out`, [[-XB, y, z], [xTurn, y, z], [xTurn, yValve, z]], DG.ro, 40, { cls: "eg-pipe" });
   const F = { o: [xTurn, 0, z], a: YD, u: XD, v: ZD3 };
-  const v = ballValve(`${nm}.valve`, F, yValve, DG, { owner: `${nm}.valve` });
-  const end = lineEnd(`${nm}.end`, F, v.s1, DG, `${nm}.valve`);
+  const v = ballValve(`${nm}.valve`, F, yValve, { owner: `${nm}.valve` });
+  const end = lineEnd(`${nm}.end`, F, v.s1, `${nm}.valve`);
   return { v, end };
 };
 {
@@ -703,29 +720,30 @@ const outLine = (nm, y, z, xTurn, yValve) => {
 }
 
 /* ====================================================================
-   11 · el tablero, contra la pared de atrás del compartimiento del glicol: la caja, la puerta con sus bisagras, el
-   controlador de temperatura con su pantalla, el interruptor principal y los dos pilotos
+   11 · el tablero, en el extremo de −x, adelante, con la puerta hacia +x: la caja, la puerta con sus bisagras y su
+   cerradura, el controlador de temperatura con su pantalla, el interruptor principal y los dos pilotos
    ==================================================================== */
 {
-  box("panel", [PN.x0, yIn, PN.z0], [PN.x1, PN.y1 - 4, PN.z1], { tone: "mid" }, { owner: "panel", cls: "eg-panel", r: 3 });
-  const yd = PN.y1;
-  box("panel.door", [PN.x0 + 4, PN.y1 - 4, PN.z0 + 4], [PN.x1 - 4, yd, PN.z1 - 4], { tone: "mid" }, { owner: "panel", cls: "eg-panel", r: 3,
-    extra: Dots([at([PN.x1 - 14, yd + 0.3, (PN.z0 + PN.z1) / 2])], { size: 1.2, tone: "mid" }) });
-  [PN.z0 + 30, PN.z1 - 50].forEach((z, q) => disc(`panel.hinge${q}`, FZ(PN.x0 + 2, yd - 2, 0), z, z + 20, 4, { tone: "mid" }, { owner: "panel", cls: "eg-cast", n: 12 }));
-  // el controlador: un marco con la pantalla oscura y tres botones
-  const cx0 = PN.x0 + 40, cx1 = PN.x0 + 116, cz0 = PN.z1 - 70, cz1 = PN.z1 - 32;
-  box("ctrl", [cx0, yd, cz0], [cx1, yd + 8, cz1], { tone: "mid" }, { owner: "panel", cls: "eg-ctrl", r: 2,
-    extra: `<path class="eg-pantalla" d="${pth1([[cx0 + 6, yd + 8.3, cz0 + 9], [cx0 + 44, yd + 8.3, cz0 + 9], [cx0 + 44, yd + 8.3, cz1 - 7], [cx0 + 6, yd + 8.3, cz1 - 7]].map(pr))}"/>` +
-      Ln(path3([[cx0 + 12, yd + 8.4, cz0 + 15], [cx0 + 18, yd + 8.4, cz0 + 15], [cx0 + 18, yd + 8.4, cz1 - 13], [cx0 + 12, yd + 8.4, cz1 - 13], [cx0 + 12, yd + 8.4, cz0 + 15]]) +
-        path3([[cx0 + 24, yd + 8.4, cz0 + 15], [cx0 + 30, yd + 8.4, cz0 + 15], [cx0 + 30, yd + 8.4, cz1 - 13], [cx0 + 24, yd + 8.4, cz1 - 13], [cx0 + 24, yd + 8.4, cz0 + 15]]), { tone: "lo", className: "eg-digito" }) +
-      Dots([0, 1, 2].map((i) => at([cx0 + 54 + i * 8, yd + 8.3, (cz0 + cz1) / 2])), { size: 0.9, tone: "mid" }) });
-  ANCH.CONTROLADOR = [cx1, yd + 8, cz1 - 8];
+  const xd = PN.x1, ym = (PN.y0 + PN.y1) / 2, zm = (PN.z0 + PN.z1) / 2;
+  box("panel", [xInL, PN.y0, PN.z0], [xd - 4, PN.y1, PN.z1], { tone: "mid" }, { owner: "panel", cls: "eg-panel", r: 3 });
+  box("panel.door", [xd - 4, PN.y0 + 4, PN.z0 + 4], [xd, PN.y1 - 4, PN.z1 - 4], { tone: "mid" }, { owner: "panel", cls: "eg-panel", r: 3,
+    extra: Dots([at([xd + 0.3, PN.y1 - 16, zm])], { size: 1.2, tone: "mid" }) });
+  [PN.z0 + 30, PN.z1 - 50].forEach((z, q) => disc(`panel.hinge${q}`, FZ(xd - 2, PN.y0 + 2, 0), z, z + 20, 4, { tone: "mid" }, { owner: "panel", cls: "eg-cast", n: 12 }));
+  // el controlador: un marco con la pantalla oscura, dos dígitos y tres botones
+  const cy0 = PN.y0 + 26, cy1 = PN.y0 + 102, cz0 = PN.z1 - 72, cz1 = PN.z1 - 34, xf = xd + 8.3, xg = xd + 8.4;
+  const digit = (y) => path3([[xg, y, cz0 + 15], [xg, y + 6, cz0 + 15], [xg, y + 6, cz1 - 13], [xg, y, cz1 - 13], [xg, y, cz0 + 15]]);
+  box("ctrl", [xd, cy0, cz0], [xd + 8, cy1, cz1], { tone: "mid" }, { owner: "panel", cls: "eg-ctrl", r: 2,
+    extra: `<path class="eg-pantalla" d="${pth1([[xf, cy0 + 6, cz0 + 9], [xf, cy0 + 44, cz0 + 9], [xf, cy0 + 44, cz1 - 7], [xf, cy0 + 6, cz1 - 7]].map(pr))}"/>` +
+      Ln(digit(cy0 + 12) + digit(cy0 + 24), { tone: "lo", className: "eg-digito" }) +
+      Dots([0, 1, 2].map((i) => at([xf, cy0 + 54 + i * 8, (cz0 + cz1) / 2])), { size: 0.9, tone: "mid" }) });
+  ANCH.CONTROLADOR = [xd + 8, cy0 + 30, cz1 - 6];
   // el interruptor principal y los pilotos
-  const Fw = FYL(PN.x1 - 46, PN.z0 + 62);
-  disc("panel.switch", Fw, yd, yd + 4, 22, { tone: "mid" }, { owner: "panel", cls: "eg-yel" });
-  fp("panel.knob", { o: [PN.x1 - 46, 0, PN.z0 + 62], a: YD, u: XD, v: ZD3 }, rect(-5, 5, -17, 17), yd + 4, yd + 14, { tone: "mid" }, { owner: "panel", cls: "eg-knob" });
-  [PN.x0 + 50, PN.x0 + 80].forEach((x, q) => disc(`panel.lamp${q}`, FYL(x, PN.z0 + 62), yd, yd + 9, 8, { tone: "mid" }, { owner: "panel", cls: q ? "eg-lamp2" : "eg-lamp" }));
-  ANCH.TABLERO = [PN.x0 + 30, yd, PN.z0 + 40];
+  const yS = PN.y1 - 46, zS = PN.z0 + 62;
+  disc("panel.switch", FXL(yS, zS), xd, xd + 4, 22, { tone: "mid" }, { owner: "panel", cls: "eg-yel" });
+  fp("panel.knob", { o: [0, yS, zS], a: XD, u: YD, v: ZD3 }, rect(-5, 5, -17, 17), xd + 4, xd + 14, { tone: "mid" }, { owner: "panel", cls: "eg-knob" });
+  [PN.y0 + 40, PN.y0 + 70].forEach((y, q) => disc(`panel.lamp${q}`, FXL(y, zS), xd, xd + 9, 8, { tone: "mid" }, { owner: "panel", cls: q ? "eg-lamp2" : "eg-lamp" }));
+  ANCH.TABLERO = [xd, ym + 20, PN.z0 + 26];
+  ANCH.INTERRUPTOR = [xd + 4, yS + 14, zS + 12];
 }
 
 /* ====================================================================
@@ -813,7 +831,7 @@ const CSS = `.eg-gal{${ACERO}}.eg-ss{${ACERO}}.eg-fin{${ACERO}}.eg-blade{${ACERO
 .eg-conc{${shades("#e8e6e1", "#e8e6e1", "#efede9", "#d2cfc8", "#d9d6d0", "#dfddd7", "#e4e2dc")}}
 .eg-slot{fill:#525c64;stroke:none}.eg-warn{fill:#f3e9a6;stroke:none}.eg-pantalla{fill:#525c64;stroke:none}
 .eg-digito.iso-line{stroke:#fff500}.eg-vidrio-v{fill:#dfe9f1;stroke:none}.eg-indicador{fill:#6e6a00}
-.eg-malla.iso-line{stroke:#525c64}
+.eg-malla.iso-line{stroke:#525c64}.eg-placa.iso-line{stroke:#c49e7c}
 .eg-flujo-o{fill:none;stroke:#525c64;stroke-width:3.4px;stroke-linecap:round;stroke-linejoin:round}
 .eg-flujo{fill:none;stroke:#ffffff;stroke-width:1.6px;stroke-linecap:round;stroke-linejoin:round}
 .eg-flujo-p{fill:#ffffff;stroke:#525c64;stroke-width:1px;stroke-linejoin:round}
