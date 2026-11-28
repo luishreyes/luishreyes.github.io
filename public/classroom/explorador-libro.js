@@ -216,16 +216,25 @@
     return out.length > 1 ? '\\begin{gathered}' + out.join('\\\\ ') + '\\end{gathered}' : (out[0] || tex);
   }
   // Lo que aun así no cabe en su recuadro se encoge, hasta el 82 %; si todavía no cabe, el recuadro se desliza de lado.
+  // Se mide otra vez cuando llega la letra de KaTeX, que cambia los anchos.
   function ajustarEcuaciones(cont) {
     Array.prototype.forEach.call(cont.querySelectorAll('.xl-ec, .xl-num'), function (e) {
-      var ks = e.querySelectorAll('.katex-display > .katex');
-      Array.prototype.forEach.call(ks, function (k) { k.style.fontSize = ''; });
-      var exceso = e.scrollWidth - e.clientWidth;
-      if (exceso <= 1 || !ks.length) return;
-      var cs = getComputedStyle(e), util = e.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      var f = Math.max(0.82, util / (util + exceso) - 0.01);
-      Array.prototype.forEach.call(ks, function (k) { k.style.fontSize = (parseFloat(getComputedStyle(k).fontSize) * f).toFixed(2) + 'px'; });
+      var ks = Array.prototype.slice.call(e.querySelectorAll('.katex-display > .katex'));
+      if (!ks.length) return;
+      ks.forEach(function (k) { k.style.fontSize = ''; });
+      var base = ks.map(function (k) { return parseFloat(getComputedStyle(k).fontSize); }), f = 1;
+      for (var vuelta = 0; vuelta < 3; vuelta++) {
+        var exceso = e.scrollWidth - e.clientWidth;
+        if (exceso <= 1 || f <= 0.82) break;
+        var cs = getComputedStyle(e), util = e.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        f = Math.max(0.82, f * util / (util + exceso) - 0.005);
+        ks.forEach(function (k, i) { k.style.fontSize = (base[i] * f).toFixed(2) + 'px'; });
+      }
     });
+    if (document.fonts && document.fonts.status === 'loading' && !cont._xlLetra) {
+      cont._xlLetra = true;
+      document.fonts.ready.then(function () { cont._xlLetra = false; if (cont.isConnected) ajustarEcuaciones(cont); });
+    }
   }
   function enlace(ruta, txt) {
     var url = /^(https?:)?\/\//.test(ruta) ? ruta : XL.LIBRO + ruta;
@@ -1039,15 +1048,16 @@
         if (b) { if (enCapa) irCapa(+b.dataset.escena); else ir(+b.dataset.escena); }
       });
     }
-    // la escena activa queda a la vista en el riel, que puede deslizarse de lado (celular) o hacia abajo (computador)
-    function enfocarRiel(cont) {
+    // la escena activa queda a la vista en el riel, que puede deslizarse de lado (celular) o hacia abajo (computador); en
+    // la capa solo de lado, para no esconder los datos de la escena
+    function enfocarRiel(cont, soloDeLado) {
       var b = cont && cont.querySelector('.xl-sn.is-active');
       if (!b) return;
       [b.parentElement, cont, cont.parentElement].forEach(function (c) {
         if (!c) return;
         var cs = getComputedStyle(c), cr = c.getBoundingClientRect(), br = b.getBoundingClientRect();
         if (/(auto|scroll)/.test(cs.overflowX) && c.scrollWidth > c.clientWidth + 2 && (br.left < cr.left || br.right > cr.right)) c.scrollLeft += br.left - cr.left - (cr.width - br.width) / 2;
-        if (/(auto|scroll)/.test(cs.overflowY) && c.scrollHeight > c.clientHeight + 2 && (br.top < cr.top || br.bottom > cr.bottom)) c.scrollTop += br.top - cr.top - cr.height / 3;
+        if (!soloDeLado && /(auto|scroll)/.test(cs.overflowY) && c.scrollHeight > c.clientHeight + 2 && (br.top < cr.top || br.bottom > cr.bottom)) c.scrollTop += br.top - cr.top - cr.height / 3;
       });
     }
 
@@ -1382,7 +1392,7 @@
     function irCapa(i) {
       escCapa = i;
       document.querySelectorAll('#capaRiel .xl-sn').forEach(function (b) { b.classList.toggle('is-active', +b.dataset.escena === i); });
-      enfocarRiel($('capaRiel'));
+      enfocarRiel($('capaRiel'), true);
       var e = ESCENAS[i], doc = $('doc');
       limpiarVivos(doc);
       doc.innerHTML = '<p class="xl-ceja">Escena ' + (i + 1) + (e._parte.titulo ? ' · ' + e._parte.titulo : '') + '</p><h3>' + e.titulo + '</h3><p class="xl-preg">' + (e.pregunta || '') + '</p><div id="docCuerpo"></div>';
@@ -1422,8 +1432,6 @@
       ajustarEcuaciones(cuerpo);
       $('capaDoc').scrollTop = sc;
     }
-    // la letra de KaTeX puede llegar después: las ecuaciones se vuelven a medir cuando está
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { var c = $('docCuerpo'); if (c && !$('capa').hidden) ajustarEcuaciones(c); });
     $('doc').addEventListener('click', function (ev) {
       var e = ESCENAS[escCapa]; if (!e.calculo) return;
       var c = e.calculo(R).pasos.length;
