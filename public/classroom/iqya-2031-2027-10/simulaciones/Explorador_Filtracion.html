@@ -12,18 +12,6 @@
 <style>
 /* Solo lo propio de este explorador: el movimiento de las líneas del filtro. */
 .fl-flujo { stroke-dasharray: 10 8; }
-/* Las isométricas de la prensa y del tambor con los colores y la letra del libro: su CSS generado (abajo, entre sus
-   marcadores) usa los nombres de la hoja vieja de los simuladores. Aquí solo se les da a esos nombres los colores del
-   libro, y los botones del acercamiento vuelven a ser los del armazón. */
-.xl-iso { --ink: var(--navy); --paper: var(--nieve); --redline: var(--alerta); --muted-ink: var(--sec); --font-mono: var(--sans); }
-.xl-iso .iz-ctl { right: 8px; bottom: 8px; }
-.xl-iso .iz-ctl button { min-width: 36px; height: 36px; padding: 0 8px; border: 1.5px solid var(--navy); background: var(--nieve); color: var(--navy); font-family: var(--sans); font-size: var(--t-m); font-weight: 600; line-height: 1; }
-.xl-iso .iz-ctl button[data-z="fit"] { font-size: var(--t-xs); letter-spacing: 0; }
-.xl-iso .iz-ctl button:hover:not(:disabled) { background: var(--amarillo-claro); }
-.xl-iso .iz-ctl button:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
-/* En el celular, un número largo de la torta (una resistencia en notación científica) deja su unidad en el renglón de
-   abajo en lugar de montarse sobre el número del lado. */
-@media (max-width: 1099.98px), (max-height: 599.98px) { .xl-kpi .v { white-space: normal; } }
 /* La prensa y el tambor en isométrico (scripts/figuras/filtro-prensa y filtro-tambor): su CSS, tal como lo escriben sus splice.mjs. */
 /*FPRESS_CSS_START*/
 .iso{
@@ -2071,10 +2059,10 @@ return FDrum;
               texto: 'La pendiente lleva la resistencia específica de la torta, α: la caída de presión que da cada kilo de torta por metro cuadrado de tela.',
               ec: '\\alpha = \\frac{2\\,A^2\\,\\Delta p}{\\mu\\,c}\\,\\frac{K_p}{2}',
               num: '\\alpha = \\frac{2 \\times 0{,}044^2 \\times ' + kn(dp, 0) + '}{' + kc(e.mu, 3) + ' \\times 23{,}5} \\times ' + kc(e.m, 3) + ' \\\\ = ' + kc(e.alfa, 3) + '\\ \\mathrm{m/kg}',
-              fuente: e.mu === M.RUTH.mu ? 'El agua a 25 °C, 0,890 mPa·s (IAPWS). McCabe usa 0,886, que sube α y R_m en 0,4 %.' : 'Con la viscosidad que usa McCabe, 0,886 mPa·s; la de la IAPWS, 0,890, las baja 0,4 %.',
+              fuente: e.mu === M.RUTH.mu ? 'El agua a 25 °C, 0,890 mPa·s (IAPWS). McCabe usa 0,886, que sube α y ' + XL.Ki('R_m') + ' en 0,4 %.' : 'Con la viscosidad que usa McCabe, 0,886 mPa·s; la de la IAPWS, 0,890, las baja 0,4 %.',
               libro: ['filtracion.html#exm-fil-ruth', 'Libro, ejemplo 18.1'] },
             { titulo: 'La resistencia de la tela',
-              texto: 'La ordenada lleva la resistencia del medio, R_m, que cuenta la tela y las primeras capas de torta que se meten en sus poros.',
+              texto: 'La ordenada lleva la resistencia del medio, ' + XL.Ki('R_m') + ', que cuenta la tela y las primeras capas de torta que se meten en sus poros.',
               ec: 'R_m = \\frac{A\\,\\Delta p}{\\mu}\\,B',
               num: 'R_m = \\frac{0{,}044 \\times ' + kn(dp, 0) + '}{' + kc(e.mu, 3) + '} \\times ' + kn(e.b, 0) + ' = ' + kc(e.Rm, 3) + '\\ \\mathrm{m^{-1}}',
               res: 'Las telas quedan entre 10¹⁰ y 10¹¹ m⁻¹ (McCabe).',
@@ -2253,13 +2241,13 @@ return FDrum;
               fuente: 'El ajuste de los cinco ensayos, con r² = ' + num(L.r2, 2) + ' en log-log. La ley no se debe usar lejos de las presiones con que se midió, entre 46 y 339 kPa.',
               libro: ['filtracion.html#eq-fil-alfa', 'Libro, ecuación 18.4'] },
             { titulo: 'La tela',
-              texto: 'La resistencia de la tela también sube con la presión, porque la presión le mete partículas. El libro la describe con una recta que pasa por las cinco R_m de los ensayos. Una tela usada resiste tres veces más.',
+              texto: 'La resistencia de la tela también sube con la presión, porque la presión le mete partículas. El libro la describe con una recta que pasa por las cinco ' + XL.Ki('R_m') + ' de los ensayos. Una tela usada resiste tres veces más.',
               ec: 'R_m = (a\\,\\Delta p + b)\\times f_{tela}',
               num: 'a\\,\\Delta p = ' + kc(L.Rm.m, 2) + ' \\times ' + kn(dp, 0) + ' = ' + kc(L.Rm.m * dp, 3) + ' \\\\ a\\,\\Delta p + b = ' + kc(L.Rm.m * dp, 3) + ' + ' + kc(L.Rm.b, 3) + ' \\\\ = ' + kc(h.rm / r.s.tela, 3) + '\\ \\mathrm{m^{-1}} \\\\ R_m = ' + kc(h.rm / r.s.tela, 3) + ' \\times ' + r.s.tela + ' = ' + kc(h.rm, 3) + '\\ \\mathrm{m^{-1}}',
-              fuente: 'La recta de R_m contra Δp pasa por los cinco ensayos de Ruth; la tela usada es la del recuadro de la sección 18.3.',
+              fuente: 'La recta de ' + XL.Ki('R_m') + ' contra Δp pasa por los cinco ensayos de Ruth; la tela usada es la del recuadro de la sección 18.3.',
               libro: ['filtracion.html#sec-fil-compresible', 'Libro, sección 18.3'] },
             { titulo: 'La recta a esa presión',
-              texto: 'Con α y R_m a la presión del ensayo, la recta de Ruth da la pendiente y la ordenada. La concentración entra solo en la pendiente; la tela, solo en la ordenada.',
+              texto: 'Con α y ' + XL.Ki('R_m') + ' a la presión del ensayo, la recta de Ruth da la pendiente y la ordenada. La concentración entra solo en la pendiente; la tela, solo en la ordenada.',
               ec: 'K_p = \\frac{\\mu\\,\\alpha\\,c}{A^2\\,\\Delta p} \\qquad B = \\frac{\\mu\\,R_m}{A\\,\\Delta p}',
               num: 'K_p = \\frac{' + kc(M.RUTH.mu, 3) + ' \\times ' + kc(h.alfa, 3) + ' \\times ' + kn(h.c, 1) + '}{0{,}044^2 \\times ' + kn(dp, 0) + '} = ' + kc(h.Kp, 3) + '\\ \\mathrm{s/m^6} \\\\ B = \\frac{' + kc(M.RUTH.mu, 3) + ' \\times ' + kc(h.rm, 3) + '}{0{,}044 \\times ' + kn(dp, 0) + '} = ' + kc(h.B, 3) + '\\ \\mathrm{s/m^3}',
               res: 'La pendiente es K_p/2 = ' + un(h.pend, 2, 's/L²') + ' y la ordenada, ' + un(h.ord, 2, 's/L') + '.',
@@ -2274,7 +2262,7 @@ return FDrum;
               texto: 'Sin la tela, el tiempo para un volumen dado va como α/Δp, es decir, como Δp elevada a s − 1. Con s = 0 el tiempo baja en proporción a la presión; con s = 0,8, doblar la presión ahorra solo 13 %; con s = 1 la presión no cambia nada.',
               ec: 't \\propto \\frac{\\alpha}{\\Delta p} \\propto \\Delta p^{\\,s-1}',
               num: '2^{\\,' + kn(L.s, 2) + ' - 1} = ' + kn(s2, 3),
-              res: 'Con s = ' + num(L.s, 2) + ', doblar la presión ahorra el ' + pct(1 - s2) + ' del tiempo de la torta. ' + (r.s.mano ? 'Con los tiempos tomados a mano, la recta da α = ' + hc(h.alfaFit, 2) + ' m/kg y R_m = ' + hc(h.rmFit, 2) + ' m⁻¹: la pendiente se mueve ' + pct(Math.abs(h.alfaFit / h.alfa - 1), 1) + ' y la ordenada ' + pct(Math.abs(h.rmFit / h.rm - 1), 1) + '.' : ''),
+              res: 'Con s = ' + num(L.s, 2) + ', doblar la presión ahorra el ' + pct(1 - s2) + ' del tiempo de la torta. ' + (r.s.mano ? 'Con los tiempos tomados a mano, la recta da α = ' + hc(h.alfaFit, 2) + ' m/kg y ' + XL.Ki('R_m') + ' = ' + hc(h.rmFit, 2) + ' m⁻¹: la pendiente se mueve ' + pct(Math.abs(h.alfaFit / h.alfa - 1), 1) + ' y la ordenada ' + pct(Math.abs(h.rmFit / h.rm - 1), 1) + '.' : ''),
               libro: ['filtracion.html#sec-fil-compresible', 'Libro, sección 18.3'] }
           ],
           libro: [['filtracion.html#sec-fil-compresible', 'Sección 18.3, Cuando la torta se aprieta'], ['filtracion.html#eq-fil-alfa', 'Ecuación 18.4, la ley de compresibilidad'], ['filtracion.html#fig-fil-alfa', 'Figura 18.3, la resistencia contra la presión'], ['filtracion.html#tbl-fil-alfa', 'Tabla 18.2, resistencias de tortas']]
