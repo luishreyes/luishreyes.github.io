@@ -640,6 +640,11 @@ export const pou202710Course: Course = {
         }
       : { ...sim, carpeta: 'iqya-2031-2026-20', week: SEMANA_2027[sim.id] ?? sim.week },
   ),
+  // Los que ya tienen versión nueva con el armazón pero no van en el aula de 2027-10, porque los da
+  // Fenómenos: solo los lee la página pública de simuladores, que muestra esta versión y no la de 2026-20.
+  simulacionesFueraDelAula: (pou202620Course.simulations ?? [])
+    .filter((sim) => ['explorador-ecofiltro'].includes(sim.id))
+    .map((sim) => ({ ...sim, bannerImg: `/classroom/iqya-2031-2027-10/simuladores-banners/${sim.id}.jpg` })),
 
   // La metodología es la misma; solo cambia de qué planta se habla.
   methodology: {
