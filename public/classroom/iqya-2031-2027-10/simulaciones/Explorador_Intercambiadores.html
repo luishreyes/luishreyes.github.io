@@ -640,6 +640,10 @@ function econ(R, s) {
   var pumpY = (Wt + Ws) / 1000 * s.hours * s.cEnergy;
   return { buy: buy, capY: capY, crf: crf, Wt: Wt, Ws: Ws, pumpY: pumpY, totY: capY + pumpY, Au: Au, outRange: outRange, range: range, note: note, fm: fm };
 }
+/* la caída de presión contra su límite del capítulo 22 (R.dpLimT, R.dpLimS): pasa el límite, advertencia; pasa
+   el límite sobre 0,7, crítico, como en los avisos */
+function dpEstado(P, lim) { return P <= lim ? 'ok' : (P <= lim / 0.7 ? 'w' : 'c'); }
+function dpRegla(lim, nota) { return '≤ ' + fmtN(lim / 1000, 0) + ' kPa (' + (nota || 'capítulo 22') + ')'; }
 /* tablero de criterios: estado ok / w / c / na de cada regla de diseño */
 function criteria(R) {
   var s = R.s, b = R.bal, g = R.geo, geomOn = !(s.Umode === 'dato' && s.Amode === 'dato'), out = [];
@@ -656,8 +660,8 @@ function criteria(R) {
   add('Velocidad en tubos', fmtN(R.tube.u, 2) + ' m/s', fmtN(vt[0], 1) + ' a ' + fmtN(vt[1], 1) + ' m/s', geomOn ? band(R.tube.u, vt[0], vt[1], 0.6 * vt[0], 1.4 * vt[1]) : 'na');
   add('Reynolds en tubos', fmtN(R.tube.Re, 0), '≥ 10⁴ turbulento', geomOn ? (R.tube.Re >= 1e4 ? 'ok' : (R.tube.Re >= 2300 ? 'w' : 'c')) : 'na');
   if (!R.steam) add('Velocidad en coraza', fmtN(R.shell.u, 2) + ' m/s', '0,3 a 1,0 m/s', geomOn ? band(R.shell.u, 0.3, 1.0, 0.15, 1.5) : 'na');
-  add('ΔP en tubos', fmtN(R.dPt / 1e5, 2) + ' bar', '≤ 0,7 bar', geomOn ? (R.dPt <= 0.7e5 ? 'ok' : (R.dPt <= 1e5 ? 'w' : 'c')) : 'na');
-  if (!R.steam) add('ΔP en coraza', fmtN(R.dPs / 1e5, 2) + ' bar', '≤ 0,7 bar', geomOn ? (R.dPs <= 0.7e5 ? 'ok' : (R.dPs <= 1e5 ? 'w' : 'c')) : 'na');
+  add('ΔP en tubos', fmtN(R.dPt / 1000, 1) + ' kPa', dpRegla(R.dpLimT), geomOn ? dpEstado(R.dPt, R.dpLimT) : 'na');
+  if (!R.steam) add('ΔP en coraza', fmtN(R.dPs / 1000, 1) + ' kPa', dpRegla(R.dpLimS), geomOn ? dpEstado(R.dPs, R.dpLimS) : 'na');
   add('Esbeltez L/Ds', fmtN(g.LDs, 1), '5 a 10', geomOn ? band(g.LDs, 5, 10, 4, 12) : 'na');
   return out;
 }
@@ -962,19 +966,19 @@ function diagnoseEq(R, add, geomOn, closes) {
 }
 function criteriaEq(R, add, band, geomOn) {
   var t = R.tube, sh = R.shell, g = R.geo;
-  var dpSt = function (P) { return P <= 0.7e5 ? 'ok' : (P <= 1e5 ? 'w' : 'c'); };
   if (R.eq === 'pl') {
     add('Velocidad en los canales', fmtN(t.u, 2) + (R.steam ? '' : ' y ' + fmtN(sh.u, 2)) + ' m/s', '0,2 a 1,0 m/s (McCabe)', geomOn ? (R.steam ? band(t.u, 0.2, 1, 0.1, 1.4) : (band(t.u, 0.2, 1, 0.1, 1.4) === 'ok' && band(sh.u, 0.2, 1, 0.1, 1.4) === 'ok' ? 'ok' : 'w')) : 'na');
     add('Reynolds en los canales', fmtN(Math.min(t.Re, R.steam ? Infinity : sh.Re), 0), '≥ 400 turbulento', geomOn ? (Math.min(t.Re, R.steam ? Infinity : sh.Re) >= 400 ? 'ok' : (Math.min(t.Re, R.steam ? Infinity : sh.Re) >= 100 ? 'w' : 'c')) : 'na');
-    add('ΔP en los canales', fmtN(Math.max(R.dPt, R.dPs || 0) / 1e5, 2) + ' bar', '≤ 0,7 bar', geomOn ? dpSt(Math.max(R.dPt, R.dPs || 0)) : 'na');
+    add('ΔP en los canales del frío', fmtN(R.dPt / 1000, 1) + ' kPa', dpRegla(R.dpLimT, '30 kPa por unidad de transferencia'), geomOn ? dpEstado(R.dPt, R.dpLimT) : 'na');
+    if (!R.steam) add('ΔP en los canales del caliente', fmtN(R.dPs / 1000, 1) + ' kPa', dpRegla(R.dpLimS, '30 kPa por unidad de transferencia'), geomOn ? dpEstado(R.dPs, R.dpLimS) : 'na');
     add('Alto de la placa', fmtN(g.H, 2) + ' m', '≤ 4 m con los puertos', g.H <= 4 ? 'ok' : 'c');
     add('Temperatura máxima', fmtN(Math.max(R.Thi, R.bal.Tco), 0) + ' °C', '≤ 180 °C (empaques)', Math.max(R.Thi, R.bal.Tco) <= 150 ? 'ok' : (Math.max(R.Thi, R.bal.Tco) <= 180 ? 'w' : 'c'));
   } else if (R.eq === 'dp') {
     add('Velocidad en el tubo', fmtN(t.u, 2) + ' m/s', fmtN(R.vt[0], 1) + ' a ' + fmtN(R.vt[1], 1) + ' m/s', geomOn ? band(t.u, R.vt[0], R.vt[1], 0.6 * R.vt[0], 1.4 * R.vt[1]) : 'na');
     if (!R.steam) add('Velocidad en el ánulo', fmtN(sh.u, 2) + ' m/s', fmtN(R.vs[0], 1) + ' a ' + fmtN(R.vs[1], 1) + ' m/s', geomOn ? band(sh.u, R.vs[0], R.vs[1], 0.6 * R.vs[0], 1.4 * R.vs[1]) : 'na');
     add('Reynolds en el tubo', fmtN(t.Re, 0), '≥ 10⁴ turbulento', geomOn ? (t.Re >= 1e4 ? 'ok' : (t.Re >= 2300 ? 'w' : 'c')) : 'na');
-    add('ΔP en el tubo', fmtN(R.dPt / 1e5, 2) + ' bar', '≤ 0,7 bar', geomOn ? dpSt(R.dPt) : 'na');
-    if (!R.steam) add('ΔP en el ánulo', fmtN(R.dPs / 1e5, 2) + ' bar', '≤ 0,7 bar', geomOn ? dpSt(R.dPs) : 'na');
+    add('ΔP en el tubo', fmtN(R.dPt / 1000, 1) + ' kPa', dpRegla(R.dpLimT), geomOn ? dpEstado(R.dPt, R.dpLimT) : 'na');
+    if (!R.steam) add('ΔP en el ánulo', fmtN(R.dPs / 1000, 1) + ' kPa', dpRegla(R.dpLimS), geomOn ? dpEstado(R.dPs, R.dpLimS) : 'na');
     add('Horquillas', String(g.nhp), 'cargas pequeñas', R.Aav <= 40 ? 'ok' : 'w');
   } else {
     add('Velocidad de frente del aire', fmtN(sh.u, 2) + ' m/s', '3 a 6 m/s (McCabe)', geomOn ? band(sh.u, 3, 6, 2, 7.5) : 'na');
@@ -982,7 +986,7 @@ function criteriaEq(R, add, band, geomOn) {
     var app = (R.target === 'hot' ? R.bal.Tho : R.Thi) - R.Tci;
     add('Acercamiento al aire', fmtN(app, 1) + ' °C', '≥ 20 °C (McCabe)', app >= 20 ? 'ok' : (app >= 12 ? 'w' : 'c'));
     add('ΔP del aire', fmtN(R.dPs, 0) + ' Pa', '≤ 250 Pa', geomOn ? (R.dPs <= 250 ? 'ok' : (R.dPs <= 350 ? 'w' : 'c')) : 'na');
-    if (!R.steam) add('ΔP en tubos', fmtN(R.dPt / 1e5, 2) + ' bar', '≤ 0,7 bar', geomOn ? dpSt(R.dPt) : 'na');
+    if (!R.steam) add('ΔP en tubos', fmtN(R.dPt / 1000, 1) + ' kPa', dpRegla(R.dpLimT), geomOn ? dpEstado(R.dPt, R.dpLimT) : 'na');
     add('Área aleteada / desnuda', '×' + fmtN(g.ratio, 1), '7 a 20 (McCabe)', g.ratio >= 7 && g.ratio <= 20 ? 'ok' : 'w');
   }
 }

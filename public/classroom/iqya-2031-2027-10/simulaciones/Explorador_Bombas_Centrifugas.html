@@ -404,6 +404,9 @@ function solveOp(pf, sys, arr) {
   return { Q: Q, H: sys.H(Q), q1: perPump(arr, Q), h1: arr === 'serie' ? sys.H(Q) / 2 : sys.H(Q) };
 }
 // el tamaño IEC más pequeño que, con el factor de la altitud, da por lo menos Pmax
+/* la regla del margen de NPSH del libro (sección 11.9, el mínimo de Gülich): el NPSH disponible tiene que ser por lo
+   menos el mayor entre 1,25 NPSH3 y NPSH3 + 0,6 m; vale con el ojo del impulsor bajo 10 m/s (20 con hidrocarburos) */
+function margenNPSH(n3) { return Math.max(1.25 * n3, n3 + 0.6); }
 function motorPick(Pmax, fAlt) { for (var i = 0; i < IEC_MOTORS.length; i++) if (IEC_MOTORS[i] * fAlt >= Pmax - 1e-9) return IEC_MOTORS[i]; return null; }
 
 /* ---------- triángulos de velocidad y presiones internas ---------- */
@@ -444,7 +447,8 @@ function compute(s, lite) {
     R.Phyd = R.rg * op.Q * op.H / 1000;
     R.npsha = sys.npsha(op.Q); R.npsh3 = pf.npsh3(q1); R.npshi = 1.3 * R.npsh3; R.margin = R.npsha - R.npsh3;
     // la regla del margen del libro (sección 11.9, Gülich): el mayor entre 1,25 NPSH3 y NPSH3 + 0,6 m
-    R.npshReq = Math.max(1.25 * R.npsh3, R.npsh3 + 0.6);
+    R.npshReq = margenNPSH(R.npsh3);
+    R.uOjo = pw.w * pw.D1 / 2; R.uOjoMax = fl.id === 'aceite' ? 20 : 10;
     // las primeras burbujas, según el libro, con un NPSH entre 4 y 6 veces el NPSH3; el dibujo (las presiones de
     // innerPressures, el lienzo y la isométrica) las hace nacer bajo 1,3 NPSH3 (R.npshi), una regla del explorador
     R.npshB = 4 * R.npsh3;
@@ -501,6 +505,7 @@ function diagnose(R) {
   if (R.npsha < R.npsh3) add('c', 'Cavita: el NPSH disponible (' + fmtN(R.npsha, 2) + ' m) no llega al NPSH3 (' + fmtN(R.npsh3, 2) + ' m), la cabeza cae ' + fmtN(100 * R.drop, 0) + ' % y el metal de los álabes se pica. Suba el tanque, acorte la succión, enfríe el líquido o baje la velocidad (sección 11.9 del libro).');
   else if (R.npsha < R.npshReq) add('w', 'Falta margen de NPSH: el libro pide por lo menos el mayor entre 1,25 NPSH3 y NPSH3 + 0,6 m, ' + fmtN(R.npshReq, 2) + ' m, y la succión da ' + fmtN(R.npsha, 2) + ' m (sección 11.9 y tabla 11.8).');
   else if (R.npsha < R.npshB) add('ok', 'Cumple la regla del margen, pero con menos de 4 veces el NPSH3 (' + fmtN(R.npshB, 2) + ' m) ya puede haber burbujas en los álabes: en un diseño normal, dice el libro, las primeras aparecen entre 4 y 6 veces el NPSH3 (sección 11.9).');
+  if (R.npsha >= R.npsh3 && R.uOjo > R.uOjoMax) add('ok', 'El ojo del impulsor gira a ' + fmtN(R.uOjo, 1) + ' m/s, más de los ' + R.uOjoMax + ' m/s hasta los que vale la regla del margen' + (R.uOjoMax > 10 ? ' con hidrocarburos' : '') + ': el libro pide un margen mayor (sección 11.9).');
   if (R.beyond) add('c', 'El punto cae más allá del final de la curva publicada, al ' + fmtN(100 * R.x, 0) + ' % del BEP: ruido, vibración y riesgo de cavitación. Agregue resistencia en la descarga o escoja una bomba mayor (sección 11.5 del libro).');
   else if (R.x < 0.7 || R.x > 1.1) add('w', 'La bomba trabaja al ' + fmtN(100 * R.x, 0) + ' % del caudal de su BEP, fuera de la ventana entre el 70 y el 110 % de la tabla 11.4 del libro' + (R.x < 0.7 ? ': recirculación, empuje radial y calentamiento.' : ': el NPSH3 sube y la bomba se acerca al final de su curva.'));
   if (R.x < 0.45) add('w', 'Caudal muy bajo: con menos del 45 % del BEP hay recirculación en la entrada y en la salida del impulsor, que el libro ubica por debajo de entre el 40 y el 75 % (sección 11.5).');
@@ -549,7 +554,7 @@ window.Modelo = (function () {
     BASE: BASE, CASO: CASO, calcular: calcular, compute: compute, regulation: regulation, diagnose: diagnose,
     FLUIDS: FLUIDS, CASINGS: CASINGS, REF: REF, G: G, RHO_W: RHO_W, SIGMA: SIGMA, IEC_MOTORS: IEC_MOTORS,
     byId: byId, bisect: bisect, pumpW: pumpW, pumpF: pumpF, hiCorr: hiCorr, solveOp: solveOp, setHead: setHead,
-    cavDrop: cavDrop, patmKPa: patmKPa, motorPick: motorPick, etaMotor: etaMotor, factorAltitud: factorAltitud, ETA_MOTOR: ETA_MOTOR,
+    cavDrop: cavDrop, patmKPa: patmKPa, margenNPSH: margenNPSH, motorPick: motorPick, etaMotor: etaMotor, factorAltitud: factorAltitud, ETA_MOTOR: ETA_MOTOR,
     ALT_MOTOR: ALT_MOTOR, AGUA: AGUA, waterPv: waterPv, waterRho: waterRho, waterMu: waterMu, fmtMu: fmtMu
   };
 })();
@@ -1049,6 +1054,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     it(r.npsha >= r.npshReq ? 'ok' : (r.npsha >= r.npsh3 ? 'w' : 'c'), 'NPSHₐ sobre la regla del margen, ' + Hu(r.npshReq), Hu(r.npsha),
       r.npsha < r.npsh3 ? 'Cavita: la cabeza cae ' + pct(r.drop) + '. Suba el tanque, acorte la succión, enfríe el líquido o baje la velocidad.' : r.npsha < r.npshReq ? 'El libro pide el mayor entre 1,25 NPSH3 y NPSH3 + 0,6 m.' : '');
     if (r.npsha >= r.npsh3 && r.npsha < r.npshB) it('i', 'Puede haber burbujas: NPSHₐ bajo 4 NPSH3, ' + Hu(r.npshB), Hu(r.npsha), 'En un diseño normal, dice el libro, las primeras aparecen entre 4 y 6 veces el NPSH3; la regla del margen las acepta.');
+    if (r.npsha >= r.npsh3 && r.uOjo > r.uOjoMax) it('i', 'El ojo gira a más de ' + r.uOjoMax + ' m/s', un(r.uOjo, 1, 'm/s'), 'La regla del margen vale por debajo' + (r.uOjoMax > 10 ? ', con hidrocarburos' : '') + '; aquí el libro pide un margen mayor.');
     if (r.sola) it(r.sola.q1 / pf.qB <= 1.2 ? 'ok' : 'w', 'Si una se apaga, la otra no pasa del 120 % del BEP', pct(r.sola.q1 / pf.qB), r.sola.q1 / pf.qB > 1.2 ? 'Sola se corre a la derecha de su curva y puede cavitar.' : '');
     it(r.motor ? 'ok' : 'c', 'Motor que cubre la potencia máxima de la curva, ' + kW(r.PmaxCurve), r.motor ? kW(r.motor) : 'no',
       r.motor ? 'A ' + un(s.alt, 0, 'm') + ' da el ' + pct(r.fAlt) + ': ' + kW(r.motorSitio) + '; el factor de servicio queda de reserva.' : 'No hay motor de la tabla IEC que dé ' + kW(r.PmaxCurve) + ' a esta altitud.');
@@ -1790,7 +1796,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
       if (!q.op) return { a: q.a, no: true };
       var q1 = q.op.q1, n = q.a === 'una' ? 1 : 2, x = q1 / pf.qB;
       var n3 = pf.npsh3(q1), na = sys.npsha(q.op.Q);
-      return { a: q.a, Q: q.op.Q, H: q.op.H, q1: q1, h1: q.op.h1, x: x, e: pf.eta(q1), P: n * pf.P(q1) / 1000, m: na - n3, malN: na < Math.max(1.25 * n3, n3 + 0.6), mal: x < 0.7 || x > 1.1 || q1 > pf.qEnd };
+      return { a: q.a, Q: q.op.Q, H: q.op.H, q1: q1, h1: q.op.h1, x: x, e: pf.eta(q1), P: n * pf.P(q1) / 1000, m: na - n3, malN: na < M.margenNPSH(n3), mal: x < 0.7 || x > 1.1 || q1 > pf.qEnd };
     });
     var fila = function (t, f) { return '<tr><th scope="row">' + t + '</th>' + cols.map(function (c) { return '<td' + (c.a === r.arr ? ' class="sel"' : '') + '>' + (c.no ? 'sin cruce' : f(c)) + '</td>'; }).join('') + '</tr>'; };
     return '<table class="bc-tabla"><thead><tr><th scope="col"></th>' + cols.map(function (c) { return '<th scope="col"' + (c.a === r.arr ? ' class="sel"' : '') + '>' + { una: 'Una', paralelo: 'Paralelo', serie: 'Serie' }[c.a] + '</th>'; }).join('') + '</tr></thead><tbody>' +
@@ -1920,7 +1926,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     // la franja donde el libro pone las primeras burbujas, entre 4 y 6 NPSH3; la línea de trazos, la del dibujo (1,3 NPSH3)
     h += E('path', { d: poly(N3.map(function (p) { return [X(p[0]), Y(4 * p[1])]; }).concat(N3.slice().reverse().map(function (p) { return [X(p[0]), Y(6 * p[1])]; }))) + 'Z', 'clip-path': 'url(#cl-npq)', fill: C.borde });
     h += PA(poly(N3.map(function (p) { return [X(p[0]), Y(p[1] * 1.3)]; })), { stroke: S1, 'stroke-width': 1.4, 'stroke-dasharray': '5 4' }, 'cl-npq');
-    h += PA(poly(N3.map(function (p) { return [X(p[0]), Y(Math.max(1.25 * p[1], p[1] + 0.6))]; })), { stroke: S3, 'stroke-width': 1.5, 'stroke-dasharray': '1.5 3' }, 'cl-npq');
+    h += PA(poly(N3.map(function (p) { return [X(p[0]), Y(M.margenNPSH(p[1]))]; })), { stroke: S3, 'stroke-width': 1.5, 'stroke-dasharray': '1.5 3' }, 'cl-npq');
     h += PA(poly(N3.map(function (p) { return [X(p[0]), Y(p[1])]; })), { stroke: S1, 'stroke-width': 2.6 }, 'cl-npq');
     h += PA(poly(A.map(function (p) { return [X(p[0]), Y(p[1])]; })), { stroke: S4, 'stroke-width': 2.6 }, 'cl-npq');
     if (r.op) {
@@ -2163,7 +2169,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
           texto: 'El líquido recibe la potencia hidráulica. El motor le entrega al eje más que eso, porque la bomba pierde una parte, y de la red se toma todavía más, porque el motor también pierde.' + (r.nP > 1 ? ' Las cuentas van por bomba; la potencia al freno de las dos es el doble.' : ''),
           ec: 'P_h = \\rho g Q H \\qquad P_{eje} = \\frac{P_h}{\\eta} \\qquad P_e = \\frac{P_{eje}}{\\eta_{mot}}',
           num: 'P_h = ' + kn(rho, 1) + '\\times 9{,}81 \\times \\frac{' + kn(op.q1 * 3600, 2) + '}{3600} \\times ' + kn(h1, 2) + ' = ' + kn(Ph, 3) + '\\ \\mathrm{kW} \\\\ P_{eje} = \\frac{' + kn(Ph, 3) + '}{' + kn(r.eta, 3) + '} = ' + kn(r.Pshaft1, 3) + '\\ \\mathrm{kW} \\\\ P_e = \\frac{' + kn(r.Pshaft, 3) + '}{' + kn(r.etaM, 3) + '} = ' + kn(r.Pelec, 3) + '\\ \\mathrm{kW}',
-          fuente: 'La eficiencia del motor sale de la tabla 11.15 del libro, interpolada en la potencia nominal: ' + pct(r.etaM, 1) + (r.motor ? ' para el de ' + kW(r.motor) : '') + '. Con el motor de 3 kW del caso da 83 %, y el ejemplo 11.2 llega a 2,07 kW.',
+          fuente: 'La eficiencia del motor sale de la tabla 11.15 del libro, interpolada en la potencia nominal: ' + pct(r.etaM, 1) + (r.motor ? ' para el de ' + kW(r.motor) : '') + '. El ejemplo 11.2 usa el motor de 3,0 kW del caso del libro, con 83 %, y llega a 2,07 kW.',
           libro: L('exm-potencia', 'Libro, ejemplo 11.2') });
       }
       return { intro: 'La bomba toma el líquido del tanque de succión y lo sube al destino. El cálculo busca el caudal en el que la bomba da justo la cabeza que pide la línea, y lo que eso cuesta en potencia.',
@@ -2709,7 +2715,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
         texto: 'El motor se escoge con la mayor potencia al freno de la curva publicada, no con la del punto de operación, porque el punto puede correrse. Arriba de 1000 m el motor da menos que su potencia de placa, así que se toma el menor tamaño IEC que, ya reducido por la altitud, cubre esa potencia. El factor de servicio queda de reserva, para las sobrecargas ocasionales.',
         ec: 'f_{alt}\\,P_{mot} \\ge P_{eje,\\text{máx}}',
         num: (r.op ? 'P_{eje} = ' + kn(r.Pshaft1, 3) + '\\ \\mathrm{kW}\\ \\text{en el punto},\\quad ' : '') + 'P_{eje,\\text{máx}} = ' + kn(r.PmaxCurve, 3) + '\\ \\mathrm{kW} \\\\ ' + (r.motor ? kn(r.fAlt, 2) + '\\times ' + kn(r.motor, r.motor < 1 ? 2 : 1) + ' = ' + kn(r.motorSitio, 2) + '\\ \\mathrm{kW} \\;\\Rightarrow\\; ' + kn(r.motor, r.motor < 1 ? 2 : 1) + '\\ \\mathrm{kW} \\\\ \\text{reserva: } ' + kn(s.FS, 2) + '\\times ' + kn(r.motorSitio, 2) + ' = ' + kn(r.reserva, 2) + '\\ \\mathrm{kW}' : '\\text{no hay en la tabla}'),
-        fuente: 'La regla es la del libro. La potencia de placa vale hasta 1000 m y 40 °C; a 2600 m el libro toma el 95 % con aire de menos de 30 °C y el 89 % entre 30 y 40 °C, de la tabla de un fabricante que el explorador interpola para las demás altitudes. Los tamaños son los de la serie IEC.',
+        fuente: 'La regla es la del libro. La potencia de placa vale hasta 1000 m y 40 °C; a 2600 m el libro toma el 95 % con aire de menos de 30 °C y el 89 % entre 30 y 40 °C, de la tabla de un fabricante que el explorador interpola para las demás altitudes. Los tamaños son los de la serie IEC. El caso del libro lleva un motor de 3,0 kW, que da 2,67 kW en Bogotá: la regla lo acepta, aunque el menor que la cumple es el de 2,2 kW.',
         libro: L('sec-bombas-curvas', 'Libro, sección 11.5') });
       if (r.op) pasos.push({ titulo: 'La potencia eléctrica y la energía',
         texto: 'De la red se toma la potencia al freno dividida por la eficiencia del motor. En 8000 horas al año se vuelve la cifra que domina lo que cuesta la bomba en su vida.',
