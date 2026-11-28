@@ -21,7 +21,7 @@ const cursosPou = classroomData
   .sort((a, b) => b.term.localeCompare(a.term));
 const vistos = new Set<string>();
 const simulaciones: Simulation[] = cursosPou.flatMap((c) =>
-  (c.simulations ?? [])
+  [...(c.simulations ?? []), ...(c.simulacionesFueraDelAula ?? [])]
     .filter((s) => !vistos.has(s.id) && !!vistos.add(s.id))
     .map((s) => ({ ...s, carpeta: s.carpeta ?? c.slug })),
 );

@@ -359,6 +359,12 @@ export interface Course {
    * queda vacío, no aparece el espacio «Simulaciones» en la landing.
    */
   simulations?: Simulation[];
+  /**
+   * Simuladores que el curso ya tiene en su versión nueva pero que no van en su aula (los que da otro curso el
+   * mismo semestre, como Bernoulli en POU 2027-10). Solo los lee la página pública de simuladores, que muestra
+   * la versión más reciente de cada uno; el aula, el Material y la portada no los ven.
+   */
+  simulacionesFueraDelAula?: Simulation[];
 }
 
 import { pouCourse } from './classroom/pou';
