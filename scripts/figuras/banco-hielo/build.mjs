@@ -298,7 +298,7 @@ fp("rim.front", { o: [0, 0, 0], a: XD, u: YD, v: ZD3 }, [[yo1 - 50, zR - 5], [yo
     const handles = [-900, 900].map((y) => path3([[xm - 90, y, zC1 + 0.3], [xm - 90, y, zC1 + 34], [xm + 90, y, zC1 + 34], [xm + 90, y, zC1 + 0.3]])).join("");
     box(`cover${i}`, [x0, yo0, zR], [x1, yo1, zC1], { tone: "mid" }, { owner: "cover", cls: "bh-panel", extra: extra + Ln(handles, { tone: "mid" }) + Dots([-900, 900].flatMap((y) => [at([xm - 90, y, zC1 + 0.3]), at([xm + 90, y, zC1 + 0.3])]), { size: 0.6 }) });
   });
-  ANCH.TAPA = [(J[2] + J[3]) / 2 - 200, yo1, (zR + zC1) / 2];
+  ANCH.TAPA = [J[0] - 400, 0, zC1];
 }
 
 /* ====================================================================
@@ -409,8 +409,8 @@ function tubeGroup(runs, r, caps = true) {
     const cut = Wn.map((pts) => A.tube([[xsW - 40, y, pts[0][2]], [xsW + 40, y, pts[0][2]]], CO.ro + 0.05));
     const plan = { x: xsW - 30, y: y - 4, w: 60, d: 8, r: 0.4 };
     put("win.plate", [xsW, y, (zLeg0 + zt) / 2], `<g class="bh-gal">${S(k.slabOf(plan, zLeg0, zt + 30 - zLeg0, P, 2, 0), { tone: "mid" })}</g>`, [record(A.slab(plan, zLeg0, zt + 30 - zLeg0, { name: "win.plate", owner: "coil", cut }, 2))]);
-    ANCH.HIELO = [xw0 + 0.3, y + RI * 0.7, GEO.zPass(5) + RI * 0.7];
-    ANCH.TUBO = [(xw0 + xsW) / 2 - 40, y + CO.ro, GEO.zPass(8)];
+    ANCH.HIELO = [xw0 + 0.3, y + RI * 0.7, GEO.zPass(3) + RI * 0.7];
+    ANCH.TUBO = [(xw0 + xsW) / 2 - 40, y + CO.ro, GEO.zPass(11)];
     ANCH.PLETINA = [xsW, y + 4, GEO.zPass(12) + 55];
     ANCH.HAZ = [-1500, y + RI * 0.7, GEO.zPass(3)];
     ANCH.CURVA = [xb - RI * 0.8, y, (GEO.zPass(6) + GEO.zPass(7)) / 2];
@@ -461,7 +461,7 @@ const zA = ZF + NA.ro;                                           // el eje de la
     saddle(`air.lat${i}`, { o: [xl, AIR.y, zA], a: [0, -1, 0], u: ZD3, v: XD }, NAL.ro, (t) => G.saddleStart(NA.ro, NAL.ro, t), AIR.y - yEnd, { tone: "mid" }, { owner: "air", cls: "bh-pvc", hosts: [A.disc(FXL(AIR.y, zA), AIR.xEnd, AIR.xDown, NA.ro)] });
     disc(`air.latcap${i}`, FYL(xl, zA), yEnd - 10, yEnd, NAL.ro + 2.5, { tone: "mid" }, { owner: "air", cls: "bh-pvc" });
   });
-  ANCH.RAMAL = [AIR.laterals[1], 600, zA + NAL.ro];
+  ANCH.RAMAL = [AIR.laterals[1], 1150, zA + NAL.ro];             // lo que asoma del ramal, bajo el haz
 }
 {
   // el soplador de canal lateral: la carcasa redonda con sus aletas, el motor adelante y la base; arriba, la entrada
@@ -523,7 +523,7 @@ const DI = BH.dist, NDI = DN[80], NDR = DN[65];
   disc("dist.cap1", FYL(DI.x, DI.z), yi1 - 150, yi1 - 138, NDI.ro + 2, { tone: "mid" }, { owner: "dist", cls: "bh-pipe" });
   saddle("dist.drop", { o: [DI.x, DI.yDrop, DI.z], a: ZD3, u: XD, v: YD }, NDR.ro, (t) => G.saddleStart(NDI.ro, NDR.ro, t), zW - DI.z, { tone: "mid" }, { owner: "dist", cls: "bh-pipe", hosts: [A.disc(FYL(DI.x, DI.z), yi0 + 120, yi1 - 150, NDI.ro)] });
   disc("dist.dropair", FZ(DI.x, DI.yDrop, 0), zW, zR, NDR.ro, { tone: "mid" }, { owner: "dist", cls: "bh-pipe" });
-  ANCH.DISTRIBUIDOR = [DI.x + NDI.ro * 0.7, 500, DI.z + NDI.ro * 0.7];
+  ANCH.DISTRIBUIDOR = [DI.x + NDI.ro * HV[0], yi1 - 175 + NDI.ro * HV[1], DI.z];   // la punta que asoma delante del haz
   // sobre la tapa: el tramo que sube, la curva y la línea del retorno, que termina en un par de bridas
   const zl = 3300;
   const rt = G.fillet([[DI.x, DI.yDrop, zC1], [DI.x, DI.yDrop, zl], [-3560, DI.yDrop, zl]], 110, 10);
