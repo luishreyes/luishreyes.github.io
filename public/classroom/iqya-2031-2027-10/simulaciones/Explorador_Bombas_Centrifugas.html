@@ -924,7 +924,9 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
   function Hu(m) { return fh(m) + NB + lH(); }
   function Pu(kW) { return fp(kW) + NB + lP(); }
   function kPa(v) { return un(v, Math.abs(v) < 10 ? 1 : 0, 'kPa'); }
-  function kW(v) { return un(v, v < 1 ? 2 : v < 10 ? 1 : 0, 'kW'); }
+  // los tamaños de motor: 0,75, 3,0, 5,5, 18,5, 22 kW
+  function decMotor(v) { return v < 1 ? 2 : v < 10 || Math.round(v) !== v ? 1 : 0; }
+  function kW(v) { return un(v, decMotor(v), 'kW'); }
   function conSigno(x, t) { return (x > 0 ? '+' : '') + t; }
   function casNom(c) { return c.name.replace(/-/g, '‑'); }
   function flu(st) { return M.byId(M.FLUIDS, st.fluid); }
@@ -1371,7 +1373,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
       c.fillText('ojo · entrada axial', cx, cy + L.r1 + 14);
       c.textAlign = 'left'; c.fillText('lengüeta', xa + 8, cy + 16);
       c.fillText('descarga', xb + 8, ytop + 18);
-      var lv = L.th + Math.PI * 1.15, rl = this.rOut(Math.PI * 1.15) + 12; c.textAlign = 'right'; c.fillText('voluta', X(rl, lv), Y(rl, lv));
+      var lv = L.th + Math.PI * 0.68, rl = this.rOut(Math.PI * 0.68) + 12;   /* arriba a la izquierda, dentro del lienzo */ c.textAlign = 'right'; c.fillText('voluta', X(rl, lv), Y(rl, lv));
     }
     c.textAlign = 'left'; c.font = '600 13px ' + mono; c.fillStyle = col.ink;
     c.fillText(num(R.N, 0) + ' r/min · cámara lenta ×1/' + SLOW, 12, 22);
@@ -1418,9 +1420,10 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
       h += E('rect', { x: x0, y: r1(Math.min(Y(a), Y(b2))), width: x1 - x0, height: r1(Math.max(1, Math.abs(Y(b2) - Y(a)))), fill: i === 0 && q[1] < 0 ? C.fuera : q[2], stroke: C.tinta, 'stroke-width': 0.8 });
       etiq.push({ y: (Y(a) + Y(b2)) / 2, t: q[0], v: q[1] });
     });
-    // las etiquetas a la derecha de la barra, sin encimarse
-    etiq.sort(function (a, b) { return b.y - a.y; });
-    for (var i = 1; i < etiq.length; i++) if (etiq[i].y > etiq[i - 1].y - 36) etiq[i].y = etiq[i - 1].y - 36;
+    // las etiquetas a la derecha de la barra, de arriba hacia abajo, debajo del rótulo de la bomba y sin encimarse
+    etiq.sort(function (a, b) { return a.y - b.y; });
+    var techo = Y(Math.max(acc, sys.Hst)) + 20;
+    for (var i = 0; i < etiq.length; i++) etiq[i].y = Math.max(etiq[i].y, i ? etiq[i - 1].y + 36 : techo);
     etiq.forEach(function (q) { h += TX(x1 + 12, q.y - 2, q.t, 'f-ts') + TX(x1 + 12, q.y + 15, conSigno(q.v, Hu(q.v)), 'f-v'); });
     if (op) {
       h += LN(x0 - 10, Y(op.H), x1 + 4, Y(op.H), { stroke: C.tinta, 'stroke-width': 2 }) + E('path', { d: 'M' + (x0 - 10) + ' ' + r1(Y(op.H) - 6) + 'l8 6l-8 6z', fill: C.amarillo, stroke: C.tinta, 'stroke-width': 1.2 });
@@ -1668,7 +1671,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     return h;
   }
   var TRES = {
-    titulo: 'Tres maneras', tipo: 'svg', vista: [400, 400], ancha: true,
+    titulo: 'Las tres maneras', tipo: 'svg', vista: [400, 400], ancha: true,
     alt: 'Las tres maneras de entregar el caudal de diseño: la válvula empina la curva de la línea hasta que cruza la de la bomba en ese caudal; el variador y el recorte bajan la curva de la bomba hasta que cruza la de la línea original.',
     montar: function (g) { this.g = el('g', {}, g); },
     poner: function (r) { this.g.innerHTML = dibTres(r); }
@@ -1757,7 +1760,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
       '</tbody></table><p class="bc-nota">En rojo, lo que sale de la ventana entre el 70 y el 110 % del BEP o del margen de NPSH exigido. La columna resaltada es el arreglo que usted escogió.</p>';
   }
   var COMPARACION = {
-    titulo: 'Lado a lado', tipo: 'html',
+    titulo: 'La comparación', tipo: 'html',
     alt: 'Tabla con el caudal, la cabeza, el caudal por bomba, la posición frente al mejor punto, la eficiencia, la potencia y el margen de NPSH de una bomba, de dos en paralelo y de dos en serie en la misma línea.',
     montar: function (d) { this.d = document.createElement('div'); this.d.className = 'bc-html'; d.appendChild(this.d); },
     poner: function (r) { this.d.innerHTML = tablaArreglos(r); }
@@ -1803,7 +1806,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     return h;
   }
   var CASCADA = {
-    titulo: 'De dónde sale', tipo: 'svg', vista: [400, 400], ancha: true,
+    titulo: 'Los términos', tipo: 'svg', vista: [400, 400], ancha: true,
     alt: 'Barras que suman los términos del NPSH disponible: la presión atmosférica del sitio, la presión del tanque, el nivel del tanque sobre el eje, menos las pérdidas de la succión y la presión de vapor; abajo, el NPSH disponible contra el NPSH3 de la bomba y la línea del NPSH3 más el margen exigido.',
     montar: function (g) { this.g = el('g', {}, g); },
     poner: function (r) { this.g.innerHTML = dibCascada(r); }
@@ -1840,7 +1843,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     return h;
   }
   var CONTRAT = {
-    titulo: 'Contra la temperatura', tipo: 'svg', vista: [400, 400],
+    titulo: 'La temperatura', tipo: 'svg', vista: [400, 400],
     alt: 'El NPSH disponible contra la temperatura de bombeo, con el NPSH3 de la bomba y el NPSH3 más el margen exigido: hasta unos 60 °C cambia poco y cerca de la ebullición se desploma. La línea roja marca la temperatura máxima con el margen.',
     montar: function (g) { this.g = el('g', {}, g); },
     poner: function (r) { this.g.innerHTML = dibContraT(r); }
@@ -1982,7 +1985,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     var xb = XB(hi.B);
     h += E('path', { d: 'M' + r1(xb) + ' 46l-7 -12h14z', fill: C.tinta });
     h += TX(entre(xb, x0 + 40, x1 - 40), 120, 'B = ' + num(hi.B, 2), !hi.valid ? 'f-v f-alerta' : 'f-v', 'middle');
-    // los tres factores, como barras de 0 a 1
+    // los tres factores, como barras entre 0 y 1
     h += TX(x0, 156, 'factores de corrección', 'f-t');
     var fx0 = 182, fx1 = 326, FX = function (v) { return fx0 + entre(v, 0, 1) * (fx1 - fx0); };
     [['caudal, C_Q', hi.CQ], ['cabeza en el BEP, C_H', hi.CHb], ['eficiencia, C_η', hi.Ce]].forEach(function (f, i) {
@@ -2162,7 +2165,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
         intro: 'El impulsor le cambia al líquido su momento angular. El cálculo arma los triángulos de velocidad a la salida, con la ecuación de Euler da la cabeza que el impulsor le entrega al líquido y compara esa cabeza con la que la bomba da de verdad.',
         pasos: [
           { titulo: 'Las velocidades a la salida',
-            texto: 'La punta del álabe corre a u₂ = ωr₂. La componente radial de la velocidad del líquido es el caudal dividido por el área de salida, con el ancho del canal y la fracción que dejan libre los álabes.' + (r.hi.on ? ' Con un líquido viscoso, el caudal que entra en estas cuentas es el equivalente con agua, Q/C_Q.' : ''),
+            texto: 'La punta del álabe corre a u₂ = ωr₂. La componente radial de la velocidad del líquido es el caudal dividido por el área de salida, con el ancho del canal y la fracción que dejan libre los álabes.' + (r.hi.on ? ' Con un líquido viscoso, el caudal que entra en estas cuentas es el equivalente con agua, Q/C<sub>Q</sub>.' : ''),
             ec: 'u_2 = \\frac{\\pi D_2 N}{60} \\qquad c_{2m} = \\frac{Q}{\\pi D_2\\, b_2\\, f_B}',
             num: 'u_2 = \\frac{\\pi \\times ' + kn(r.D, 3) + '\\times ' + kn(r.N, 0) + '}{60} = ' + kn(t.u2, 2) + '\\ \\mathrm{m/s} \\\\ c_{2m} = \\frac{' + kn(qw * 3600, 2) + '/3600}{\\pi \\times ' + kn(r.D, 3) + '\\times ' + kn(pw.b2, 5) + '\\times 0{,}92} = ' + kn(t.cm2, 2) + '\\ \\mathrm{m/s}',
             fuente: 'El impulsor del caso: 6 álabes que salen a 27°, una salida de 9,31 mm de ancho en la 2×3‑8 y 92 % del área libre.',
@@ -2322,7 +2325,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
       }
       if (g.thr) {
         var E8 = function (x) { return x ? x.P * 8000 : NaN; };
-        pasos.push({ titulo: 'Lo que cuesta en un año',
+        pasos.push({ titulo: 'La energía de un año',
           texto: 'En la vida de una bomba la energía pesa mucho más que la compra. Con 8000 horas al año, la diferencia entre la válvula y las otras dos maneras se vuelve kilovatios hora.',
           ec: 'E = P_{eje}\\,t',
           num: 'E_{v\\acute{a}lvula} = ' + kn(g.thr.P, 3) + '\\times 8000 = ' + kn(E8(g.thr), 0) + '\\ \\mathrm{kWh} \\\\ ' + (g.vfd ? 'E_{variador} = ' + kn(E8(g.vfd), 0) + '\\ \\mathrm{kWh}' : '') + (g.trim ? (g.vfd ? '\\qquad ' : '') + 'E_{recorte} = ' + kn(E8(g.trim), 0) + '\\ \\mathrm{kWh}' : ''),
@@ -2386,7 +2389,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
         ec: 'H_{ser}(Q) = 2\\,H(Q) = H_{sis}(Q)',
         num: 'Q = ' + kn(A.serie.Q * 3600, 2) + '\\ \\mathrm{m^3/h},\\quad H = ' + kn(A.serie.H, 2) + '\\ \\mathrm{m} \\\\ H_{bomba} = ' + kn(A.serie.h1, 2) + '\\ \\mathrm{m},\\quad Q = ' + kn(100 * A.serie.q1 / pf.qB, 0) + '\\ \\%\\ \\text{del BEP}',
         libro: L('exm-arreglos', 'Libro, ejemplo 11.8') });
-      if (A.una) pasos.push({ titulo: 'Lo que gana cada arreglo',
+      if (A.una) pasos.push({ titulo: 'La ganancia de cada arreglo',
         texto: 'Ningún arreglo da el doble, porque la línea pide más cabeza con más caudal. En una línea de mucha cabeza estática gana el paralelo; en una dominada por la fricción, la serie.',
         num: '\\frac{Q_{par}}{Q_1} = ' + (A.paralelo ? kn(A.paralelo.Q / A.una.Q, 3) : '\\text{sin cruce}') + ' \\qquad \\frac{Q_{ser}}{Q_1} = ' + (A.serie ? kn(A.serie.Q / A.una.Q, 3) : '\\text{sin cruce}'),
         res: 'La línea tiene ' + Hu(r.sys.Hst) + ' de cabeza estática y ' + Hu(r.sys.H(r.sys.Qd) - r.sys.Hst) + ' de dinámica a su caudal de diseño.',
@@ -2517,7 +2520,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
           texto: 'El fabricante mide el NPSH3: el NPSH con el que la cabeza cae 3 %. El explorador lo estima con la velocidad en el ojo y la relativa en el borde de ataque, y lo sube un poco a caudal muy bajo.',
           ec: '\\mathrm{NPSH_3} = \\frac{1{,}1\\,c_1^2 + 0{,}22\\,w_1^2}{2g}\\left[1 + 0{,}3\\left(\\frac{0{,}6 - Q/Q_{sf}}{0{,}6}\\right)^2\\right]',
           num: 'c_1 = ' + kn(c1, 2) + '\\ \\mathrm{m/s},\\quad w_1^2 = c_1^2 + u_1^2 = ' + kn(w1, 1) + '\\ \\mathrm{m^2/s^2} \\\\ \\mathrm{NPSH_3} = \\frac{1{,}1\\times ' + kn(c1 * c1, 3) + ' + 0{,}22\\times ' + kn(w1, 1) + '}{2\\times 9{,}81}\\times ' + kn(f, 3) + ' = ' + kn(r.npsh3, 3) + '\\ \\mathrm{m}',
-          fuente: 'Es la forma de Gülich con coeficientes del explorador; el corchete solo cuenta por debajo del 60 % del caudal sin choque del impulsor, Q_sf. Como advierte el libro, la curva del modelo es más plana que la de una bomba real, que cavita algo antes.',
+          fuente: 'Es la forma de Gülich con coeficientes del explorador; el corchete solo cuenta por debajo del 60 % del caudal sin choque del impulsor, Q<sub>sf</sub>. Como advierte el libro, la curva del modelo es más plana que la de una bomba real, que cavita algo antes.',
           libro: L('sec-bombas-npsh', 'Libro, sección 11.9') });
         pasos.push({ titulo: 'El inicio de las burbujas',
           texto: 'En el NPSH3 la bomba ya cavita, tanto que pierde cabeza. Las burbujas aparecen antes: el explorador las hace nacer por debajo de 1,3 veces el NPSH3, en la figura y en el lienzo de la bomba por dentro.',
@@ -2606,7 +2609,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
           num: 'C_Q = 2{,}71^{-0{,}165\\times ' + kn(lg, 3) + '^{3{,}15}} = ' + kn(hi.CQ, 3) + ' \\\\ C_\\eta = ' + kn(Bc, 2) + '^{-0{,}0547\\times ' + kn(Bc, 2) + '^{0{,}69}} = ' + kn(hi.Ce, 3),
           libro: L('eq-hi-viscosidad', 'Libro, ecuación 11.20') });
         pasos.push({ titulo: 'El mejor punto con el líquido',
-          texto: 'Cada punto de la curva de agua se traslada: el caudal se multiplica por C_Q, la cabeza por C_H y la eficiencia por C_η. La potencia sale de la ecuación de la potencia al eje con la densidad del líquido.',
+          texto: 'Cada punto de la curva de agua se traslada: el caudal se multiplica por C<sub>Q</sub>, la cabeza por C<sub>H</sub> y la eficiencia por C<sub>η</sub>. La potencia sale de la ecuación de la potencia al eje con la densidad del líquido.',
           ec: 'Q = C_Q\\,Q_w \\qquad H = C_H\\,H_w \\qquad \\eta = C_\\eta\\,\\eta_w \\qquad P_{eje} = \\frac{\\rho g Q_w H_w C_Q^2}{\\eta_w C_\\eta}',
           num: 'Q_{BEP} = ' + kn(hi.CQ, 3) + '\\times ' + kn(Qh, 2) + ' = ' + kn(pf.qB * 3600, 2) + '\\ \\mathrm{m^3/h},\\quad H_{BEP} = ' + kn(pf.hB, 2) + '\\ \\mathrm{m} \\\\ \\eta_{BEP} = ' + kn(hi.Ce, 3) + '\\times ' + kn(100 * pw.eB, 1) + ' = ' + kn(100 * pf.eB, 1) + '\\ \\% \\\\ P_{eje} = ' + kn(pf.P(pf.qB) / 1000, 3) + '\\ \\mathrm{kW}\\ \\text{(con agua, ' + kn(pw.P(pw.qB) / 1000, 3) + ')}',
           res: 'La bomba mueve ' + pct(1 - hi.CQ) + ' menos caudal con ' + pct(1 - hi.CHb) + ' menos cabeza, y pide ' + (pf.P(pf.qB) > pw.P(pw.qB) ? pct(pf.P(pf.qB) / pw.P(pw.qB) - 1) + ' más' : pct(1 - pf.P(pf.qB) / pw.P(pw.qB)) + ' menos') + ' de potencia.',
@@ -2624,7 +2627,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     controles: ['FS', 'marg'], mas: ['casing', 'D', 'N0', 'T', 'alt'], datos: ['FS', 'marg'],
     kpis: function (r) {
       return [
-        { etiqueta: 'Motor', valor: r.motor ? num(r.motor, r.motor < 1 ? 2 : r.motor < 10 ? 1 : 0) : 'no hay', unidad: r.motor ? 'kW' : '', nota: r.motor ? un(r.motor / 0.7457, 1, 'hp') + ' · IE3 de ' + pct(r.etaM, 1) : 'para ' + kW(r.PmaxCurve * r.s.FS), alerta: !r.motor },
+        { etiqueta: 'Motor', valor: r.motor ? num(r.motor, decMotor(r.motor)) : 'no hay', unidad: r.motor ? 'kW' : '', nota: r.motor ? un(r.motor / 0.7457, 1, 'hp') + ' · IE3 de ' + pct(r.etaM, 1) : 'para ' + kW(r.PmaxCurve * r.s.FS), alerta: !r.motor },
         { etiqueta: 'Potencia eléctrica', valor: r.op ? fp(r.Pelec) : 'sin dato', unidad: lP(), nota: 'la que se toma de la red' },
         { etiqueta: 'Energía al año', valor: r.op ? num(r.Pelec * 8000, 0) : 'sin dato', unidad: 'kWh', nota: 'en 8000 h' }
       ];
@@ -2668,13 +2671,13 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
         ec: 'n_q = \\frac{N\\sqrt{Q}}{H^{3/4}}',
         num: 'n_q = \\frac{' + kn(r.N, 0) + '\\sqrt{' + kn(pw.qB * 3600, 2) + '/3600}}{' + kn(pw.hB, 2) + '^{0{,}75}} = ' + kn(r.nq, 1) + ' \\qquad N_s = ' + kn(r.NsUS, 0),
         res: r.nq < 30 ? 'Es una radial de impulsor angosto, en la zona donde la eficiencia cae rápido.' : 'Es una radial.',
-        fuente: 'N_s, en gpm, pies y r/min, es la forma que se usa en Estados Unidos: unas 51,6 veces n_q.',
+        fuente: 'N<sub>s</sub>, en gpm, pies y r/min, es la forma que se usa en Estados Unidos: unas 51,6 veces n<sub>q</sub>.',
         libro: L('eq-nq', 'Libro, ecuación 11.10') });
       pasos.push({ titulo: 'El modelo de la bomba',
         texto: 'Todo lo anterior sale de una bomba radial de una etapa construida con la ecuación de Euler y el deslizamiento de Wiesner, 6 álabes a 27°, con pérdidas por fricción, por choque a la entrada, por fugas en los anillos, por fricción de disco, mecánicas y por recirculación a caudal bajo. Está calibrada para portarse como una bomba de catálogo: eficiencia máxima entre 70 y 76 %, cabeza a caudal cero entre 1,1 y 1,2 veces la del mejor punto y potencia a caudal cero cerca del 45 % de la del mejor punto. Las tres carcasas son semejantes. Es un modelo para aprender: un diseño de verdad se hace con las curvas del fabricante.',
         libro: L('sec-bombas-seleccion', 'Libro, sección 11.13') });
       return { intro: 'La selección junta todo lo de las otras escenas: el punto en su ventana, el NPSH con margen, la viscosidad, el motor que no se sobrecarga y la energía que se paga. El cálculo escoge el motor y resume lo que se revisa.', pasos: pasos,
-        libro: [L('sec-bombas-seleccion', 'Sección 11.13, Selección paso a paso'), L('exm-seleccion', 'Ejemplo 11.17, la revisión del caso'), L('tbl-reglas', 'Tabla 11.15, reglas prácticas'), L('tbl-tipos', 'Tabla 11.3, tipos de bomba según n_q')] };
+        libro: [L('sec-bombas-seleccion', 'Sección 11.13, Selección paso a paso'), L('exm-seleccion', 'Ejemplo 11.17, la revisión del caso'), L('tbl-reglas', 'Tabla 11.15, reglas prácticas'), L('tbl-tipos', 'Tabla 11.3, tipos de bomba según n<sub>q</sub>')] };
     }
   };
 
