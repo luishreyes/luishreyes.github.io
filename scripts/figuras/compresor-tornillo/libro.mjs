@@ -34,9 +34,10 @@ const FIG = leer('fig.svg', 'fig_data.json');
 const DET = leer('detalle.svg', 'detalle_data.json');
 
 /* ---------- la composición: la vista entera, el detalle y la línea que los une ---------- */
-// el centro del círculo y su radio, en unidades de la vista entera: arriba a la derecha, sobre el tablero
-const POS = [Number(process.env.CT_DX || 662), Number(process.env.CT_DY || 32)];
-const RD = Number(process.env.CT_RD || 116), ESC = RD / DET.RDET;
+// el centro del círculo y su radio, en unidades de la vista entera: arriba, sobre el compresor y a la derecha de la
+// succión (la línea que lo une al círculo chico pasa a la derecha del filtro y de la válvula de la succión)
+const POS = [Number(process.env.CT_DX || 450), Number(process.env.CT_DY || -50)];
+const RD = Number(process.env.CT_RD || 110), ESC = RD / DET.RDET;
 const cuerpoDe = (svg) => svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/<style>[^<]*<\/style>/, '');
 const estiloDe = (svg) => (svg.match(/<style>([^<]*)<\/style>/) || [, ''])[1];
 const CSS_EXTRA = '.ct-det-marca{fill:none;stroke:#525c64;stroke-width:1px}.ct-det-linea{fill:none;stroke:#525c64;stroke-width:1px}';
@@ -77,25 +78,25 @@ function contorno(svg) {
 
 /* ---------- los rótulos ---------- */
 // [ancla, vista ('fig' o 'det'), texto, x, y del texto (primer renglón), lado: 'der' (la línea llega por la izquierda
-// del texto) o 'izq']. A la izquierda, la succión, el tren motor y lo que va en el extremo del separador; arriba en el
-// medio, la válvula y el filtro de la succión; a la derecha del círculo, los rotores, la descarga y el tablero; abajo,
-// bajo la losa, lo que va al frente del separador y el enfriador con su termosifón. La persona está frente al
-// tablero: nada de la derecha la cruza.
+// del texto) o 'izq']. A la izquierda, la succión, el tren motor y el separador; a los lados del círculo, el filtro de
+// la succión, los rotores, la carcasa y la inyección; bajo el círculo, la válvula de seguridad; a la derecha, la
+// descarga, el tablero y la persona; abajo, bajo la losa, lo que va al frente del separador y el enfriador con su
+// termosifón. La persona está frente al tablero, y ningún rótulo de la derecha la cruza.
 const RS = [
-  ['SUCCION', 'fig', 'Succión del nivel alto', 200, 52, 'izq'],
-  ['MOTOR', 'fig', 'Motor de 45 kW', 110, 132, 'izq'],
+  ['SUCCION', 'fig', 'Succión del nivel alto', 205, 22, 'izq'],
+  ['VALV_SUC', 'fig', 'Válvula de cierre\ny retención', 205, 70, 'izq'],
+  ['MOTOR', 'fig', 'Motor de 45 kW', 110, 140, 'izq'],
   ['BASTIDOR', 'fig', 'Bastidor del tren motor', 110, 212, 'izq'],
-  ['VISOR', 'fig', 'Visor de nivel', 110, 262, 'izq'],
-  ['SEPARADOR', 'fig', 'Separador de aceite', 110, 312, 'izq'],
-  ['VALV_SUC', 'fig', 'Válvula de cierre\ny retención', 348, 46, 'der'],
-  ['FILTRO_SUC', 'fig', 'Filtro de succión', 348, 98, 'der'],
-  ['ALIVIO', 'fig', 'Válvula de seguridad', 394, 128, 'der'],
-  ['HEMBRA', 'det', 'Rotor hembra', 792, -40, 'der'],
-  ['MACHO', 'det', 'Rotor macho', 792, -6, 'der'],
-  ['COMPRESOR', 'det', 'Carcasa del compresor', 792, 60, 'der'],
-  ['INYECCION', 'det', 'Inyección de aceite', 792, 96, 'der'],
-  ['VALV_DESC', 'fig', 'Válvula de cierre de la\ndescarga, al condensador', 792, 150, 'der'],
-  ['TABLERO', 'fig', 'Tablero con\nmanómetros', 792, 204, 'der'],
+  ['SEPARADOR', 'fig', 'Separador de aceite', 110, 262, 'izq'],
+  ['VISOR', 'fig', 'Visor de nivel', 110, 312, 'izq'],
+  ['FILTRO_SUC_D', 'det', 'Filtro de succión', 325, -130, 'izq'],
+  ['HEMBRA', 'det', 'Rotor hembra', 325, -80, 'izq'],
+  ['MACHO', 'det', 'Rotor macho', 578, -100, 'der'],
+  ['COMPRESOR', 'det', 'Carcasa del compresor', 578, -40, 'der'],
+  ['INYECCION', 'det', 'Inyección de aceite', 325, 0, 'izq'],
+  ['ALIVIO', 'fig', 'Válvula de\nseguridad', 398, 112, 'der'],
+  ['VALV_DESC', 'fig', 'Válvula de cierre de la\ndescarga, al condensador', 600, 112, 'der'],
+  ['TABLERO', 'fig', 'Tablero con manómetros', 612, 166, 'der'],
   ['PERSONA', 'fig', 'Persona\nde 1,75 m', 712, 300, 'der'],
   ['BASE', 'fig', 'Base de canales', 95, 455, 'izq'],
   ['FILTRO_ACEITE', 'fig', 'Filtro de aceite', 185, 492, 'izq'],
@@ -104,6 +105,7 @@ const RS = [
   ['TS_LIQUIDO', 'fig', 'Líquido del termosifón', 530, 566, 'der'],
   ['REGISTRO', 'fig', 'Registro de los coalescedores', 590, 530, 'der'],
 ];
+
 
 if (process.argv.includes('--anclas')) anclas();
 else libro();

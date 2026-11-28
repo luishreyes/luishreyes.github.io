@@ -26,7 +26,7 @@ export const CT = {
   /* la carcasa: la sección exterior (dos semicírculos de 92 mm unidos arriba y abajo y el bolsillo de la válvula de
      corredera debajo) y el agujero de los rotores (dos círculos de 63 mm) */
   cas: { Ro: 92, Ri: 63, zBot: -132, ySv: 46, seal: [-200, -170], suc: [-170, -60], dis: [90, 200], cap: [200, 240] },
-  /* la válvula de corredera: su cilindro y el indicador de posición, en el extremo de la descarga, bajo los rotores */
+  /* la válvula deslizante: su cilindro y el indicador de posición, en el extremo de la descarga, bajo los rotores */
   slide: { z: -78, R: 42, x0: 240, x1: 390, ind: 60 },
   /* el motor de 45 kW, dos polos (carcasa IEC 225M: el eje a 225 mm de las patas) */
   motor: { R: 208, x0: -1180, x1: -480, cowl: -1300, de: -470, feet: [-980, -670] },

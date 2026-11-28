@@ -191,6 +191,23 @@ export const CLASES = {
   'ce-agua-cara': { fill: 'agua.sombras.0', 'fill-opacity': LIQ }, 'ce-agua-sup': { fill: 'agua.sombras.0', 'fill-opacity': LIQ_SUP },
   '.ce-agua .iso-line[data-tone="lo"]': { stroke: 'agua.oscuro' }, 'ce-gota': { fill: 'azul' }, '.ce-malla.iso-line': { stroke: 'tinta-2' },
   'ce-flujo-o': { stroke: 'tinta-2' }, 'ce-flujo': { stroke: 'blanco' }, 'ce-flujo-p': { fill: 'blanco', stroke: 'tinta-2' },
+  // el enfriador de glicol empacado de la winterización (capítulo 26): el gabinete, el serpentín aleteado, las aspas, el
+  // evaporador de placas, el tanque y las líneas del glicol en el acero; las válvulas de bola, las uniones, las bisagras y
+  // el marco del controlador en la fundición; la base, el recibidor, el filtro secador, la bomba, los motores, el tablero
+  // y los presostatos pintados; la tubería del propano, la válvula de expansión, la mirilla y las juntas soldadas de las
+  // placas en el cobre; el compresor hermético, el aislamiento de la succión, las gomas y los cables en el caucho; el
+  // visor de nivel y un piloto en el vidrio, el glicol del visor en el agua, el interruptor y el otro piloto en el
+  // amarillo, el botón de rearme en el rojo de alerta; las rejillas en el gris de los huecos; la pantalla del controlador
+  // en la tinta, con los dígitos blancos; el aire en flechas blancas con borde de tinta, como en el condensador evaporativo
+  'eg-gal': 'acero', 'eg-ss': 'acero', 'eg-fin': 'acero', 'eg-blade': 'acero', 'eg-pipe': 'acero',
+  'eg-cast': 'fundicion', 'eg-lever': 'fundicion', 'eg-ctrl': 'fundicion',
+  'eg-paint': 'pintado', 'eg-motor': 'pintado', 'eg-pump': 'pintado', 'eg-panel': 'pintado',
+  'eg-cu': 'cobre', 'eg-brass': 'cobre', 'eg-comp': 'caucho', 'eg-ins': 'caucho', 'eg-rub': 'caucho', 'eg-cable': 'caucho', 'eg-knob': 'caucho',
+  'eg-glass': 'vidrio', 'eg-lamp': 'vidrio', 'eg-gly': 'agua', 'eg-yel': 'amarillo', 'eg-lamp2': 'amarillo', 'eg-red': { plano: 'alerta' },
+  'eg-conc': 'concreto', 'eg-slot': { fill: 'hueco.medio' }, 'eg-warn': { fill: 'amarillo.cara' }, 'eg-pantalla': { fill: 'tinta-2' },
+  '.eg-digito.iso-line': { stroke: 'blanco' }, 'eg-vidrio-v': { fill: 'vidrio.sombras.0' }, 'eg-indicador': { fill: 'oliva' },
+  '.eg-malla.iso-line': { stroke: 'tinta-2' }, '.eg-placa.iso-line': { stroke: 'cobre.sombras.0' },
+  'eg-flujo-o': { stroke: 'tinta-2' }, 'eg-flujo': { stroke: 'blanco' }, 'eg-flujo-p': { fill: 'blanco', stroke: 'tinta-2' },
   // el banco de hielo de la planta de frío (capítulo 26): el forro del tanque, la tapa, los soportes del haz, las líneas
   // del agua y la chaqueta del aislamiento del separador en el acero; los serpentines desnudos, los cabezales, las
   // válvulas y las bridas en la fundición (acero galvanizado); la lámina de adentro del tanque, el soplador, su motor,
@@ -435,6 +452,7 @@ export const VISTAS = {
   'refrigeracion-y-congelacion/_condensador-evaporativo': {},
   'refrigeracion-y-congelacion/_banco-hielo': {},
   'refrigeracion-y-congelacion/_compresor-tornillo': {},
+  'refrigeracion-y-congelacion/_enfriador-glicol': {},
   'evaporacion/_taste': {},
   'caracterizacion-de-solidos-particulados/_divisor': { piezas: PIEZAS.divisor },
   'filtracion/_prensa-tornillo': {},

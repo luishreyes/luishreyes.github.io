@@ -9,10 +9,12 @@
    la bomba lo lleva por el enfriador de termosifón, donde el amoníaco líquido del condensador lo enfría hirviendo, y
    por el filtro, de vuelta al compresor.
    Corte: a la carcasa del compresor se le quitó la mitad de arriba entre la caja de la succión y la de la descarga,
-   así que se ven los dos rotores; el acople va sin la tapa de la guarda que mira al lector.
+   así que se ven los dos rotores; el acople va sin la tapa de la guarda que mira al lector. Con --detalle, el
+   compresor abierto en un círculo, 3,4 veces más grande y visto desde 50° de elevación (ELDET), para que se vean los
+   dos rotores engranados.
    Lleva la persona de referencia de 1,75 m (../persona.mjs), de pie frente al tablero.
    Uso: node build.mjs [--audit] [--fast] [--detalle]   (CT_ITEM="pieza" lista lo que se cruza con una pieza;
-   CT_PER="x,y,rumbo" prueba otro lugar para la persona)
+   CT_PER="x,y,rumbo" prueba otro lugar para la persona; CT_ELDET, otra elevación para el detalle)
    Unidades: 1 = 1 mm. Medidas en geo.mjs.
    ==================================================================== */
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -429,7 +431,7 @@ const HH_R = 120, HH_S0 = SP.x1 + SP.hd * Math.sqrt(1 - (HH_R / SP.R) ** 2);   /
       put(`sep.b${i}`, G.add3(FSEP.o, G.mul3(XD, (b.s0 + b.s1) / 2)), svg, [sh, ...tubes, ...(h ? [h.shape] : [])]);
     });
   }
-  ANCH.SEPARADOR = G.pointOf(FSEP, -880, SP.R, -0.3);
+  ANCH.SEPARADOR = G.pointOf(FSEP, SP.x0 - 60, SP.R * Math.sqrt(1 - (60 / SP.hd) ** 2) + 1, -0.15);   // en la cabeza de −x
 }
 if (!DET) {
   // la placa de datos del separador, en el casco, del lado del lector: una lámina delgada curva
@@ -521,11 +523,11 @@ if (!DET) {
 
 /* ====================================================================
    5 · el compresor: la caja del sello, la de la succión, la carcasa de los rotores (sin la mitad de arriba), los
-   rotores, la caja de la descarga, la tapa de los cojinetes, el cilindro de la válvula de corredera con su indicador,
+   rotores, la caja de la descarga, la tapa de los cojinetes, el cilindro de la válvula deslizante con su indicador,
    las patas y sus pedestales, el cuello de la succión, el de la descarga y la boquilla del aceite
    ==================================================================== */
 // la sección exterior de la carcasa (en y, z relativos a y = 0, z = zA): dos semicírculos unidos y el bolsillo de
-// la válvula de corredera debajo
+// la válvula deslizante debajo
 const casOuter = (() => {
   const Ro = CS.Ro, ys = CS.ySv, zb = CS.zBot;
   const out = [];
@@ -579,7 +581,7 @@ function halfSec(sg, part = "all") {
     if (part === "floor") floorM = h;
   }
   // los rotores
-  const det = DET ? { perLobe: 18, land: 4, ns: 52 } : { perLobe: 9, land: 2, ns: 22 };
+  const det = DET ? { perLobe: 12, land: 3, ns: 36 } : { perLobe: 7, land: 2, ns: 16 };
   const Rmt = RO.rm + RO.rho, Rft = RO.rf;
   const shM = A.solid(FXL(YM, ZA), [[RO.x0 + 0.5, 0], [RO.x0 + 0.5, Rmt], [RO.x1 - 0.5, Rmt], [RO.x1 - 0.5, 0]], { name: "rotor.M", owner: "rotor", cut: [A.disc(FXL(YF, ZA), RO.x0 - 5, RO.x1 + 5, Rft)] });
   const shF = A.disc(FXL(YF, ZA), RO.x0 + 0.5, RO.x1 - 0.5, Rft, { name: "rotor.F", owner: "rotor" });
@@ -592,7 +594,7 @@ function halfSec(sg, part = "all") {
   const capSec = casOuter.map(([y, z]) => [y * 0.92, z * 0.92]);
   fp("comp.cap", FC, capSec, CS.cap[0], CS.cap[1], { tone: "mid" }, { owner: "comp", cls: "ct-comp", extra: Dots([[YM + 60, 50], [YM + 60, -50], [YF - 60, 50], [YM, 75], [YF, 75]].map(([y, z]) => at([CS.cap[1] + 0.3, y, ZA + z])), { size: 0.45 }) });
   // las bridas entre las cajas: un filete de pernos en el borde de la caja de la succión y de la descarga
-  // el cilindro de la válvula de corredera y su indicador de posición, bajo los rotores
+  // el cilindro de la válvula deslizante y su indicador de posición, bajo los rotores
   const SV = CT.slide, Fsv = FXL(0, ZA + SV.z);
   disc("comp.slidecyl", Fsv, CS.cap[1], SV.x1, SV.R, { tone: "mid" }, { owner: "comp", cls: "ct-comp", extra: Dots(G.dotsOf(Fsv, SV.x1, SV.R - 10, 6, P, { all: true }), { size: 0.45 }) });
   disc("comp.slideind", Fsv, SV.x1, SV.x1 + SV.ind, 26, { tone: "mid" }, { owner: "comp", cls: "ct-cast" });
@@ -623,6 +625,7 @@ const SU = CT.suc, NS = DN[80], ZT = ZA + CS.Ro;
   disc("suc.drain", FZ(SU.x - 40, 72, 0), SU.body[0] - 22, SU.body[0], 9, { tone: "mid" }, { owner: "strainer", cls: "ct-ss" });
   disc("suc.sfl1", Fv, SU.body[1], SU.body[1] + SU.fl, NS.fl, { tone: "mid" }, { owner: "strainer", cls: "ct-cast", extra: boltDots(Fv, SU.body[1] + SU.fl, NS) });
   ANCH.FILTRO_SUC = G.pointOf(Fv, (SU.body[0] + SU.body[1]) / 2 + 40, SU.R, (AZ - 75) * D2R);   // a la derecha, en pantalla
+  ANCH.FILTRO_SUC_D = G.pointOf(Fv, SU.body[0] + 40, SU.R, (AZ - 75) * D2R);                      // el mismo, más abajo (el detalle)
   // la válvula de ángulo: la brida de salida abajo, el cuerpo, la boca de entrada hacia −x, el bonete y el volante
   const z0 = SU.body[1] + SU.fl, zv = SU.valve, rv = 112;
   disc("sv.fl0", Fv, z0, z0 + NS.ft, NS.fl, { tone: "mid" }, { owner: "sv", cls: "ct-cast", extra: boltDots(Fv, z0 + NS.ft, NS) });
