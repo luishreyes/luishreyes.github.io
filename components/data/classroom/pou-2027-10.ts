@@ -763,5 +763,21 @@ export const pou202710Course: Course = {
       href: GUIA + 'Guia_Semana_09.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l08.jpg',
     },
+    {
+      // La clase de refrigeración no tenía lectura en 2026-20. El banner es el condensador
+      // evaporativo del capítulo 26 del libro, una figura propia, sin sus rótulos.
+      slug: 'guia-semana-10-refrigeracion',
+      week: 10,
+      order: 10,
+      title: 'Guía de lectura · Semana 10: refrigeración',
+      summary:
+        'Qué leer del capítulo 26 del libro: el ciclo de compresión de vapor con su efecto refrigerante, su potencia y su COP, el enfriador de la winterización como primer ejemplo, la seguridad y el efecto en el ambiente de cada refrigerante, el condensador en Bogotá y los refrigerantes secundarios. Con las preguntas de la semana. De ahí sale el Quiz 8, y es la base de la refrigeración de la winterización en la Bitácora 3.',
+      date: '2026-11-28',
+      readingMinutes: 65,
+      tags: ['guía de lectura', 'libro', 'refrigeración', 'ciclo de compresión de vapor', 'COP', 'refrigerantes', 'winterización'],
+      category: 'lectura',
+      href: GUIA + 'Guia_Semana_10_Refrigeracion.html',
+      bannerImg: '/classroom/iqya-2031-2027-10/lecturas-banners/refrigeracion.jpg',
+    },
   ],
 };
