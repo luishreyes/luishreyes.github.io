@@ -35,6 +35,7 @@ const PRESENTACIONES_PROPIAS = new Set([
   'propiedades-solidos-particulados', 'reduccion-de-tamano',
   'arrastre-de-vapor', 'bombas', 'valvulas-control-vacio',
   'agitacion-y-mezclado', 'condensacion-y-decantacion', 'refrigeracion',
+  'filtracion-y-winterizacion',
 ]);
 const LECTURAS_PROPIAS = new Set([
   'lectura-01-operaciones-unitarias',
@@ -153,7 +154,6 @@ const SIMULADORES_RETIRADOS = new Set([
 ]);
 // La semana de 2027-10 de lo heredado que se queda, según su cronograma.
 const SEMANA_2027: Record<string, number> = {
-  filtracion: 10,
   'destilacion-diferencial': 13, 'diseno-de-platos': 15,
   'eficiencias-en-destilacion': 15, 'comunicacion-visual': 16,
   'explorador-intercambiadores': 9,
@@ -163,9 +163,9 @@ const SEMANA_2027: Record<string, number> = {
   'lectura-12-destilacion-por-lotes': 13, 'lectura-14-comunicacion-visual': 16,
 };
 // La sesión de 2027-10 de las presentaciones heredadas, para que el Material las ordene
-// con las nuevas (la de filtración, el jueves 8 de abril, es la sesión 20).
+// con las nuevas.
 const SESION_2027: Record<string, number> = {
-  filtracion: 20, 'destilacion-diferencial': 25, 'diseno-de-platos': 29, 'eficiencias-en-destilacion': 29,
+  'destilacion-diferencial': 25, 'diseno-de-platos': 29, 'eficiencias-en-destilacion': 29,
 };
 
 // Descripciones que en 2026-20 hablaban de la planta de pectina.
@@ -192,6 +192,8 @@ const DESCRIPCIONES: Record<string, string> = {
     'Cómo condensa el vapor que sale de los extractores y cómo se separa el aceite del agua, con el tren de condensación de los capítulos 23 y 17 del libro y sus figuras: la película de condensado, los gases incondensables y el venteo, las disposiciones de un condensador, sus corazas, sus deflectores y el subenfriamiento, la curva de condensación del vapor con aceite, el rocío y la meseta, el agua de torre, E-201 por dentro y por zonas; después el florentino, con la regla del área, la gota de diseño, sus comprobaciones, la pierna del agua, el venteo y la seguridad, las gotas que no se juntan, los coalescedores, el hidrolato y el florentino en corte. Con siete animaciones de los dos capítulos.',
   'refrigeracion':
     'Cómo un refrigerante que hierve a baja presión enfría el aceite de la winterización, con el enfriador empacado de propano del capítulo 26 del libro y sus figuras: el frío en una planta de alimentos y la planta de frío de la juguera, los cuatro equipos del ciclo de compresión de vapor, el efecto refrigerante, la potencia y el COP, el ciclo en el diagrama presión-entalpía, la carga del lote y el ciclo del enfriador, el COP contra las dos temperaturas y el ciclo real; después los refrigerantes, con su clase de seguridad, su límite de concentración en Bogotá, su PCG y las reglas de cada país, el condensador en Bogotá con el evaporativo E-401 en isométrico, y los refrigerantes secundarios: el agua cerca de 0 °C, el propilenglicol y la diferencia de cada equipo. Con dos animaciones del capítulo; cierra con lo que pide la Bitácora 3.',
+  'filtracion-y-winterizacion':
+    'Cómo se le quita al aceite frío el agua que trae, con la winterización del capítulo 18 del libro y sus figuras: la filtración de torta y la de profundidad, la ecuación de la filtración con la resistencia de la torta y la de la tela, la recta de Ruth y su ensayo, los ensayos de Ruth y el escalado, la torta compresible y lo que compra la presión, la resistencia de algunas tortas, y como contexto la prensa de cámaras en isométrico, su ciclo y el tambor rotatorio a vacío, con dos videos; después las ayudas filtrantes, del montón al poro, su resistencia, la precapa, la alimentación al cuerpo y el polvo, y el aceite frío: cómo retiene un filtro de profundidad, los cartuchos, las bolsas y las placas, el agua del aceite, el reposo del lote y el área de placa. Con seis animaciones del capítulo; cierra con lo que pide la Bitácora 3.',
   'trabajo-en-equipo':
     'La sesión del quiz de práctica: qué distingue a un equipo que funciona, cuánto pesa el equipo en la nota, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase y sube a Bloque Neón.',
 };
@@ -220,6 +222,15 @@ const REEMPLAZOS: Record<string, Presentation> = {
     description: DESCRIPCIONES['bombas'],
     sessionNumber: 11,
     file: 'Bombas/Presentacion_Bombas.html',
+  },
+  // La de filtración de 2026-20 era de pectina y levadura; la de 2027-10 sigue la winterización del aceite.
+  filtracion: {
+    id: 'filtracion-y-winterizacion',
+    week: 10,
+    title: 'Filtración y winterización',
+    description: DESCRIPCIONES['filtracion-y-winterizacion'],
+    sessionNumber: 20,
+    file: 'Filtracion_y_Winterizacion/Presentacion_Filtracion_y_Winterizacion.html',
   },
 };
 
