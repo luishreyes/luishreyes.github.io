@@ -45,11 +45,11 @@ const ANCH = {};                                                  // los puntos 
 
 /* ---------- la cámara ---------- */
 const EXT = [];
-for (const x of [CT.pad.x0, CT.pad.x1]) for (const y of [CT.pad.y0, CT.pad.y1]) EXT.push([x, y, 0]);
+for (const x of [CT.pad.x0, CT.pad.x1]) for (const y of [CT.pad.y0, CT.pad.y1]) EXT.push([x, y, CT.pad.z0]);
 for (const x of [CT.skid.x0, CT.skid.x1]) for (const y of [-CT.skid.y, CT.skid.y]) EXT.push([x, y, CT.mount.z1]);
 EXT.push([CT.suc.inlet - 100, 0, CT.suc.top + 60], [CT.suc.x, 0, CT.suc.valve + 300], [CT.dis.xOut, CT.dis.yEnd - 80, CT.dis.zRun + 100]);
 EXT.push([CT.oc.x + 240, CT.oc.y, 1500], [CT.panel.x1, CT.panel.y0, CT.panel.z1], [CT.panel.x1, CT.panel.y1, CT.panel.z1]);
-EXT.push([CT.persona.x, CT.persona.y, 0], [CT.persona.x, CT.persona.y, 1800], [CT.persona.x + 250, CT.persona.y, 0]);
+EXT.push([CT.persona.x, CT.persona.y, CT.pad.z0], [CT.persona.x, CT.persona.y, CT.pad.z0 + 1800], [CT.persona.x + 250, CT.persona.y, CT.pad.z0]);
 const PMAIN = k.fitProjection(EXT, W0, H0, { pad: 12, azimuth: AZ, elevation: EL });
 // el detalle: el compresor abierto, MDET veces más grande, dentro de un círculo de RDET
 const CDET = [15, 0, ZA + 10], MDET = 3.4, RDET = 140;
@@ -364,7 +364,7 @@ const sepProf = (() => {
 const sepHost = A.solid(FSEP, sepProf.map(([s, r]) => [s, r]));
 const onShell = (ang) => [SP.R * Math.cos(ang * D2R), SP.R * Math.sin(ang * D2R)];   // (y, z − zSep) a ese ángulo desde +y
 if (!DET) {
-  box("stand.pad", [CT.pad.x0, CT.pad.y0, 0], [CT.pad.x1, CT.pad.y1, CT.pad.h], { tone: "mid" }, { r: 6, steps: 2, bevel: 0.6, cls: "ct-conc", ground: true });
+  box("stand.pad", [CT.pad.x0, CT.pad.y0, CT.pad.z0], [CT.pad.x1, CT.pad.y1, CT.pad.h], { tone: "mid" }, { r: 6, steps: 2, bevel: 0.6, cls: "ct-conc", ground: true });
   // los canales a lo largo: el alma afuera y las alas hacia adentro
   [-1, 1].forEach((sg, i) => {
     const y0 = sg * SK.y, yi = sg * (SK.y - SK.b), w = sg * (SK.y - SK.tw);
@@ -896,7 +896,7 @@ if (!DET) {
 /* ---------- la persona de referencia: 1,75 m, de pie frente al tablero (../persona.mjs) ---------- */
 if (!DET) {
   const PS = process.env.CT_PER ? Object.fromEntries(["x", "y", "rumbo"].map((kk, i) => [kk, Number(process.env.CT_PER.split(",")[i])])) : CT.persona;
-  const per = personaDePie({ P, pie: [PS.x, PS.y, 0], rumbo: PS.rumbo, mm: 1, adelante: "izq" });
+  const per = personaDePie({ P, pie: [PS.x, PS.y, CT.pad.z0], rumbo: PS.rumbo, mm: 1, adelante: "izq" });
   per.shapes.forEach(record);
   put("persona", per.ref, per.svg, per.shapes);
   ANCH.PERSONA = per.anclas.PECHO;

@@ -9,7 +9,7 @@
    como en las demás figuras. */
 export const CT = {
   AZ: 58, EL: 26,
-  pad: { x0: -1700, x1: 1820, y0: -820, y1: 820, h: 100 },          // la losa de la sala de máquinas
+  pad: { x0: -1700, x1: 1820, y0: -820, y1: 820, z0: -150, h: 100 }, // la losa de la sala de máquinas, de 250 mm sobre el piso (Stoecker, p. 161)
   /* la base: dos canales C 200 × 75 a lo largo y dos en los extremos, con la bandeja de lámina encima */
   skid: { x0: -1450, x1: 1450, y: 550, h: 200, b: 75, tw: 8, tf: 11, deck: 6 },
   /* el separador de aceite: casco de 20 in (508 mm) con cabezas elipsoidales 2:1, sobre dos sillas */
