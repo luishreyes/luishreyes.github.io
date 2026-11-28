@@ -244,7 +244,6 @@ box("back", [-XB + T, -YB, ZP], [XB - T, yIn, ZD], { tone: "mid" }, { owner: "ca
   box("left", [-XB, -YB, ZP], [xInL, YB, ZD], { tone: "mid" }, { owner: "casing", cls: "eg-gal", extra: slots + pass });
 }
 // el extremo de +x: el marco del condensador (abajo, arriba y a los lados del serpentín)
-box("right.bot", [XB - T, -YB, ZP], [XB, YB, CO.z0 - 5], { tone: "mid" }, { owner: "casing", cls: "eg-gal" });
 box("right.top", [XB - T, -YB, CO.z1 + 5], [XB, YB, ZD], { tone: "mid" }, { owner: "casing", cls: "eg-gal" });
 box("right.l", [XB - T, -YB, CO.z0 - 5], [XB, CO.y0 - 3, CO.z1 + 5], { tone: "mid" }, { owner: "casing", cls: "eg-gal" });
 box("right.r", [XB - T, CO.y1 + 3, CO.z0 - 5], [XB, YB, CO.z1 + 5], { tone: "mid" }, { owner: "casing", cls: "eg-gal" });
@@ -254,9 +253,10 @@ box("right.r", [XB - T, CO.y1 + 3, CO.z0 - 5], [XB, YB, CO.z1 + 5], { tone: "mid
   const rules = Ln([0.3, 0.5, 0.7].map((f) => path3([[xd + 3.3, y1 - 20, z0 + (z1 - z0) * f], [xd + 3.3, y0 + 20, z0 + (z1 - z0) * f]])).join(""), { tone: "lo", free: true });
   box("plate", [xd, y0, z0], [xd + 3, y1, z1], { tone: "mid" }, { owner: "casing", cls: "eg-ss", r: 2, extra: rules + Dots([[y0 + 8, z0 + 6], [y1 - 8, z0 + 6], [y1 - 8, z1 - 6], [y0 + 8, z1 - 6]].map(([y, z]) => at([xd + 3.3, y, z])), { size: 0.45 }) });
   // el triángulo amarillo con su borde y su signo de admiración
-  const yc = 75, zc = (z0 + z1) / 2, s = 22, tri = [[xd + 0.5, yc - s, zc - s * 0.6], [xd + 0.5, yc + s, zc - s * 0.6], [xd + 0.5, yc, zc + s * 0.95]];
-  const svg = `<path class="eg-warn" d="${pth1(tri.map(pr))}"/>` + Ln(path3(tri, true), { tone: "mid" }) + Ln(path3([[xd + 0.6, yc, zc + s * 0.5], [xd + 0.6, yc, zc - s * 0.1]]), { tone: "mid", free: true }) + Dots([at([xd + 0.6, yc, zc - s * 0.35])], { size: 0.7, tone: "mid" });
-  put("warn", [xd + 0.5, yc, zc], svg, [A.box([xd, yc - s, zc - s * 0.6], [xd + 0.5, yc + s, zc + s])]);
+  // la calcomanía va pintada en la franja de abajo del marco (con ella en el mismo trazo)
+  const yc = 75, zc = (z0 + z1) / 2, s = 22, xw = xd + 0.3, tri = [[xw, yc - s, zc - s * 0.6], [xw, yc + s, zc - s * 0.6], [xw, yc, zc + s * 0.95]];
+  const svg = `<path class="eg-warn" d="${pth1(tri.map(pr))}"/>` + Ln(path3(tri, true), { tone: "mid" }) + Ln(path3([[xw + 0.1, yc, zc + s * 0.5], [xw + 0.1, yc, zc - s * 0.1]]), { tone: "mid", free: true }) + Dots([at([xw + 0.1, yc, zc - s * 0.35])], { size: 0.7, tone: "mid" });
+  box("right.bot", [XB - T, -YB, ZP], [XB, YB, CO.z0 - 5], { tone: "mid" }, { owner: "casing", cls: "eg-gal", extra: svg });
   ANCH.PLACA = [xd + 3, (y0 + y1) / 2, z1 - 6];
   ANCH.ADVERTENCIA = [xd + 0.5, yc + s * 0.3, zc + s * 0.4];
 }
@@ -382,7 +382,7 @@ const zT = GEO.zTube;
   for (const r of [rr0, 100, 145, 190]) wires += path3(arcPts(r, zw, 0, TAU, 96, cx, cy).slice(0, -1), true);
   for (let q = 0; q < 8; q++) { const d = 22.5 + q * 45; wires += path3([pol(rr0, d, zw, cx, cy), pol(rI + 16, d, zw, cx, cy)]); }
   put("guard", [cx, cy, zw], Ln(wires, { tone: "mid", className: "eg-malla" }), [A.disc(FZ(cx, cy, 0), zg + 6, zw + 1.5, rI + 13)]);
-  ANCH.MALLA = pol(167, 200, zw, cx, cy);
+  ANCH.MALLA = pol(172, 150, zw, cx, cy);
 }
 
 /* ====================================================================
@@ -526,7 +526,7 @@ pipe("liq.b", [[LQ.x, DR.y0, zRv], [LQ.x, SG.y + SG.h / 2, zRv]], rL, 14, { cls:
   ANCH.MIRILLA = [LQ.x + ap + 5, SG.y + 4, zRv + 6];
 }
 pipe("liq.c", [[LQ.x, SG.y - SG.h / 2, zRv], [LQ.x, yTx, zRv], [xTx + 34, yTx, zRv]], rL, 28, { cls: "eg-cu" });
-ANCH.LIQUIDO = [LQ.x + rL, 120, zRv];
+ANCH.LIQUIDO = [LQ.x + rL, 190, zRv];
 
 /* ====================================================================
    7 · la succión: del evaporador sube, corre bajo el techo hacia el compresor y baja a él; aislada, salvo en el tramo
@@ -830,7 +830,7 @@ const CSS = `.eg-gal{${ACERO}}.eg-ss{${ACERO}}.eg-fin{${ACERO}}.eg-blade{${ACERO
 .eg-red{${shades("#e8b4ae", "#e8b4ae", "#f0c9c4", "#c2766e", "#cc8a83", "#d69e97", "#dfb0aa")}}
 .eg-conc{${shades("#e8e6e1", "#e8e6e1", "#efede9", "#d2cfc8", "#d9d6d0", "#dfddd7", "#e4e2dc")}}
 .eg-slot{fill:#525c64;stroke:none}.eg-warn{fill:#f3e9a6;stroke:none}.eg-pantalla{fill:#525c64;stroke:none}
-.eg-digito.iso-line{stroke:#fff500}.eg-vidrio-v{fill:#dfe9f1;stroke:none}.eg-indicador{fill:#6e6a00}
+.eg-digito.iso-line{stroke:#ffffff}.eg-vidrio-v{fill:#dfe9f1;stroke:none}.eg-indicador{fill:#6e6a00}
 .eg-malla.iso-line{stroke:#525c64}.eg-placa.iso-line{stroke:#c49e7c}
 .eg-flujo-o{fill:none;stroke:#525c64;stroke-width:3.4px;stroke-linecap:round;stroke-linejoin:round}
 .eg-flujo{fill:none;stroke:#ffffff;stroke-width:1.6px;stroke-linecap:round;stroke-linejoin:round}
