@@ -2748,7 +2748,7 @@ var AC_FIGS = {"par":{"P":{"origin":[477.42950073671653,326.6946066012488],"scal
   'use strict';
 var M = window.Modelo;
 var D = XL.dib, C = D.C, el = D.el, tx = D.texto, set = D.attrs, entre = D.entre, mezcla = D.mezcla;
-var num = XL.num, un = XL.un, pct = XL.pct, kn = XL.kn, kc = XL.kc, NB = XL.NB, esc = XL.esc, ico = XL.ico;
+var num = XL.num, un = XL.un, pct = XL.pct, kn = XL.kn, kc = function (x, d) { return x ? XL.kc(x, d) : '0'; }, NB = XL.NB, esc = XL.esc, ico = XL.ico;
 var fN = M.fmtN, trimN = M.trimN, L10 = M.L10;
 // los colores de las figuras: el caliente en el naranja del libro, el frío en azul, el aceite en ocre; el rojo de alerta
 // queda solo para lo que pasa de un límite
@@ -2799,9 +2799,11 @@ function linea(g, pts, color, w, extra) { var at = { d: camino(pts), fill: 'none
 function punto(g, x, y, caso) { return el('circle', { cx: x, cy: y, r: caso ? 7 : 5.5, fill: caso ? C.amarillo : C.blanco, stroke: C.tinta, 'stroke-width': 1.8 }, g); }
 function rotulo(g, x, y, t, cls, anc) { return tx(g, x, y, t, (cls || 'f-v') + ' f-halo', anc); }
 // un rótulo junto a un punto que pasa al otro lado si se saldría de la figura (ancho estimado de la letra)
-function rotuloPunto(g, x, y, t, cls, xmax, dx) {
-  var w = String(t).length * (/f-v/.test(cls || 'f-v') ? 8.6 : 7.6), d = dx == null ? 10 : dx, der = x + d + w <= xmax;
-  return rotulo(g, der ? x + d : x - d, y, t, cls, der ? 'start' : 'end');
+function rotuloPunto(g, x, y, t, cls, xmax, dx, xmin) {
+  var w = String(t).length * (/f-v/.test(cls || 'f-v') ? 8.6 : 7.6), d = dx == null ? 10 : dx, lo = xmin == null ? 56 : xmin;
+  if (x + d + w <= xmax) return rotulo(g, x + d, y, t, cls, 'start');
+  if (x - d - w >= lo) return rotulo(g, x - d, y, t, cls, 'end');
+  return rotulo(g, entre(x, lo + w / 2, xmax - w / 2), y, t, cls, 'middle');
 }
 function aviso(g, w, h, lineas) {   // cuando la figura no tiene qué mostrar
   lineas.forEach(function (l, i) { tx(g, w / 2, h / 2 - (lineas.length - 1) * 11 + i * 22, l, i ? 'f-ts' : 'f-v', 'middle'); });
@@ -2982,7 +2984,7 @@ var CD_TREN = (function () {
   function dibujar(g, r) {
     vaciar(g); S.flujos = [];
     var R = r.cd, p = R.p, ok = okCd(R), i;
-    var x0 = 158, x1 = 238, xm = 198, yT = 64, yB = 280, H = yB - yT;
+    var x0 = 158, x1 = 238, xm = 198, yT = 62, yB = 266, H = yB - yT;
     var fz = ok ? R.op.z.Lc / R.L_inst : 1, yZ = yT + H * fz;
     var flujo = function (d, color, w, v, op) { var e = el('path', { d: d, fill: 'none', stroke: color, 'stroke-width': w, 'stroke-dasharray': '7 6', opacity: op || 1 }, g); S.flujos.push({ e: e, v: v }); return e; };
     // el vapor que llega
@@ -3047,10 +3049,10 @@ var CD_TREN = (function () {
     el('rect', { x: 333, y: yE - 7, width: 72, height: 9, fill: C.aceiteM }, g);
     tx(g, 369, yE - 16, 'florentino', 'f-v', 'middle');
     if (ok) tx(g, 369, yE + 50, 'cabeza ' + pct(R.cabeza, 2), 'f-ts' + (R.cabeza >= 0.007 ? ' f-alerta' : ''), 'middle');
-    if (R.L_inst) { tx(g, 16, yB + 76, 'tubos de ' + p.Lft + NB + 'ft, ' + un(R.L_inst, 2, 'm'), 'f-ts'); if (R.L_req) tx(g, 16, yB + 93, 'el diseño pide ' + un(R.L_req, 2, 'm'), 'f-ts'); }
+    if (R.L_inst) { tx(g, 16, yB + 74, 'tubos de ' + p.Lft + NB + 'ft, ' + un(R.L_inst, 2, 'm'), 'f-ts'); if (R.L_req) tx(g, 16, yB + 91, 'el diseño pide ' + un(R.L_req, 2, 'm'), 'f-ts'); }
   }
   var corte = {
-    etiqueta: 'Corte', tipo: 'svg', vista: [420, 400],
+    etiqueta: 'Corte', tipo: 'svg', vista: [420, 372],
     alt: 'Corte esquemático de E-201: el vapor baja por los tubos, el agua de torre sube por la coraza entre los deflectores, la frontera entre la zona de condensación y la de subenfriamiento, la cámara de abajo con el venteo, E-202 y el florentino.',
     montar: function (g) { S.g = g; },
     poner: function (r) { dibujar(S.g, r); },
@@ -3065,12 +3067,12 @@ var CD_TREN = (function () {
   };
   var S2 = {};
   var perfil = {
-    etiqueta: 'Temperaturas', tipo: 'svg', vista: [380, 400],
+    etiqueta: 'Temperaturas', tipo: 'svg', vista: [380, 366],
     alt: 'Temperatura del vapor y del condensado y del agua de torre a lo largo de los tubos de E-201, con la frontera entre la zona de condensación y la de subenfriamiento.',
     montar: function (g) { S2.g = g; },
     poner: function (r) {
       var g = S2.g, R = r.cd, p = R.p; vaciar(g);
-      if (!okCd(R)) { mensaje(g, 380, 400, noCondensa(R)); return; }
+      if (!okCd(R)) { mensaje(g, 380, 366, noCondensa(R)); return; }
       var pr = perfilE201(R), lo = Math.floor((Math.min(p.Tcw, R.T_sal) - 3) / 5) * 5, hi = Math.ceil((R.T_rocio + 4) / 5) * 5;
       var a = ejes(g, { x0: 50, x1: 364, y0: 40, y1: 318, xmin: 0, xmax: R.L_inst, ymin: lo, ymax: hi, xt: 'distancia desde la placa de arriba, m', yt: 'temperatura, °C' });
       var xz = a.X(R.op.z.Lc);
@@ -3127,7 +3129,7 @@ var CD_TREN = (function () {
       }
     },
     figuras: [{ titulo: 'E-201 en corte', ancha: true, alt: 'E-201 en corte y el tren de condensación.', vistas: [corte, iso] },
-      { titulo: 'A lo largo de E-201', alt: 'Temperaturas a lo largo de E-201 y el diagnóstico.', vistas: [perfil, diag] }],
+      { titulo: 'E‑201', alt: 'Temperaturas a lo largo de E-201 y el diagnóstico.', vistas: [perfil, diag] }],
     calculo: function (r) {
       var R = r.cd, p = R.p, ok = okCd(R), z = ok ? R.op.z : null;
       var pasos = [
@@ -3164,7 +3166,7 @@ var CD_TREN = (function () {
 var CD_VAPOR = (function () {
   var S = {};
   var curva = {
-    titulo: 'La curva de condensación', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: 'La curva de condensación', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: 'Temperatura del vapor contra el calor retirado desde el rocío: el tramo en que condensa el agua sola, la meseta donde condensan juntos el agua y el aceite y el subenfriamiento, con las rectas del agua de torre y del agua de servicios.',
     montar: function (g) { S.g = g; },
     poner: function (r) {
@@ -3188,7 +3190,7 @@ var CD_VAPOR = (function () {
     }
   };
   var tramos = {
-    titulo: 'La carga de cada tramo', tipo: 'svg', vista: [380, 400],
+    titulo: 'La carga de cada tramo', tipo: 'svg', vista: [380, 366],
     alt: 'Barras con el calor de cada tramo del camino del vapor: el agua que condensa sola, la meseta, el subenfriamiento en E-201 y el subenfriamiento en E-202, con su parte del total.',
     montar: function (g) { S.g2 = g; },
     poner: function (r) {
@@ -3200,12 +3202,12 @@ var CD_VAPOR = (function () {
       tx(g, X0, 26, 'del vapor que llega al florentino: ' + un(tot, 0, 'kW'), 'f-t');
       bars.forEach(function (b) { var w = (X1 - X0) * b[1] / tot; el('rect', { x: x, y: 40, width: Math.max(w, 1), height: 34, fill: b[2] }, g); x += w; });
       bars.forEach(function (b, k) {
-        var y = 112 + k * 52;
+        var y = 106 + k * 46;
         el('rect', { x: X0, y: y - 12, width: 14, height: 14, fill: b[2] }, g);
         tx(g, X0 + 22, y, b[0], 'f-v');
         tx(g, X0 + 22, y + 19, un(b[1], b[1] < 100 ? 1 : 0, 'kW') + ', ' + pct(b[1] / tot, b[1] / tot < 0.1 ? 1 : 0) + ' del total', 'f-ts');
       });
-      var y0 = 112 + bars.length * 52 + 8;
+      var y0 = 106 + bars.length * 46 + 6;
       tx(g, X0, y0, 'Rocío del agua: ' + T2(R.T_rocio) + '; el agua pura, ' + T2(c.T_rocio_sin), 'f-ts');
       tx(g, X0, y0 + 20, 'Aceite en el vapor de equilibrio: ' + num(c.ratio_eq / (R.p.mL / R.p.mw), 0) + ' veces el de la planta', 'f-ts');
       tx(g, X0, y0 + 40, 'Sobrecalentamiento: ' + pct(c.desob_frac, 1) + ' de la carga latente', 'f-ts');
@@ -3273,12 +3275,12 @@ var CD_VAPOR = (function () {
 var CD_ZONAS = (function () {
   var S = {};
   var zonas = {
-    titulo: 'Las zonas sobre la curva', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: 'Las zonas sobre la curva', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: 'La curva de condensación dentro de E-201 con la recta del agua de torre, partida en la zona de condensación y la de subenfriamiento, con las diferencias de temperatura de sus extremos y la media logarítmica de cada una.',
     montar: function (g) { S.g = g; },
     poner: function (r) {
       var g = S.g, R = r.cd, p = R.p; vaciar(g);
-      if (!okCd(R)) { mensaje(g, 420, 400, noCondensa(R)); return; }
+      if (!okCd(R)) { mensaje(g, 420, 366, noCondensa(R)); return; }
       var z = R.op.z, cur = R.curva.filter(function (q) { return q.Q <= R.Q + 1e-6; });
       var a = ejes(g, { x0: 52, x1: 404, y0: 40, y1: 318, xmin: 0, xmax: Math.ceil(R.Q / 100) * 100, ymin: Math.floor((p.Tcw - 2) / 10) * 10, ymax: Math.ceil((R.T_rocio + 3) / 10) * 10, xt: 'calor retirado en E-201, kW', yt: 'temperatura, °C' });
       var xq = a.X(z.Q_cond);
@@ -3390,12 +3392,12 @@ var CD_ZONAS = (function () {
 var CD_E202 = (function () {
   var S = {};
   var eps = {
-    titulo: 'La efectividad de E‑202', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: 'La efectividad de E‑202', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: 'Efectividad contra el número de unidades de transferencia en contracorriente, con las curvas de Cr igual a 0, 0,5 y 1 y el punto de E-202.',
     montar: function (g) { S.g = g; },
     poner: function (r) {
       var g = S.g, R = r.cd, e = R.e202, p = R.p; vaciar(g);
-      if (!e) { aviso(g, 420, 400, p.e202.on ? ['E-202 no enfría', 'el agua de servicios llega más caliente que el condensado'] : (okCd(R) ? ['E-202 está fuera de servicio', 'el condensado va directo al florentino'] : ['Sin condensado que enfriar', 'E-201 no condensa todo'])); return; }
+      if (!e) { aviso(g, 420, 366, p.e202.on ? ['E-202 no enfría', 'el agua de servicios llega más caliente que el condensado'] : (okCd(R) ? ['E-202 está fuera de servicio', 'el condensado va directo al florentino'] : ['Sin condensado que enfriar', 'E-201 no condensa todo'])); return; }
       var xmax = Math.max(4, Math.ceil(e.NTU * 1.3)), a = ejes(g, { x0: 52, x1: 404, y0: 40, y1: 318, xmin: 0, xmax: xmax, ymin: 0, ymax: 1, xt: 'NTU = UA/Cmín', yt: 'efectividad ε', dy: 0.2 });
       var cc = function (n, cr) { var ex = Math.exp(-n * (1 - cr)); return Math.abs(cr - 1) < 1e-9 ? n / (1 + n) : (1 - ex) / (1 - cr * ex); };
       [0, 0.5, 1].forEach(function (cr) {
@@ -3442,8 +3444,8 @@ var CD_E202 = (function () {
       var R = r.cd, e = R.e202, p = R.p, ok = okCd(R);
       return [
         { etiqueta: 'Llega al florentino', valor: ok ? num(R.T_flor, 1) : 'sin dato', unidad: '°C', nota: 'se pide ' + trimN(p.e202.Tflor, 1) + ' °C o menos', alerta: !ok || R.T_flor > p.e202.Tflor + 0.05 },
-        { etiqueta: 'Efectividad', valor: e ? num(e.eps, 3) : 'sin dato', nota: e ? 'ε, con NTU ' + num(e.NTU, 2) + ' y Cr ' + num(e.Cr, 2) : '' },
-        { etiqueta: 'Caída del condensado', valor: e ? num(e.dp_tubo / 1000, 2) : 'sin dato', unidad: 'kPa', nota: 'baja por gravedad: 1 psi como máximo', alerta: !!e && e.dp_tubo > 6894.76 }
+        { etiqueta: 'Efectividad', valor: e ? num(e.eps, 3) : (p.e202.on ? 'sin dato' : '—'), nota: e ? 'ε, con NTU ' + num(e.NTU, 2) + ' y Cr ' + num(e.Cr, 2) : (p.e202.on ? '' : 'E‑202 fuera de servicio') },
+        { etiqueta: 'Caída del condensado', valor: e ? num(e.dp_tubo / 1000, 2) : (p.e202.on ? 'sin dato' : '—'), unidad: e ? 'kPa' : '', nota: e ? 'baja por gravedad: 1 psi como máximo' : (p.e202.on ? '' : 'E‑202 fuera de servicio'), alerta: !!e && e.dp_tubo > 6894.76 }
       ];
     },
     veredicto: function (r) {
@@ -3515,31 +3517,31 @@ var CD_COEF = (function () {
     });
   }
   var res = {
-    titulo: 'Las resistencias en serie', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: 'Las resistencias en serie', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: 'Dos barras con las resistencias en serie de E-201, una por zona: la película del agua en la coraza, los dos ensuciamientos, la pared y la película del lado del vapor, con su parte de 1/U y el U de cada zona.',
     montar: function (g) { S.g = g; },
     poner: function (r) {
       var g = S.g, R = r.cd; vaciar(g);
-      if (!okCd(R)) { mensaje(g, 420, 400, noCondensa(R)); return; }
+      if (!okCd(R)) { mensaje(g, 420, 366, noCondensa(R)); return; }
       var rs = R.op.z.res, base = [['Película del agua en la coraza', rs.coraza, FRI], ['Ensuciamiento del agua de torre', rs.ens_agua, C.aguaO, C.tinta], ['Pared de AISI 316', rs.pared, C.metalO], ['Ensuciamiento del vapor', rs.ens_vapor, CAL_M, C.tinta]];
       pila(g, 24, 'Zona de condensación', base.concat([['Película que condensa', rs.pelicula, CAL]]));
       pila(g, 222, 'Zona de subenfriamiento', base.concat([['Película del condensado que baja', rs.pelicula_sub, mezcla(CAL, C.tinta, 0.35)]]));
     }
   };
   var lim = {
-    titulo: 'Las reglas del libro', tipo: 'svg', vista: [380, 400],
+    titulo: 'Las reglas del libro', tipo: 'svg', vista: [380, 366],
     alt: 'Las velocidades y las caídas de presión de E-201 y E-202 contra lo que admite el libro: el vapor a la entrada, el agua en la coraza, la caída del vapor, la caída del condensado en E-202 y el Reynolds del ánulo.',
     montar: function (g) { S.g2 = g; },
     poner: function (r) {
       var g = S.g2, R = r.cd; vaciar(g);
-      if (!okCd(R)) { mensaje(g, 380, 400, noCondensa(R)); return; }
+      if (!okCd(R)) { mensaje(g, 380, 366, noCondensa(R)); return; }
       var filas = [
         { nombre: 'Vapor a la entrada', v: R.v_entrada, lo: 10, hi: 30, max: 50, u: 'm/s', d: 1, sub: '10 a 30 m/s' },
         { nombre: 'Agua en la coraza', v: R.bell.v, lo: 0, hi: 1, max: 1.6, u: 'm/s', d: 2, sub: 'hasta 1 m/s', soloMax: true },
         { nombre: 'Caída del vapor', v: R.dp_vapor / 1000, lo: 0, hi: 6.895, max: 14, u: 'kPa', d: 1, sub: 'hasta 1 psi', soloMax: true }];
       if (R.e202) filas.push({ nombre: 'Condensado en E-202', v: R.e202.dp_tubo / 1000, lo: 0, hi: 6.895, max: 14, u: 'kPa', d: 1, sub: 'hasta 1 psi', soloMax: true },
         { nombre: 'Reynolds del ánulo', v: R.e202.Re_anulo, lo: 4000, hi: Infinity, max: 12000, u: '', d: 0, sub: '4000 o más' });
-      filas.forEach(function (q, i) { regla(g, 26 + i * 74, 20, 360, q); });
+      filas.forEach(function (q, i) { regla(g, 24 + i * 68, 20, 360, q); });
     }
   };
   return {
@@ -3612,12 +3614,12 @@ var CD_COEF = (function () {
 var CD_VENTEO = (function () {
   var S = {};
   var dalton = {
-    titulo: 'Lo que se lleva el aire', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: 'Lo que se lleva el aire', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: 'Agua y aceite que se lleva cada kilogramo de aire del venteo contra la temperatura, con los puntos de la cámara de abajo de E-201 y del florentino.',
     montar: function (g) { S.g = g; },
     poner: function (r) {
       var g = S.g, R = r.cd, p = R.p; vaciar(g);
-      if (!okCd(R)) { mensaje(g, 420, 400, noCondensa(R)); return; }
+      if (!okCd(R)) { mensaje(g, 420, 366, noCondensa(R)); return; }
       var Tm = Math.max(40, Math.ceil((Math.max(R.T_sal, R.T_flor) + 5) / 10) * 10), pts = [], k, mx = 0;
       for (k = 0; k <= 60; k++) { var T = 5 + (Tm - 5) * k / 60, d = CDM.dalton(T, p.P); pts.push([T, d.agua, d.limoneno]); mx = Math.max(mx, d.agua, d.limoneno); }
       var ymax = Math.ceil(mx * 1000 / 50) * 50;
@@ -3636,36 +3638,36 @@ var CD_VENTEO = (function () {
     }
   };
   var cabeza = {
-    titulo: 'El espacio de cabeza', tipo: 'svg', vista: [380, 400],
+    titulo: 'El espacio de cabeza', tipo: 'svg', vista: [380, 366],
     alt: 'El florentino con su espacio de cabeza y una barra con el limoneno en el gas contra su límite inferior de inflamabilidad, 0,7 %.',
     montar: function (g) { S.g2 = g; },
     poner: function (r) {
       var g = S.g2, R = r.cd; vaciar(g);
-      if (!okCd(R)) { mensaje(g, 380, 400, noCondensa(R)); return; }
+      if (!okCd(R)) { mensaje(g, 380, 366, noCondensa(R)); return; }
       var d2 = R.dalton_flor, c = R.cabeza;
       // el florentino
-      el('rect', { x: 80, y: 30, width: 220, height: 150, fill: C.blanco, stroke: C.tinta, 'stroke-width': 2 }, g);
-      el('rect', { x: 81, y: 31, width: 218, height: 44, fill: C.zona }, g);
-      el('rect', { x: 81, y: 75, width: 218, height: 22, fill: C.aceiteM }, g);
-      el('rect', { x: 81, y: 97, width: 218, height: 82, fill: C.agua }, g);
-      tx(g, 190, 58, 'gas: ' + pct(c, 2) + ' de limoneno', 'f-ts', 'middle');
-      tx(g, 190, 91, 'aceite', 'f-ts', 'middle');
-      tx(g, 190, 142, 'agua, ' + T1(R.T_flor), 'f-ts', 'middle');
+      el('rect', { x: 80, y: 22, width: 220, height: 132, fill: C.blanco, stroke: C.tinta, 'stroke-width': 2 }, g);
+      el('rect', { x: 81, y: 23, width: 218, height: 40, fill: C.zona }, g);
+      el('rect', { x: 81, y: 63, width: 218, height: 22, fill: C.aceiteM }, g);
+      el('rect', { x: 81, y: 85, width: 218, height: 68, fill: C.agua }, g);
+      tx(g, 190, 48, 'gas: ' + pct(c, 2) + ' de limoneno', 'f-ts', 'middle');
+      tx(g, 190, 79, 'aceite', 'f-ts', 'middle');
+      tx(g, 190, 124, 'agua, ' + T1(R.T_flor), 'f-ts', 'middle');
       // la barra contra el límite
       var X0 = 30, X1 = 350, mx = 1.0, X = function (v) { return X0 + (X1 - X0) * Math.min(v, mx) / mx; };
-      tx(g, X0, 214, 'limoneno en el espacio de cabeza', 'f-v');
-      el('rect', { x: X0, y: 236, width: X1 - X0, height: 20, fill: C.zona }, g);
-      el('rect', { x: X(0.5), y: 236, width: X(0.7) - X(0.5), height: 20, fill: C.borde }, g);
-      tx(g, X(0.6), 251, 'cerca', 'f-ts', 'middle');
-      el('line', { x1: X(0.7), x2: X(0.7), y1: 230, y2: 262, stroke: C.alerta, 'stroke-width': 2 }, g);
-      tx(g, X(0.7), 232, '0,7 %, inflamable', 'f-ts f-alerta', 'middle');
+      tx(g, X0, 176, 'limoneno en el espacio de cabeza', 'f-v');
+      el('rect', { x: X0, y: 206, width: X1 - X0, height: 20, fill: C.zona }, g);
+      el('rect', { x: X(0.5), y: 206, width: X(0.7) - X(0.5), height: 20, fill: C.borde }, g);
+      tx(g, X(0.6), 221, 'cerca', 'f-ts', 'middle');
+      el('line', { x1: X(0.7), x2: X(0.7), y1: 200, y2: 232, stroke: C.alerta, 'stroke-width': 2 }, g);
+      tx(g, X(0.7), 195, '0,7 %, inflamable', 'f-ts f-alerta', 'middle');
       var xv = X(100 * c);
-      el('line', { x1: xv, x2: xv, y1: 230, y2: 262, stroke: c >= 0.007 ? C.alerta : C.tinta, 'stroke-width': 4 }, g);
-      tx(g, entre(xv, X0 + 30, X1 - 30), 282, pct(c, 2), 'f-v' + (c >= 0.007 ? ' f-alerta' : ''), 'middle');
-      tx(g, X0, 314, 'En el florentino, a ' + T1(R.T_flor) + ':', 'f-ts');
-      tx(g, X0, 334, un(1000 * d2.agua, 0, 'g') + ' de agua y ' + un(1000 * d2.limoneno, 1, 'g') + ' de aceite', 'f-ts');
-      tx(g, X0, 354, 'por kilogramo de aire que sale', 'f-ts');
-      tx(g, X0, 380, 'presiones: agua ' + un(d2.p_agua, 2, 'kPa') + ', limoneno ' + un(d2.p_lim, 3, 'kPa'), 'f-ts');
+      el('line', { x1: xv, x2: xv, y1: 200, y2: 232, stroke: c >= 0.007 ? C.alerta : C.tinta, 'stroke-width': 4 }, g);
+      tx(g, entre(xv, X0 + 30, X1 - 30), 252, pct(c, 2), 'f-v' + (c >= 0.007 ? ' f-alerta' : ''), 'middle');
+      tx(g, X0, 288, 'En el florentino, a ' + T1(R.T_flor) + ':', 'f-ts');
+      tx(g, X0, 306, un(1000 * d2.agua, 0, 'g') + ' de agua y ' + un(1000 * d2.limoneno, 1, 'g') + ' de aceite', 'f-ts');
+      tx(g, X0, 324, 'por kilogramo de aire que sale', 'f-ts');
+      tx(g, X0, 350, 'presiones: agua ' + un(d2.p_agua, 2, 'kPa') + ', limoneno ' + un(d2.p_lim, 3, 'kPa'), 'f-ts');
     }
   };
   return {
@@ -3849,7 +3851,7 @@ function escenasGen(q) {
     ] : DP ? [
       { p: D.ends.inIn, a: 'r', t: ['tubo interior, ' + tF.short, 'entra a ' + fT(tIn)], T: tIn },
       { p: D.ends.inOut, a: 'r', t: ['tubo interior', 'sale a ' + fT(tOut)], T: tOut },
-      { p: D.ends[par ? 'anBot' : 'anTop'], a: par ? 'b' : 'r', t: [vap('ánulo, ' + sF.short), 'entra a ' + fT(sIn)], T: sIn },
+      { p: D.ends[par ? 'anBot' : 'anTop'], a: par ? 'l' : 'r', t: [vap('ánulo, ' + sF.short), 'entra a ' + fT(sIn)], T: sIn },
       { p: D.ends[par ? 'anTop' : 'anBot'], a: par ? 'r' : 'b', t: [R.steam ? 'condensado' : 'ánulo', (R.steam ? '' : 'sale a ') + fT(sOut)], T: sOut }
     ] : PL ? [
       { p: D.noz.hIn, a: 'r', t: [vap('caliente, ' + R.hf.short), 'entra a ' + fT(R.Thi)], T: R.Thi },
@@ -3860,7 +3862,7 @@ function escenasGen(q) {
       { p: D.ends.sIn, a: 'l', t: [vap('coraza, ' + sF.short), 'entra a ' + fT(sIn)], T: sIn },
       { p: D.ends.tOut, a: 'r', t: ['tubos', 'sale a ' + fT(tOut)], T: tOut },
       { p: D.ends.sOut, a: 'l', t: [R.steam ? 'condensado' : 'coraza', (R.steam ? '' : 'sale a ') + fT(sOut)], T: sOut },
-      { p: D.ends.tIn, a: 'b', t: ['tubos, ' + tF.short, 'entra a ' + fT(tIn)], T: tIn }
+      { p: D.ends.tIn, a: 'r', t: ['tubos, ' + tF.short, 'entra a ' + fT(tIn)], T: tIn }
     ];
     if (ST) (D.links || []).forEach(function (lk, i) { var md = pr.mids && pr.mids[i]; if (!md) return; l.push({ p: lk.s, a: 'l', t: ['coraza ' + 'ABC'.charAt(i) + ' → ' + 'ABC'.charAt(i + 1), fT(md.shell)], T: md.shell }); l.push({ p: lk.t, a: 'r', t: ['tubos', fT(md.tube)], T: md.tube }); });
     var angosta = window.innerWidth < 700;
@@ -3900,12 +3902,12 @@ function escenasGen(q) {
   /* ---------- el perfil de temperatura ---------- */
   var SP = {};
   var PERFIL = {
-    etiqueta: 'Temperaturas', tipo: 'svg', vista: [800, 400],
+    etiqueta: 'Temperaturas', tipo: 'svg', vista: [800, 366],
     alt: 'Temperatura de las dos corrientes a lo largo del equipo, con las entradas y las salidas de cada una.',
     montar: function (g) { SP.g = g; },
     poner: function (r) {
       var g = SP.g, R = E(r); vaciar(g);
-      if (!R.bal.physical) { mensaje(g, 800, 400, sinIntercambio(R)); return; }
+      if (!R.bal.physical) { mensaje(g, 800, 366, sinIntercambio(R)); return; }
       var pr = perfil(R), Ns = R.Ns, all = [];
       pr.units.forEach(function (u) { all = all.concat(u.shell); u.tubes.forEach(function (t) { all = all.concat(t); }); });
       var tmin = Math.min.apply(null, all), tmax = Math.max.apply(null, all), pad = (tmax - tmin) * 0.1 + 1;
@@ -4013,25 +4015,25 @@ function escenasGen(q) {
   /* ---------- 2. El balance y lo que pide el proceso ---------- */
   var SB = {};
   var BAL = {
-    titulo: 'El balance', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: 'El balance', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: 'Barras con el calor que cede el caliente y el que recibe el frío en el equipo, que son iguales, y abajo el calor que pide el objetivo del proceso contra el que cabe en el frío dentro de su límite de retorno.',
     montar: function (g) { SB.g = g; },
     poner: function (r) {
       var g = SB.g, R = E(r), b = R.bal, sc = R.spec, hot = sc.target === 'hot', lim = hot && sc.limit != null; vaciar(g);
-      if (!b.physical) { mensaje(g, 420, 400, sinIntercambio(R)); return; }
+      if (!b.physical) { mensaje(g, 420, 366, sinIntercambio(R)); return; }
       var Qcap = lim ? sc.Qcmax : 0, mx = Math.max(b.Q, sc.Q, Qcap) * 1.12, X0 = 20, X1 = 330, X = function (v) { return X0 + (X1 - X0) * Math.max(0, v) / mx; };
       var barra = function (y, l1, l2, v, col, op) { tx(g, X0, y, l1, 'f-v'); tx(g, X0, y + 17, l2, 'f-ts'); el('rect', { x: X0, y: y + 25, width: Math.max(1, X(v) - X0), height: 22, fill: col, opacity: op }, g); tx(g, X(v) + 6, y + 41, kWu(v), 'f-v'); };
-      tx(g, X0, 22, 'en el equipo', 'f-t');
-      barra(40, AC ? 'Cede el proceso' : 'Cede el caliente', R.steam ? 'vapor que condensa' : T1(R.Thi) + ' → ' + T1(b.Tho), b.Q, CAL, 1);
-      barra(104, AC ? 'Recibe el aire' : 'Recibe el frío', T1(R.Tci) + ' → ' + T1(b.Tco), b.Q, FRI, 1);
-      el('line', { x1: X0, x2: 400, y1: 176, y2: 176, stroke: C.borde, 'stroke-width': 1.5 }, g);
-      tx(g, X0, 200, 'lo que pide el proceso', 'f-t');
-      barra(218, 'Pide el objetivo', (hot ? quien(R) + ' a ' : 'el frío a ') + T1(sc.goal), sc.Q, hot ? CAL_M : FRI_M, 1);
+      tx(g, X0, 20, 'en el equipo', 'f-t');
+      barra(36, AC ? 'Cede el proceso' : 'Cede el caliente', R.steam ? 'vapor que condensa' : T1(R.Thi) + ' → ' + T1(b.Tho), b.Q, CAL, 1);
+      barra(96, AC ? 'Recibe el aire' : 'Recibe el frío', T1(R.Tci) + ' → ' + T1(b.Tco), b.Q, FRI, 1);
+      el('line', { x1: X0, x2: 400, y1: 160, y2: 160, stroke: C.borde, 'stroke-width': 1.5 }, g);
+      tx(g, X0, 182, 'lo que pide el proceso', 'f-t');
+      barra(198, 'Pide el objetivo', (hot ? quien(R) + ' a ' : 'el frío a ') + T1(sc.goal), sc.Q, hot ? CAL_M : FRI_M, 1);
       if (lim) {
-        barra(282, 'Cabe en el frío', 'sin pasar de ' + T1(sc.limit), Qcap, FRI_M, 1);
-        if (!sc.limitOk) { el('rect', { x: X(Qcap), y: 307, width: Math.max(1, X(sc.Q) - X(Qcap)), height: 22, fill: 'none', stroke: C.alerta, 'stroke-width': 2, 'stroke-dasharray': '5 3' }, g); tx(g, X0, 368, 'faltan ' + kWu(sc.Q - Qcap) + ': con este caudal de frío', 'f-v f-alerta'); tx(g, X0, 387, 'el objetivo no es posible', 'f-v f-alerta'); }
-        else tx(g, X0, 368, 'sobran ' + kWu(Qcap - sc.Q) + ' de capacidad en el frío', 'f-ts');
-      } else tx(g, X0, 300, sc.physical ? (b.Q >= sc.Q - 1 ? 'el equipo da lo que pide el objetivo' : 'al equipo le faltan ' + kWu(sc.Q - b.Q)) : 'el objetivo viola la segunda ley', 'f-v' + (sc.physical && b.Q >= sc.Q - 1 ? '' : ' f-alerta'));
+        barra(258, 'Cabe en el frío', 'sin pasar de ' + T1(sc.limit), Qcap, FRI_M, 1);
+        if (!sc.limitOk) { el('rect', { x: X(Qcap), y: 283, width: Math.max(1, X(sc.Q) - X(Qcap)), height: 22, fill: 'none', stroke: C.alerta, 'stroke-width': 2, 'stroke-dasharray': '5 3' }, g); tx(g, X0, 334, 'faltan ' + kWu(sc.Q - Qcap) + ': con este caudal de frío', 'f-v f-alerta'); tx(g, X0, 353, 'el objetivo no es posible', 'f-v f-alerta'); }
+        else tx(g, X0, 334, 'sobran ' + kWu(Qcap - sc.Q) + ' de capacidad en el frío', 'f-ts');
+      } else tx(g, X0, 290, sc.physical ? (b.Q >= sc.Q - 1 ? 'el equipo da lo que pide el objetivo' : 'al equipo le faltan ' + kWu(sc.Q - b.Q)) : 'el objetivo viola la segunda ley', 'f-v' + (sc.physical && b.Q >= sc.Q - 1 ? '' : ' f-alerta'));
     }
   };
   var ALT = {
@@ -4116,12 +4118,12 @@ function escenasGen(q) {
   /* ---------- 3. La diferencia media, F y la efectividad ---------- */
   var SF = {};
   var FIG_F = {
-    titulo: DP ? 'Contracorriente y paralelo' : 'El factor F', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: DP ? 'Contracorriente y paralelo' : 'El factor F', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: ST ? 'Curvas del factor F contra P para varios R con una coraza y con varias corazas en serie, la curva del equipo y los puntos de la operación y del objetivo; bajo 0,75 la zona que no se acepta.' : (PL ? 'El factor F de las placas contra Nₕ, interpolado entre los dos valores de McCabe, con los puntos de la operación y del objetivo.' : (AC ? 'El factor F del flujo cruzado contra el NTU para varios Cr, con los puntos de la operación y del objetivo.' : 'Temperaturas a lo largo del mismo equipo en contracorriente y en paralelo.')),
     montar: function (g) { SF.g = g; },
     poner: function (r) {
       var g = SF.g, R = E(r), sc = R.spec; vaciar(g);
-      if (!R.bal.physical) { mensaje(g, 420, 400, sinIntercambio(R)); return; }
+      if (!R.bal.physical) { mensaje(g, 420, 366, sinIntercambio(R)); return; }
       var a, k, i;
       if (ST) {
         a = ejes(g, { x0: 52, x1: 404, y0: 40, y1: 318, xmin: 0, xmax: 1, ymin: 0.5, ymax: 1, xt: 'P, de los tubos', yt: 'F', dx: 0.2, dy: 0.1 });
@@ -4141,7 +4143,7 @@ function escenasGen(q) {
           if (sc.Fr.ok && Math.abs(sc.P - R.P) > 0.012) { punto(g, a.X(sc.P), a.Y(sc.F), false); rotulo(g, a.X(sc.P) + 9, a.Y(sc.F) + 22, 'objetivo, F ' + num(sc.F, 3), 'f-ts'); }
           if (R.Fr.ok) { punto(g, a.X(R.P), a.Y(R.F), true); var izq = R.P > 0.55; rotulo(g, a.X(R.P) + (izq ? -10 : 10), a.Y(R.F) + (R.F > 0.94 ? 24 : -12), 'operación, F ' + num(R.F, 3), 'f-v', izq ? 'end' : 'start'); }
           if (!sc.Fr.ok) rotulo(g, 228, 74, 'con ' + M.NCOR[R.Ns] + ' el objetivo no tiene solución', 'f-v f-alerta', 'middle');
-          tx(g, 404, 384, 'continua: 1 coraza · trazos: ' + Nalt + ' corazas', 'f-ts', 'end');
+          tx(g, 404, 24, 'continua: 1 coraza · trazos: ' + Nalt + ' corazas', 'f-ts', 'end');
         } else rotulo(g, 228, 90, 'con un lado a temperatura constante, F = 1', 'f-v', 'middle');
         return;
       }
@@ -4163,9 +4165,11 @@ function escenasGen(q) {
         el('rect', { x: 52, y: a.Y(0.75), width: 352, height: a.Y(0.5) - a.Y(0.75), fill: C.fuera, opacity: 0.6 }, g);
         [0.25, 0.5, 0.75, 1].forEach(function (Cr) {
           var p2 = []; for (i = 1; i <= 120; i++) { var n = 4 * i / 120, f = M.Fgen(R.epsFn(n, Cr), Cr, R.epsFn); if (f.ok) p2.push([a.X(n), a.Y(Math.min(1, f.F))]); }
-          linea(g, p2, Math.abs(Cr - R.rate.Cr) < 0.13 ? C.tinta : C.borde, Math.abs(Cr - R.rate.Cr) < 0.13 ? 2.2 : 1.3);
-          if (p2.length) { var lp = p2[p2.length - 1]; rotulo(g, lp[0] - 4, lp[1] + 16, 'Cr ' + num(Cr, 2), 'f-ts', 'end'); }
+          linea(g, p2, C.borde, 1.3);
         });
+        var pe = []; for (i = 1; i <= 120; i++) { var ne = 4 * i / 120, fe = M.Fgen(R.epsFn(ne, R.rate.Cr), R.rate.Cr, R.epsFn); if (fe.ok) pe.push([a.X(ne), a.Y(Math.min(1, fe.F))]); }
+        linea(g, pe, C.tinta, 2.4);
+        tx(g, 60, 304, 'grises: Cr = 0,25, 0,5, 0,75 y 1; en tinta, Cr = ' + num(R.rate.Cr, 2), 'f-ts');
         if (sc.Fr.ok && isFinite(R.NTUreq) && Math.abs(R.NTUreq - R.rate.NTU) > 0.04) { punto(g, a.X(Math.min(4, R.NTUreq)), a.Y(sc.F), false); rotulo(g, a.X(Math.min(4, R.NTUreq)) + 9, a.Y(sc.F) + 22, 'objetivo, F ' + num(sc.F, 3), 'f-ts'); }
         if (R.Fr.ok) { punto(g, a.X(Math.min(4, R.rate.NTU)), a.Y(R.F), true); rotulo(g, a.X(Math.min(4, R.rate.NTU)) + 10, a.Y(R.F) - 12, 'operación, F ' + num(R.F, 3), 'f-v'); }
         tx(g, 404, 24, R.geo.Np + (R.geo.Np === 1 ? ' paso' : ' pasos en contra-cruce'), 'f-ts', 'end');
@@ -4178,17 +4182,17 @@ function escenasGen(q) {
       var ln = function (arr, col, dash, w) { linea(g, arr.map(function (T, j) { return [a.X(j / (arr.length - 1)), a.Y(T)]; }), col, w, { 'clip-path': a.clip, 'stroke-dasharray': dash }); };
       var hs = R.hotShell;
       ln(hs ? pp.shell : pp.tubes[0], CAL, '6 4', 1.8); ln(hs ? pp.tubes[0] : pp.shell, FRI, '6 4', 1.8); ln(hs ? pc.shell : pc.tubes[0], CAL, 'none', 2.8); ln(hs ? pc.tubes[0] : pc.shell, FRI, 'none', 2.8);
-      tx(g, 52, 376, 'continua: contracorriente, ' + kWu(pc.Q), 'f-ts');
-      tx(g, 52, 395, 'trazos: paralelo, ' + kWu(pp.Q), 'f-ts');
+      tx(g, 404, 13, 'continua: contracorriente, ' + kWu(pc.Q), 'f-ts', 'end');
+      tx(g, 404, 31, 'trazos: paralelo, ' + kWu(pp.Q), 'f-ts', 'end');
     }
   };
   var FIG_E = {
-    titulo: 'La efectividad', tipo: 'svg', vista: [380, 400],
+    titulo: 'La efectividad', tipo: 'svg', vista: [380, 366],
     alt: 'Efectividad contra NTU del arreglo del equipo para varios Cr, con el punto del equipo instalado y el del área que pide el objetivo.',
     montar: function (g) { SF.g2 = g; },
     poner: function (r) {
       var g = SF.g2, R = E(r), rt = R.rate; vaciar(g);
-      if (!R.bal.physical) { mensaje(g, 380, 400, sinIntercambio(R)); return; }
+      if (!R.bal.physical) { mensaje(g, 380, 366, sinIntercambio(R)); return; }
       var nmax = Math.max(2, Math.ceil(Math.max(rt.NTU, isFinite(R.NTUreq) ? R.NTUreq : 0) * 1.6));
       var a = ejes(g, { x0: 48, x1: 364, y0: 40, y1: 318, xmin: 0, xmax: nmax, ymin: 0, ymax: 1, xt: 'NTU = UA/Cmín', yt: 'ε', dy: 0.2 });
       [0, 0.25, 0.5, 0.75, 1].forEach(function (Cr) { var pts = []; for (var i = 0; i <= 120; i++) { var n = nmax * i / 120; pts.push([a.X(n), a.Y(R.epsFn(n, Cr))]); } linea(g, pts, C.borde, 1.3, { 'clip-path': a.clip }); });
@@ -4240,7 +4244,7 @@ function escenasGen(q) {
       if (!R.bal.physical) return { alerta: true, html: sinIntercambio(R) };
       if (ST && !R.steam && R.Fr.ok && R.F < 0.75) return { alerta: true, html: 'F = <b>' + num(R.F, 3) + '</b>, bajo 0,75: el diseño queda en la zona empinada de la curva. Agregue una coraza.' };
       if (!isFinite(R.Areq)) return { alerta: true, html: 'Con estos caudales el objetivo <b>no tiene área</b> que lo cumpla; el equipo da ε = ' + num(R.rate.eps, 3) + '.' };
-      return { alerta: R.over < -0.005, html: 'El objetivo pide <b>' + m2(R.Areq) + '</b> con ΔTml = ' + un(sc.LMTD, 1, 'K') + ' y F = ' + num(sc.F, 3) + '; con ' + m2(R.Aav) + ' el equipo da ε = ' + num(R.rate.eps, 3) + '.' };
+      return { alerta: R.over < -0.005, html: 'El objetivo pide <b>' + m2(R.Areq) + '</b>; con ' + m2(R.Aav) + ' el equipo da ε = ' + num(R.rate.eps, 3) + '.' };
     },
     prediccion: {
       base: (function () { var o = {}; o[K(PRED_F.k)] = PRED_F.b; return o; })(), llevar: (function () { var o = {}; o[K(PRED_F.k)] = PRED_F.n; return o; })(),
@@ -4300,12 +4304,12 @@ function escenasGen(q) {
     partes.forEach(function (p, k) { var yy = y + 52 + k * 19; el('rect', { x: X0, y: yy - 11, width: 12, height: 12, fill: p[2] }, g); tx(g, X0 + 20, yy, p[0], 'f-ts'); tx(g, X1, yy, num(p[1] * 1e4, 2) + ' × 10⁻⁴', 'f-ts', 'end'); });
   }
   var FIG_R = {
-    titulo: 'Las resistencias en serie', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: 'Las resistencias en serie', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: 'Barra con las resistencias en serie de 1/U: las dos películas, los dos ensuciamientos y la pared, cada una con su parte del total; con U como dato, la barra del dato y la de la geometría como referencia.',
     montar: function (g) { SC.g = g; },
     poner: function (r) {
       var g = SC.g, R = E(r); vaciar(g);
-      if (!R.bal.physical) { mensaje(g, 420, 400, sinIntercambio(R)); return; }
+      if (!R.bal.physical) { mensaje(g, 420, 366, sinIntercambio(R)); return; }
       var partes = partesU(R);
       if (R.s.Umode === 'dato') {
         pilaU(g, 24, 'El dato del enunciado', [['1/U limpio', 1 / R.Uc, C.metalM, C.tinta], ['Ensuciamiento total Rd', R.s.Rd, CAL_M, C.tinta]]);
@@ -4324,13 +4328,13 @@ function escenasGen(q) {
     return f;
   }
   var FIG_V = {
-    titulo: 'Velocidades y caídas', tipo: 'svg', vista: [380, 400],
+    titulo: 'Velocidades y caídas', tipo: 'svg', vista: [380, 366],
     alt: 'Las velocidades y las caídas de presión de cada lado contra lo que recomienda el libro, con el valor del equipo marcado en cada banda.',
     montar: function (g) { SC.g2 = g; },
     poner: function (r) {
       var g = SC.g2, R = E(r); vaciar(g);
-      if (!R.bal.physical) { mensaje(g, 380, 400, sinIntercambio(R)); return; }
-      reglas(R).forEach(function (q2, i) { regla(g, 26 + i * 80, 20, 360, q2); });
+      if (!R.bal.physical) { mensaje(g, 380, 366, sinIntercambio(R)); return; }
+      reglas(R).forEach(function (q2, i) { regla(g, 24 + i * 68, 20, 360, q2); });
     }
   };
   var PRED_C = {
@@ -4375,16 +4379,28 @@ function escenasGen(q) {
       var p = partesU(R), tot = 0, mx = p[0]; p.forEach(function (x) { tot += x[1]; if (x[1] > mx[1]) mx = x; });
       var mal = reglas(R).filter(function (q2) { return q2.v > q2.hi + 1e-9 && q2.u !== 'm/s'; })[0];
       if (mal) return { alerta: true, html: mal.nombre + ': <b>' + un(mal.v, mal.d, mal.u) + '</b>, sobre ' + mal.sub.replace('hasta ', '') + ' que admite el libro.' };
-      return { alerta: false, html: (R.s.Umode === 'dato' ? 'U es un dato; en la geometría ' : 'En 1/U ') + 'manda <b>' + mx[0].toLowerCase() + '</b>, con ' + pct(mx[1] / tot) + ' del total: subir la velocidad de ese lado es lo que más mejora U.' };
-    },
-    prediccion: {
-      base: (function () { var o = {}; o[K(PRED_C.k)] = PRED_C.b; return o; })(), llevar: (function () { var o = {}; o[K(PRED_C.k)] = PRED_C.n; return o; })(),
-      pregunta: PRED_C.q, opciones: PRED_C.op, instruccion: PRED_C.ins,
-      cumple: function (e) { return typeof PRED_C.n === 'number' ? Math.abs(e[K(PRED_C.k)] - PRED_C.n) < 1e-6 : e[K(PRED_C.k)] === PRED_C.n; }, correcta: PRED_C.ok, explica: PRED_C.ex
+      return { alerta: false, html: (R.s.Umode === 'dato' ? 'U es un dato; en la geometría ' : 'En 1/U ') + 'manda <b>' + mx[0].toLowerCase() + '</b>, con ' + pct(mx[1] / tot) + ' del total.' };
     },
     figuras: [FIG_R, FIG_V],
     calculo: function (r) { return calculoCoef(E(r)); }
   };
+  // la predicción de U y Δp: con vapor en la coraza (el vapor siempre condensa allí) la caída de la coraza no se
+  // calcula, así que la pregunta pasa a los pasos por tubos, donde va el agua
+  var PRED_C_VAP = { k: 'Np', b: 4, n: 8,
+    q: function (rb) { return 'El vapor condensa en la coraza y casi no pierde presión; la caída que cuesta es la del agua en los tubos: con cuatro pasos, ' + kPa(E(rb).dPt) + '. Con ocho pasos, ¿qué pasa con esa caída?'; },
+    op: ['Se duplica', 'Crece mucho más del doble', 'Baja'], ins: 'Escoja 8 pasos por tubos en «Más ajustes» y mire la caída en los tubos.',
+    ok: function (rn, rb) { var x = E(rn).dPt / E(rb).dPt; return x < 1 ? 2 : (x <= 2.6 ? 0 : 1); },
+    ex: function (rn, rb) { var a = E(rb), b = E(rn); return 'La caída en los tubos pasa de ' + kPa(a.dPt) + ' a ' + kPa(b.dPt) + ', ' + num(b.dPt / a.dPt, 1) + ' veces. Con el doble de pasos el agua corre al doble de velocidad por un camino dos veces más largo: la fricción crece casi con el cuadrado de la velocidad y en proporción al largo, y las vueltas en los cabezales también se duplican. A cambio, U pasa de ' + un(a.Ud, 0, 'W/(m²·K)') + ' a ' + un(b.Ud, 0, 'W/(m²·K)') + '.'; } };
+  function predDe(P) {
+    var o = {}, l = {}; o[K(P.k)] = P.b; l[K(P.k)] = P.n;
+    return { base: o, llevar: l, pregunta: P.q, opciones: P.op, instruccion: P.ins, correcta: P.ok, explica: P.ex,
+      cumple: function (e) { return typeof P.n === 'number' ? Math.abs(e[K(P.k)] - P.n) < 1e-6 : e[K(P.k)] === P.n; } };
+  }
+  var PRED_C_N = predDe(PRED_C), PRED_C_V = ST ? predDe(PRED_C_VAP) : null;
+  Object.defineProperty(COEF, 'prediccion', { enumerable: true, get: function () {
+    var a = XL._app, s = a && a.estado ? a.estado() : null;
+    return PRED_C_V && s && s[K('hot')] === 'vapor' ? PRED_C_V : PRED_C_N;
+  } });
   function calculoCoef(R) {
     if (!R.bal.physical) return { intro: 'Sin intercambio no hay coeficientes que calcular.', pasos: [{ titulo: 'Sin intercambio', texto: sinIntercambio(R), libro: [LIB + '#sec-hx-lados', 'Libro, sección 22.6'] }], libro: [[LIB + '#sec-hx-lados', 'Sección 22.6']] };
     var t = R.tube, sh = R.shell, g = R.geo, p = partesU(R), tot = p.reduce(function (s, x) { return s + x[1]; }, 0), pasos = [];
@@ -4428,12 +4444,12 @@ function escenasGen(q) {
   }
   var SE = {};
   var FIG_EN = {
-    titulo: 'La salida a lo largo de las campañas', ancha: true, tipo: 'svg', vista: [800, 400],
+    titulo: 'La salida a lo largo de las campañas', ancha: true, tipo: 'svg', vista: [800, 366],
     alt: 'La salida del proceso contra los meses de operación: tres campañas en diente de sierra con la limpieza al final de cada una, la línea del objetivo y, punteada, la salida si nunca se limpia.',
     montar: function (g) { SE.g = g; },
     poner: function (r) {
       var g = SE.g, R = E(r), s = M.estadoDe(r.s, q); vaciar(g);
-      if (!R.bal.physical) { mensaje(g, 800, 400, sinIntercambio(R)); return; }
+      if (!R.bal.physical) { mensaje(g, 800, 366, sinIntercambio(R)); return; }
       var c = campana(R, s), vals = c.libre.map(function (p) { return p[c.key]; }).concat([c.tgt]), lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), pad = (hi - lo) * 0.15 + 0.5;
       var a = ejes(g, { x0: 60, x1: 780, y0: 40, y1: 318, xmin: 0, xmax: c.tmax, ymin: lo - pad, ymax: hi + pad, xt: 'meses de operación', yt: c.hot ? 'salida ' + (AC ? 'del proceso' : 'del caliente') + ', °C' : 'salida del frío, °C' });
       var yt = a.Y(c.tgt);
@@ -4492,12 +4508,12 @@ function escenasGen(q) {
   /* ---------- 6. El costo ---------- */
   var SK = {};
   var FIG_C = {
-    titulo: 'El costo por año', ancha: true, tipo: 'svg', vista: [420, 400],
+    titulo: 'El costo por año', ancha: true, tipo: 'svg', vista: [420, 366],
     alt: 'Barra del costo total por año partido en el capital anualizado y el bombeo, con la compra, el factor de recuperación y la potencia de bombeo.',
     montar: function (g) { SK.g = g; },
     poner: function (r) {
       var g = SK.g, R = E(r), s = M.estadoDe(r.s, q); vaciar(g);
-      if (!R.bal.physical) { mensaje(g, 420, 400, sinIntercambio(R)); return; }
+      if (!R.bal.physical) { mensaje(g, 420, 366, sinIntercambio(R)); return; }
       var e = M.econ(R, s), tot = e.totY, X0 = 20, X1 = 400, X = function (v) { return X0 + (X1 - X0) * v / Math.max(tot, 1); };
       tx(g, X0, 26, 'por año, ' + usd(tot), 'f-v');
       el('rect', { x: X0, y: 40, width: X(e.capY) - X0, height: 34, fill: C.metalO }, g);

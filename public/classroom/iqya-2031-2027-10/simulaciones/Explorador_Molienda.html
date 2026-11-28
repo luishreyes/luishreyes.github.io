@@ -237,34 +237,58 @@ canvas.ml-live{position:absolute;inset:0;width:100%;height:100%;pointer-events:n
 <script src="/classroom/vendor/katex/katex.min.js"></script>
 
 <script id="modelo">
-/* El modelo de molienda y tamizado: el del explorador de siempre, sin cambios. Todo el cálculo vive en compute(s),
-   una función pura que no toca la página. Unidades: tamaños en µm, capacidad en t/h (tonelada métrica), energía en
-   kWh/t, potencia en kW. La energía es la ley de Bond (capítulo 7 del libro, ecuación 7.3) con el índice por tonelada
-   métrica y las correcciones de Rowland para el molino de bolas; la distribución del producto, Rosin-Rammler
-   (capítulo 5, ecuación 5.3), anclada en el P80; los tamices, las series ASTM E11 e ISO 3310 y la Tyler (capítulo 6).
-   calcular(s) es compute(s) con el estado de entrada guardado en r.s, para las notas de las escenas. */
+/* El modelo de molienda y tamizado, con las ecuaciones, las correcciones y los datos del capítulo 7 del libro
+   (herramientas/molienda-carbonato.py, que escribe el caso de la planta del carbonato). Todo el cálculo vive en
+   compute(s), una función pura que no toca la página. Unidades: tamaños en µm, capacidad en t/h (tonelada métrica),
+   energía en kWh/t, potencia en kW.
+   · Energía: la ley de Bond (ecuación 7.3) con el índice de su tabla, por tonelada corta, pasado a tonelada métrica;
+     en el molino de bolas, las correcciones de la tabla 7.1 (en seco, diámetro, alimentación gruesa, finura por
+     debajo de 70 µm y razón de reducción menor que 3). Las demás máquinas van con Bond sin corregir, como el
+     ejemplo 7.1 lleva la trituradora y el molino de martillos.
+   · Molino de bolas: la velocidad crítica de diseño, 42,3/√D (ecuación 7.6), la potencia por tonelada corta de bolas
+     (7.8), las toneladas de bolas y el largo (7.9) y la bola de reposición (7.11), como el ejemplo 7.2.
+   · Trituradora de mandíbulas: la abertura del lado abierto que deja el producto (ecuación 7.5).
+   · Calor: toda la energía en el eje se vuelve calor y se queda en el producto, como en la sección 7.7; la calcita
+     con la capacidad calorífica de la tabla de datos 7.3, a 55 °C.
+   · Producto: Rosin-Rammler (capítulo 5, ecuación 5.3) anclada en el P80; los tamices, las series ASTM E11 e ISO 3310
+     y la Tyler (capítulo 6).
+   Del explorador, sin fuente en el libro: el consumo de corte de la cáscara húmeda, los índices de la cáscara seca, el
+   calor específico de los materiales que no son la calcita y el del agua que los acompaña, la eficiencia de la
+   transmisión (0,95), los intervalos de las máquinas que la tabla 7.2 no da, el n de Rosin-Rammler de cada máquina y
+   los nombres de los regímenes del molino. calcular(s) es compute(s) con el estado de entrada guardado en r.s. */
 window.Modelo = (function () {
   'use strict';
-var TS = 1.1023; // tonelada métrica / tonelada corta
-/* Wi en kWh por tonelada MÉTRICA. Bond (1961) tabuló en kWh/tonelada corta:
-   caliza 11,61 → 12,8 · carbón bituminoso 11,37 → 12,5 · arcilla 7,10 → 7,8.
-   Maíz y azúcar no tienen ensayo de Bond publicado: valores orientativos. */
+var CORTA = 0.90718474; // t por tonelada corta
+/* la capacidad calorífica de la calcita, kJ/(kg·K), con T en K (Perry, tabla 2-151, en la tabla 7.3 del libro) */
+function cpCalcita(T) { return (19.68 + 0.01189 * T - 307600 / (T * T)) * 4.184 / 100.09; }
+/* Wi en kWh por tonelada métrica, del índice de la tabla de Bond por tonelada corta (WiC; tabla 7.4 del libro):
+   caliza 11,61, carbón 11,37 y arcilla 7,10. El maíz y el azúcar no tienen índice de Bond: el libro da 40 000 a
+   80 000 J/kg para los alimentos duros (Fellows), y el explorador toma el extremo bajo. Sg es la gravedad específica
+   del material, que pide la bola de reposición (la de la tabla 7.4 donde la hay). */
 var MATERIALS = [
-  { id: 'cascarah', name: 'Cáscara cítrica húmeda', noBond: true, Wi: null, WiSrc: 'no tiene · se corta, no se fractura', mohs: '—', cp: 1.40, hum: 300, tmax: null, fib: true, sol: false, higro: false, abr: false, atex: false, color: '#f2a33a', note: 'Materia prima de la planta de aceite esencial: sale de la juguera con 70-80 % de humedad y se desgarra a 5-10 mm sin secarla, porque el aceite es volátil. No tiene índice de Bond: su energía se estima por consumo específico.' },
-  { id: 'caliza', name: 'Caliza', Wi: 12.8, WiSrc: 'Bond (1961): 11,61 kWh/t corta', mohs: '3', cp: 0.91, hum: 2, tmax: null, fib: false, sol: false, higro: false, abr: true, atex: false, color: '#b9b1a3', note: 'Mineral de dureza media y abrasividad moderada · sin límite térmico del producto.' },
-  { id: 'carbon', name: 'Carbón bituminoso', Wi: 12.5, WiSrc: 'Bond (1961): 11,37 kWh/t corta', mohs: '2–2,5', cp: 1.30, hum: 8, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: true, color: '#2d2c2b', note: 'Friable, fácil de moler · el polvo fino seco forma atmósferas explosivas (ATEX).' },
-  { id: 'maiz', name: 'Maíz (grano)', Wi: 9.0, WiSrc: 'orientativo · sin ensayo de Bond publicado', mohs: '—', cp: 1.80, hum: 14, tmax: 60, fib: true, sol: false, higro: false, abr: false, atex: false, color: '#e3b23c', note: 'Orgánico fibroso-elástico · por encima de ~60 °C el almidón se gelatiniza y se daña.' },
-  { id: 'azucar', name: 'Azúcar cristal', Wi: 7.0, WiSrc: 'orientativo · sin ensayo de Bond publicado', mohs: '—', cp: 1.24, hum: 0.5, tmax: 50, fib: false, sol: true, higro: true, abr: false, atex: false, color: '#f2efe8', note: 'Higroscópico y termosensible: se apelmaza y carameliza · soluble en agua.' },
-  { id: 'arcilla', name: 'Arcilla húmeda', Wi: 7.8, WiSrc: 'Bond (1961): 7,10 kWh/t corta', mohs: '1–2', cp: 1.10, hum: 20, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: false, color: '#9c6b4a', note: 'Blanda pero plástica y pegajosa · en seco ciega y atasca la mayoría de los equipos.' },
-  { id: 'cascara', name: 'Cáscara cítrica seca', Wi: 14.0, WiSrc: 'sin índice publicado · use el de su ensayo o una fuente citada', mohs: '—', cp: 1.40, hum: 10, tmax: 60, fib: true, sol: false, higro: true, abr: false, atex: false, custom: true, color: '#e88a2d', note: 'Cáscara ya secada, fibrosa y algo higroscópica; se degrada con el calor. Bond describe mal los fibrosos: Wi, cp y límite son editables. No es la de la planta de aceite esencial, que se desgarra húmeda.' }
+  { id: 'cascarah', name: 'Cáscara cítrica húmeda', noBond: true, Wi: null, WiC: null, Sg: null, WiSrc: 'no tiene · se corta, no se fractura', mohs: 'no aplica', cp: 1.40, cpSrc: 'del explorador', hum: 300, tmax: null, fib: true, sol: false, higro: false, abr: false, atex: false, color: '#f2a33a', note: 'Materia prima de la planta de aceite esencial: sale de la juguera con 70 a 80 % de humedad y se desgarra en trozos que miden entre 5 y 10 mm, sin secarla, porque el aceite es volátil. No tiene índice de Bond: su energía se estima por consumo específico.' },
+  { id: 'caliza', name: 'Caliza', WiC: 11.61, Wi: 11.61 / CORTA, Sg: 2.69, WiSrc: 'Bond (1961): 11,61 kWh/t corta, 119 ensayos', mohs: '3', cp: cpCalcita(328.15), cpSrc: 'la calcita a 55 °C, como en el libro', hum: 2, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: false, color: '#b9b1a3', note: 'Mineral de dureza media y poco abrasivo: su índice de abrasión es 0,0256, contra 0,1831 del cuarzo. Es el uso más común de los molinos de impacto en roca. No tiene límite térmico del producto.' },
+  { id: 'carbon', name: 'Carbón bituminoso', WiC: 11.37, Wi: 11.37 / CORTA, Sg: 1.63, WiSrc: 'Bond (1961): 11,37 kWh/t corta, 10 ensayos', mohs: '2 a 2,5', cp: 1.30, cpSrc: 'del explorador', hum: 8, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: true, color: '#2d2c2b', note: 'Friable, fácil de moler · el polvo fino seco forma atmósferas explosivas (ATEX).' },
+  { id: 'maiz', name: 'Maíz (grano)', Wi: 40000 / 3600, WiC: 40000 / 3600 * CORTA, Sg: 1.3, WiSrc: 'alimento duro: 40 000 a 80 000 J/kg según Fellows, en el libro; el explorador toma el extremo bajo', mohs: 'no aplica', cp: 1.80, cpSrc: 'del explorador', hum: 14, tmax: 60, fib: true, sol: false, higro: false, abr: false, atex: false, color: '#e3b23c', note: 'Orgánico fibroso y elástico · por encima de unos 60 °C el almidón se gelatiniza y se daña.' },
+  { id: 'azucar', name: 'Azúcar cristal', Wi: 40000 / 3600, WiC: 40000 / 3600 * CORTA, Sg: 1.59, WiSrc: 'alimento duro: 40 000 a 80 000 J/kg según Fellows, en el libro; el explorador toma el extremo bajo', mohs: 'no aplica', cp: 1.24, cpSrc: 'del explorador', hum: 0.5, tmax: 50, fib: false, sol: true, higro: true, abr: false, atex: false, color: '#f2efe8', note: 'Higroscópico y termosensible: se apelmaza y carameliza · soluble en agua.' },
+  { id: 'arcilla', name: 'Arcilla húmeda', WiC: 7.10, Wi: 7.10 / CORTA, Sg: 2.23, WiSrc: 'Bond (1961): 7,10 kWh/t corta, 9 ensayos', mohs: '1 a 2', cp: 1.10, cpSrc: 'del explorador', hum: 20, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: false, color: '#9c6b4a', note: 'Blanda pero plástica y pegajosa · en seco ciega y atasca la mayoría de los equipos.' },
+  { id: 'cascara', name: 'Cáscara cítrica seca', Wi: 14.0, WiC: 14.0 * CORTA, Sg: 1.4, WiSrc: 'sin índice publicado · use el de su ensayo o una fuente citada', mohs: 'no aplica', cp: 1.40, cpSrc: 'el que usted fije', hum: 10, tmax: 60, fib: true, sol: false, higro: true, abr: false, atex: false, custom: true, color: '#e88a2d', note: 'Cáscara ya secada, fibrosa y algo higroscópica; se degrada con el calor. Bond describe mal los fibrosos: Wi, cp y límite son editables. No es la de la planta de aceite esencial, que se desgarra húmeda.' }
 ];
+/* Los intervalos de cada máquina (tabla 7.2 del libro): la boca fmax y el producto pmin a pmax, en mm, y la razón de
+   reducción máxima rrMax. Donde la tabla no da un valor, el del explorador: la trituradora de mandíbulas baja a 12 mm
+   con una razón de hasta 6, la de cada etapa de trituración en el texto del libro (la tabla da productos entre 10
+   y 20 cm para la primaria, y el caso del libro la lleva a 40 mm); la boca del molino de martillos, el producto más
+   fino del molino de discos y la boca y la razón del molino de cuchillas y del de discos. Las capacidades capMin a
+   capMax (t/h; la trituradora baja a 1 t/h porque la planta del libro la usa con 5 t/h), la
+   humedad máxima en seco humMax (%) y el n de Rosin-Rammler son del explorador. eMed es la energía que el libro da
+   como medida para la máquina, kWh/t, cuando Bond la estima mal. */
 var MILLS = [
-  { id: 'mand', name: 'Trituradora de mandíbulas', short: 'Mandíbulas', mech: 'Compresión', fmax: 1000, pmin: 12, pmax: 300, rrMax: 8, capMin: 10, capMax: 800, humMax: 12, wet: false, n: 1.5, k: 1.0, note: 'Trituración primaria de material grueso y duro; no produce finos.' },
-  { id: 'rod', name: 'Molino de rodillos', short: 'Rodillos', mech: 'Compresión', fmax: 40, pmin: 1, pmax: 15, rrMax: 4, capMin: 5, capMax: 300, humMax: 20, wet: false, n: 2.2, k: 1.1, note: 'Producto uniforme con pocos finos; tolera material algo húmedo o pegajoso.' },
-  { id: 'mart', name: 'Molino de martillos', short: 'Martillos', mech: 'Impacto', fmax: 80, pmin: 0.15, pmax: 25, rrMax: 40, capMin: 0.5, capMax: 80, humMax: 12, wet: false, n: 0.9, k: 1.4, note: 'Versátil, gran relación de reducción; distribución amplia y desgaste alto con abrasivos.' },
-  { id: 'bolas', name: 'Molino de bolas', short: 'Bolas', mech: 'Impacto + atrición', fmax: 25, pmin: 0.02, pmax: 2, rrMax: 200, capMin: 1, capMax: 200, humMax: 4, wet: true, n: 1.1, k: 1.0, note: 'Molienda fina, seca o húmeda; en seco exige alimentación casi seca.' },
-  { id: 'cuch', name: 'Molino de cuchillas', short: 'Cuchillas', mech: 'Corte', fmax: 120, pmin: 2, pmax: 40, rrMax: 15, capMin: 0.3, capMax: 20, humMax: 400, wet: false, n: 1.8, k: 1.0, note: 'Corta en vez de fracturar: es el equipo de los materiales blandos, húmedos y fibrosos, como la cáscara fresca. La criba fija el tamaño de salida y la energía se estima por consumo específico.' },
-  { id: 'disc', name: 'Molino de discos (atrición)', short: 'Discos', mech: 'Cizalla / fricción', fmax: 12, pmin: 0.02, pmax: 1, rrMax: 100, capMin: 0.2, capMax: 15, humMax: 10, wet: true, n: 1.2, k: 1.8, note: 'Molienda fina de blandos y fibrosos; gran generación de calor por fricción.' }
+  { id: 'mand', name: 'Trituradora de mandíbulas', short: 'Mandíbulas', mech: 'Compresión', fmax: 1500, pmin: 12, pmax: 300, rrMax: 6, capMin: 1, capMax: 800, humMax: 12, wet: false, n: 1.5, note: 'Trituración primaria de material grueso y duro; no produce finos. La abertura del lado abierto fija el producto.' },
+  { id: 'rod', name: 'Molino de rodillos', short: 'Rodillos', mech: 'Compresión', fmax: 75, pmin: 1, pmax: 12, rrMax: 4, capMin: 5, capMax: 300, humMax: 20, wet: false, n: 2.2, note: 'Rodillos lisos: trituración secundaria con producto uniforme y pocos finos; tolera material algo húmedo o pegajoso.' },
+  { id: 'mart', name: 'Molino de martillos', short: 'Martillos', mech: 'Impacto', fmax: 80, pmin: 0.075, pmax: 25, rrMax: 40, capMin: 0.5, capMax: 80, humMax: 12, wet: false, n: 0.9, eMed: [4, 17], note: 'Versátil, gran razón de reducción y distribución amplia. En roca se limita a la caliza y a las piedras más blandas: con más de 5 % de cuarzo los martillos se gastan demasiado.' },
+  { id: 'bolas', name: 'Molino de bolas', short: 'Bolas', mech: 'Impacto y frotación', fmax: 15, pmin: 0.015, pmax: 2, rrMax: 200, capMin: 1, capMax: 200, humMax: 4, wet: true, n: 1.1, note: 'Molienda fina, seca o húmeda, con razones de reducción entre 20 y 200; en seco exige alimentación casi seca.' },
+  { id: 'cuch', name: 'Molino de cuchillas', short: 'Cuchillas', mech: 'Corte', fmax: 120, pmin: 2, pmax: 10, rrMax: 15, capMin: 0.3, capMax: 20, humMax: 400, wet: false, n: 1.8, note: 'Corta en vez de fracturar: es el equipo de los materiales blandos, húmedos y fibrosos, como la cáscara fresca. La criba fija el tamaño de salida, entre 2 y 10 mm, y la energía se estima por consumo específico.' },
+  { id: 'disc', name: 'Molino de discos', short: 'Discos', mech: 'Frotación y cizalla', fmax: 12, pmin: 0.02, pmax: 0.074, rrMax: 600, capMin: 0.2, capMax: 15, humMax: 10, wet: true, n: 1.2, eMed: [8, 80], note: 'Molienda fina de blandos y fibrosos, casi todo por la malla 200, de 74 µm; gran generación de calor por fricción.' }
 ];
 /* Series de tamices. ASTM E11 (= ISO 3310-1, la de la lectura del curso) y
    Tyler (razón √2, aberturas propias). */
@@ -285,7 +309,7 @@ function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id =
 function compute(s) {
   var mat0 = byId(MATERIALS, s.mat), mill = byId(MILLS, s.mill);
   var mat = Object.assign({}, mat0);
-  if (mat.custom) { mat.Wi = s.cWi; mat.cp = s.cCp; mat.tmax = s.cTmax; }
+  if (mat.custom) { mat.Wi = s.cWi; mat.WiC = s.cWi * CORTA; mat.cp = s.cCp; mat.tmax = s.cTmax; }
   var Tamb = s.Tamb, F80 = Math.pow(10, s.lF), P80t = Math.pow(10, s.lP), cap = Math.pow(10, s.lC), wet = s.modo === 'hum';
   var pminUm = mill.pmin * 1000, pmaxUm = mill.pmax * 1000;
   var P80 = Math.min(Math.max(P80t, pminUm), pmaxUm);
@@ -293,44 +317,63 @@ function compute(s) {
   var clamped = Math.abs(P80 - P80t) / P80t > 0.001;
   var rr = F80 / P80;
 
-  /* Energía: Bond sobre el Wi de referencia (molino de bolas húmedo, circuito
-     cerrado) y factores de corrección de Rowland para el molino de bolas. */
+  /* Energía: la ley de Bond (ecuación 7.3) con el índice por tonelada métrica. El índice corresponde a un molino de
+     bolas de rebose de 8 pies que muele en húmedo y en circuito cerrado; para el molino de bolas de la planta, las
+     correcciones de la tabla 7.1, cuando están aplicadas (s.rowland): en seco × 1,30, el diámetro (8/D)^0,2 con D en
+     pies dentro del revestimiento, la alimentación más gruesa que F0 = 4000·√(13/WiC) µm (con el índice por tonelada
+     corta), la finura por debajo de 70 µm y la razón de reducción menor que 3. El circuito es cerrado, como el del
+     caso del libro: la corrección de circuito abierto no entra. */
   var noBond = !!mat.noBond;
   var Ebond = noBond ? 0 : Math.max(0, 10 * mat.Wi * (1 / Math.sqrt(P80) - 1 / Math.sqrt(F80)));
-  var ef = { EF1: 1, EF4: 1, EF5: 1 };
+  var ef = { EF1: 1, EF3: 1, EF4: 1, EF5: 1, EF6: 1 };
   if (!noBond && s.rowland && mill.id === 'bolas') {
     if (!wet) ef.EF1 = 1.3;
-    var F0 = 4000 * Math.sqrt(13 / mat.Wi);
-    if (F80 > F0 && rr > 1.01) ef.EF4 = (rr + (mat.Wi - 7) * (F80 - F0) / F0) / rr;
-    if (P80 < 75) ef.EF5 = (P80 + 10.3) / (1.145 * P80);
+    ef.Dft = s.D / 0.3048;
+    ef.EF3 = Math.pow(8 / ef.Dft, 0.2);
+    var F0 = 4000 * Math.sqrt(13 / mat.WiC);
+    if (F80 > F0 && rr > 1.01) ef.EF4 = (rr + (mat.WiC - 7) * (F80 - F0) / F0) / rr;
+    if (P80 < 70) ef.EF5 = (P80 + 10.3) / (1.145 * P80);
+    if (rr < 3 && rr > 1.35) ef.EF6 = (20 * (rr - 1.35) + 2.6) / (20 * (rr - 1.35));
     ef.F0 = F0;
   }
-  var EF = ef.EF1 * ef.EF4 * ef.EF5;
+  var EF = ef.EF1 * ef.EF3 * ef.EF4 * ef.EF5 * ef.EF6;
   /* La cáscara húmeda no tiene Wi: su energía es el consumo específico de corte,
      dado por tonelada de cáscara tal como llega, y se pasa a sólido seco con su agua. */
   var w0 = wet ? (100 / s.sol - 1) : s.hum / 100;
   var E = noBond ? s.cEsp * (1 + w0) : Ebond * EF;   // kWh/t de sólido seco
-  var Eeq = noBond ? E : mill.k * E;  // kWh/t que absorbe ESTE equipo
+  var Eeq = E;  // la energía del equipo: el ejemplo 7.1 lleva la trituradora y el molino de martillos con Bond sin corregir
+  /* La potencia de Bond es la del eje del motor (sección 7.3). La eficiencia de la transmisión, 0,95, es un supuesto
+     del explorador: deja el margen con que se escoge el motor de la serie IEC. */
   var Peje = Eeq * cap, eta = 0.95, Pmot = Peje / eta;
   var motor = null; for (var i = 0; i < IEC_MOTORS.length; i++) if (IEC_MOTORS[i] >= Pmot) { motor = IEC_MOTORS[i]; break; }
-  var Qsurf = 0.03 * Peje, Q = 0.97 * Peje, Ploss = Pmot - Peje;
-
-  /* Balance térmico adiabático: todo el calor va al flujo de proceso. */
+  /* Calor (sección 7.7): casi toda la energía se vuelve calor; la superficie nueva guarda del orden de una milésima
+     (Bond) y el libro la desprecia. Si todo se queda en el producto, ΔT = 3,6·E/cp, con 1 kWh/t = 3,6 kJ/kg. El agua
+     que acompaña al sólido, la humedad en seco o la de la pulpa en húmedo, se calienta con él (del explorador). */
+  var Qsurf = 0.001 * Peje, Q = Peje, Ploss = Pmot - Peje;
   var w = wet ? (100 / s.sol - 1) : s.hum / 100;  // kg agua / kg sólido seco
   var cpmix = mat.cp + w * 4.18;                  // kJ/(kg sólido·K)
-  var dT = Eeq > 0 ? 0.97 * Eeq * 3.6 / cpmix : 0; // 1 kWh/t = 3,6 kJ/kg
+  var dT = Eeq > 0 ? Eeq * 3.6 / cpmix : 0;
   var Tout = Tamb + dT, mcp = cap / 3.6 * cpmix, agua = cap * w;
+  /* Trituradora de mandíbulas: la abertura del lado abierto que deja ese producto (ecuación 7.5, Oss en pulgadas) */
+  var oss = (!noBond && mill.id === 'mand') ? P80 / (25400 * (0.04 * mat.WiC + 0.40)) : null;
 
   /* Leyes de Kick y Rittinger calibradas en el punto de operación. */
   var CK = Ebond > 0 ? Ebond / Math.log(F80 / P80) : 0;
   var CR = Ebond > 0 ? Ebond / (1 / P80 - 1 / F80) : 0;
 
-  /* Molino de bolas: velocidad crítica Nc = 42,3/√(D − d) rpm (D, d en m). */
+  /* Molino de bolas (sección 7.5 y ejemplo 7.2): la velocidad crítica de diseño Nc = 42,3/√D r/min con D en metros
+     (ecuación 7.6); la potencia por tonelada corta de bolas Kwb (ecuación 7.8, D en pies), × 1,08 en seco con descarga
+     por parrilla (el explorador supone parrilla en seco y rebose en húmedo); las toneladas cortas de bolas que pide la
+     potencia en el eje y el largo del molino con mb = J·D²·L/8,4 (ecuación 7.9), y la bola de reposición
+     (ecuación 7.11), con KB = 335 en seco y 350 en húmedo. Los nombres de los regímenes son del explorador. */
   var ball = null;
   if (mill.id === 'bolas') {
-    var D = s.D, d = 0.05, Nc = 42.3 / Math.sqrt(D - d), N = s.phi / 100 * Nc;
+    var D = s.D, Dft = D / 0.3048, Jf = s.J / 100, cs = s.phi / 100, Nc = 42.3 / Math.sqrt(D), N = cs * Nc;
     var reg = s.phi >= 100 ? 'Centrifugado' : s.phi >= 85 ? 'Catarata intensa' : s.phi >= 65 ? 'Catarata' : s.phi >= 45 ? 'Cascada' : 'Deslizamiento';
-    ball = { D: D, d: d, Nc: Nc, N: N, phi: s.phi, J: s.J, reg: reg };
+    var kwb0 = 2.8 * Math.pow(Dft, 0.4) * (3.2 - 3 * Jf) * cs * (1 - 0.1 / Math.pow(2, 9 - 10 * cs)), kwb = kwb0 * (wet ? 1 : 1.08);
+    var mb = kwb > 0 ? Peje / kwb : NaN, Lft = mb * 8.4 / (Jf * Dft * Dft), KB = wet ? 350 : 335;
+    var bola = (!noBond && mat.Sg) ? 25.4 * Math.sqrt(F80 / KB) * Math.pow(mat.Sg * mat.WiC / (100 * cs * Math.sqrt(Dft)), 1 / 3) : null;
+    ball = { D: D, Dft: Dft, Nc: Nc, N: N, phi: s.phi, J: s.J, reg: reg, kwb0: kwb0, kwb: kwb, mbC: mb, mb: mb * CORTA, L: Lft * 0.3048, LD: Lft * 0.3048 / D, KB: KB, bola: bola };
   }
 
   /* Rosin-Rammler: F(x) = 1 − exp[−(x/x′)ⁿ], anclada en P₈₀. */
@@ -352,28 +395,30 @@ function compute(s) {
   var fondo = prev, sub38 = Fpass(38) * 100;
   var P50 = x63 * Math.pow(Math.log(2), 1 / n);
 
-  /* Advertencias (textos del explorador original, más las nuevas). */
+  /* Advertencias: los límites de cada máquina y lo que el material no tolera (tabla 7.6 del libro), con los textos
+     del explorador. */
   var warns = [], crit = false;
   var W = function (t, c) { warns.push({ t: t, c: !!c }); if (c) crit = true; };
   if (F80 > mill.fmax * 1000) W('La alimentación F₈₀ = ' + fmtSize(F80) + ' supera la boca de entrada del equipo (' + mill.fmax + ' mm): el material no entra. Se requiere trituración previa.', true);
   if (P80t >= F80 / 1.2) W('El tamaño objetivo debe ser claramente menor que la alimentación: se calcula con P₈₀ = F₈₀/1,2.');
   else if (P80t < pminUm) W('Producto fuera de especificación: este equipo no baja de ' + fmtSize(pminUm) + ' y el objetivo era ' + fmtSize(P80t) + '. El cálculo usa el mínimo alcanzable.', true);
-  else if (P80t > pmaxUm) W('El objetivo ' + fmtSize(P80t) + ' es más grueso que el rango del equipo (máx. ' + fmtSize(pmaxUm) + '): habrá sobre-molienda; considere un equipo de trituración.');
+  else if (P80t > pmaxUm) W('El objetivo ' + fmtSize(P80t) + ' es más grueso que el intervalo del equipo (máx. ' + fmtSize(pmaxUm) + '): habrá sobremolienda; considere un equipo de trituración.');
   if (rr > mill.rrMax) W('Relación de reducción ' + fmtN(rr, 0) + ':1, mayor que la máxima típica del equipo (' + mill.rrMax + ':1): divida la reducción en varias etapas en serie.');
   if (!wet && s.hum > mill.humMax && !noBond) W('Atasco: con humedad de ' + fmtN(s.hum, 1) + ' % (máx. ' + mill.humMax + ' % en seco) el material se apelmaza, ciega las superficies de molienda y bloquea el equipo.', true);
   if (wet && !mill.wet) W('Este equipo no admite operación húmeda: la pulpa no puede procesarse en un equipo de ' + mill.short.toLowerCase() + '.', true);
   if (wet && mat.sol) W('El azúcar es soluble: en molienda húmeda el producto se disuelve en el agua. Proceso inviable.', true);
   if (wet && mat.id === 'cascara') W('La cáscara seca se muele en seco: en pulpa vuelve a hidratarse y se pierde lo que costó secarla.');
-  if (noBond && mill.id !== 'cuch') W('La cáscara húmeda no se fractura, se corta: con 70-80 % de humedad se aplasta, tapona la criba y bloquea este equipo. Use el molino de cuchillas.', true);
-  if (noBond && wet) W('No hace falta moler en pulpa: la cáscara ya trae 70-80 % de agua y se desgarra tal como llega.');
+  if (noBond && mill.id !== 'cuch') W('La cáscara húmeda no se fractura, se corta: con 70 a 80 % de humedad se aplasta, tapona la criba y bloquea este equipo. Use el molino de cuchillas.', true);
+  if (noBond && wet) W('No hace falta moler en pulpa: la cáscara ya trae 70 a 80 % de agua y se desgarra tal como llega.');
   if (mill.id === 'cuch' && !mat.fib && !noBond) W('Material frágil: las cuchillas se desafilan y se astillan contra él. El molino de cuchillas es para materiales blandos y fibrosos.', true);
   if (!wet && mat.higro && s.hum > 1.5 && mat.id === 'azucar') W('Material higroscópico: con w > 1,5 % los cristales se apelmazan durante la molienda y el manejo posterior.');
   if (mat.tmax && Tout > mat.tmax) W('Daño térmico: la temperatura de salida (' + fmtN(Tout, 0) + ' °C) supera el límite del material (' + mat.tmax + ' °C). ' + (mat.id === 'maiz' ? 'Gelatinización y daño del almidón. Considere molienda criogénica o aire de barrido.' : mat.id === 'cascara' ? 'Degradación térmica de la cáscara. Considere aire de barrido, menor relación de reducción por etapa o enfriamiento.' : 'Caramelización y apelmazado del producto. Considere aire de barrido o enfriamiento.'), true);
   if (mat.fib && (mill.id === 'bolas' || mill.id === 'mand')) W('Material fibroso-elástico: la fractura por ' + mill.mech.toLowerCase() + ' es poco eficaz; prefiera impacto (martillos) o atrición (discos).');
   if (mat.atex && !wet && P80 < 200) W('Polvo de carbón < 200 µm en seco: atmósfera explosiva (ATEX). Requiere inertización y venteos de explosión.');
   if (mat.abr && (mill.id === 'mart' || mill.id === 'disc')) W('Material abrasivo en equipo de ' + (mill.id === 'mart' ? 'impacto: desgaste acelerado de martillos y criba' : 'fricción: desgaste acelerado de los discos') + '. Alto costo de mantenimiento.');
-  if (cap > mill.capMax) W('Capacidad de ' + fmtN(cap, 0) + ' t/h por encima del rango típico (' + mill.capMin + '–' + mill.capMax + ' t/h): use varias unidades en paralelo o un equipo mayor.');
-  else if (cap < mill.capMin) W('Capacidad de ' + fmtN(cap, 1) + ' t/h por debajo del rango típico (' + mill.capMin + '–' + mill.capMax + ' t/h): el equipo queda sobredimensionado.');
+  if (cap > mill.capMax) W('Capacidad de ' + fmtN(cap, 0) + ' t/h por encima del intervalo típico (' + fmtN(mill.capMin, mill.capMin < 1 ? 1 : 0) + ' a ' + fmtN(mill.capMax, 0) + ' t/h): use varias unidades en paralelo o un equipo mayor.');
+  else if (cap < mill.capMin) W('Capacidad de ' + fmtN(cap, 1) + ' t/h por debajo del intervalo típico (' + fmtN(mill.capMin, mill.capMin < 1 ? 1 : 0) + ' a ' + fmtN(mill.capMax, 0) + ' t/h): el equipo queda sobredimensionado.');
+  if (mill.id === 'bolas' && s.rowland && !noBond && rr <= 1.35) W('Razón de reducción de ' + fmtN(rr, 2) + ':1 en un molino de bolas: la corrección de Bond para razones bajas solo vale por encima de 1,35, y un molino de bolas no se usa para tan poca reducción.', true);
   if (ball && ball.phi >= 100) W('Molino de bolas a ' + fmtN(ball.phi, 0) + ' % de la velocidad crítica: la carga centrifuga pegada a la pared y no hay molienda.', true);
   else if (ball && ball.phi > 85) W('A ' + fmtN(ball.phi, 0) + ' % de la velocidad crítica las bolas golpean el revestimiento: desgaste alto. Lo usual es 65 a 80 %.');
   else if (ball && ball.phi < 55) W('A ' + fmtN(ball.phi, 0) + ' % de la velocidad crítica la carga apenas se levanta: molienda lenta por atrición. Lo usual es 65 a 80 %.');
@@ -382,7 +427,7 @@ function compute(s) {
   var status = crit ? 'inviable' : warns.length ? 'advertencias' : 'viable';
   return {
     mat: mat, mill: mill, F80: F80, P80t: P80t, P80: P80, clamped: clamped, rr: rr, cap: cap, wet: wet, Tamb: Tamb,
-    Ebond: Ebond, ef: ef, EF: EF, E: E, Eeq: Eeq, Peje: Peje, Pmot: Pmot, eta: eta, motor: motor, Q: Q, Qsurf: Qsurf, Ploss: Ploss,
+    Ebond: Ebond, ef: ef, EF: EF, E: E, Eeq: Eeq, Peje: Peje, Pmot: Pmot, eta: eta, motor: motor, Q: Q, Qsurf: Qsurf, Ploss: Ploss, oss: oss,
     noBond: noBond, cEsp: s.cEsp, w: w, cpmix: cpmix, dT: dT, Tout: Tout, mcp: mcp, agua: agua, CK: CK, CR: CR, ball: ball,
     n: n, x63: x63, P50: P50, Fpass: Fpass, rows: rows, fondo: fondo, sub38: sub38, series: series,
     warns: warns, crit: crit, status: status, pminUm: pminUm, pmaxUm: pmaxUm
@@ -407,7 +452,7 @@ function fmtSize(um) {
   function calcular(s) { var r = compute(s); r.s = Object.assign({}, s); return r; }
   // al escoger otro material, la humedad pasa a la típica de ese material, como en el explorador anterior
   function ajustar(s, clave) { if (clave === 'mat') s.hum = byId(MATERIALS, s.mat).hum; }
-  return { TS: TS, MATERIALS: MATERIALS, MILLS: MILLS, SIEVE_SERIES: SIEVE_SERIES, IEC_MOTORS: IEC_MOTORS, byId: byId,
+  return { CORTA: CORTA, cpCalcita: cpCalcita, MATERIALS: MATERIALS, MILLS: MILLS, SIEVE_SERIES: SIEVE_SERIES, IEC_MOTORS: IEC_MOTORS, byId: byId,
     compute: compute, calcular: calcular, ajustar: ajustar, fmtN: fmtN, fmtSize: fmtSize, CASO: CASO };
 })();
 </script>
@@ -1776,8 +1821,10 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
   /* ================= Formato ================= */
   function tam(um) { return M.fmtSize(um).replace(' ', NB); }
   function capTxt(c) { return un(c, c < 10 ? 1 : 0, 't/h'); }
-  function kw(v) { return v == null ? 'más de 20 MW' : un(v, v < 10 ? 1 : 0, 'kW'); }
-  function kwN(v) { return num(v, v < 100 ? 1 : 0); }
+  function kw(v) { return v == null ? 'más de 20 MW' : un(v, v < 10 ? 2 : v < 100 ? 1 : 0, 'kW'); }
+  // un motor de la serie IEC, con los decimales de su tamaño (0,37; 2,2; 11; 18,5)
+  function kwMot(v) { if (v == null) return 'más de 20 MW'; var d = Math.round(v * 100) % 10 ? 2 : Math.round(v * 10) % 10 ? 1 : 0; return un(v, d, 'kW'); }
+  function kwN(v) { return num(v, v < 10 ? 2 : v < 100 ? 1 : 0); }
   function log(x) { return Math.log10(x); }
   function mill(id) { return M.byId(MILLS, id); }
   function mat(id) { return M.byId(MATS, id); }
@@ -1828,30 +1875,30 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     phi: { etiqueta: 'Velocidad, φ', min: 30, max: 120, paso: 1, decimales: 0, unidad: '%', nota: 'fracción de la crítica' },
     D: { etiqueta: 'Diámetro interno del tambor, D', min: 0.5, max: 5, paso: 0.1, decimales: 1, unidad: 'm' },
     J: { etiqueta: 'Carga de bolas, J', min: 20, max: 45, paso: 1, decimales: 0, unidad: '%', nota: 'del volumen del tambor' },
-    rowland: { etiqueta: 'Correcciones de Rowland', tipo: 'opciones', opciones: [{ valor: true, texto: 'Aplicadas' }, { valor: false, texto: 'Solo Bond' }], nota: 'solo el molino de bolas' },
+    rowland: { etiqueta: 'Correcciones de Bond', tipo: 'opciones', opciones: [{ valor: true, texto: 'Aplicadas' }, { valor: false, texto: 'Sin corregir' }], nota: 'tabla 7.1, en el molino de bolas' },
     Tamb: { etiqueta: 'Temperatura ambiente', min: 5, max: 40, paso: 1, decimales: 0, unidad: '°C' },
     series: { etiqueta: 'Serie de tamices', tipo: 'opciones', opciones: [{ valor: 'astm', texto: 'ASTM E11' }, { valor: 'tyler', texto: 'Tyler' }], nota: 'la ASTM E11 es la de la ISO 3310' }
   };
 
   /* ================= Las configuraciones ================= */
-  var CARB = { mat: 'caliza', hum: 2, modo: 'seca', lC: log(5), rowland: true };
-  function energia(r) { return un(r.Eeq, r.Eeq < 1 ? 3 : r.Eeq < 10 ? 2 : 1, 'kWh/t') + ', ' + un(r.Peje, r.Peje < 10 ? 2 : r.Peje < 100 ? 1 : 0, 'kW') + ' en el eje y un motor de ' + kw(r.motor) + '.'; }
+  var CARB = { mat: 'caliza', hum: 0, modo: 'seca', lC: log(5), rowland: true };   // el libro no le pone agua al carbonato
+  function energia(r) { return un(r.Eeq, r.Eeq < 10 ? 3 : 1, 'kWh/t') + ', ' + un(r.Peje, r.Peje < 10 ? 2 : r.Peje < 100 ? 1 : 0, 'kW') + ' en el eje y un motor de ' + kwMot(r.motor) + '.'; }
   var CONFIGURACIONES = [
     { id: 'caso', ceja: 'Planta de aceite esencial', titulo: 'La cáscara del proyecto', cambios: {}, alerta: function (r) { return r.crit; },
       fija: 'La cáscara cítrica húmeda que sale de la juguera, en el molino de cuchillas: entra con 50 mm y sale con 7,9 mm, 2 t/h de sólido seco.',
       resultado: function (r) { return energia(r) + ' Sale a ' + un(r.Tout, 0, '°C') + '.'; } },
     { id: 'etapa1', ceja: 'Ejemplo 7.1 del libro', titulo: 'Carbonato, etapa 1', alerta: function (r) { return r.crit; },
       cambios: Object.assign({}, CARB, { mill: 'mand', lF: log(200000), lP: log(40000) }),
-      fija: 'La caliza de la cantera en la trituradora de mandíbulas: entra con 200 mm y sale con 40 mm, 5 t/h.',
-      resultado: energia },
+      fija: 'La caliza seca de la cantera en la trituradora de mandíbulas: entra con 200 mm y sale con 40 mm, 5 t/h.',
+      resultado: function (r) { return energia(r) + ' La abertura del lado abierto es de ' + un(r.oss * 25.4, 0, 'mm') + '.'; } },
     { id: 'etapa2', ceja: 'Ejemplo 7.1 del libro', titulo: 'Carbonato, etapa 2', alerta: function (r) { return r.crit; },
       cambios: Object.assign({}, CARB, { mill: 'mart', lF: log(40000), lP: log(3000) }),
       fija: 'La piedra de 40 mm en el molino de martillos, hasta 3 mm, 5 t/h.',
-      resultado: function (r) { return 'Bond da ' + un(r.Ebond, 3, 'kWh/t') + '; con el factor del equipo, ' + energia(r); } },
+      resultado: function (r) { return energia(r) + ' El libro la toma como una primera estimación.'; } },
     { id: 'etapa3', ceja: 'Ejemplos 7.1 y 7.2 del libro', titulo: 'Carbonato, etapa 3', alerta: function (r) { return r.crit; },
       cambios: Object.assign({}, CARB, { mill: 'bolas', lF: log(3000), lP: log(34.9), D: 2.0, J: 40, phi: 75 }),
       fija: 'El molino de bolas en seco, de 2,0 m, con 40 % de carga a 75 % de la crítica: entra con 3 mm y sale con 34,9 µm, 5 t/h.',
-      resultado: function (r) { return energia(r) + ' Gira a ' + un(r.ball.N, 1, 'r/min') + '.'; } }
+      resultado: function (r) { return energia(r) + ' Gira a ' + un(r.ball.N, 1, 'r/min') + ' con ' + un(r.ball.mb, 1, 't') + ' de bolas, en un tambor de ' + un(r.ball.L, 2, 'm') + ' de largo.'; } }
   ];
 
   /* ================= Las máquinas en isométrico y en corte ================= */
@@ -1867,7 +1914,7 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
   function bolasEnSeccion(J) { return Math.round(0.8 * J / 100 * 3364 / 50) * 50; }
   var SIMCAP = {
     cuch: function () { return 'Las cuchillas del rotor pasan rozando las cuchillas fijas de la carcasa y cortan el material como unas tijeras. No hace falta que la partícula se fracture, y por eso este equipo sirve para la cáscara húmeda y fibrosa, que en un molino de impacto solo se aplasta. Sale lo que pasa por la criba de abajo, cuya abertura fija el tamaño. La simulación usa la mecánica de partículas del molino de martillos con el rotor de cuchillas.'; },
-    bolas: function (r) { var b = r.ball; return 'Es una simulación de elementos discretos: unas ' + num(bolasEnSeccion(b.J), 0) + ' bolas de acero de entre 4 y 6 cm, en promedio las de 5 cm del cálculo de la velocidad crítica, y granos de mineral en una sección del tambor con sus levantadores, girando a φ = ' + un(b.phi, 0, '%') + ' de la crítica. En ' + b.reg.toLowerCase() + ', ' + REGIMEN[b.reg] + ' Los destellos son impactos de bola contra mineral; el mineral se fractura con impactos repetidos y los finos se descargan. Como el régimen depende solo de ω²R/g, la simulación es dinámicamente semejante al molino real aunque su escala sea otra.'; },
+    bolas: function (r) { var b = r.ball; return 'Es una simulación de elementos discretos: unas ' + num(bolasEnSeccion(b.J), 0) + ' bolas de acero de entre 4 y 6 cm, de 5 cm en promedio, y granos de mineral en una sección del tambor con sus levantadores, girando a φ = ' + un(b.phi, 0, '%') + ' de la crítica. En ' + b.reg.toLowerCase() + ', ' + REGIMEN[b.reg] + ' Los destellos son impactos de bola contra mineral; el mineral se fractura con impactos repetidos y los finos se descargan. Como el régimen depende solo de ω²R/g, la simulación es dinámicamente semejante al molino real aunque su escala sea otra.'; },
     mand: function () { return 'La mandíbula móvil oscila impulsada por la excéntrica y aprieta el material contra la fija. Una partícula se fractura cuando queda atrapada entre las dos; los fragmentos descienden hasta pasar por la abertura de descarga, que fija el tamaño máximo del producto. No produce finos.'; },
     rod: function () { return 'Los rodillos giran en sentidos opuestos y arrastran el material por fricción hacia la luz. Solo pasan las partículas que caben; las demás se fracturan en la línea de contacto. Por eso el producto es uniforme, con un n alto, y con pocos finos.'; },
     mart: function () { return 'Los martillos giran a gran velocidad periférica y golpean el material, que rebota contra la carcasa y vuelve a ser golpeado. Solo sale lo que pasa por la criba de la parte inferior: la abertura de la criba controla el tamaño del producto. La distribución es amplia, con un n bajo.'; },
@@ -1889,27 +1936,27 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
         { p: E.gear, a: 'i', e: 1, t: ['corona y piñón', 'N = ' + un(b.N, 1, 'r/min') + ', N<sub>c</sub> = ' + un(b.Nc, 1, 'r/min')] },
         { p: E.feed, a: 'd', t: ['alimentación', feed + ', ' + c] },
         { p: E.trommel, a: 'i', t: ['descarga por el trommel', prod] },
-        { p: E.motor, a: 'i', t: ['motor', kw(rr.motor)] }];
+        { p: E.motor, a: 'i', t: ['motor', kwMot(rr.motor)] }];
     } else if (id === 'mand') {
       L = [{ p: E.gape, a: 'd', t: ['boca de alimentación', feed + ', ' + c] },
-        { p: E.setting, a: 'd', t: ['abertura de descarga', prod] },
+        { p: E.setting, a: 'd', t: ['abertura de descarga', (rr.oss ? 'Oₛₛ = ' + un(rr.oss * 25.4, 0, 'mm') + ', ' : '') + prod] },
         { p: E.fly, a: 'i', t: ['volante y eje excéntrico', 'mueven la biela'] },
-        { p: E.motor, a: 'i', t: ['motor y correas', kw(rr.motor)] }];
+        { p: E.motor, a: 'i', t: ['motor y correas', kwMot(rr.motor)] }];
     } else if (id === 'rod') {
       L = [{ p: E.bin, a: 'd', t: ['producto', prod] },
         { p: E.spring, a: 'i', t: ['resortes de alivio', 'dejan pasar lo que no se rompe'] },
-        { p: E.motor, a: 'i', t: ['motores', kw(rr.motor)] }];
+        { p: E.motor, a: 'i', t: ['motores', kwMot(rr.motor)] }];
     } else if (id === 'disc') {
       L = [{ p: E.feed, a: 'd', t: ['alimentación por el ojo', feed + ', ' + c] },
         { p: E.gap, a: 'i', t: ['entre los dos discos', 'frotación, sale a ' + un(rr.Tout, 0, '°C')] },
         { p: E.springs, a: 'i', t: ['resortes de la puerta', 'ceden si entra algo duro'] },
         { p: E.out, a: 'i', t: ['descarga por la periferia', prod] },
-        { p: E.motor, a: 'i', t: ['motor y correas', kw(rr.motor)] }];
+        { p: E.motor, a: 'i', t: ['motor y correas', kwMot(rr.motor)] }];
     } else {
       L = [{ p: E.feed, a: 'd', t: ['alimentación', feed + ', ' + c] },
         { p: E.rotor, a: 'd', t: [id === 'cuch' ? 'rotor de cuchillas' : 'rotor y martillos', id === 'cuch' ? 'cortan contra las fijas' : 'golpean a alta velocidad'] },
         { p: E.screen, a: 'i', t: ['por la criba y la tolva', 'sale con ' + prod] },
-        { p: E.motor, a: 'i', t: ['motor', kw(rr.motor)] }];
+        { p: E.motor, a: 'i', t: ['motor', kwMot(rr.motor)] }];
     }
     // en la pantalla angosta no caben al lado de la máquina: quedan los de la carga del molino de bolas, que van sobre
     // el tambor; lo demás está en los números de la escena
@@ -2007,15 +2054,20 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
             ec: 'P_{80} = \\min\\left[\\max(P_{80,\\text{obj}},\\,P_{\\min}),\\;P_{\\max},\\;F_{80}/1{,}2\\right]',
             num: 'P_{80} = \\min\\left[\\max(' + kn(r.P80t, 0) + ',\\,' + kn(r.pminUm, 0) + '),\\;' + kn(r.pmaxUm, 0) + ',\\;' + kn(r.F80 / 1.2, 0) + '\\right] = ' + kn(r.P80, 0) + '\\ \\mu\\mathrm{m}',
             res: r.clamped ? 'El objetivo, ' + tam(r.P80t) + ', queda fuera del alcance ' + de(m.id) + '.' : 'El objetivo queda dentro del alcance ' + de(m.id) + '.',
-            fuente: 'Los intervalos de cada máquina son del explorador; los del libro, con sus fuentes, están en la tabla 7.2.', libro: ['reduccion-de-tamano.html#tbl-red-maquinas', 'Libro, tabla 7.2'] },
+            fuente: 'Los intervalos son los de la tabla 7.2 del libro donde los da; los que la tabla no trae son del explorador.', libro: ['reduccion-de-tamano.html#tbl-red-maquinas', 'Libro, tabla 7.2'] },
           { titulo: 'La razón de reducción',
             texto: 'La razón de reducción compara el tamaño que entra con el que sale. Una máquina tiene una razón máxima típica; una reducción más grande se hace en varias etapas en serie.',
             ec: 'R_r = \\frac{F_{80}}{P_{80}}',
             num: 'R_r = \\frac{' + kn(r.F80, 0) + '}{' + kn(r.P80, 0) + '} = ' + kn(r.rr, 1) + ' \\qquad R_{r,\\max} = ' + m.rrMax,
-            fuente: 'La razón máxima de cada máquina es del explorador.', libro: ['reduccion-de-tamano.html#sec-red-equipos', 'Libro, sección 7.4'] },
+            fuente: 'La razón máxima es la de la tabla 7.2 donde la da; la de la trituradora, 6, es la de cada etapa de trituración en el libro, y las del molino de cuchillas y del de discos son del explorador.', libro: ['reduccion-de-tamano.html#sec-red-equipos', 'Libro, sección 7.4'] },
+          r.oss ? { titulo: 'La abertura de la trituradora',
+            texto: 'Lo que sale de una trituradora de mandíbulas lo gobierna su abertura del lado abierto, la luz abajo de la cámara cuando la mandíbula móvil está más lejos de la fija. Bond da la abertura que deja un producto, con el índice por tonelada corta.',
+            ec: 'P_{80} = 25\\,400\\,O_{ss}\\,(0{,}04\\,W_i + 0{,}40)',
+            num: 'O_{ss} = \\frac{' + kn(r.P80, 0) + '}{25\\,400 \\times (0{,}04 \\times ' + kn(r.mat.WiC, 2) + ' + 0{,}40)} = ' + kn(r.oss, 2) + '\\ \\mathrm{pulgadas} = ' + kn(r.oss * 25.4, 0) + '\\ \\mathrm{mm}',
+            fuente: 'O_ss en pulgadas; el 25 400 las pasa a micrómetros.', libro: ['reduccion-de-tamano.html#eq-red-oss', 'Libro, ecuación 7.5'] } : null,
           { titulo: 'La máquina', texto: FIGCAP[m.id] },
           { titulo: 'La simulación', texto: SIMCAP[m.id](r) + ' Los tamaños se dibujan en escala logarítmica entre F₈₀ y P₈₀: la simulación es un esquema del mecanismo, no una medida.' }
-        ],
+        ].filter(Boolean),
         libro: [['reduccion-de-tamano.html#sec-red-fractura', 'Sección 7.2, Cómo se rompe un sólido'], ['reduccion-de-tamano.html#sec-red-equipos', 'Sección 7.4, Las máquinas'], ['reduccion-de-tamano.html#fig-red-maquinas', 'Figura 7.4, las máquinas abiertas']]
       };
     }
@@ -2062,12 +2114,12 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
       },
       poner: function (r, modo, X) {
         var c = cuenta(r), m0 = r.mill.id;
-        var h = '<table class="ml-tabla ml-maq"><thead><tr><th>Máquina</th><th>Boca</th><th>Producto</th><th>Razón máx.</th><th>t/h típicas</th><th>Humedad en seco</th><th>En húmedo</th><th class="sym">n</th><th class="sym">k</th><th>Con su corriente</th></tr></thead><tbody>';
+        var h = '<table class="ml-tabla ml-maq"><thead><tr><th>Máquina</th><th>Boca</th><th>Producto</th><th>Razón máx.</th><th>t/h típicas</th><th>Humedad en seco</th><th>En húmedo</th><th class="sym">n</th><th>Con su corriente</th></tr></thead><tbody>';
         MILLS.forEach(function (m) {
           var q = c.res[m.id], st = q.status === 'viable' ? 'sirve' : q.status === 'advertencias' ? nAvisos(q.warns.length) : 'no sirve';
           h += '<tr' + (m.id === m0 ? ' class="sel"' : '') + '><td><button type="button" data-mill="' + m.id + '" aria-pressed="' + (m.id === m0) + '"><b>' + esc(m.short) + '</b><small>' + esc(m.mech) + '</small></button></td>' +
             '<td>≤' + NB + num(m.fmax, 0) + NB + 'mm</td><td>' + tam(m.pmin * 1000) + ' a ' + tam(m.pmax * 1000) + '</td><td>' + m.rrMax + NB + ': 1</td><td>' + num(m.capMin, m.capMin < 1 ? 1 : 0) + ' a ' + num(m.capMax, 0) + '</td>' +
-            '<td>≤' + NB + num(m.humMax, 0) + NB + '%</td><td>' + (m.wet ? 'sí' : 'no') + '</td><td>' + num(m.n, 1) + '</td><td>' + num(m.k, 1) + '</td>' +
+            '<td>≤' + NB + num(m.humMax, 0) + NB + '%</td><td>' + (m.wet ? 'sí' : 'no') + '</td><td>' + num(m.n, 1) + '</td>' +
             '<td class="' + (q.crit ? 'mal' : '') + '">' + st + (q.crit ? '' : '<small>' + un(q.Eeq, q.Eeq < 10 ? 2 : 1, 'kWh/t') + '</small>') + '</td></tr>';
         });
         h += '</tbody></table><div class="ml-sel-pie"><div><h3>Avisos ' + de(m0) + '</h3>';
@@ -2104,18 +2156,18 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
   /* ================= 3. El molino de bolas ================= */
   var BOLAS = {
     id: 'bolas', titulo: 'El molino de bolas', corto: 'Bolas',
-    pregunta: '¿A qué velocidad debe girar el tambor para que las bolas caigan sobre la carga?',
+    pregunta: '¿A qué velocidad gira el tambor, y cuántas bolas y qué largo pide la potencia?',
     controles: ['phi', 'D', 'J'], mas: [], datos: ['phi', 'D'],
     info: function (r) {
-      if (r.mill.id === 'bolas') return 'Molino de bolas con ' + esc(r.mat.name.toLowerCase()) + ': entra con ' + tam(r.F80) + ' y sale con ' + tam(r.P80) + '. <button type="button" data-ir="maquina">Cambiar en La máquina</button>';
+      if (r.mill.id === 'bolas') return 'Molino de bolas con ' + esc(r.mat.name.toLowerCase()) + ': entra con ' + tam(r.F80) + ', sale con ' + tam(r.P80) + ' y toma <b>' + kw(r.Peje) + '</b> en el eje. <button type="button" data-ir="motor">Cambiar en La potencia y el motor</button>';
       return 'El equipo escogido es ' + DEL[r.mill.id] + '; esta escena muestra un molino de bolas con el mismo material y la misma corriente. <button type="button" data-ml-bolas>Escoger el molino de bolas</button>';
     },
     kpis: function (r) {
       var b = deBolas(r).ball;
       return [
-        { etiqueta: 'Velocidad crítica', valor: num(b.Nc, 1), unidad: 'r/min', nota: 'para D = ' + un(b.D, 1, 'm') + ' y bolas de 5' + NB + 'cm' },
-        { etiqueta: 'Velocidad del tambor', valor: num(b.N, 1), unidad: 'r/min', nota: 'φ = ' + un(b.phi, 0, '%') + ' de la crítica', alerta: b.phi >= 100 },
-        { etiqueta: 'Carga de bolas', valor: num(b.J, 0), unidad: '%', nota: 'unas ' + num(bolasEnSeccion(b.J), 0) + ' bolas en la sección' }
+        { etiqueta: 'Velocidad del tambor', valor: num(b.N, 1), unidad: 'r/min', nota: 'φ = ' + un(b.phi, 0, '%') + ' de Nc = ' + un(b.Nc, 1, 'r/min'), alerta: b.phi >= 100 },
+        { etiqueta: 'Bolas', valor: num(b.mb, b.mb < 10 ? 2 : 1), unidad: 't', nota: 'Kwb = ' + num(b.kwb, 2) + ' kW por t corta, con J = ' + un(b.J, 0, '%') },
+        { etiqueta: 'Largo del tambor', valor: num(b.L, 2), unidad: 'm', nota: 'L/D = ' + num(b.LD, 2) + (b.bola ? ', bola de ' + un(b.bola, 0, 'mm') : '') }
       ];
     },
     veredicto: function (r) {
@@ -2134,20 +2186,37 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     figuras: [ranuraMolino({ titulo: 'El molino de bolas', res: deBolas,
       alt: 'El molino de bolas en isométrico, con la mitad del tambor quitada, o en corte: las bolas suben con los levantadores y caen según la fracción de la velocidad crítica; con la velocidad cambian el hombro y el pie de la carga.' })],
     calculo: function (r) {
-      var B = deBolas(r), b = B.ball;
+      var B = deBolas(r), b = B.ball, cs = b.phi / 100, Jf = b.J / 100, Lft = b.L / 0.3048, seco = !B.wet;
       return {
-        intro: 'El tambor sube la carga de bolas por la pared y la deja caer. El cálculo da la velocidad a la que la carga se pegaría a la pared y la velocidad de giro, que se escoge como una fracción de ella.',
+        intro: 'El tambor sube la carga de bolas por la pared y la deja caer. El cálculo da la velocidad de giro, la potencia que mueve cada tonelada de bolas y, con la potencia que pide la molienda, las bolas, el largo del tambor y la bola de reposición, como el ejemplo 7.2 del libro.',
         pasos: [
           { titulo: 'La velocidad crítica',
-            texto: 'Arriba del tambor, el peso de una bola pegada al revestimiento tiene que poner la fuerza centrípeta. A la velocidad crítica ya no alcanza, y la bola no se despega nunca.',
-            ec: 'N_c = \\frac{1}{2\\pi}\\sqrt{\\frac{g}{R - r}} = \\frac{42{,}3}{\\sqrt{D - d}}\\ \\ \\mathrm{r/min}',
-            num: 'N_c = \\frac{42{,}3}{\\sqrt{' + kn(b.D, 1) + ' - 0{,}05}} = ' + kn(b.Nc, 1) + '\\ \\mathrm{r/min}',
-            fuente: 'D y d en metros; d es la bola de 5 cm. El explorador usa la forma de Wills, que resta el diámetro de la bola; el libro diseña con 42,3/√D, la forma con que Bond ajustó sus ecuaciones, y da una velocidad un poco menor.', libro: ['reduccion-de-tamano.html#eq-red-critica', 'Libro, ecuación 7.6'] },
+            texto: 'Arriba del tambor, el peso de una bola pegada al revestimiento tiene que poner la fuerza centrípeta. A la velocidad crítica ya no alcanza, y la bola no se despega nunca. Los molinos se diseñan con la forma que deja por fuera la bola, porque Bond ajustó a ella sus ecuaciones de la potencia y de la bola.',
+            ec: 'N_c = \\frac{42{,}3}{\\sqrt{D}}\\ \\ \\mathrm{r/min}',
+            num: 'N_c = \\frac{42{,}3}{\\sqrt{' + kn(b.D, 1) + '}} = ' + kn(b.Nc, 1) + '\\ \\mathrm{r/min}',
+            fuente: 'D en metros, dentro del revestimiento. La forma con el radio de la bola da una velocidad un poco más alta.', libro: ['reduccion-de-tamano.html#eq-red-critica', 'Libro, ecuación 7.6'] },
           { titulo: 'La velocidad del tambor',
             texto: 'El molino gira a una fracción φ de la velocidad crítica.',
             ec: 'N = \\varphi\\,N_c',
-            num: 'N = ' + kn(b.phi / 100, 2) + ' \\times ' + kn(b.Nc, 1) + ' = ' + kn(b.N, 1) + '\\ \\mathrm{r/min}',
-            fuente: 'El ejemplo 7.2 del libro hace la misma cuenta con el molino del carbonato, de 2,0 m, a 75 % de la crítica.', libro: ['reduccion-de-tamano.html#exm-red-molino', 'Libro, ejemplo 7.2'] },
+            num: 'N = ' + kn(cs, 2) + ' \\times ' + kn(b.Nc, 1) + ' = ' + kn(b.N, 1) + '\\ \\mathrm{r/min}',
+            fuente: 'El ejemplo 7.2 hace la misma cuenta con el molino del carbonato, de 2,0 m, a 75 % de la crítica.', libro: ['reduccion-de-tamano.html#exm-red-molino', 'Libro, ejemplo 7.2'] },
+          { titulo: 'La potencia por tonelada de bolas',
+            texto: 'Bond dio la potencia que mueve cada tonelada corta de bolas en un molino húmedo de rebose. Crece con el diámetro y con la velocidad, y cae cuando la carga pasa de cierto llenado, porque una carga muy llena tiene su centro de gravedad cerca del eje.',
+            ec: 'K_{wb} = 2{,}8\\,D^{0{,}4}\\,(3{,}2 - 3J)\\,\\varphi\\left(1 - \\frac{0{,}1}{2^{\\,9 - 10\\varphi}}\\right)',
+            num: 'K_{wb} = 2{,}8 \\times ' + kn(b.Dft, 2) + '^{0{,}4} \\times (3{,}2 - 3 \\times ' + kn(Jf, 2) + ') \\times ' + kn(cs, 2) + '\\left(1 - \\frac{0{,}1}{2^{' + kn(9 - 10 * cs, 1) + '}}\\right) = ' + kn(b.kwb0, 2) + '\\ \\mathrm{kW/t\\ corta}' + (seco ? ' \\\\ K_{wb} = ' + kn(b.kwb0, 2) + ' \\times 1{,}08 = ' + kn(b.kwb, 2) + '\\ \\mathrm{kW/t\\ corta}' : ''),
+            fuente: 'D en pies, dentro del revestimiento. En seco y con descarga por parrilla se multiplica por 1,08; el explorador supone parrilla en seco y rebose en húmedo.', libro: ['reduccion-de-tamano.html#eq-red-kwb', 'Libro, ecuación 7.8'] },
+          { titulo: 'Las bolas y el largo del tambor',
+            texto: 'Las toneladas de bolas son la potencia que pide la molienda dividida por lo que mueve cada una, y el largo sale del volumen que ocupan con el llenado J.',
+            ec: 'm_b = \\frac{P_{\\text{eje}}}{K_{wb}} \\qquad m_b = \\frac{J\\,D^2 L}{8{,}4}',
+            num: 'm_b = \\frac{' + kn(B.Peje, 1) + '}{' + kn(b.kwb, 2) + '} = ' + kn(b.mbC, 2) + '\\ \\mathrm{t\\ cortas} = ' + kn(b.mb, 2) + '\\ \\mathrm{t} \\\\ L = \\frac{8{,}4 \\times ' + kn(b.mbC, 2) + '}{' + kn(Jf, 2) + ' \\times ' + kn(b.Dft, 2) + '^2} = ' + kn(Lft, 2) + '\\ \\mathrm{pies} = ' + kn(b.L, 2) + '\\ \\mathrm{m}',
+            res: 'El tambor mide ' + un(b.D, 1, 'm') + ' × ' + un(b.L, 2, 'm') + ', con L/D = ' + num(b.LD, 2) + '.',
+            fuente: 'La potencia en el eje es la de la escena La potencia y el motor; D y L en pies.', libro: ['reduccion-de-tamano.html#eq-red-tb', 'Libro, ecuación 7.9'] },
+          { titulo: 'La bola de reposición',
+            texto: 'La bola de reposición es la que apenas rompe las partículas más grandes de la alimentación: va como la raíz del tamaño que tiene que romper.',
+            ec: 'B = \\left(\\frac{F_{80}}{K_B}\\right)^{1/2}\\left(\\frac{S_g\\,W_i}{100\\,\\varphi\\,\\sqrt{D}}\\right)^{1/3}',
+            num: b.bola ? 'B = \\left(\\frac{' + kn(B.F80, 0) + '}{' + b.KB + '}\\right)^{1/2}\\left(\\frac{' + kn(B.mat.Sg, 2) + ' \\times ' + kn(B.mat.WiC, 2) + '}{100 \\times ' + kn(cs, 2) + ' \\times \\sqrt{' + kn(b.Dft, 2) + '}}\\right)^{1/3} = ' + kn(b.bola / 25.4, 2) + '\\ \\mathrm{pulgadas} = ' + kn(b.bola, 0) + '\\ \\mathrm{mm}' : '',
+            res: b.bola ? '' : 'Sin índice de trabajo no hay bola de reposición: la cáscara húmeda no se muele en un molino de bolas.',
+            fuente: 'F₈₀ en µm, W_i por tonelada corta, D en pies; K_B = 335 en seco y 350 en húmedo. La gravedad específica es la de la tabla 7.4 para la caliza, el carbón y la arcilla, y del explorador para los demás materiales.', libro: ['reduccion-de-tamano.html#eq-red-bola', 'Libro, ecuación 7.11'] },
           { titulo: 'El régimen de la carga',
             texto: 'El explorador nombra el régimen por la fracción de la crítica: deslizamiento por debajo de 45 %, cascada hasta 65 %, catarata hasta 85 %, catarata intensa hasta 100 % y centrifugado desde ahí. Los molinos se operan entre 65 y 80 % de la crítica, y el libro explica con su ecuación dónde se suelta la bola de afuera.',
             res: 'A ' + un(b.phi, 0, '%') + ': ' + b.reg.toLowerCase() + ', ' + REGIMEN[b.reg],
@@ -2328,7 +2397,7 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
       return [
         { etiqueta: 'Energía de Bond', valor: num(r.Ebond, r.Ebond < 10 ? 2 : 1), unidad: 'kWh/t', nota: 'sin correcciones' },
         { etiqueta: 'Razón de reducción', valor: num(r.rr, r.rr < 10 ? 1 : 0) + NB + ': 1', nota: tam(r.F80) + ' a ' + tam(r.P80) },
-        { etiqueta: 'Energía del equipo', valor: num(r.Eeq, r.Eeq < 10 ? 2 : 1), unidad: 'kWh/t', nota: (r.EF > 1.0001 ? 'Rowland × ' + num(r.EF, 2) : 'sin Rowland') + (r.mill.k !== 1 ? ', k = ' + num(r.mill.k, 1) : '') }];
+        { etiqueta: 'Energía del equipo', valor: num(r.Eeq, r.Eeq < 10 ? 2 : 1), unidad: 'kWh/t', nota: r.EF > 1.0001 ? 'con las correcciones, × ' + num(r.EF, 3) : r.mill.eMed ? 'Bond, una primera estimación' : 'Bond sin corregir' }];
     },
     veredicto: function (r) {
       if (r.noBond) return { alerta: false, html: 'La cáscara húmeda no sigue a Bond: el molino gasta <b>' + un(r.Eeq, 1, 'kWh/t') + '</b> de sólido seco, el consumo de corte por el agua que trae.' };
@@ -2343,7 +2412,7 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
       correcta: function (rn, rb) { var q = rn.Eeq / rb.Eeq; return q < 2.15 ? 0 : q < 3.7 ? 1 : 2; },
       explica: function (rn, rb) {
         var qb = rn.Ebond / rb.Ebond, q = rn.Eeq / rb.Eeq;
-        return 'Bond da ' + num(qb, 2) + ' veces: sería el doble con una alimentación infinita, y es un poco más porque la alimentación de 3 mm ya trae su registro de energía.' + (Math.abs(q - qb) > 0.01 ? ' Con la corrección de finura, que entra por debajo de 75 µm, la energía del equipo sube ' + num(q, 2) + ' veces: ' + un(rn.Eeq, 1, 'kWh/t') + '.' : ' La energía del equipo pasa a ' + un(rn.Eeq, 1, 'kWh/t') + '.');
+        return 'Bond da ' + num(qb, 2) + ' veces: sería el doble con una alimentación infinita, y es un poco más porque la alimentación de 3 mm ya trae su registro de energía.' + (Math.abs(q - qb) > 0.01 ? ' Con la corrección de finura, que entra por debajo de 70 µm, la energía del equipo sube ' + num(q, 2) + ' veces: ' + un(rn.Eeq, 1, 'kWh/t') + '.' : ' La energía del equipo pasa a ' + un(rn.Eeq, 1, 'kWh/t') + '.');
       }
     },
     figuras: [LEYES, REGISTRO],
@@ -2362,14 +2431,14 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
         ],
         libro: [['reduccion-de-tamano.html#sec-red-blandos', 'Sección 7.9, Alimentos, fibras y fármacos'], ['reduccion-de-tamano.html#tbl-red-energias', 'Tabla 7.5, energías medidas para alimentos y fibras']]
       };
-      var Wi = r.mat.Wi, corta = Wi / M.TS;
+      var Wi = r.mat.Wi, corta = r.mat.WiC, deJ = r.mat.id === 'maiz' || r.mat.id === 'azucar';
       return {
         intro: 'La ley de Bond da la energía por tonelada de una reducción de tamaño con el F₈₀ y el P₈₀. El cálculo pasa el índice a tonelada métrica, aplica la ley y ajusta las de Kick y Rittinger al mismo punto.',
         pasos: [
           { titulo: 'El índice de trabajo',
-            texto: 'Bond publicó el índice por tonelada corta, de 907 kg. El explorador lo pasa a tonelada métrica, y con ese valor la ley da kWh por tonelada métrica con los tamaños en micrómetros.',
-            ec: 'W_i\\,(\\text{t métrica}) = 1{,}1023\\;W_i\\,(\\text{t corta})',
-            num: 'W_i = ' + kn(corta, 2) + ' \\times 1{,}1023 = ' + kn(Wi, 1) + '\\ \\mathrm{kWh/t}',
+            texto: 'Bond publicó el índice por tonelada corta, de 907,18 kg. El explorador lo pasa a tonelada métrica, como el ejemplo 7.1, y con ese valor la ley da kWh por tonelada métrica con los tamaños en micrómetros. El maíz y el azúcar no tienen índice de Bond: el libro da para los alimentos duros entre 40 000 y 80 000 J/kg, y el explorador toma el extremo bajo.',
+            ec: 'W_i\\,(\\text{t métrica}) = \\frac{W_i\\,(\\text{t corta})}{0{,}9072}',
+            num: deJ ? 'W_i = \\frac{40\\,000\\ \\mathrm{J/kg}}{3600} = ' + kn(Wi, 2) + '\\ \\mathrm{kWh/t}' : r.mat.custom ? 'W_i = ' + kn(Wi, 1) + '\\ \\mathrm{kWh/t}\\quad(\\text{el que usted fijó})' : 'W_i = \\frac{' + kn(corta, 2) + '}{0{,}9072} = ' + kn(Wi, 2) + '\\ \\mathrm{kWh/t}',
             fuente: 'Fuente del índice: ' + esc(r.mat.WiSrc) + '.', libro: ['reduccion-de-tamano.html#tbl-red-indices', 'Libro, tabla 7.4'] },
           { titulo: 'La ley de Bond',
             texto: 'La energía de una etapa es el registro de energía del producto menos el de la alimentación.',
@@ -2393,27 +2462,28 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
   /* ================= 5. La potencia y el motor ================= */
   var CADENA = {
     titulo: 'De la energía al motor', ancha: true, tipo: 'html',
-    alt: 'Tabla de la cadena del cálculo: la energía de Bond, las correcciones de Rowland, el factor del equipo, la energía del equipo, la capacidad, la potencia en el eje, la eficiencia de la transmisión, la potencia del motor y el motor estándar.',
+    alt: 'Tabla de la cadena del cálculo: la energía de Bond, las correcciones de la tabla 7.1 en el molino de bolas, la energía del equipo, la capacidad, la potencia en el eje, la eficiencia de la transmisión, la potencia del motor y el motor estándar.',
     montar: function (div) { div.classList.add('ml-cad'); },
     poner: function (r, modo, X) {
-      var m = r.mill, f = [];
+      var m = r.mill, ef = r.ef, f = [];
       if (r.noBond) { f.push(['Consumo de corte por tonelada de cáscara húmeda', '', un(r.cEsp, 1, 'kWh/t')]); f.push(['Agua de la cáscara, 1 + w', '×', num(1 + r.w, 2)]); }
-      else f.push(['Bond con el Wi de tabla', '', un(r.Ebond, 2, 'kWh/t')]);
+      else f.push(['Ley de Bond con el Wi de la tabla', '', un(r.Ebond, 3, 'kWh/t')]);
       if (m.id === 'bolas' && r.s.rowland && !r.noBond) {
-        f.push(['EF1, molienda en seco', '×', num(r.ef.EF1, 2)]);
-        f.push(['EF4, alimentación gruesa (F₀ = ' + tam(r.ef.F0) + ')', '×', num(r.ef.EF4, 3)]);
-        f.push(['EF5, producto fino (P₈₀ < 75' + NB + 'µm)', '×', num(r.ef.EF5, 3)]);
+        f.push(['EF1, molienda en seco', '×', num(ef.EF1, 2)]);
+        f.push(['EF3, diámetro de ' + un(r.s.D, 1, 'm') + ', ' + num(ef.Dft, 2) + ' pies', '×', num(ef.EF3, 3)]);
+        f.push(['EF4, alimentación más gruesa que F₀ = ' + tam(ef.F0), '×', num(ef.EF4, 3)]);
+        f.push(['EF5, finura, P₈₀ menor que 70' + NB + 'µm', '×', num(ef.EF5, 3)]);
+        f.push(['EF6, razón de reducción menor que 3', '×', num(ef.EF6, 3)]);
       }
-      if (!r.noBond) f.push(['Factor del equipo, k', '×', num(m.k, 1)]);
-      f.push(['Energía del equipo', '=', un(r.Eeq, 2, 'kWh/t'), 'tot']);
+      f.push(['Energía del equipo', '=', un(r.Eeq, r.Eeq < 1 ? 3 : 2, 'kWh/t'), 'tot']);
       f.push(['Capacidad', '×', capTxt(r.cap)]);
-      f.push(['Potencia en el eje', '=', un(r.Peje, r.Peje < 100 ? 1 : 0, 'kW'), 'tot']);
-      f.push(['Eficiencia de la transmisión, η', '÷', '0,95']);
-      f.push(['Potencia del motor', '=', un(r.Pmot, r.Pmot < 100 ? 1 : 0, 'kW'), 'tot']);
-      f.push(['Motor IEC inmediatamente superior', '→', r.motor ? kw(r.motor) : 'ninguno de la serie', 'tot']);
-      var nota = r.noBond ? 'La cáscara húmeda no tiene índice de Bond: no se fractura, se corta. La energía del equipo es la que reporta el fabricante o la literatura por tonelada de cáscara, y se pasa a sólido seco con su agua.'
-        : m.id === 'bolas' ? 'El Wi de Bond se mide en un molino de bolas húmedo de 2,44 m en circuito cerrado. En seco se gasta 1,3 veces más (EF1); si la alimentación es más gruesa que el óptimo F₀ = 4000·√(13/Wi) µm se corrige con EF4, y si el producto es menor de 75 µm, con EF5. ' + (r.s.rowland ? 'Están aplicadas; con «Solo Bond» se quitan.' : 'Están quitadas; con «Aplicadas» vuelven.')
-        : 'El Wi de tabla corresponde a un molino de bolas húmedo de referencia; k corrige de forma orientativa la eficiencia relativa de las demás máquinas (k = ' + num(m.k, 1) + ' para ' + DEL[m.id] + '). Las correcciones de Rowland solo aplican al molino de bolas.';
+      f.push(['Potencia en el eje', '=', un(r.Peje, r.Peje < 10 ? 2 : r.Peje < 100 ? 1 : 0, 'kW'), 'tot']);
+      f.push(['Eficiencia de la transmisión, η, del explorador', '÷', '0,95']);
+      f.push(['Potencia del motor', '=', un(r.Pmot, r.Pmot < 10 ? 2 : r.Pmot < 100 ? 1 : 0, 'kW'), 'tot']);
+      f.push(['Motor IEC inmediatamente superior', '→', r.motor ? kwMot(r.motor) : 'ninguno de la serie', 'tot']);
+      var nota = r.noBond ? 'La cáscara húmeda no tiene índice de Bond: no se fractura, se corta. La energía del equipo es la que reporta el fabricante o la literatura por tonelada de cáscara, y se pasa a sólido seco con su agua; el consumo de corte es del explorador.'
+        : m.id === 'bolas' ? 'El índice de Bond corresponde a un molino de bolas de rebose de 8 pies que muele en húmedo y en circuito cerrado. Para el molino de la planta se multiplica por las correcciones de la tabla 7.1 del libro: 1,30 en seco, (8/D)^0,2 por el diámetro, la de la alimentación más gruesa que F₀, la de finura por debajo de 70 µm y la de razón de reducción menor que 3. El circuito es cerrado, como el del caso del libro. ' + (r.s.rowland ? 'Están aplicadas; con «Sin corregir» se quitan.' : 'Están quitadas; con «Aplicadas» vuelven.')
+        : 'Las demás máquinas van con la ley de Bond sin corregir, como el ejemplo 7.1 del libro lleva la trituradora y el molino de martillos.' + (m.eMed ? ' Para ' + DEL[m.id] + ' el libro advierte que Bond da solo una primera estimación: las máquinas comerciales gastan entre ' + m.eMed[0] + ' y ' + m.eMed[1] + ' kWh/t.' : '');
       X.figura.cuerpo.innerHTML = '<table class="ml-tabla ml-flujo"><tbody>' + f.map(function (x) { return '<tr class="' + (x[3] || '') + '"><td>' + esc(x[0]) + '</td><td class="op">' + x[1] + '</td><td>' + esc(x[2]) + '</td></tr>'; }).join('') + '</tbody></table><p class="ml-nota">' + nota + '</p>';
     }
   };
@@ -2472,14 +2542,14 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     info: function (r) { return 'Entra con F₈₀ = ' + tam(r.F80) + ' y sale con ' + tam(r.P80) + ' en ' + DEL[r.mill.id] + '. <button type="button" data-ir="bond">Cambiar en La ley de Bond</button>'; },
     kpis: function (r) {
       return [
-        { etiqueta: 'Energía del equipo', valor: num(r.Eeq, r.Eeq < 10 ? 2 : 1), unidad: 'kWh/t', nota: r.noBond ? 'de sólido seco' : 'Bond ' + num(r.Ebond, 2) + (r.EF > 1.0001 ? ' × ' + num(r.EF, 2) : '') + (r.mill.k !== 1 ? ' × k ' + num(r.mill.k, 1) : '') },
+        { etiqueta: 'Energía del equipo', valor: num(r.Eeq, r.Eeq < 1 ? 3 : r.Eeq < 10 ? 2 : 1), unidad: 'kWh/t', nota: r.noBond ? 'de sólido seco' : 'Bond ' + num(r.Ebond, r.Ebond < 1 ? 3 : 2) + (r.EF > 1.0001 ? ' × ' + num(r.EF, 3) : r.mill.eMed ? ', una primera estimación' : ', sin corregir') },
         { etiqueta: 'Potencia en el eje', valor: kwN(r.Peje), unidad: 'kW', nota: 'con ' + capTxt(r.cap) },
-        { etiqueta: 'Motor IEC', valor: r.motor ? num(r.motor, r.motor < 10 ? 1 : 0) : 'no hay', unidad: r.motor ? 'kW' : '', nota: 'para ' + kw(r.Pmot) + ' con η = 0,95', alerta: !r.motor }
+        { etiqueta: 'Motor IEC', valor: r.motor ? kwMot(r.motor).replace(/\s*kW$/, '') : 'no hay', unidad: r.motor ? 'kW' : '', nota: 'para ' + kw(r.Pmot) + ' con η = 0,95', alerta: !r.motor }
       ];
     },
     veredicto: function (r) {
       if (!r.motor) return { alerta: true, html: 'La potencia pasa de la serie de motores: con ' + capTxt(r.cap) + ' hacen falta <b>' + kw(r.Pmot) + '</b>; reparta el flujo en varias máquinas.' };
-      return { alerta: false, html: 'Con ' + capTxt(r.cap) + ', ' + DEL[r.mill.id] + ' toma <b>' + kw(r.Peje) + '</b> en el eje y pide un motor IEC de ' + kw(r.motor) + '.' };
+      return { alerta: false, html: 'Con ' + capTxt(r.cap) + ', ' + DEL[r.mill.id] + ' toma <b>' + kw(r.Peje) + '</b> en el eje y pide un motor IEC de ' + kwMot(r.motor) + '.' };
     },
     prediccion: {
       base: { lC: log(2) }, llevar: { lC: log(4) },
@@ -2488,35 +2558,33 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
       instruccion: 'Lleve la capacidad a 4 t/h y mire los tres números.',
       cumple: function (st) { return Math.abs(st.lC - log(4)) < 0.006; },
       correcta: function (rn, rb) { var q = rn.Eeq / rb.Eeq; return Math.abs(q - 1) < 0.01 ? 1 : q > 1.5 ? 0 : 2; },
-      explica: function (rn, rb) { return 'La energía por tonelada sigue en ' + un(rn.Eeq, rn.Eeq < 10 ? 2 : 1, 'kWh/t') + ': depende del material y de la reducción, no del flujo. Lo que se duplica es la potencia: ahora son ' + kw(rn.Peje) + ' en el eje, contra ' + kw(rb.Peje) + ' con 2 t/h, y el motor es de ' + kw(rn.motor) + ', contra ' + kw(rb.motor) + '.'; }
+      explica: function (rn, rb) { return 'La energía por tonelada sigue en ' + un(rn.Eeq, rn.Eeq < 10 ? 2 : 1, 'kWh/t') + ': depende del material y de la reducción, no del flujo. Lo que se duplica es la potencia: ahora son ' + kw(rn.Peje) + ' en el eje, contra ' + kw(rb.Peje) + ' con 2 t/h, y el motor es de ' + kwMot(rn.motor) + ', contra ' + kwMot(rb.motor) + '.'; }
     },
     figuras: [CADENA, POTENCIA],
     calculo: function (r) {
-      var m = r.mill, ef = r.ef, bolas = m.id === 'bolas' && r.s.rowland && !r.noBond, Wi = r.mat.Wi;
-      var row = bolas ? 'EF_1 = ' + (r.wet ? '1' : '1{,}3') + ' \\\\ F_0 = 4000\\sqrt{13/' + kn(Wi, 1) + '} = ' + kn(ef.F0, 0) + '\\ \\mu\\mathrm{m}' + (ef.EF4 > 1.00001 ? ' \\qquad EF_4 = \\frac{' + kn(r.rr, 2) + ' + (' + kn(Wi, 1) + ' - 7)(' + kn(r.F80, 0) + ' - ' + kn(ef.F0, 0) + ')/' + kn(ef.F0, 0) + '}{' + kn(r.rr, 2) + '} = ' + kn(ef.EF4, 3) : ' \\qquad EF_4 = 1') +
-        ' \\\\ ' + (r.P80 < 75 ? 'EF_5 = \\frac{' + kn(r.P80, 1) + ' + 10{,}3}{1{,}145 \\times ' + kn(r.P80, 1) + '} = ' + kn(ef.EF5, 3) : 'EF_5 = 1\\quad (P_{80} \\ge 75\\ \\mu\\mathrm{m})') + ' \\\\ EF = ' + kn(r.EF, 3) : '';
+      var m = r.mill, ef = r.ef, bolas = m.id === 'bolas' && r.s.rowland && !r.noBond, WiC = r.mat.WiC;
+      var row = bolas ? 'EF_1 = ' + (r.wet ? '1\\quad(\\text{en húmedo})' : '1{,}30') + ' \\qquad EF_3 = \\left(\\frac{8}{' + kn(ef.Dft, 2) + '}\\right)^{0{,}2} = ' + kn(ef.EF3, 3) +
+        ' \\\\ F_0 = 4000\\sqrt{13/' + kn(WiC, 2) + '} = ' + kn(ef.F0, 0) + '\\ \\mu\\mathrm{m}' + (ef.EF4 > 1.00001 ? ' \\qquad EF_4 = \\frac{' + kn(r.rr, 2) + ' + (' + kn(WiC, 2) + ' - 7)(' + kn(r.F80, 0) + ' - ' + kn(ef.F0, 0) + ')/' + kn(ef.F0, 0) + '}{' + kn(r.rr, 2) + '} = ' + kn(ef.EF4, 3) : ' > F_{80} \;\\Rightarrow\; EF_4 = 1') +
+        ' \\\\ ' + (r.P80 < 70 ? 'EF_5 = \\frac{' + kn(r.P80, 1) + ' + 10{,}3}{1{,}145 \\times ' + kn(r.P80, 1) + '} = ' + kn(ef.EF5, 3) : 'EF_5 = 1\\quad (P_{80} \\ge 70\\ \\mu\\mathrm{m})') +
+        ' \\qquad ' + (ef.EF6 > 1.00001 ? 'EF_6 = \\frac{20(' + kn(r.rr, 2) + ' - 1{,}35) + 2{,}60}{20(' + kn(r.rr, 2) + ' - 1{,}35)} = ' + kn(ef.EF6, 3) : 'EF_6 = 1\\quad (R_r \\ge 3)') +
+        ' \\\\ E = ' + kn(r.Ebond, 3) + ' \\times ' + kn(r.EF, 4) + ' = ' + kn(r.Eeq, 2) + '\\ \\mathrm{kWh/t}' : '';
       var pasos = [];
-      if (!r.noBond) pasos.push({ titulo: 'Las correcciones de Rowland',
-        texto: bolas ? 'El índice es el de un molino de bolas húmedo de 8 pies en circuito cerrado. Para el molino de la planta, la energía de Bond se multiplica por las correcciones que le tocan.' : (m.id === 'bolas' ? 'Las correcciones están quitadas: la energía es la de Bond sola.' : 'Las correcciones de Rowland solo se aplican al molino de bolas; para ' + DEL[m.id] + ', EF = 1.'),
-        ec: 'EF_1 = 1{,}3\\ (\\text{seco}) \\qquad EF_4 = \\frac{R_r + (W_i - 7)(F_{80} - F_0)/F_0}{R_r} \\qquad EF_5 = \\frac{P_{80} + 10{,}3}{1{,}145\\,P_{80}}',
-        num: bolas ? row : 'EF = 1',
-        fuente: 'El explorador aplica la corrección de finura por debajo de 75 µm y calcula F₀ con el índice por tonelada métrica; el libro la pide por debajo de 70 µm, usa el índice por tonelada corta y suma la corrección del diámetro, (8/D)^0,2, que el explorador no trae.', libro: ['reduccion-de-tamano.html#tbl-red-correcciones', 'Libro, tabla 7.1'] });
-      if (!r.noBond) pasos.push({ titulo: 'El factor del equipo',
-        texto: 'El factor k lleva la energía del molino de bolas de referencia a la máquina escogida. Es una cifra orientativa del explorador.',
-        ec: 'E_{\\text{equipo}} = k\\,EF\\,W',
-        num: 'E_{\\text{equipo}} = ' + kn(m.k, 1) + ' \\times ' + kn(r.EF, 3) + ' \\times ' + kn(r.Ebond, 3) + ' = ' + kn(r.Eeq, 2) + '\\ \\mathrm{kWh/t}',
-        res: m.id === 'mart' ? 'Para un molino de martillos, el libro advierte que la energía no se estima con confianza desde la teoría: los molinos comerciales gastan entre 4 y 17 kWh/t.' : '',
-        fuente: 'El factor k de cada máquina es del explorador.', libro: ['reduccion-de-tamano.html#exm-red-etapas', 'Libro, ejemplo 7.1'] });
+      if (!r.noBond) pasos.push({ titulo: 'Las correcciones de la tabla 7.1',
+        texto: bolas ? 'El índice es el de un molino de bolas de rebose de 8 pies, en húmedo y en circuito cerrado. Para el molino de la planta, la energía de Bond se multiplica por las correcciones que le tocan; con F₀ y con la corrección gruesa, el índice va por tonelada corta.' : (m.id === 'bolas' ? 'Las correcciones están quitadas: la energía es la de Bond sola.' : 'Las correcciones de la tabla 7.1 son para los molinos de volteo. Para ' + DEL[m.id] + ' el explorador usa Bond sin corregir, como el ejemplo 7.1 lleva la trituradora y el molino de martillos.'),
+        ec: 'EF_1 = 1{,}30\\ (\\text{seco}) \\qquad EF_3 = \\left(\\frac{8}{D}\\right)^{0{,}2} \\\\ EF_4 = \\frac{R_r + (W_i - 7)(F_{80} - F_0)/F_0}{R_r},\\quad F_0 = 4000\\sqrt{\\frac{13}{W_i}} \\\\ EF_5 = \\frac{P_{80} + 10{,}3}{1{,}145\\,P_{80}}\\ (P_{80} < 70) \\qquad EF_6 = \\frac{20(R_r - 1{,}35) + 2{,}60}{20(R_r - 1{,}35)}\\ (R_r < 3)',
+        num: bolas ? row : 'EF = 1 \\qquad E = ' + kn(r.Ebond, 3) + '\\ \\mathrm{kWh/t}',
+        res: (!bolas && m.eMed) ? 'Para ' + DEL[m.id] + ' el libro advierte que Bond da solo una primera estimación: las máquinas comerciales gastan entre ' + m.eMed[0] + ' y ' + m.eMed[1] + ' kWh/t, y lo mejor es medirla en la máquina con el material real.' : '',
+        fuente: 'D en pies, dentro del revestimiento; F₈₀ y P₈₀ en µm; W_i por tonelada corta. La corrección de circuito abierto no entra: el circuito es cerrado, como el del caso del libro.', libro: ['reduccion-de-tamano.html#tbl-red-correcciones', 'Libro, tabla 7.1'] });
       pasos.push({ titulo: 'La potencia en el eje y la del motor',
-        texto: 'La energía por tonelada por el flujo de sólido seco da la potencia en el eje; la transmisión pierde una parte, y el motor tiene que poner la potencia en el eje más esa pérdida.',
+        texto: 'La energía por tonelada por el flujo de sólido seco da la potencia en el eje. El explorador le suma una pérdida de transmisión para escoger el motor.',
         ec: 'P_{\\text{eje}} = E_{\\text{equipo}}\\,\\dot m \\qquad P_{\\text{motor}} = \\frac{P_{\\text{eje}}}{\\eta}',
         num: 'P_{\\text{eje}} = ' + kn(r.Eeq, 2) + ' \\times ' + kn(r.cap, 2) + ' = ' + kn(r.Peje, 1) + '\\ \\mathrm{kW} \\\\ P_{\\text{motor}} = ' + kn(r.Peje, 1) + '/0{,}95 = ' + kn(r.Pmot, 1) + '\\ \\mathrm{kW}',
-        fuente: 'La eficiencia de la transmisión, 0,95, es un supuesto del explorador; el ejemplo 7.1 del libro da la potencia de cada etapa con la misma cuenta.', libro: ['reduccion-de-tamano.html#exm-red-etapas', 'Libro, ejemplo 7.1'] });
+        fuente: 'La potencia de Bond es la del eje del motor, y el ejemplo 7.1 del libro la calcula con la misma cuenta. La eficiencia de la transmisión, 0,95, es del explorador: deja el margen con que se escoge el motor.', libro: ['reduccion-de-tamano.html#exm-red-etapas', 'Libro, ejemplo 7.1'] });
       pasos.push({ titulo: 'El motor estándar',
         texto: 'El motor se escoge entre los tamaños normalizados de la IEC, el inmediatamente superior a la potencia que pide.',
-        res: r.motor ? 'Para ' + kw(r.Pmot) + ', el motor IEC es de ' + kw(r.motor) + '.' : 'La serie del explorador termina en 20 MW: con ' + kw(r.Pmot) + ' no hay un motor estándar.' });
+        res: r.motor ? 'Para ' + kw(r.Pmot) + ', el motor IEC es de ' + kwMot(r.motor) + '.' : 'La serie del explorador termina en 20 MW: con ' + kw(r.Pmot) + ' no hay un motor estándar.' });
       return {
-        intro: 'La energía por tonelada lleva a la potencia: se corrige para la máquina, se multiplica por el flujo y se divide por la eficiencia de la transmisión.',
+        intro: 'La energía por tonelada lleva a la potencia: en el molino de bolas se corrige con la tabla 7.1, se multiplica por el flujo y, para escoger el motor, se divide por la eficiencia de la transmisión.',
         pasos: pasos,
         libro: [['reduccion-de-tamano.html#tbl-red-correcciones', 'Tabla 7.1, las correcciones de la ley de Bond'], ['reduccion-de-tamano.html#exm-red-etapas', 'Ejemplo 7.1, la energía de las tres etapas']]
       };
@@ -2550,17 +2618,17 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
         var hL = f(r.Ploss), hS = f(r.Qsurf), hQ = Math.max(3, W - hL - 40 - hS);
         S.tit.textContent = 'potencia del motor: ' + kw(r.Pmot);
         S.perd.setAttribute('d', 'M' + x0 + ' 70L' + x0 + ' 352L' + (x0 + hL) + ' 352L' + (x0 + hL) + ' 70Z');
-        S.lbPerd.textContent = 'pérdidas de la transmisión: ' + kw(r.Ploss) + ' (5 %)';
+        S.lbPerd.textContent = 'pérdidas de la transmisión: ' + kw(r.Ploss) + ' (5 %, del explorador)';
         var a = x0 + hL, b = x0 + W, c0 = x0 + hL + 40;
         S.flujo.setAttribute('d', 'M' + a + ' 70C' + a + ' 140,' + c0 + ' 140,' + c0 + ' 210L' + (c0 + hQ + hS) + ' 210C' + (c0 + hQ + hS) + ' 140,' + b + ' 140,' + b + ' 70Z');
         set(S.lbEje, { x: (a + b) / 2 }); S.lbEje.textContent = 'potencia en el eje: ' + kw(r.Peje);
         set(S.calor, { x: c0, width: hQ }); set(S.sup, { x: c0 + hQ, width: hS });
         [S.lbQ, S.lbQ2, S.lbQ3].forEach(function (t) { set(t, { x: c0 }); });
-        S.lbQ.textContent = 'calor: ' + kw(r.Q) + ' (97 % del eje)';
+        S.lbQ.textContent = 'calor: ' + kw(r.Q) + ', toda la potencia en el eje';
         S.lbQ2.textContent = 'calienta ' + capTxt(r.cap) + ' de sólido' + (r.w > 0 ? ' y ' + un(r.agua, r.agua < 10 ? 2 : 1, 't/h') + ' de agua' : '');
         S.lbQ3.textContent = 'ṁ·c̄p = ' + un(r.mcp, 2, 'kW/K') + ', ΔT = ' + un(r.dT, 1, '°C');
-        S.lbS.textContent = 'superficie nueva: ' + kw(r.Qsurf) + ' (3 %)';
-        S.lbS2.textContent = 'supuesto del explorador';
+        S.lbS.textContent = 'superficie nueva: unos ' + kw(r.Qsurf) + ', una milésima';
+        S.lbS2.textContent = 'según Bond; el libro la desprecia';
       }
     };
   })();
@@ -2611,7 +2679,7 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     kpis: function (r) {
       var Tm = r.mat.tmax;
       return [
-        { etiqueta: 'Calor disipado', valor: kwN(r.Q), unidad: 'kW', nota: 'el 97 % de la potencia en el eje' },
+        { etiqueta: 'Calor disipado', valor: kwN(r.Q), unidad: 'kW', nota: 'toda la potencia en el eje' },
         { etiqueta: 'Subida de temperatura', valor: num(r.dT, 1), unidad: '°C', nota: 'no depende del flujo' },
         { etiqueta: 'Temperatura de salida', valor: num(r.Tout, 0), unidad: '°C', nota: Tm ? 'límite del material: ' + un(Tm, 0, '°C') : 'el material no tiene límite', alerta: !!(Tm && r.Tout > Tm) }
       ];
@@ -2619,7 +2687,7 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     veredicto: function (r) {
       var Tm = r.mat.tmax;
       if (Tm && r.Tout > Tm) return { alerta: true, html: 'El producto sale a <b>' + un(r.Tout, 0, '°C') + '</b>, por encima de los ' + un(Tm, 0, '°C') + ' en que ' + (LIMITE[r.mat.id] || 'el material se daña') + ': hace falta aire de barrido o enfriamiento.' };
-      return { alerta: false, html: 'El ' + num(97, 0) + NB + '% de la potencia en el eje se vuelve calor y el producto sale a <b>' + un(r.Tout, 0, '°C') + '</b>, ' + un(r.dT, 1, '°C') + ' por encima del ambiente.' };
+      return { alerta: false, html: 'Si el calor se queda en el producto, este sale a <b>' + un(r.Tout, 0, '°C') + '</b>, ' + un(r.dT, 1, '°C') + ' por encima del ambiente.' };
     },
     prediccion: {
       base: { modo: 'seca' }, llevar: { modo: 'hum' },
@@ -2635,25 +2703,25 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     },
     figuras: [SANKEY, TERMOMETRO],
     calculo: function (r) {
-      var cp = r.mat.cp;
+      var cp = r.mat.cp, calcita = r.mat.id === 'caliza';
       return {
-        intro: 'Casi toda la energía de la molienda se vuelve calor. El explorador supone que ese calor se queda en el sólido y en el agua que lo acompaña, y calcula cuánto se calientan.',
+        intro: 'Casi toda la energía de la molienda se vuelve calor. Como en la sección 7.7 del libro, el cálculo supone que ese calor se queda en el producto y da cuánto se calienta; en la planta, el aire o el agua de enfriamiento se llevan una parte.',
         pasos: [
           { titulo: 'Lo que se vuelve calor',
-            texto: 'El explorador deja el 3 % de la potencia en el eje en la superficie nueva y el resto lo vuelve calor.',
-            ec: '\\dot Q = 0{,}97\\,P_{\\text{eje}}',
-            num: '\\dot Q = 0{,}97 \\times ' + kn(r.Peje, 1) + ' = ' + kn(r.Q, 1) + '\\ \\mathrm{kW}',
-            fuente: 'El 3 % es un supuesto del explorador; el libro cita estimaciones de la energía que guarda la superficie nueva del orden de una milésima, así que casi todo es calor.', libro: ['reduccion-de-tamano.html#sec-red-fractura', 'Libro, sección 7.2'] },
+            texto: 'La superficie nueva guarda del orden de una milésima de la energía que gasta la planta, según Bond, y el libro la desprecia: toda la potencia en el eje se vuelve calor.',
+            ec: '\\dot Q = P_{\\text{eje}}',
+            num: '\\dot Q = ' + kn(r.Q, r.Q < 10 ? 2 : 1) + '\\ \\mathrm{kW} \\qquad \\dot Q_{\\text{superficie}} \\approx \\frac{P_{\\text{eje}}}{1000} = ' + kn(r.Qsurf, 3) + '\\ \\mathrm{kW}',
+            fuente: 'La milésima es la cifra de Bond que trae el libro.', libro: ['reduccion-de-tamano.html#sec-red-fractura', 'Libro, sección 7.2'] },
           { titulo: 'El calor específico de la mezcla',
-            texto: 'El sólido sale con su agua: la humedad, en seco, o el agua de la pulpa, en húmedo. El calor específico de la mezcla va por kilogramo de sólido seco.',
-            ec: '\\bar c_p = c_{p,s} + 4{,}18\\,w \\qquad w_{\\text{pulpa}} = \\frac{100}{C_w} - 1',
-            num: 'w = ' + kn(r.w, 3) + ' \\qquad \\bar c_p = ' + kn(cp, 2) + ' + 4{,}18 \\times ' + kn(r.w, 3) + ' = ' + kn(r.cpmix, 3) + '\\ \\mathrm{kJ/(kg\\cdot K)}',
-            fuente: 'El calor específico de cada material es del explorador; el libro usa 0,87 kJ/(kg·K) para la calcita a 55 °C.', libro: ['reduccion-de-tamano.html#sec-red-desgaste', 'Libro, sección 7.7'] },
+            texto: (calcita ? 'Para la caliza, el calor específico es el de la calcita, con la correlación del Perry que trae la tabla de datos del libro, a 55 °C, como en la sección 7.7. ' : 'El calor específico de ' + esc(r.mat.name.toLowerCase()) + ' es del explorador: el libro solo da el de la calcita. ') + 'El agua que sale con el sólido, la humedad en seco o la de la pulpa en húmedo, se calienta con él; ese término es del explorador, y en el caso del libro no hay agua.',
+            ec: (calcita ? 'c_{p,s} = \\frac{(19{,}68 + 0{,}01189\\,T - 307\\,600/T^2) \\times 4{,}184}{100{,}09} \\\\ ' : '') + '\\bar c_p = c_{p,s} + 4{,}18\\,w \\qquad w_{\\text{pulpa}} = \\frac{100}{C_w} - 1',
+            num: (calcita ? 'c_{p,s} = \\frac{(19{,}68 + 0{,}01189 \\times 328{,}15 - 307\\,600/328{,}15^2) \\times 4{,}184}{100{,}09} = ' + kn(cp, 3) + ' \\\\ ' : '') + 'w = ' + kn(r.w, 3) + ' \\qquad \\bar c_p = ' + kn(cp, 3) + ' + 4{,}18 \\times ' + kn(r.w, 3) + ' = ' + kn(r.cpmix, 3) + '\\ \\mathrm{kJ/(kg\\cdot K)}',
+            fuente: calcita ? 'T en kelvin; la correlación da cal/(mol·K), y 100,09 g/mol es la masa molar del carbonato de calcio.' : 'w en kg de agua por kg de sólido seco.', libro: ['reduccion-de-tamano.html#tbl-red-datos', 'Libro, tabla 7.3'] },
           { titulo: 'La subida de temperatura',
-            texto: 'Con el sistema adiabático, el calor de cada tonelada calienta la mezcla de esa tonelada. Como el calor y la masa crecen juntos con el flujo, la subida de temperatura no depende de la capacidad. 1 kWh/t son 3,6 kJ/kg.',
-            ec: '\\Delta T = \\frac{0{,}97 \\times 3{,}6\\,E_{\\text{equipo}}}{\\bar c_p} \\qquad T = T_{\\text{amb}} + \\Delta T',
-            num: '\\Delta T = \\frac{0{,}97 \\times 3{,}6 \\times ' + kn(r.Eeq, 2) + '}{' + kn(r.cpmix, 3) + '} = ' + kn(r.dT, 1) + '\\ \\mathrm{K} \\\\ T = ' + kn(r.Tamb, 0) + ' + ' + kn(r.dT, 1) + ' = ' + kn(r.Tout, 1) + '\\ ^{\\circ}\\mathrm{C}',
-            fuente: 'Que todo el calor se quede en el producto es un supuesto del explorador. En la planta del carbonato, el libro calcula lo que se llevaría el aire del clasificador si el producto saliera a 60 °C.', libro: ['reduccion-de-tamano.html#sec-red-desgaste', 'Libro, sección 7.7'] },
+            texto: 'Si el calor de cada tonelada se queda en la mezcla de esa tonelada, la subida de temperatura es la energía por tonelada dividida por el calor específico, y no depende de la capacidad: el calor y la masa crecen juntos con el flujo. 1 kWh/t son 3,6 kJ/kg.',
+            ec: '\\Delta T = \\frac{3{,}6\\,E}{\\bar c_p} \\qquad T = T_{\\text{amb}} + \\Delta T',
+            num: '\\Delta T = \\frac{3{,}6 \\times ' + kn(r.Eeq, 2) + '}{' + kn(r.cpmix, 3) + '} = ' + kn(r.dT, 1) + '\\ \\mathrm{K} \\\\ T = ' + kn(r.Tamb, 0) + ' + ' + kn(r.dT, 1) + ' = ' + kn(r.Tout, 1) + '\\ ^{\\circ}\\mathrm{C}',
+            fuente: 'En la planta del carbonato el calor no se queda en el producto: el libro calcula que, si el carbonato sale a 60 °C, el aire del clasificador se lleva el resto.', libro: ['reduccion-de-tamano.html#sec-red-desgaste', 'Libro, sección 7.7'] },
           { titulo: 'El límite del material',
             texto: r.mat.tmax ? 'Por encima de ' + un(r.mat.tmax, 0, '°C') + ', ' + (LIMITE[r.mat.id] || 'el material se daña') + '. El calor se saca con aire de barrido, camisas de agua fría o molienda criogénica, o se reparte en etapas con menos reducción cada una.' : esc(r.mat.name) + ' no tiene límite térmico en el explorador: el calor es un costo de ventilación, no un límite de la operación.',
             res: 'Su producto sale a ' + un(r.Tout, 0, '°C') + '.' }

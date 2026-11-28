@@ -74,8 +74,8 @@
 .ag-diag li.c .xl-ico { color: var(--alerta); }
 .ag-diag li.ok { border-left-color: var(--navy); }
 .ag-diag .xl-ico { width: 18px; height: 18px; margin-top: 1px; }
-.ag-diag b { display: block; font-size: var(--t-xs); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--oliva-osc); }
-.ag-diag li.c b { color: var(--alerta); }
+.ag-diag .e { display: block; font-size: var(--t-xs); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--oliva-osc); }
+.ag-diag li.c .e { color: var(--alerta); }
 
 @media (max-width: 1099.98px), (max-height: 599.98px) {
   /* las nueve escenas, en una sola fila de botones que se acomoda */
@@ -854,6 +854,15 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
   var FLU_CORTO = { agua: 'Agua', etanol: 'Etanol', glicerina: 'Glicerina', aceite: 'Aceite VG 32', extracto: 'Extracto', papilla: 'Papilla', custom: 'Propio' };
   var FLU_OP = M.FLUIDS.map(function (f) { return { valor: f.id, texto: FLU_CORTO[f.id] || f.name }; });
   var CRIT_OP = M.SCALE_CRIT.map(function (c) { return { valor: c.id, texto: c.short }; });
+  var FLU_NOTA = {
+    agua: 'El agua de servicios y de proceso. A 80 °C su viscosidad es la tercera parte de la que tiene a 20 °C, y su presión de vapor sube veinte veces, hasta 47 kPa.',
+    etanol: 'Un solvente de extracción y de limpieza, común en las plantas de alimentos y de aromas. Es mucho menos viscoso que la glicerina y más liviano que el agua: con la misma velocidad da un Reynolds más alto.',
+    glicerina: 'Un líquido newtoniano muy viscoso: a 20 °C es unas 1400 veces más viscoso que el agua. Sirve para ver el flujo laminar.',
+    aceite: 'Un aceite mineral ligero, de grado ISO VG 32, de los de lubricación e hidráulica. Trabaja en laminar o en transición en casi toda la escala de diseño.',
+    extracto: 'Un extracto acuoso caliente de una planta de alimentos, con cerca de 1 % de sólidos. Su densidad y su presión de vapor son las del agua a la misma temperatura; su viscosidad depende de los sólidos y puede ser pseudoplástica, así que la de los controles es un dato de referencia que se mide en el laboratorio.',
+    papilla: 'La papilla de manzana del capítulo 14, un líquido adelgazante de ley de potencia con m = 2,4 Pa·sⁿ y n = 0,5, 1200 kg/m³, k = 0,516 W/(m·K) y cₚ = 3600 J/(kg·K). Sus propiedades son las de 90 °C y el explorador no las cambia con la temperatura.',
+    custom: 'Un líquido con la densidad y la viscosidad que usted le pone en «Más ajustes»; la conductividad y el calor específico son los de un líquido acuoso.'
+  };
   function fluDe(st) { return byId(M.FLUIDS, st.fluid); }
   var CONTROLES = {
     imp: { etiqueta: 'Impulsor', tipo: 'opciones', opciones: IMP_OP },
@@ -961,7 +970,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       fija: 'El mismo tanque de banco con la Rushton a 450 r/min y sin bafles. La caída de la potencia a la quinta parte es la del libro; el vórtice que se dibuja es un modelo de Rankine del explorador, y sin bafles el libro no da el tiempo de mezcla. Trae agua a 20 °C: con un líquido viscoso el Reynolds baja y en laminar los bafles no cambian la potencia.',
       resultado: function (r) {
         var b = con(r, { baff: true });
-        return 'El líquido gira con las palas y Nₚ baja de ' + npTxt(b.Np) + ' a ' + npTxt(r.Np) + '; el explorador dibuja un vórtice de unos ' + un(100 * r.vx.depth, 0, 'cm') + ' bajo el nivel en reposo.' + resumen(r);
+        return 'El líquido gira con las palas y Nₚ baja a ' + npTxt(r.Np) + ', desde ' + npTxt(b.Np) + ' con bafles; el explorador dibuja un vórtice de unos ' + un(100 * r.vx.depth, 0, 'cm') + ' bajo el nivel en reposo.' + resumen(r);
       } },
     { id: 'viscoso', ceja: 'Ejemplo del explorador · capítulo 14', titulo: 'Tanque de laboratorio con glicerina', alerta: problema,
       fija: 'El tanque de banco con la Rushton, ahora en glicerina a 20 °C, unas 1400 veces más viscosa que el agua (1,41 Pa·s, de Segur y Oberstar), a 120 r/min. La curva de la Rushton es la del capítulo 14; el tanque y la velocidad son del explorador.',
@@ -1676,7 +1685,9 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       },
       poner: function (r, modo) {
         var t = this.t; t.configure(r);
-        if (modo === 'entrar') { clearTimeout(t.pend); if (t.key !== t.flowKey(r) || !t.F) { t.key = t.flowKey(r); t.rebuild(); } t.reset(); if (!t.autoInj0 && t.tr) t.autoInj = 0; }
+        // al abrirse la escena o cargar una configuración: el flujo se resuelve desde cero (sin arrancar del campo de otro
+        // sistema, que deja una solución a medio converger) y el tanque arranca de nuevo, como al cargar una tarjeta antes
+        if (modo === 'entrar') { clearTimeout(t.pend); t.F = null; t.key = t.flowKey(r); t.rebuild(); t.reset(); }
         this.sync(); this.hud();
         if (op.alPoner) op.alPoner(t, r, modo);
         if (!t.running || modo === 'fijo') { t.dts = 0; t.draw(); }
@@ -1741,7 +1752,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'La geometría',
             texto: 'Con el diámetro del tanque y las proporciones salen las medidas: la altura del líquido, el diámetro del impulsor, su altura sobre el fondo y el ancho de los bafles, Dₜ/10. El volumen es el de un cilindro; con fondo elíptico 2:1 se le resta lo que el fondo no ocupa, y la camisa moja solo la pared recta. El dibujo del tanque es siempre de fondo plano.',
             ec: eli ? 'V = \\frac{\\pi D_t^3}{24} + \\frac{\\pi}{4} D_t^2\\left(H - \\frac{D_t}{4}\\right) \\qquad L_w = H - \\frac{D_t}{4}' : 'V = \\frac{\\pi}{4} D_t^2 H \\qquad L_w = H',
-            num: 'D_t = ' + kn(g.T, 3) + '\\ \\mathrm{m} \\quad H = ' + kn(g.H, 3) + '\\ \\mathrm{m} \\quad D = ' + kn(g.D, 3) + '\\ \\mathrm{m} \\quad C = ' + kn(g.C, 3) + '\\ \\mathrm{m} \\\\ V = ' + (g.V < 1 ? kn(g.V * 1000, 2) + '\\ \\mathrm{L}' : kn(g.V, 2) + '\\ \\mathrm{m^3}') + ' \\qquad L_w = ' + kn(g.Lw, 3) + '\\ \\mathrm{m}',
+            num: 'D_t = ' + kn(g.T, 3) + '\\ \\mathrm{m} \\qquad H = ' + kn(g.H, 3) + '\\ \\mathrm{m} \\qquad D = ' + kn(g.D, 3) + '\\ \\mathrm{m} \\qquad C = ' + kn(g.C, 3) + '\\ \\mathrm{m} \\\\ V = ' + (g.V < 1 ? kn(g.V * 1000, 2) + '\\ \\mathrm{L}' : kn(g.V, 2) + '\\ \\mathrm{m^3}') + ' \\qquad L_w = ' + kn(g.Lw, 3) + '\\ \\mathrm{m}',
             res: imp.close ? 'El ' + imp.short.toLowerCase() + ' fija su diámetro, ' + num(imp.dt, 2) + ' del tanque, y barre la pared: no lleva bafles.' : 'Para este impulsor el D/Dₜ típico es ' + num(imp.dt, 2) + '.',
             fuente: 'Las proporciones del tanque normalizado y el fondo elíptico del reactor son las del libro.', libro: [C14 + '#tbl-agi-proporciones', 'Libro, tabla 14.2'] },
           { titulo: 'El Reynolds del impulsor',
@@ -1753,7 +1764,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'El caudal que bombea',
             texto: 'El caudal que sale del impulsor crece con la velocidad y con el cubo del diámetro; el número de flujo depende del impulsor. Con ese caudal, el tanque entero pasa por el impulsor cada V/Q, el tiempo de una vuelta.',
             ec: 'Q = N_Q\\,N D^3 \\qquad t_c = \\frac{V}{Q}',
-            num: 'Q = ' + kn(imp.NQ, 2) + ' \\times ' + kn(r.N, 3) + ' \\times ' + kn(g.D, 3) + '^3 = ' + kc(r.Q, 3) + '\\ \\mathrm{m^3/s} = ' + kn(r.Q * 1000, r.Q < 0.01 ? 2 : 1) + '\\ \\mathrm{L/s} \\\\ t_c = ' + kn(g.V, 3) + '/' + kc(r.Q, 3) + ' = ' + kn(r.tc, 1) + '\\ \\mathrm{s}',
+            num: 'Q = ' + kn(imp.NQ, 2) + ' \\times ' + kn(r.N, 3) + ' \\times ' + kn(g.D, 3) + '^3 = ' + kn(r.Q * 1000, r.Q < 0.01 ? 2 : 1) + '\\ \\mathrm{L/s} \\\\ t_c = ' + kn(g.V, 3) + '/' + kc(r.Q, 3) + ' = ' + kn(r.tc, 1) + '\\ \\mathrm{s}',
             fuente: 'El número de flujo de cada impulsor es el de la tabla del libro.', libro: [C14 + '#eq-agi-q', 'Libro, ecuación 14.7'] },
           { titulo: 'La cabeza del impulsor',
             texto: 'La potencia que entra es la cabeza que le da el impulsor al caudal que bombea. En las turbinas de palas planas el chorro arrastra líquido del tanque, y el caudal total que circula se puede contar.',
@@ -1768,7 +1779,8 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'El vórtice',
             texto: 'Sin bafles el líquido gira en bloque y la superficie se hunde en el centro. El explorador dibuja un vórtice de Rankine, con un núcleo de radio cercano a 0,55 D que gira a κω (κ ≈ 0,42 en turbulento, Nagata). Es solo para el dibujo: no viene del libro y no entra en la potencia.',
             ec: 'z(r) = \\frac{\\Omega_f^2 r^2}{2g}\\ \\ (r < r_c) \\qquad z(r) = \\frac{\\Omega_f^2 r_c^2}{g}\\left(1 - \\frac{r_c^2}{2 r^2}\\right)\\ \\ (r > r_c)',
-            num: r.vx.on ? '\\Omega_f = ' + kn(r.vx.kappa, 3) + ' \\times ' + kn(r.omega, 1) + ' = ' + kn(r.vx.Om, 2) + '\\ \\mathrm{rad/s} \\qquad r_c = ' + kn(r.vx.rc, 3) + '\\ \\mathrm{m} \\\\ \\text{el centro baja } ' + kn(100 * r.vx.depth, 1) + '\\ \\mathrm{cm}' : '\\text{con bafles, con un impulsor de pared o en laminar no hay vórtice}',
+            num: r.vx.on ? '\\Omega_f = ' + kn(r.vx.kappa, 3) + ' \\times ' + kn(r.omega, 1) + ' = ' + kn(r.vx.Om, 2) + '\\ \\mathrm{rad/s} \\qquad r_c = ' + kn(r.vx.rc, 3) + '\\ \\mathrm{m} \\\\ \\text{el centro baja } ' + kn(100 * r.vx.depth, 1) + '\\ \\mathrm{cm}' : '\\text{sin vórtice}',
+            res: r.vx.on ? '' : 'Con bafles, con un impulsor de pared o en laminar no hay vórtice.',
             fuente: 'Es del explorador. El libro solo dice que sin bafles la gravedad sostiene el vórtice y el Froude entra en la potencia.', libro: [C14 + '#sec-agi-potencia', 'Libro, sección 14.3'] },
           { titulo: 'Lo que se dibuja',
             texto: 'El flujo del dibujo es del explorador, no del libro. La circulación media es una función de corriente axisimétrica que se resuelve en cada cambio, con fuentes de vorticidad que imitan la descarga de cada impulsor y el caudal total del capítulo 14. La dispersión turbulenta va con Nₚ^(1/3)·N·D² y cae como (Re/6400)^1,5 en la transición. Las partículas siguen ese campo, el giro y la turbulencia; su color es la rapidez local.',
@@ -1790,7 +1802,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       lectura(svg, function (p) {
         limpiar(self.cur);
         var a = self.a, r = self.r; if (!a || !r) return;
-        if (!p || p.x < a.o.x0 || p.x > a.o.x1) { self.lec.textContent = 'Pase el cursor para leer Nₚ a cualquier Reynolds.'; return; }
+        if (!p || p.x < a.o.x0 || p.x > a.o.x1) { self.lec.textContent = self.def; return; }
         var Re = Math.pow(10, L10(a.o.xmin) + (p.x - a.o.x0) / (a.o.x1 - a.o.x0) * (L10(a.o.xmax) - L10(a.o.xmin)));
         var n1 = M.npOf(r.imp, Re, true, r.Fr), n2 = M.npOf(r.imp, Re, false, r.Fr);
         el('line', { x1: p.x, x2: p.x, y1: a.o.y0, y2: a.o.y1, stroke: C.guia, 'stroke-width': 1 }, self.cur);
@@ -1814,19 +1826,16 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       var cur = r.imp;
       if (!r.baff && !cur.close) linea(cg, res.map(function (Re) { return [a.X(Re), a.Y(M.npOf(cur, Re, false, r.Fr))]; }), { stroke: C.tinta, 'stroke-width': 2.2, 'stroke-dasharray': '6 4' });
       linea(cg, res.map(function (Re) { return [a.X(Re), a.Y(M.npOf(cur, Re, true, r.Fr))]; }), { stroke: C.azul, 'stroke-width': r.baff || cur.close ? 3 : 1.8 });
-      labs.push({ y: a.Y(M.npOf(cur, xmx * 0.6, true, r.Fr)) - 6, t: cur.short + (cur.close ? '' : ' · Nₚ = ' + npTxt(M.npTabla(cur, 1e7))), cls: 'f-v f-azul' });
       separar(labs, 16, 76, 310).forEach(function (l) { tx(g, 424, l.y, l.t, l.cls + ' f-halo', 'end'); });
       // el laminar: K_p/Re
       var kl = cur.id === 'ancla' ? '215·Re^−0,955' : 'Kₚ = ' + num(M.NP_CURVA[cur.id] ? M.NP_CURVA[cur.id][0] : cur.KL, cur.close ? 0 : 1);
-      tx(g, a.X(2.2), a.Y(M.npTabla(cur, 2.2)) - 10, kl, 'f-ts f-azul f-halo');
+      tx(g, a.X(2.2), a.Y(M.npTabla(cur, 2.2)) - 10, cur.short + ' · ' + kl, 'f-v f-azul f-halo');
       if (!r.baff && !cur.close) tx(g, a.X(30), a.Y(M.npOf(cur, 3000, false, r.Fr)) + 22, 'sin bafles', 'f-ts f-halo');
       // el punto en que trabaja
       el('line', { x1: a.X(r.Re), x2: a.X(r.Re), y1: a.Y(0.05), y2: a.Y(r.NpG), stroke: C.guia, 'stroke-width': 1, 'stroke-dasharray': '3 3' }, g);
       punto(g, a.X(r.Re), a.Y(r.NpG));
-      var der = a.X(r.Re) > 260, yl = Math.max(84, a.Y(r.NpG) - 34);
-      el('line', { x1: a.X(r.Re), x2: a.X(r.Re) + (der ? -10 : 10), y1: a.Y(r.NpG) - 8, y2: yl + 4, stroke: C.tinta, 'stroke-width': 1 }, g);
-      tx(g, a.X(r.Re) + (der ? -12 : 12), yl, 'Re ' + fRe(r.Re) + ' · Nₚ ' + npTxt(r.NpG), 'f-v f-halo', der ? 'end' : 'start');
-      this.lec.textContent = 'Pase el cursor para leer Nₚ a cualquier Reynolds.';
+      this.def = 'Su impulsor: Re = ' + fRe(r.Re) + ', Nₚ = ' + npTxt(r.NpG) + '. Pase el cursor para leer otros.';
+      this.lec.textContent = this.def;
     }
   };
   var PN_FIG = {
@@ -1953,10 +1962,10 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       var kp = M.NP_CURVA[imp.id] ? M.NP_CURVA[imp.id][0] : imp.KL, sinB = imp.close ? null : M.npOf(imp, r.Re, false, r.Fr) / M.npOf(imp, r.Re, true, r.Fr);
       var pasos = [
         { titulo: 'El líquido',
-          texto: fl.note + ' ' + (r.mo ? 'Su viscosidad sale de la velocidad de corte media, que según Metzner y Otto es proporcional a la velocidad de giro, con kₛ = 10 para la hélice, 12 para la Rushton, 25 para el ancla y 30 para la cinta, y aquí 11 para las turbinas inclinadas y los hidrofoiles. Vale en laminar para todos los impulsores y en la transición solo para el ancla y la cinta.' : ''),
+          texto: FLU_NOTA[fl.id] + ' ' + (r.mo ? 'Su viscosidad sale de la velocidad de corte media, que según Metzner y Otto es proporcional a la velocidad de giro, con kₛ = 10 para la hélice, 12 para la Rushton, 25 para el ancla y 30 para la cinta, y aquí 11 para las turbinas inclinadas y los hidrofoiles. Vale en laminar para todos los impulsores y en la transición solo para el ancla y la cinta.' : ''),
           ec: r.mo ? '\\dot\\gamma = k_s N \\qquad \\mu_{ap} = m\\,\\dot\\gamma^{\\,n-1}' : '\\nu = \\frac{\\mu}{\\rho} \\qquad \\mathrm{Pr} = \\frac{c_p\\,\\mu}{k}',
           num: (r.mo ? '\\dot\\gamma = ' + kn(r.mo.ks, 0) + ' \\times ' + kn(r.N, 3) + ' = ' + kn(r.mo.gam, 1) + '\\ \\mathrm{s^{-1}} \\\\ \\mu_{ap} = ' + kn(fl.pl.m, 1) + ' \\times ' + kn(r.mo.gam, 1) + '^{' + kn(fl.pl.n - 1, 1) + '} = ' + kn(P.mu, 3) + '\\ \\mathrm{Pa\\cdot s} \\\\ ' : '') +
-            '\\rho = ' + kn(P.rho, 1) + '\\ \\mathrm{kg/m^3} \\quad \\mu = ' + kc(P.mu, 3) + '\\ \\mathrm{Pa\\cdot s} \\quad \\nu = ' + kc(P.nu, 3) + '\\ \\mathrm{m^2/s} \\quad \\mathrm{Pr} = ' + kn(r.Pr, r.Pr < 10 ? 2 : 0),
+            '\\rho = ' + kn(P.rho, 1) + '\\ \\mathrm{kg/m^3} \\qquad \\mu = ' + kc(P.mu, 3) + '\\ \\mathrm{Pa\\cdot s} \\\\ \\nu = ' + kc(P.nu, 3) + '\\ \\mathrm{m^2/s} \\qquad \\mathrm{Pr} = ' + kn(r.Pr, r.Pr < 10 ? 2 : 0),
           res: 'A ' + un(r.Tf, 0, '°C') + (fl.T ? ', dentro del rango de sus datos, entre ' + fl.T[0] + ' y ' + fl.T[1] + ' °C' : '') + '.',
           fuente: 'Propiedades: ' + fl.src + '.', libro: r.mo ? [C14 + '#eq-agi-metzner', 'Libro, ecuación 14.5'] : [C14 + '#sec-agi-potencia', 'Libro, sección 14.3'] },
         { titulo: 'El número de potencia',
@@ -1965,7 +1974,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           num: 'K_p = ' + kn(kp, imp.close ? 0 : 1) + (imp.close ? '' : ' \\qquad N_P = ' + kn(M.npTabla(imp, 1e7), 2) + '\\ (\\mathrm{Re} > 10^4)') + ' \\\\ N_P(\\mathrm{Re} = ' + kRe(r.Re) + ') = ' + kn(r.Np, 3),
           fuente: 'Las curvas son las de la figura del número de potencia del libro.', libro: [C14 + '#fig-agi-potencia', 'Libro, figura 14.3'] },
         { titulo: 'Sin bafles',
-          texto: 'Sin bafles el líquido gira con las palas y la potencia cae. En laminar los bafles no cambian nada; en Re = 10⁴ una Rushton sin bafles toma la quinta parte. El explorador pasa de 1 en Re = 10 a esa fracción en Re = 10⁴; la fracción de los demás impulsores es suya, no del libro.',
+          texto: 'Sin bafles el líquido gira con las palas y la potencia cae. En laminar los bafles no cambian nada; en Re = 10⁴ una Rushton sin bafles toma la quinta parte. En el explorador la razón vale 1 en Re = 10 y baja hasta esa fracción en Re = 10⁴; la fracción de los demás impulsores es suya, no del libro.',
           ec: '\\frac{N_{P,\\text{sin bafles}}}{N_{P,\\text{con bafles}}}' + (sinB ? ' = ' + kn(sinB, 2) : ''),
           num: imp.close ? '\\text{el ' + imp.short.toLowerCase() + ' no lleva bafles}' : (r.baff ? '\\text{con bafles: } N_P = ' + kn(r.Np, 3) : '\\text{sin bafles: } N_P = ' + kn(r.Np, 3) + '\\quad (\\mathrm{Fr} = ' + kn(r.Fr, 3) + ')'),
           libro: [C14 + '#sec-agi-tanque', 'Libro, sección 14.1'] },
@@ -1977,10 +1986,11 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
         { titulo: 'La altura del impulsor',
           texto: 'El número de potencia de la turbina de palas inclinadas se midió con el impulsor a Dₜ/3 del fondo, y cambia con (C/D)^−0,25. La corrección entra en la potencia con que se escoge el motor; el caudal, la cabeza y el tiempo de mezcla usan el Nₚ de la tabla.',
           ec: '\\frac{N_{P,2}}{N_{P,1}} = \\left(\\frac{C_2/D}{C_1/D}\\right)^{-0{,}25}',
-          num: r.kC !== 1 ? 'N_P = ' + kn(r.Np, 3) + ' \\times ' + kn(r.kC, 3) + ' = ' + kn(r.Np * r.kC, 3) : '\\text{sin corrección para este impulsor o sin bafles}',
+          num: r.kC !== 1 ? 'N_P = ' + kn(r.Np, 3) + ' \\times ' + kn(r.kC, 3) + ' = ' + kn(r.Np * r.kC, 3) : '\\text{sin corrección}',
+          res: r.kC !== 1 ? '' : 'Sin corrección para este impulsor, o sin bafles.',
           libro: [C14 + '#eq-agi-altura', 'Libro, ecuación 14.4'] },
         { titulo: 'El motor',
-          texto: 'El motor se escoge para la mayor potencia que puede pedir el impulsor: sin gas, con el número de potencia corregido por la altura y, si el lote arranca frío, con el líquido más denso y más viscoso del arranque. Esa potencia se divide por lo que el motor da en la altitud (a 2600 m, el 95 % con aire de menos de 30 °C y el 89 % entre 30 y 40 °C) y por el tope de 85 a 90 % que se le deja al impulsor. El factor de servicio de la placa queda de reserva.',
+          texto: 'El motor se escoge para la mayor potencia que puede pedir el impulsor: sin gas, con el número de potencia corregido por la altura y, si el lote arranca frío, con el líquido más denso y más viscoso del arranque. Esa potencia se divide por lo que el motor da en la altitud (a 2600 m, el 95 % con aire de menos de 30 °C y el 89 % entre 30 y 40 °C) y por el tope, entre 85 y 90 %, que se le deja al impulsor. El factor de servicio de la placa queda de reserva.',
           ec: 'P_{\\text{motor}} \\ge \\frac{P_{\\max}}{f_{\\text{alt}}\\,f_{\\text{tope}}}',
           num: 'P_{\\max} = ' + kW(r.Pmot) + (r.Tfrio !== null ? '\\ (\\text{lote a } ' + kn(r.Tfrio, 0) + '\\ ^\\circ\\mathrm{C})' : '') + ' \\\\ P_{\\text{motor}} \\ge \\frac{' + kW(r.Pmot) + '}{' + kn(r.s.alt, 2) + ' \\times ' + kn(r.s.tope, 2) + '} = ' + kW(need),
           res: 'El motor normalizado es el de ' + fKW(r.motor) + '.',
@@ -2140,7 +2150,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'El tiempo en turbulento',
             texto: 'En turbulento el número de vueltas para mezclar es constante: t₉₅ va con 1/N, y doblar la potencia solo lo acorta un 20 %, 2^(1/3).',
             ec: 't_{95} = \\frac{5{,}20\\,D_t^{1{,}5}H^{0{,}5}}{N_P^{1/3}\\,N D^2}',
-            num: r.th95 && x > 6370 ? 't_{95} = \\frac{5{,}20 \\times ' + kn(g.T, 3) + '^{1{,}5} \\times ' + kn(g.H, 3) + '^{0{,}5}}{' + kn(r.Np, 3) + '^{1/3} \\times ' + kn(r.N, 3) + ' \\times ' + kn(g.D, 3) + '^2} = ' + kn(r.th95, 1) + '\\ \\mathrm{s}' : '\\text{no es turbulento en el sentido de Grenville}',
+            num: r.th95 && x > 6370 ? 't_{95} = \\frac{5{,}20 \\times ' + kn(g.T, 2) + '^{1{,}5} \\times ' + kn(g.H, 2) + '^{0{,}5}}{' + kn(r.Np, 3) + '^{1/3} \\times ' + kn(r.N, 3) + ' \\times ' + kn(g.D, 3) + '^2} = ' + kn(r.th95, 1) + '\\ \\mathrm{s}' : '\\text{no es turbulento en el sentido de Grenville}',
             libro: [C15 + '#eq-mez-grenville', 'Libro, ecuación 15.3'] },
           { titulo: 'El tiempo en la transición',
             texto: 'En la transición Grenville correlaciona el número de Fourier de la mezcla, que lleva la viscosidad; despejado, da el tiempo.',
@@ -2273,7 +2283,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
         var so = rn.sol, sb = rb.sol;
         if (!so || !(so.NJ || so.Njs)) return rb.imp.close ? 'El ancla y la cinta fijan su diámetro, y ni Zwietering ni Joosten les aplican.' : 'Sin una correlación para este sólido, la velocidad no cambia en el explorador.';
         if (so.NJ) return 'Con D/Dₜ = 0,5 Joosten pide ' + rpm(so.NJ * 60) + ': el Froude que pide baja con (D/Dₜ)^−3,65, así que una turbina más grande hunde lo que flota mucho más despacio. La potencia a esa velocidad es ' + fW(so.Pjs) + ', contra ' + fW(sb.Pjs) + ' con la turbina chica.';
-        return 'Con D/Dₜ = 0,5 Zwietering pide ' + rpm(so.Njs * 60) + ': Nⱼₛ va con D^−0,85 y la tabla de S cambia con Dₜ/D. La potencia en Nⱼₛ pasa de ' + fW(sb.Pjs) + ' a ' + fW(so.Pjs) + '.';
+        return 'Con D/Dₜ = 0,5 Zwietering pide ' + rpm(so.Njs * 60) + ': Nⱼₛ va con D^−0,85 y la tabla de S cambia con Dₜ/D. La potencia en Nⱼₛ es ' + fW(so.Pjs) + ', contra ' + fW(sb.Pjs) + ' con la turbina chica.';
       }
     },
     figuras: [figTanque({
@@ -2289,13 +2299,13 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
         pasos: [
           { titulo: 'La velocidad terminal',
             texto: 'Una partícula sube o baja en el líquido quieto con su velocidad terminal, que sale del coeficiente de arrastre de Turton y Levenspiel resuelto para el Reynolds de la partícula. ' + (flota ? 'Este sólido es más liviano que el líquido: sube.' : 'Este sólido es más denso que el líquido: baja.'),
-            ec: 'C_D = \\frac{24}{\\mathrm{Re}_p}\\left(1 + 0{,}173\\,\\mathrm{Re}_p^{0{,}657}\\right) + \\frac{0{,}413}{1 + 16\\,300\\,\\mathrm{Re}_p^{-1{,}09}} \\qquad v_t = \\sqrt{\\frac{4\\,x\\,|\\rho_p - \\rho|\\,g}{3\\,\\rho\\,C_D}}',
+            ec: '\\begin{gathered} C_D = \\frac{24}{\\mathrm{Re}_p}\\left(1 + 0{,}173\\,\\mathrm{Re}_p^{0{,}657}\\right) \\\\ + \\frac{0{,}413}{1 + 16\\,300\\,\\mathrm{Re}_p^{-1{,}09}} \\\\ v_t = \\sqrt{\\frac{4\\,x\\,|\\rho_p - \\rho|\\,g}{3\\,\\rho\\,C_D}} \\end{gathered}',
             num: 'x = ' + kn(s.dp, s.dp < 1 ? 2 : 1) + '\\ \\mathrm{mm} \\qquad \\Delta\\rho = ' + kn(s.rhoS - P.rho, 1) + '\\ \\mathrm{kg/m^3} \\\\ v_t = ' + kn(vt * 1000, vt < 0.01 ? 2 : 1) + '\\ \\mathrm{mm/s} \\qquad \\mathrm{Re}_p = ' + kn(Rep, Rep < 10 ? 2 : 0),
             fuente: 'La correlación es la del capítulo 16; el capítulo 14 la usa para la cáscara.', libro: [C14 + '#eq-agi-arrastre', 'Libro, ecuación 14.10'] },
           { titulo: 'Lo que se hunde: Zwietering',
             texto: 'Nⱼₛ es la velocidad a la que ninguna partícula queda quieta en el fondo más de uno o dos segundos. Mandan la diferencia de densidad y el diámetro del impulsor, con exponente −0,85; la carga pesa poco. S sale de la tabla del capítulo 14 según el impulsor, Dₜ/D y C/Dₜ. Más allá de Nⱼₛ, agitar más rinde poco: la nube de sólidos sube, pero la transferencia casi no mejora.',
             ec: 'N_{js} = S\\,\\nu^{0{,}1}\\left(\\frac{g\\,\\Delta\\rho}{\\rho}\\right)^{0{,}45} X^{0{,}13}\\,x^{0{,}2}\\,D^{-0{,}85}',
-            num: so && so.Njs ? 'N_{js} = ' + kn(so.S, 2) + ' \\times (' + kc(P.nu, 3) + ')^{0{,}1} \\times \\left(\\frac{9{,}81 \\times ' + kn(so.drho, 1) + '}{' + kn(P.rho, 1) + '}\\right)^{0{,}45} \\\\ \\times ' + kn(s.X, 1) + '^{0{,}13} \\times ' + kn(s.dp / 1000, 4) + '^{0{,}2} \\times ' + kn(r.geo.D, 3) + '^{-0{,}85} = ' + kn(so.Njs, 3) + '\\ \\mathrm{r/s} = ' + kn(so.Njs * 60, 0) + '\\ \\mathrm{r/min}' : (flota ? '\\text{el sólido flota: Zwietering no aplica}' : '\\text{sin } S \\text{ para este impulsor}') + (Sx ? '\\qquad S = ' + kn(Sx, 2) : ''),
+            num: so && so.Njs ? 'N_{js} = ' + kn(so.S, 2) + ' \\times (' + kc(P.nu, 3) + ')^{0{,}1} \\\\ \\times \\left(\\frac{9{,}81 \\times ' + kn(so.drho, 1) + '}{' + kn(P.rho, 1) + '}\\right)^{0{,}45} \\\\ \\times ' + kn(s.X, 1) + '^{0{,}13} \\times ' + kn(s.dp / 1000, 4) + '^{0{,}2} \\times ' + kn(r.geo.D, 3) + '^{-0{,}85} \\\\ = ' + kn(so.Njs, 3) + '\\ \\mathrm{r/s} = ' + kn(so.Njs * 60, 0) + '\\ \\mathrm{r/min}' : (flota ? '\\text{el sólido flota: Zwietering no aplica}' : '\\text{sin } S \\text{ para este impulsor}') + (Sx ? '\\qquad S = ' + kn(Sx, 2) : ''),
             fuente: 'X es 100 veces la masa de sólido sobre la de líquido. La tabla de S es la de la segunda vista de la figura.', libro: [C14 + '#eq-agi-zw', 'Libro, ecuación 14.11'] },
           { titulo: 'Lo que flota: Joosten',
             texto: 'Lo que flota no se levanta del fondo: se arrastra desde la superficie, y para eso manda el número de Froude. La correlación de Joosten da el que hace falta, sin término para el tamaño ni para la carga. Joosten midió con una turbina de palas inclinadas que bombea hacia abajo y un solo bafle parcial que deja un vórtice; con cuatro bafles de pared el vórtice es menor y lo que flota puede pedir más velocidad.',
@@ -2304,10 +2314,10 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
             res: 'El Froude de su agitador es ' + num(r.Fr, 3) + '.',
             libro: [C14 + '#eq-agi-joosten', 'Libro, ecuación 14.12'] },
           { titulo: 'El margen y la potencia',
-            texto: 'Con lo que se hunde se trabaja con un margen de 1,2 a 1,5 Nⱼₛ: con H = Dₜ, a 1,5 Nⱼₛ la nube de sólidos pasa del 95 % de la altura. La potencia a la velocidad que pide el sólido sale del número de potencia de la curva a ese Reynolds.',
+            texto: 'Con lo que se hunde se trabaja con un margen entre 1,2 y 1,5 Nⱼₛ: con H = Dₜ, a 1,5 Nⱼₛ la nube de sólidos pasa del 95 % de la altura. La potencia a la velocidad que pide el sólido sale del número de potencia de la curva a ese Reynolds.',
             ec: 'P = N_P\\,\\rho N^3 D^5',
             num: so && (so.Njs || so.NJ) ? '\\frac{N}{N_{\\text{pide}}} = \\frac{' + kn(r.N, 3) + '}{' + kn(so.Njs || so.NJ, 3) + '} = ' + kn(so.ratio, 2) + ' \\qquad P_{\\text{pide}} = ' + kW(so.Pjs) : '\\text{sin velocidad que pida el sólido}',
-            res: so && so.Njs ? 'El margen de 1,2 a 1,5 Nⱼₛ va entre ' + rpm(so.Njs * 72) + ' y ' + rpm(so.Njs * 90) + '.' : '',
+            res: so && so.Njs ? 'El margen va entre ' + rpm(so.Njs * 72) + ' y ' + rpm(so.Njs * 90) + '.' : '',
             libro: [C14 + '#exm-agi-cascara', 'Libro, ejemplo 14.3'] }
         ],
         libro: [[C14 + '#sec-agi-solidos', 'Sección 14.6, Sólidos en suspensión'], [C14 + '#tbl-agi-s', 'Tabla 14.7, la constante S'], [C14 + '#exm-agi-cascara', 'Ejemplo 14.3, ¿se hunde la cáscara del caso?'], [C14 + '#fig-agi-cascara', 'Figura 14.4, lo que pide la cáscara según su densidad']]
@@ -2416,7 +2426,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'Las gotas de Chen y Middleman',
             texto: 'El libro usa las constantes de Chen y Middleman con la corrección de Doulah, porque es la única de las tres correlaciones que dice su intervalo. Son de la Rushton; con otro impulsor se multiplican por (5,75/Nₚ)^(2/5).',
             ec: '\\frac{d_{32}}{D} = c_1\\,(1 + c_2\\,\\alpha_d)\\,\\mathrm{We}^{-0{,}6} \\qquad c_1 = 0{,}053,\\ c_2 = 3',
-            num: dq ? 'd_{32} = 0{,}053 \\times (1 + 3 \\times ' + kn(dq.phi, 3) + ') \\times ' + kn(dq.We, 0) + '^{-0{,}6}' + (dq.fNp !== 1 ? ' \\times ' + kn(dq.fNp, 3) : '') + ' \\times ' + kn(g.D, 4) + ' \\\\ = ' + kn(dq.d32 * 1e6, 1) + '\\ \\mathrm{\\mu m}' : '\\text{sin gotas}',
+            num: dq ? 'd_{32} = 0{,}053 \\times (1 + 3 \\times ' + kn(dq.phi, 3) + ') \\\\ \\times ' + kn(dq.We, 0) + '^{-0{,}6}' + (dq.fNp !== 1 ? ' \\\\ \\times ' + kn(dq.fNp, 3) : '') + ' \\times ' + kn(g.D, 4) + ' \\\\ = ' + kn(dq.d32 * 1e6, 1) + '\\ \\mathrm{\\mu m}' : '\\text{sin gotas}',
             libro: [C14 + '#exm-agi-gotas', 'Libro, ejemplo 14.5'] },
           { titulo: 'Otras dos correlaciones',
             texto: 'McCabe usa las constantes 0,058 y 5,4; Gnanasundaram y colaboradores corrigen la fracción dispersa con una exponencial y cambian de forma en We = 10 000. Una predicción absoluta del tamaño de las gotas casi nunca es posible: con datos del sistema real, las correlaciones sirven para los cambios relativos.',
@@ -2513,7 +2523,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       instruccion: 'Lleve el caudal de gas a 1 vvm y mire el número de la derecha.',
       cumple: function (st) { return st.gas && Math.abs(st.vvm - 1) < 0.005; },
       correcta: function (rn, rb) { if (!rn.gas || !rb.gas) return 1; var q = rn.gas.kLa / rb.gas.kLa; return q > 1.95 ? 0 : (q > 1.02 ? 1 : 2); },
-      explica: function (rn, rb) { if (!rn.gas || !rb.gas) return 'Con el ancla o la cinta el explorador no calcula el gas.'; return 'Sube a ' + un(rn.gas.kLa * 3600, 0, 'h⁻¹') + ', ' + num(rn.gas.kLa / rb.gas.kLa, 2) + ' veces: el kLa crece con la raíz de la velocidad superficial del gas' + (rn.gas.ratio ? ', y con la Rushton la potencia con gas baja del ' + pct(rb.gas.ratio) + ' al ' + pct(rn.gas.ratio) + ', así que crece todavía menos' : '') + '.'; }
+      explica: function (rn, rb) { if (!rn.gas || !rb.gas) return 'Con el ancla o la cinta el explorador no calcula el gas.'; return 'Sube a ' + un(rn.gas.kLa * 3600, 0, 'h⁻¹') + ', ' + num(rn.gas.kLa / rb.gas.kLa, 2) + ' veces: el kLa crece con la raíz de la velocidad superficial del gas' + (rn.gas.ratio ? ', y con la Rushton la potencia con gas baja al ' + pct(rn.gas.ratio) + ', desde ' + pct(rb.gas.ratio) + ', así que crece todavía menos' : '') + '.'; }
     },
     figuras: [MAPA_FIG, FRONTERAS_FIG],
     calculo: function (r) {
@@ -2540,7 +2550,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'El kLa',
             texto: 'El kLa de van\'t Riet usa los extremos de los exponentes publicados: C = 0,026, α = 0,4 y β = 0,5 en agua, y C = 0,002, α = 0,7 y β = 0,2 con electrolitos. Vale hasta unos 2,6 m³ y entre 500 y 10 000 W/m³.',
             ec: '\\text{agua: } k_La = 0{,}026\\,(P_g/V)^{0{,}4}\\,v_{sg}^{0{,}5} \\qquad \\text{con electrolitos: } k_La = 0{,}002\\,(P_g/V)^{0{,}7}\\,v_{sg}^{0{,}2}',
-            num: gq ? 'k_La = ' + (r.s.coal ? '0{,}026 \\times ' + kn(gq.PgV, 0) + '^{0{,}4} \\times ' + kn(gq.vs, 4) + '^{0{,}5}' : '0{,}002 \\times ' + kn(gq.PgV, 0) + '^{0{,}7} \\times ' + kn(gq.vs, 4) + '^{0{,}2}') + ' = ' + kn(gq.kLa, 4) + '\\ \\mathrm{s^{-1}} = ' + kn(gq.kLa * 3600, 0) + '\\ \\mathrm{h^{-1}}' : '\\text{sin gas}',
+            num: gq ? 'k_La = ' + (r.s.coal ? '0{,}026 \\times ' + kn(gq.PgV, 0) + '^{0{,}4} \\times ' + kn(gq.vs, 4) + '^{0{,}5}' : '0{,}002 \\times ' + kn(gq.PgV, 0) + '^{0{,}7} \\times ' + kn(gq.vs, 4) + '^{0{,}2}') + ' \\\\ = ' + kn(gq.kLa, 4) + '\\ \\mathrm{s^{-1}} = ' + kn(gq.kLa * 3600, 0) + '\\ \\mathrm{h^{-1}}' : '\\text{sin gas}',
             res: gq && gq.PgV < 500 ? 'Con ' + un(gq.PgV, 0, 'W/m³') + ' el tanque queda por debajo de los 500 W/m³ desde los que vale la correlación: es un orden de magnitud.' : '',
             libro: [C14 + '#eq-agi-kla', 'Libro, ecuación 14.15'] },
           { titulo: 'El impulsor con gas',
@@ -2665,7 +2675,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           }).join('') + '</tr>';
         }).join('') + '</table>';
       h += '<p class="ag-nota">Cada casilla es el factor de la otra escala sobre la actual, con R = ' + num(Rf, Rf < 1 ? 3 : 2) + ' y su exponente de R debajo. Salen de la misma geometría con Nₚ constante (turbulento): P = Nₚ·ρ·N³·D⁵, V ∝ D³, par = P/(2πN), Q = N_Q·N·D³ y N·t₉₅ constante (Grenville)' + (hasJs ? ', y Nⱼₛ ∝ D^−0,85 (Zwietering)' : '') + (hasJd ? ', y la velocidad de Joosten ∝ D^−1/2, con D/Dₜ y Δρ fijos' : '') + '. Subrayado, lo que cada criterio conserva; toque una fila para escogerlo. Ninguna fila deja todo igual: escalar es escoger qué se sacrifica.' +
-        (r.Re < 1e4 ? ' <b>El caso no está en turbulento</b> (Re = ' + fRe(r.Re) + '): Nₚ cambia con el Reynolds y estas leyes son aproximadas; la tabla de los siete criterios usa el Nₚ de cada escala.' : '') + '</p>';
+        (r.Re < 1e4 ? ' El caso no está en turbulento (Re = ' + fRe(r.Re) + '): Nₚ cambia con el Reynolds y estas leyes son aproximadas; la tabla de los siete criterios usa el Nₚ de cada escala.' : '') + '</p>';
       this.d.innerHTML = h;
     }
   };
@@ -2845,7 +2855,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       explica: function (rn, rb) {
         if (!rn.heat.t || !rb.heat.t) return 'Sin la película del lote no hay coeficiente global.';
         var vid = rb.heat.res.filter(function (q) { return /vidrio/.test(q[0]); })[0];
-        return 'Con inoxidable tarda ' + fTm(rn.heat.t) + ', el ' + pct(rn.heat.t / rb.heat.t) + (vid ? ': el vidrio, con 1,16 W/(m·K), ponía el ' + pct(vid[1] * rb.heat.U) + ' de la resistencia' : '') + ', y U sube de ' + un(rb.heat.U, 0, 'W/(m²·K)') + ' a ' + un(rn.heat.U, 0, 'W/(m²·K)') + '. El vidrio se usa porque el ácido clorhídrico caliente pica el inoxidable.';
+        return 'Con inoxidable tarda ' + fTm(rn.heat.t) + ', el ' + pct(rn.heat.t / rb.heat.t) + (vid ? ': el vidrio, con 1,16 W/(m·K), ponía el ' + pct(vid[1] * rb.heat.U) + ' de la resistencia' : '') + ', y U sube a ' + un(rn.heat.U, 0, 'W/(m²·K)') + ', desde ' + un(rb.heat.U, 0, 'W/(m²·K)') + '. El vidrio se usa porque el ácido clorhídrico caliente pica el inoxidable.';
       }
     },
     figuras: [CALOR_FIG, RES_FIG],
@@ -2862,17 +2872,17 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'Las cinco resistencias',
             texto: 'La película del vapor, su ensuciamiento, la pared, el ensuciamiento del lado del lote y la película del lote. La agitación solo cambia la última. Los ensuciamientos, 1 × 10⁻⁴ m²·K/W del lado del vapor y 2 × 10⁻⁴ del lado del lote, y los espesores de la pared son ilustrativos, como en el libro.',
             ec: '\\frac{1}{U} = \\frac{1}{h_s} + R_{f,s} + \\sum \\frac{\\delta}{k} + R_{f,p} + \\frac{1}{h_p}',
-            num: '\\frac{1}{U} = (' + hq.res.map(function (q) { return kn(q[1] * 1e4, 2); }).join(' + ') + ') \\times 10^{-4} = ' + kn(Rt * 1e4, 2) + ' \\times 10^{-4} \\\\ U = ' + kn(hq.U, 0) + '\\ \\mathrm{W/(m^2\\cdot K)}',
+            num: (function () { var t = hq.res.map(function (q) { return kn(q[1] * 1e4, 2); }), m = Math.ceil(t.length / 2); return '\\frac{1}{U} = (' + t.slice(0, m).join(' + ') + ' \\\\ + ' + t.slice(m).join(' + ') + ') \\times 10^{-4} \\\\ = ' + kn(Rt * 1e4, 2) + ' \\times 10^{-4}'; })() + ' \\\\ U = ' + kn(hq.U, 0) + '\\ \\mathrm{W/(m^2\\cdot K)}',
             libro: [C15 + '#eq-mez-U', 'Libro, ecuación 15.7'] },
           { titulo: 'La película del lote',
             texto: 'La película del lado del lote sale de una correlación de Nusselt con el Reynolds del impulsor, con las propiedades a media carrera. Kₕ vale 0,45 para la turbina de palas inclinadas, con la corrección geométrica G_c = (Dₜ/H)^0,15·(L_b/L_b,s)^0,2; 0,32 para el ancla (Harry y Uhl, Re > 100) y 0,76 para la turbina de disco. La viscosidad en la pared sale de la temperatura de su cara, que se halla por tanteo.' + (r.fl.pl ? ' Con la papilla la razón de viscosidades se toma como 1.' : ''),
             ec: '\\frac{h_p D_t}{k} = K_h\\,\\mathrm{Re}^{2/3}\\mathrm{Pr}^{1/3}\\left(\\frac{\\mu}{\\mu_w}\\right)^{0{,}14} G_c',
-            num: 'T_m = ' + kn(hq.Tm, 1) + '\\ ^\\circ\\mathrm{C} \\quad \\mathrm{Re} = ' + kRe(hq.Re) + ' \\quad \\mathrm{Pr} = ' + kn(hq.Pr, hq.Pr < 10 ? 3 : 0) + ' \\quad T_{\\text{cara}} = ' + kn(hq.Tface, 1) + '\\ ^\\circ\\mathrm{C} \\\\ h_p = \\frac{' + kn(hq.k, 4) + '}{' + kn(g.T, 3) + '} \\times ' + kn(hq.Kh, 2) + ' \\times (' + kRe(hq.Re) + ')^{2/3} \\times ' + kn(hq.Pr, 3) + '^{1/3} \\times \\left(\\frac{\\mu}{\\mu_w}\\right)^{0{,}14} \\times ' + kn(hq.Gc, 3) + ' \\\\ = ' + kn(hq.hp, 0) + '\\ \\mathrm{W/(m^2\\cdot K)}',
+            num: 'T_m = ' + kn(hq.Tm, 1) + '\\ ^\\circ\\mathrm{C} \\qquad \\mathrm{Re} = ' + kRe(hq.Re) + ' \\qquad \\mathrm{Pr} = ' + kn(hq.Pr, hq.Pr < 10 ? 3 : 0) + ' \\qquad T_{\\text{cara}} = ' + kn(hq.Tface, 1) + '\\ ^\\circ\\mathrm{C} \\\\ h_p = \\frac{' + kn(hq.k, 4) + '}{' + kn(g.T, 3) + '} \\times ' + kn(hq.Kh, 2) + ' \\times (' + kRe(hq.Re) + ')^{2/3} \\\\ \\times ' + kn(hq.Pr, 3) + '^{1/3} \\times \\left(\\frac{\\mu}{\\mu_w}\\right)^{0{,}14} \\times ' + kn(hq.Gc, 3) + ' \\\\ = ' + kn(hq.hp, 0) + '\\ \\mathrm{W/(m^2\\cdot K)}',
             libro: [C15 + '#eq-mez-nu', 'Libro, ecuación 15.8'] },
           { titulo: 'La película del vapor',
             texto: 'El condensado baja en flujo laminar por la pared recta mojada, y su coeficiente sale de Nusselt, con las propiedades del condensado a Tₛ − 3ΔTₒ/4. La caída en el condensado sale del mismo tanteo.',
             ec: 'h_s = 0{,}943\\left(\\frac{k_f^3\\,\\rho_f^2\\,g\\,\\hat H_{fg}}{\\Delta T_o\\,L_w\\,\\mu_f}\\right)^{1/4}',
-            num: 'T_s = ' + kn(s.Tw, 1) + '\\ ^\\circ\\mathrm{C} \\quad \\hat H_{fg} = ' + kn(hq.hfg / 1000, 1) + '\\ \\mathrm{kJ/kg} \\quad \\Delta T_o = ' + kn(hq.dTo, 2) + '\\ \\mathrm{K} \\quad L_w = ' + kn(hq.Lw, 3) + '\\ \\mathrm{m} \\\\ h_s = ' + kn(hq.hs, 0) + '\\ \\mathrm{W/(m^2\\cdot K)}',
+            num: 'T_s = ' + kn(s.Tw, 1) + '\\ ^\\circ\\mathrm{C} \\qquad \\hat H_{fg} = ' + kn(hq.hfg / 1000, 1) + '\\ \\mathrm{kJ/kg} \\\\ \\Delta T_o = ' + kn(hq.dTo, 2) + '\\ \\mathrm{K} \\qquad L_w = ' + kn(hq.Lw, 3) + '\\ \\mathrm{m} \\\\ h_s = ' + kn(hq.hs, 0) + '\\ \\mathrm{W/(m^2\\cdot K)}',
             fuente: 'El agua y el vapor salen de las formulaciones IAPWS, como en el libro.', libro: [C15 + '#eq-mez-nusselt', 'Libro, ecuación 15.10'] },
           { titulo: 'El tiempo del lote',
             texto: 'Con el lote parejo, el vapor a temperatura constante y U a media carrera, la temperatura del lote se acerca a la del vapor como una exponencial. Despejada, da el tiempo hasta el objetivo; con el tiempo deseado, el área que haría falta.',
@@ -2919,7 +2929,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
     poner: function (r) {
       var orden = { c: 0, w: 1, ok: 2 }, ws = r.warn.slice().sort(function (a, b) { return orden[a.sev] - orden[b.sev]; });
       this.d.innerHTML = '<ul class="ag-diag">' + ws.map(function (w) {
-        return '<li class="' + (w.sev === 'c' ? 'c' : (w.sev === 'ok' ? 'ok' : '')) + '">' + XL.ico(w.sev === 'ok' ? 'ok' : (w.sev === 'c' ? 'alerta' : 'info')) + '<div><b>' + (w.sev === 'c' ? 'Problema' : (w.sev === 'ok' ? 'Bien' : 'Advertencia')) + '</b>' + esc(notaTxt(w.t)) + '</div></li>';
+        return '<li class="' + (w.sev === 'c' ? 'c' : (w.sev === 'ok' ? 'ok' : '')) + '">' + XL.ico(w.sev === 'ok' ? 'ok' : (w.sev === 'c' ? 'alerta' : 'info')) + '<div><span class="e">' + (w.sev === 'c' ? 'Problema' : (w.sev === 'ok' ? 'Bien' : 'Advertencia')) + '</span>' + esc(notaTxt(w.t)) + '</div></li>';
       }).join('') + '</ul>';
     }
   };
@@ -2950,7 +2960,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'El motor',
             texto: 'De todos los números de la hoja, el que se compra es el motor: la mayor potencia que puede pedir el impulsor, dividida por lo que el motor da en la altitud y por el tope, y redondeada al tamaño normalizado que sigue.',
             ec: 'P_{\\text{motor}} \\ge \\frac{P_{\\max}}{f_{\\text{alt}}\\,f_{\\text{tope}}}',
-            num: 'P_{\\text{motor}} \\ge \\frac{' + kW(r.Pmot) + '}{' + kn(r.s.alt, 2) + ' \\times ' + kn(r.s.tope, 2) + '} = ' + kW(need) + ' \\;\\Rightarrow\\; ' + (r.motor ? kn(r.motor, r.motor < 1 ? 2 : (r.motor < 10 ? 1 : 0)) + '\\ \\mathrm{kW}' : '\\text{más de 315 kW}'),
+            num: 'P_{\\text{motor}} \\ge \\frac{' + kW(r.Pmot) + '}{' + kn(r.s.alt, 2) + ' \\times ' + kn(r.s.tope, 2) + '} = ' + kW(need) + ' \\qquad \\Rightarrow\\; ' + (r.motor ? kn(r.motor, r.motor < 1 ? 2 : (r.motor < 10 ? 1 : 0)) + '\\ \\mathrm{kW}' : '\\text{más de 315 kW}'),
             libro: [C14 + '#sec-agi-potencia', 'Libro, sección 14.3, El motor'] },
           { titulo: 'La hoja de datos',
             texto: 'Una solicitud de cotización dice los líquidos, los sólidos y los gases, sus cantidades y cuál importa más, si el proceso es por lotes o continuo, el tamaño y la densidad de las partículas y lo que se busca con la agitación. El proveedor completa el agitador. La hoja de esta escena junta los números del sistema en pantalla, que salen de las escenas anteriores.',
