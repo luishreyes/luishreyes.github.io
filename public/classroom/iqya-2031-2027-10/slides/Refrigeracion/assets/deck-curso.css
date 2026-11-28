@@ -1,0 +1,97 @@
+/* ===================================================================
+   POU 2027-10 · Capa del curso para las PRESENTACIONES (solo pantalla)
+
+   Cada deck trae su plantilla en un <style> propio, con tarjetas de
+   esquina redonda, sombras al pasar el cursor y diapositivas oscuras en
+   negro. Esta hoja se carga DESPUÉS de ese bloque y las alinea con el
+   landing del curso: esquinas cuadradas, nada en reposo con sombra,
+   oscuras en azul noche con el amarillo como acento, y la ceja con la
+   barra amarilla gruesa.
+
+   En el celular (768 px o menos) el motor apila las diapositivas. El
+   motor ya no las pinta como tarjetas (deck-stage.js), y aquí se suben
+   los tamaños que quedaban por debajo del piso de 13 px y se deja
+   deslizar de lado lo que no cabe a lo ancho (.desliza).
+
+   El PDF documento no pasa por aquí: lo arma build-deck-doc.mjs con
+   medio de impresión y su propia hoja.
+   Fuente maestra: 202710/Plantillas/assets/deck-curso.css. Cada deck
+   lleva su copia en assets/, como deloitte.css.
+   =================================================================== */
+
+@media screen {
+
+/* Una sola esquina, y es cuadrada. Nada en reposo lleva sombra. */
+deck-stage > section, deck-stage > section * { border-radius: 0 !important; }
+deck-stage > section *, deck-stage > section *:hover { box-shadow: none !important; } /* taste-skill-ignore: quita sombras */
+.card:hover, .doccard:hover { transform: none; }
+
+/* La ceja: barra amarilla gruesa. Es marca, no trazo. */
+/* La ceja de los decks se conserva: es la marca de sección en clase. */
+.kicker::before, .cover-bar { /* taste-skill-ignore: ceja de deck */ background: var(--amarillo) !important; }
+.kicker::before { height: 6px; }
+
+/* Oscuras en azul noche. Ahí el acento es el amarillo: la oliva no se lee. */
+.s--dark, .fullbleed { background: var(--navy) !important; }
+.s--dark .kicker, .divider .part, /* taste-skill-ignore: ceja de deck */ .divider .dctx b { color: var(--amarillo) !important; }
+.s--dark .stat-cell .num { color: var(--amarillo) !important; }
+.s--dark .stat-cell.teal .num { color: #fff !important; }
+.s--dark .stat-cell .lbl { color: #C9D1D9; }
+.s--dark li::marker { color: var(--amarillo); }
+
+/* La etiqueta «A trabajar» del cierre: campo amarillo con tinta azul noche. */
+.close .next .pill { background: var(--amarillo) !important; color: var(--navy) !important; border-radius: 0 !important; }
+
+/* Lo que no cabe a lo ancho en el celular se desliza de lado. */
+.desliza { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+@media (max-width: 768px) {
+  .s { padding: 40px 20px 44px !important; }
+
+  /* Las rejillas comunes de la plantilla pasan a una columna. Cada deck
+     arregla aparte sus componentes propios, en su bloque de celular. */
+  .cards, .cards.two, .cards.four, .stat-grid, .collist, .steps, .steps.four, .agenda-list,
+  .split, .split--wideR, .split--wideL, .split--narrow { grid-template-columns: 1fr !important; }
+  .split { flex-direction: column !important; gap: 18px !important; }
+  .cover-meta { flex-direction: column !important; gap: 10px !important; }
+
+  /* Los tamaños del lienzo de 1920 px no sirven en un celular de 375. */
+  .cover h1, h1.s-title { font-size: 32px !important; line-height: 1.08 !important; }
+  .s h2, h2.s-head, .divider h2 { font-size: 26px !important; line-height: 1.15 !important; }
+  .kicker { /* taste-skill-ignore: ceja de deck */ font-size: 13px !important; letter-spacing: .08em !important; }
+  .s p, .s-lead, .lead-top, .callout p { font-size: 16px !important; line-height: 1.5 !important; }
+  .s ul, .s ol { font-size: 16px !important; }
+  .s h3, .card h3 { font-size: 19px !important; line-height: 1.25 !important; }
+  .card p, .cover-meta div { font-size: 15px !important; }
+  .cover-meta b { font-size: 16px !important; }
+  /* La portada de todos los decks, igual en el celular: la de la presentación del curso. */
+  .cover-org { font-size: 16px !important; }
+  .cover .course { margin-bottom: 12px !important; }
+  .cover .session { font-size: 15px !important; margin-top: 14px !important; }
+  .cover-bar, .cover .wm { display: none !important; }
+  /* El cierre «A trabajar»: una etiqueta cuadrada, no un círculo de 11 px. */
+  .close .next { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+  .s-foot { gap: 12px !important; }
+  .divider .part, .timeline .tl .dot, .timeline .tl .wk { font-size: 13px !important; }
+  .dctx b { white-space: nowrap; }
+  .s-foot .num { flex-shrink: 0; }
+  .close .next .pill { font-size: 13px !important; width: auto !important; min-width: 0 !important; height: auto !important;
+                       padding: 6px 12px !important; display: inline-block !important; }
+  .card, .callout { padding: 18px 16px !important; }
+  .stat-cell .num { font-size: 64px !important; }
+  .stat-cell .lbl { font-size: 15px !important; }
+  .s-foot, .foot-note, .figcap, .img-panel .figcap, .figbox .figcap, .var-list,
+  .databar .chip, .divider .sub, .dctx span, .cover .course, .cover-org span,
+  .agenda-list .t span, .collist .it span, .card ul, .card .card-n { font-size: 13px !important; }
+  /* Tablas: celdas que parten línea, porque una de 1.400 px no se lee deslizando. */
+  table { font-size: 15px !important; }
+  th, td { font-size: 15px !important; line-height: 1.35 !important; padding: 10px 12px !important;
+           white-space: normal !important; min-width: 108px; }
+  th { font-size: 13px !important; }
+  .desliza > svg { min-width: 760px; }
+  .desliza::before { content: "Deslice de lado para verlo completo"; display: block; position: sticky; left: 0;
+                     font-size: 13px; color: var(--gris-2); margin: 0 0 6px; }
+  .s--dark .desliza::before { color: #C9D1D9; }
+}
+
+}

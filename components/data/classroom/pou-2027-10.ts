@@ -34,7 +34,7 @@ const PRESENTACIONES_PROPIAS = new Set([
   'diagramas-ingenieria', 'pid-instrumentacion',
   'propiedades-solidos-particulados', 'reduccion-de-tamano',
   'arrastre-de-vapor', 'bombas', 'valvulas-control-vacio',
-  'agitacion-y-mezclado', 'condensacion-y-decantacion',
+  'agitacion-y-mezclado', 'condensacion-y-decantacion', 'refrigeracion',
 ]);
 const LECTURAS_PROPIAS = new Set([
   'lectura-01-operaciones-unitarias',
@@ -162,6 +162,11 @@ const SEMANA_2027: Record<string, number> = {
   'explorador-graficos': 16,
   'lectura-12-destilacion-por-lotes': 13, 'lectura-14-comunicacion-visual': 16,
 };
+// La sesión de 2027-10 de las presentaciones heredadas, para que el Material las ordene
+// con las nuevas (la de filtración, el jueves 8 de abril, es la sesión 20).
+const SESION_2027: Record<string, number> = {
+  filtracion: 20, 'destilacion-diferencial': 25, 'diseno-de-platos': 29, 'eficiencias-en-destilacion': 29,
+};
 
 // Descripciones que en 2026-20 hablaban de la planta de pectina.
 const DESCRIPCIONES: Record<string, string> = {
@@ -185,6 +190,8 @@ const DESCRIPCIONES: Record<string, string> = {
     'Cómo se arma un tanque agitado y cómo se escala, con el reactor de extracción de los capítulos 14 y 15 del libro y sus figuras: las proporciones, los bafles y la altura que mueve cada impulsor, los siete impulsores en corte y en isométrico, el número de potencia, el motor, el caudal que bombea un impulsor y la escala de Kolmogorov, la suspensión de lo que se hunde y el arrastre de lo que flota, el tamaño de las gotas, el tiempo de mezcla y las reglas de escalado, con diez animaciones de los dos capítulos; cierra con el tanque de lavado de la Bitácora 2 y el Laboratorio 2.',
   'condensacion-y-decantacion':
     'Cómo condensa el vapor que sale de los extractores y cómo se separa el aceite del agua, con el tren de condensación de los capítulos 23 y 17 del libro y sus figuras: la película de condensado, los gases incondensables y el venteo, las disposiciones de un condensador, sus corazas, sus deflectores y el subenfriamiento, la curva de condensación del vapor con aceite, el rocío y la meseta, el agua de torre, E-201 por dentro y por zonas; después el florentino, con la regla del área, la gota de diseño, sus comprobaciones, la pierna del agua, el venteo y la seguridad, las gotas que no se juntan, los coalescedores, el hidrolato y el florentino en corte. Con siete animaciones de los dos capítulos.',
+  'refrigeracion':
+    'Cómo un refrigerante que hierve a baja presión enfría el aceite de la winterización, con el enfriador empacado de propano del capítulo 26 del libro y sus figuras: el frío en una planta de alimentos y la planta de frío de la juguera, los cuatro equipos del ciclo de compresión de vapor, el efecto refrigerante, la potencia y el COP, el ciclo en el diagrama presión-entalpía, la carga del lote y el ciclo del enfriador, el COP contra las dos temperaturas y el ciclo real; después los refrigerantes, con su clase de seguridad, su límite de concentración en Bogotá, su PCG y las reglas de cada país, el condensador en Bogotá con el evaporativo E-401 en isométrico, y los refrigerantes secundarios: el agua cerca de 0 °C, el propilenglicol y la diferencia de cada equipo. Con dos animaciones del capítulo; cierra con lo que pide la Bitácora 3.',
   'trabajo-en-equipo':
     'La sesión del quiz de práctica: qué distingue a un equipo que funciona, cuánto pesa el equipo en la nota, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase y sube a Bloque Neón.',
 };
@@ -533,7 +540,8 @@ export const pou202710Course: Course = {
         ? REEMPLAZOS[p.id]
         : PRESENTACIONES_PROPIAS.has(p.id)
         ? { ...p, description: DESCRIPCIONES[p.id] ?? p.description }
-        : { ...p, carpeta: 'iqya-2031-2026-20', week: SEMANA_2027[p.id] ?? p.week },
+        : { ...p, carpeta: 'iqya-2031-2026-20', week: SEMANA_2027[p.id] ?? p.week,
+            sessionNumber: SESION_2027[p.id] ?? p.sessionNumber },
     )
     // La clase de válvulas, control y vacío no tenía presentación en 2026-20.
     .concat([
@@ -553,6 +561,15 @@ export const pou202710Course: Course = {
         description: DESCRIPCIONES['condensacion-y-decantacion'],
         sessionNumber: 18,
         file: 'Condensacion_y_Decantacion/Presentacion_Condensacion_y_Decantacion.html',
+      },
+      // La clase de refrigeración no tenía presentación en 2026-20.
+      {
+        id: 'refrigeracion',
+        week: 10,
+        title: 'Refrigeración',
+        description: DESCRIPCIONES['refrigeracion'],
+        sessionNumber: 19,
+        file: 'Refrigeracion/Presentacion_Refrigeracion.html',
       },
     ]),
   // Los simuladores se sirven desde 2026-20, salvo los que ya tienen versión
