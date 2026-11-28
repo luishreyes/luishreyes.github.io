@@ -78,10 +78,13 @@
 .ag-diag li.c .e { color: var(--alerta); }
 
 @media (max-width: 1099.98px), (max-height: 599.98px) {
-  /* las nueve escenas, en una sola fila de botones que se acomoda */
+  /* las nueve escenas, en botones de a tres por fila, en la página y en la capa */
   .xl-riel { display: flex !important; flex-direction: row !important; flex-wrap: wrap; gap: 6px; }
   .xl-riel .xl-parte { display: contents !important; }
   .xl-riel .xl-sn { flex: 1 1 28% !important; width: auto !important; min-width: 0 !important; }
+  .xl-capa-riel { display: flex; flex-wrap: wrap; gap: 6px; }
+  .xl-capa-riel .xl-parte { display: contents !important; }
+  .xl-capa-riel .xl-sn { flex: 1 1 28% !important; width: auto !important; min-width: 0 !important; }
   .ag-barra button, .ag-menu > summary { min-width: 44px; min-height: 44px; }
 }
 @media (pointer: coarse) {
@@ -823,7 +826,8 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
   function fRe(Re) { return !(Re > 0) ? '0' : (Re < 1e4 ? num(Re, Re < 100 ? 1 : 0) : XL.hc(Re, 2)); }
   function kRe(Re) { return Re < 1e4 ? kn(Re, Re < 100 ? 1 : 0) : kc(Re, 2); }
   function fPV(x) { return x > 0 && x < 0.001 ? XL.hc(x, 2) : num(x, x < 1 ? 3 : (x < 10 ? 2 : (x < 100 ? 1 : 0))); }
-  function fKW(m) { return m ? un(m, m < 1 ? 2 : (m < 10 ? 1 : 0), 'kW') : 'más de 315' + NB + 'kW'; }
+  function iec(m) { return num(m, m < 1 ? 2 : (m % 1 ? 1 : 0)); }
+  function fKW(m) { return m ? iec(m) + NB + 'kW' : 'más de 315' + NB + 'kW'; }
   function um(x) { return un(x * 1e6, x * 1e6 < 10 ? 1 : 0, 'µm'); }
   function npTxt(x) { return num(x, x < 10 ? 2 : 1); }
   function pvClass(pv) { return pv < 0.1 ? 'agitación suave' : (pv < 0.4 ? 'agitación moderada' : (pv < 0.8 ? 'agitación vigorosa' : (pv <= 2 ? 'agitación intensa' : 'muy intensa: gas y emulsiones'))); }
@@ -1432,7 +1436,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
   Tanque.prototype.drawMotorLabel = function () {
     var c = this.ctx, R = this.R, lx = this.motorXY[0], my = this.motorXY[1];
     c.font = '600 13px ' + this.font; c.textAlign = 'left';
-    var t1 = 'motor ' + (R.motor ? num(R.motor, R.motor < 1 ? 2 : (R.motor < 10 ? 1 : 0)) + ' kW' : '> 315 kW'), t2 = rpm(R.s.rpm), tw = Math.max(c.measureText(t1).width, c.measureText(t2).width);
+    var t1 = 'motor ' + (R.motor ? iec(R.motor) + ' kW' : '> 315 kW'), t2 = rpm(R.s.rpm), tw = Math.max(c.measureText(t1).width, c.measureText(t2).width);
     c.fillStyle = this.col.paper; c.globalAlpha = 0.92; c.fillRect(lx - 3, my - 3, tw + 6, 34); c.globalAlpha = 1;
     c.fillStyle = this.col.ink; c.fillText(t1, lx, my + 11);
     c.fillStyle = this.col.muted; c.font = '400 13px ' + this.font; c.fillText(t2, lx, my + 27);
@@ -1670,7 +1674,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
         var f = t.eff; chips.push('<span>t = ' + fT(t.ts) + ' · ' + (!t.running ? 'en pausa' : (f < 0.98 ? 'cámara lenta × ' + num(f, f < 0.1 ? 3 : 2) : (f > 1.02 ? 'acelerado × ' + num(f, 1) : 'tiempo real'))) + '</span>');
         if (tr && tr.on) { var th = tr.theta(); chips.push('<span' + (th ? ' class="acento"' : '') + '>' + (th ? 't₉₅ simulado ' + fT(th) : 'mezclando… ' + fT(tr.t)) + '</span>'); }
         if (R.vx.on && R.vx.depth > 0.03 * R.geo.T) chips.push('<span' + (R.airEntr ? ' class="alerta"' : '') + '>' + (R.airEntr ? 'el vórtice arrastra aire' : 'vórtice de ' + un(100 * R.vx.depth, 0, 'cm')) + '</span>');
-        if (R.sol && (R.sol.Njs || R.sol.NJ)) { var quietos = t.sol.filter(function (p) { return p.rest; }).length; chips.push('<span' + (R.sol.ratio < 1 ? ' class="alerta"' : '') + '>' + num(100 * quietos / Math.max(1, t.sol.length), 0) + ' % ' + (R.sol.float ? 'arriba' : 'en el fondo') + '</span>'); }
+        if (R.sol && (R.sol.Njs || R.sol.NJ)) { var quietos = t.sol.filter(function (p) { return p.rest; }).length; chips.push('<span' + (R.sol.ratio < 1 ? ' class="alerta"' : '') + '>' + num(100 * quietos / Math.max(1, t.sol.length), 0) + ' % de sólidos ' + (R.sol.float ? 'arriba' : 'en el fondo') + '</span>'); }
         if (R.gas && R.gas.reg) chips.push('<span' + (R.gas.reg === 'inundado' ? ' class="alerta"' : '') + '>gas ' + R.gas.reg + '</span>');
         var html = chips.join('');
         this.hudEl.style.maxWidth = (L.sideW - 12) + 'px';
@@ -1834,7 +1838,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       // el punto en que trabaja
       el('line', { x1: a.X(r.Re), x2: a.X(r.Re), y1: a.Y(0.05), y2: a.Y(r.NpG), stroke: C.guia, 'stroke-width': 1, 'stroke-dasharray': '3 3' }, g);
       punto(g, a.X(r.Re), a.Y(r.NpG));
-      this.def = 'Su impulsor: Re = ' + fRe(r.Re) + ', Nₚ = ' + npTxt(r.NpG) + '. Pase el cursor para leer otros.';
+      this.def = 'Su impulsor: Re = ' + fRe(r.Re) + ' y Nₚ = ' + npTxt(r.NpG) + '.';
       this.lec.textContent = this.def;
     }
   };
@@ -1885,7 +1889,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       if (r.kC !== 1) filas.push({ t: 'Con la altura del impulsor, × ' + num(r.kC, 3), v: r.PwU * r.kC });
       if (r.Tfrio !== null) filas.push({ t: 'Con el lote a ' + un(r.Tfrio, 0, '°C') + ', al arrancar', v: r.Pmot });
       filas.push({ t: 'Lo que debe dar, ÷ (' + num(r.s.alt, 2) + ' × ' + num(r.s.tope, 2) + ')', v: need, fuerte: true });
-      filas.push({ t: 'Motor normalizado', v: r.motor ? r.motor * 1000 : null, motor: true });
+      filas.push({ t: 'Motor normalizado', v: r.motor ? r.motor * 1000 : null, motor: true, txt: fKW(r.motor) });
       var vmax = Math.max.apply(null, filas.map(function (f) { return f.v || 0; })) * 1.18, X0 = 20, X1 = 380, y = 34;
       tx(g, X0, 22, 'la mayor potencia que puede pedir el impulsor', 'f-t');
       filas.forEach(function (f) {
@@ -1893,12 +1897,12 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
         y += 8;
         var w = f.v ? (X1 - X0) * f.v / vmax : X1 - X0;
         el('rect', { x: X0, y: y, width: Math.max(2, w), height: 18, fill: f.motor ? (f.v ? C.amarillo : C.alerta) : (f.fuerte ? C.azul : C.metal), stroke: f.motor ? C.tinta : 'none', 'stroke-width': 1.2 }, g);
-        tx(g, f.v ? X0 + w + 6 : X0 + 6, y + 14, f.v ? fW(f.v) : 'más de 315 kW', 'f-v' + (f.motor && !f.v ? ' f-alerta' : '') + (f.fuerte && w > 300 ? '' : ''), 'start');
+        tx(g, f.v ? X0 + w + 6 : X0 + 6, y + 14, f.txt || (f.v ? fW(f.v) : 'más de 315 kW'), 'f-v' + (f.motor && !f.v ? ' f-alerta' : '') + (f.fuerte && w > 300 ? '' : ''), 'start');
         y += 22;
       });
       var i = M.IEC.indexOf(r.motor), prev = i > 0 ? M.IEC[i - 1] : null, tq = r.PwU / r.omega;
       y += 12;
-      parrafo(g, X0, y, partirTexto((prev ? 'El de ' + un(prev, prev < 1 ? 2 : (prev < 10 ? 1 : 0), 'kW') + ' se queda corto. ' : '') + 'El factor de servicio de la placa queda de reserva. Par en el eje: ' + un(tq, tq < 10 ? 2 : 0, 'N·m') + '.', 50), 'f-ts', 18);
+      parrafo(g, X0, y, partirTexto((prev ? 'El de ' + fKW(prev) + ' se queda corto. ' : '') + 'El factor de servicio de la placa queda de reserva. Par en el eje: ' + un(tq, tq < 10 ? 2 : 0, 'N·m') + '.', 50), 'f-ts', 18);
     }
   };
   var PV_FIG = {
@@ -1934,7 +1938,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       return [
         { etiqueta: 'Número de potencia', valor: npTxt(r.NpG), nota: 'Re ' + fRe(r.Re) + ', ' + (r.imp.close ? 'impulsor de pared' : (r.baff ? 'con bafles' : 'sin bafles')) + (r.gas && r.gas.ratio ? ', con gas' : '') },
         { etiqueta: 'Potencia al eje', valor: r.Pw < 1000 ? num(r.Pw, r.Pw < 10 ? 2 : (r.Pw < 100 ? 1 : 0)) : num(r.Pw / 1000, r.Pw < 1e4 ? 2 : 1), unidad: r.Pw < 1000 ? 'W' : 'kW', nota: un(r.PV / 1000, r.PV < 100 ? 3 : 2, 'kW/m³') + ', ' + pvClass(r.PV / 1000) },
-        { etiqueta: 'Motor', valor: r.motor ? num(r.motor, r.motor < 1 ? 2 : (r.motor < 10 ? 1 : 0)) : '> 315', unidad: 'kW', nota: 'debe dar ' + fW(need) + ' en la altitud', alerta: !r.motor }
+        { etiqueta: 'Motor', valor: r.motor ? iec(r.motor) : '> 315', unidad: 'kW', nota: 'debe dar ' + fW(need) + ' en la altitud', alerta: !r.motor }
       ];
     },
     veredicto: function (r) {
@@ -2028,7 +2032,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       ['P1', 'P2', 'P3'].forEach(function (n, i) { var x = 230 + i * 52; el('line', { x1: x, x2: x + 18, y1: 25, y2: 25, stroke: SONDA[i], 'stroke-width': 3 }, g); tx(g, x + 22, 30, n, 'f-ts'); });
       if (r.th95 && r.th95 < tmax) { el('line', { x1: a.X(r.th95), x2: a.X(r.th95), y1: 44, y2: 290, stroke: C.tinta, 'stroke-width': 1.2, 'stroke-dasharray': '5 4' }, g); tx(g, a.X(r.th95) + 5, 64, 'Grenville ' + fT(r.th95), 'f-ts f-halo'); }
       if (th) { el('line', { x1: a.X(th), x2: a.X(th), y1: 44, y2: 290, stroke: C.tinta, 'stroke-width': 2.2 }, g); tx(g, a.X(th) + 5, 84, 'simulado ' + fT(th), 'f-v f-halo'); }
-      if (!hist.length) tx(g, 219, 170, 'Inyecte el trazador para ver las sondas', 'f-t', 'middle');
+      if (!hist.length) tx(g, 219, 120, 'Inyecte el trazador para ver las sondas', 'f-t f-halo', 'middle');
       var nota;
       if (tr) {
         nota = 't = ' + fT(tr.t) + ' · CoV en todo el tanque ' + un(100 * tr.cov(), 1, '%') + (th ? ' · t₉₅ simulado ' + fT(th) + (r.th95 ? ' frente a ' + fT(r.th95) + ' de Grenville (' + (th >= r.th95 ? '+' : '−') + num(Math.abs(100 * (th / r.th95 - 1)), 0) + ' %)' : '') : '');
@@ -2059,7 +2063,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       for (var i = 0; i <= 60; i++) { var n = lo * Math.pow(hi / lo, i / 60), rr = conRpm(st, n); if (rr.th95) { ths.push([n, rr.th95]); tmax = Math.max(tmax, rr.th95); tmin = Math.min(tmin, rr.th95); } if (rr.t99) { tts.push([n, rr.t99]); tmax = Math.max(tmax, rr.t99); tmin = Math.min(tmin, rr.t99); } }
       var meas = MEAS.filter(function (m) { return m.key === measKey(st); });
       meas.forEach(function (m) { tmax = Math.max(tmax, m.th); tmin = Math.min(tmin, m.th); });
-      this.def = 'En turbulento t₉₅ ∝ 1/N: el número de vueltas para mezclar es constante. Pase el cursor para leer los tiempos.';
+      this.def = 'En turbulento t₉₅ ∝ 1/N: las vueltas para mezclar no cambian.';
       if (!(tmax > 0)) { this.a = null; tx(g, 200, 170, cap1(r.th95src) + ':', 'f-t', 'middle'); tx(g, 200, 194, 'mida t₉₅ con el trazador', 'f-t', 'middle'); this.lec.textContent = ''; return; }
       var a = this.a = ejes(g, { x0: 56, x1: 386, y0: 44, y1: 300, xlog: true, ylog: true, xmin: lo, xmax: hi, ymin: Math.pow(10, Math.floor(L10(tmin * 0.8))), ymax: Math.pow(10, Math.ceil(L10(tmax * 1.2))), ylab: 'tiempo de mezcla, s', xlab: 'velocidad del agitador, r/min' });
       var cg = el('g', { 'clip-path': a.clip }, g);
@@ -2068,9 +2072,9 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       meas.forEach(function (m) { el('rect', { x: a.X(m.rpm) - 5, y: a.Y(m.th) - 5, width: 10, height: 10, fill: C.tinta }, cg); });
       if (r.th95) { punto(g, a.X(n0), a.Y(r.th95), 6); tx(g, a.X(n0) + 10, a.Y(r.th95) - 9, fT(r.th95), 'f-v f-halo'); }
       // leyenda
-      el('line', { x1: 150, x2: 168, y1: 25, y2: 25, stroke: C.azul, 'stroke-width': 3 }, g); tx(g, 172, 30, 't₉₅', 'f-ts');
-      el('line', { x1: 206, x2: 224, y1: 25, y2: 25, stroke: C.tinta, 'stroke-width': 2, 'stroke-dasharray': '6 4' }, g); tx(g, 228, 30, 't₉₉', 'f-ts');
-      el('rect', { x: 266, y: 20, width: 10, height: 10, fill: C.tinta }, g); tx(g, 282, 30, 'sus mediciones', 'f-ts');
+      el('line', { x1: 20, x2: 38, y1: 364, y2: 364, stroke: C.azul, 'stroke-width': 3 }, g); tx(g, 44, 369, 't₉₅ de Grenville', 'f-ts');
+      el('line', { x1: 170, x2: 188, y1: 364, y2: 364, stroke: C.tinta, 'stroke-width': 2, 'stroke-dasharray': '6 4' }, g); tx(g, 194, 369, 't₉₉', 'f-ts');
+      el('rect', { x: 236, y: 359, width: 10, height: 10, fill: C.tinta }, g); tx(g, 252, 369, 'lo que midieron las sondas', 'f-ts');
       this.lec.textContent = this.def;
     }
   };
@@ -2351,7 +2355,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
         var p = q[0].reduce(function (b, x) { return Math.abs(L10(x[0] / xl)) < Math.abs(L10(b[0] / xl)) ? x : b; }); return { y: entre(a.Y(p[1]), 60, 296) - 6, t: q[1], cls: q[2] }; });
       separar(labs, 16, 60, 296).forEach(function (l) { tx(g, a.X(xl) + 2, l.y, l.t, l.cls + ' f-halo'); });
       punto(g, a.X(n0), a.Y(dq.d32 * 1e6), 6).setAttribute('fill', hip ? C.blanco : C.amarillo); tx(g, a.X(n0) + 10, a.Y(dq.d32 * 1e6) - 9, um(dq.d32), 'f-v f-halo');
-      parrafo(g, 20, 372, partirTexto((hip ? 'El sistema no tiene gotas: la gráfica muestra las que saldrían con φ = ' + num(r.s.phi, 3) + ' y σ = ' + un(r.s.sig, 1, 'mN/m') + '. ' : '') + 'Como el Weber va con N², la gota va con N^−1,2.' + (r.imp.id === 'rushton' ? '' : ' Con un impulsor que no es una Rushton las tres van multiplicadas por (5,75/Nₚ)^(2/5) = ' + num(dq.fNp, 2) + '.'), 60), 'f-ts', 18);
+      parrafo(g, 20, 370, partirTexto((hip ? 'Sin gotas en el sistema: así saldrían con φ = ' + num(r.s.phi, 3) + ' y σ = ' + un(r.s.sig, 1, 'mN/m') + '. ' : '') + 'La gota va con N^−1,2, porque el Weber va con N².' + (r.imp.id === 'rushton' ? '' : ' Con otro impulsor, × (5,75/Nₚ)^(2/5) = ' + num(dq.fNp, 2) + '.'), 62), 'f-ts', 18);
     }
   };
   var VALIDEZ_FIG = {
@@ -2628,7 +2632,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       crit.forEach(function (q) { var on = q.id === c.id; if (!on) el('circle', { cx: a.X(D2), cy: a.Y(q.rpm2), r: 3.4, fill: C.guia }, g); labs.push({ y: a.Y(q.rpm2), t: q.short + ' · ' + fRPM(q.rpm2), cls: on ? 'f-v f-azul' : 'f-ts' }); });
       punto(g, a.X(D2), a.Y(c.rpm2), 6.5);
       el('circle', { cx: a.X(D1), cy: a.Y(N1), r: 5.5, fill: C.tinta }, g);
-      tx(g, a.X(D1) + (up ? 8 : -8), a.Y(N1) - 12, 'escala actual · ' + fRPM(N1), 'f-v f-halo', up ? 'start' : 'end');
+      tx(g, a.X(D1) + (up ? 8 : -4), a.Y(N1) + 24, 'escala actual · ' + fRPM(N1), 'f-v f-halo', up ? 'start' : 'end');
       separar(labs, 15, 52, 296).forEach(function (l) { tx(g, a.X(D2) + (up ? 10 : -10), l.y + 5, l.t, l.cls + ' f-halo', up ? 'start' : 'end'); });
       tx(g, 426, 360, 'escala actual, D₁ = ' + fL(D1) + '; otra escala, D₂ = ' + fL(D2), 'f-ts', 'end');
       parrafo(g, 20, 392, ['Cada criterio es una recta de pendiente −x; la vertical', 'punteada es el impulsor de la otra escala.'], 'f-ts', 18);
@@ -2658,7 +2662,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
     }
   };
   var MATRIZ_FIG = {
-    etiqueta: 'Lo demás', titulo: 'Lo que le pasa a todo lo demás', tipo: 'html', vista: [400, 440],
+    etiqueta: 'Factores', titulo: 'Lo que le pasa a todo lo demás', tipo: 'html', vista: [400, 440],
     alt: 'Una tabla con el factor de la otra escala sobre la actual de cada magnitud con cada criterio, y su exponente de R; lo que cada criterio conserva va subrayado. Una fila se toca para escoger ese criterio.',
     montar: function (div, X) {
       var self = this; this.d = document.createElement('div'); this.d.className = 'ag-html'; div.appendChild(this.d);
@@ -2671,7 +2675,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
         sc.crit.map(function (q) {
           return '<tr data-crit="' + q.id + '"' + (q.id === c.id ? ' class="on"' : '') + '><td>' + q.short + '</td><td>' + expo(q.n) + '</td>' + cols.map(function (k) {
             var e = k.ex(q.n), f = Math.pow(Rf, e);
-            return Math.abs(e) < 1e-9 ? '<td class="k">igual<small>R⁰</small></td>' : '<td>' + scMul(f) + '<small>R^' + scExp(e) + '</small></td>';
+            return Math.abs(e) < 1e-9 ? '<td class="k">igual<small>R⁰</small></td>' : '<td>' + scMul(f) + '<small>R<sup>' + scExp(e) + '</sup></small></td>';
           }).join('') + '</tr>';
         }).join('') + '</table>';
       h += '<p class="ag-nota">Cada casilla es el factor de la otra escala sobre la actual, con R = ' + num(Rf, Rf < 1 ? 3 : 2) + ' y su exponente de R debajo. Salen de la misma geometría con Nₚ constante (turbulento): P = Nₚ·ρ·N³·D⁵, V ∝ D³, par = P/(2πN), Q = N_Q·N·D³ y N·t₉₅ constante (Grenville)' + (hasJs ? ', y Nⱼₛ ∝ D^−0,85 (Zwietering)' : '') + (hasJd ? ', y la velocidad de Joosten ∝ D^−1/2, con D/Dₜ y Δρ fijos' : '') + '. Subrayado, lo que cada criterio conserva; toque una fila para escogerlo. Ninguna fila deja todo igual: escalar es escoger qué se sacrifica.' +
@@ -2680,7 +2684,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
     }
   };
   var CRIT_FIG = {
-    etiqueta: 'Los siete', titulo: 'Los siete criterios con los números del caso', tipo: 'html', vista: [400, 440],
+    etiqueta: 'Tabla', titulo: 'Los siete criterios con los números del caso', tipo: 'html', vista: [400, 440],
     alt: 'Una tabla con la escala actual y la otra escala con cada criterio: la velocidad, la potencia, la potencia por volumen, la punta, el Reynolds, el número de potencia, el tiempo de mezcla y, si hay sólidos, el margen sobre la suspensión completa.',
     montar: function (div, X) {
       this.d = document.createElement('div'); this.d.className = 'ag-html'; div.appendChild(this.d);
@@ -2693,7 +2697,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
         sc.crit.map(function (q) {
           return '<tr data-crit="' + q.id + '"' + (q.id === c.id ? ' class="on"' : '') + '><td>' + q.name + '<small>' + q.use + '</small></td><td>' + fRPM(q.rpm2) + '</td><td>' + fW(q.P2) + '</td><td>' + fPV(q.PV2 / 1000) + '</td><td' + (tm && q.tip2 > tm ? ' class="al"' : '') + '>' + num(q.tip2, 2) + '</td><td>' + fRe(q.Re2) + '</td><td>' + npTxt(q.Np2) + '</td><td>' + fT(q.th2) + '</td>' + (hasJs ? '<td' + (q.js2 < 1 ? ' class="al"' : '') + '>' + num(q.js2, 2) + '</td>' : '') + '</tr>';
         }).join('') + '</table>' +
-        '<p class="ag-nota">Aquí la potencia sale del número de potencia de la otra escala, con su Reynolds (y su Froude sin bafles), y t₉₅ de Grenville con el H/Dₜ del caso: por eso puede diferir un poco de las leyes de la tabla «Lo demás», que suponen Nₚ constante. En rojo, la punta que pasa de lo que da un fabricante y los criterios con los que los sólidos se asientan.</p>';
+        '<p class="ag-nota">Aquí la potencia sale del número de potencia de la otra escala, con su Reynolds (y su Froude sin bafles), y t₉₅ de Grenville con el H/Dₜ del caso: por eso puede diferir un poco de los factores de la vista «Factores», que suponen Nₚ constante. En rojo, la punta que pasa de lo que da un fabricante y los criterios con los que los sólidos se asientan.</p>';
       this.d.innerHTML = h;
     }
   };
@@ -2705,7 +2709,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
     kpis: function (r) {
       var c = critDe(r), mot = M.motorFor(c.P2 * r.kC / 1000, r.s.alt, r.s.tope);
       return [
-        { etiqueta: 'Velocidad de la otra escala', valor: fRPM(c.rpm2), unidad: 'r/min', nota: scMul(c.f) + '; hoy, ' + rpm(r.N * 60) },
+        { etiqueta: 'Velocidad, N₂', valor: fRPM(c.rpm2), unidad: 'r/min', nota: scMul(c.f) + '; hoy, ' + rpm(r.N * 60) },
         { etiqueta: 'Potencia, P₂', valor: fW(c.P2).split(NB)[0], unidad: fW(c.P2).split(NB)[1], nota: 'motor ' + fKW(mot), alerta: !mot },
         { etiqueta: 'P₂/V₂', valor: fPV(c.PV2 / 1000), unidad: 'kW/m³', nota: scMul(c.PV2 / r.PV) + '; ' + pvClass(c.PV2 / 1000) }
       ];
@@ -2834,12 +2838,12 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       return [
         { etiqueta: 'Coeficiente global, U', valor: hq.U ? num(hq.U, 0) : 'sin dato', unidad: hq.U ? 'W/(m²·K)' : '', nota: hq.U ? 'película del lote, ' + un(hq.hp, 0, 'W/(m²·K)') : 'sin Kₕ para este impulsor' },
         { etiqueta: 'Tiempo hasta el objetivo', valor: !calienta ? 'no calienta' : (hq.t ? num(hq.t / 60, hq.t < 600 ? 1 : 0) : 'no llega'), unidad: calienta && hq.t ? 'min' : '', nota: calienta ? 'deseado, ' + un(s.tH, 0, 'min') : 'el objetivo no pasa de la inicial', alerta: calienta && (!hq.t || hq.t > s.tH * 60) && !!hq.U },
-        { etiqueta: 'Área para lograrlo a tiempo', valor: hq.Areq ? num(hq.Areq, hq.Areq < 1 ? 3 : (hq.Areq < 10 ? 2 : 1)) : 'sin dato', unidad: hq.Areq ? 'm²' : '', nota: 'la camisa tiene ' + un(hq.A, hq.A < 1 ? 3 : (hq.A < 10 ? 2 : 1), 'm²'), alerta: !!hq.Areq && hq.Areq > hq.A }
+        { etiqueta: 'Área necesaria', valor: hq.Areq ? num(hq.Areq, hq.Areq < 1 ? 3 : (hq.Areq < 10 ? 2 : 1)) : 'sin dato', unidad: hq.Areq ? 'm²' : '', nota: 'para el tiempo deseado; la camisa tiene ' + un(hq.A, hq.A < 1 ? 3 : (hq.A < 10 ? 2 : 1), 'm²'), alerta: !!hq.Areq && hq.Areq > hq.A }
       ];
     },
     veredicto: function (r) {
       var hq = r.heat, s = r.s;
-      if (s.Tgoal <= s.T0) return { alerta: false, html: 'Este lote no se calienta: la temperatura objetivo no pasa de la inicial. El reactor y la marmita del libro están en Configuraciones.' };
+      if (s.Tgoal <= s.T0) return { alerta: false, html: 'Este lote no se calienta. El reactor y la marmita del libro, que sí, están en Configuraciones.' };
       if (!hq.Kh) return { alerta: false, html: 'El libro no da la constante de la película del lote para este impulsor, y el explorador no calcula el calentamiento.' };
       if (s.Tw <= s.Tgoal) return { alerta: true, html: 'El vapor está a ' + un(s.Tw, 0, '°C') + ' y el lote tiene que llegar a ' + un(s.Tgoal, 0, '°C') + ': <b>no llega</b>.' };
       var mayor = hq.res.reduce(function (a, b) { return b[1] > a[1] ? b : a; });
@@ -2941,7 +2945,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       var d = diag(r);
       return [
         { etiqueta: 'Potencia al eje', valor: fW(r.Pw).split(NB)[0], unidad: fW(r.Pw).split(NB)[1], nota: un(r.PV / 1000, 3, 'kW/m³') },
-        { etiqueta: 'Motor', valor: r.motor ? num(r.motor, r.motor < 1 ? 2 : (r.motor < 10 ? 1 : 0)) : '> 315', unidad: 'kW', nota: 'con la altitud y el tope', alerta: !r.motor },
+        { etiqueta: 'Motor', valor: r.motor ? iec(r.motor) : '> 315', unidad: 'kW', nota: 'con la altitud y el tope', alerta: !r.motor },
         { etiqueta: 'Notas del diagnóstico', valor: String(d.c + d.a), nota: cuentaNotas(d), alerta: d.c > 0 }
       ];
     },
@@ -2960,7 +2964,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           { titulo: 'El motor',
             texto: 'De todos los números de la hoja, el que se compra es el motor: la mayor potencia que puede pedir el impulsor, dividida por lo que el motor da en la altitud y por el tope, y redondeada al tamaño normalizado que sigue.',
             ec: 'P_{\\text{motor}} \\ge \\frac{P_{\\max}}{f_{\\text{alt}}\\,f_{\\text{tope}}}',
-            num: 'P_{\\text{motor}} \\ge \\frac{' + kW(r.Pmot) + '}{' + kn(r.s.alt, 2) + ' \\times ' + kn(r.s.tope, 2) + '} = ' + kW(need) + ' \\qquad \\Rightarrow\\; ' + (r.motor ? kn(r.motor, r.motor < 1 ? 2 : (r.motor < 10 ? 1 : 0)) + '\\ \\mathrm{kW}' : '\\text{más de 315 kW}'),
+            num: 'P_{\\text{motor}} \\ge \\frac{' + kW(r.Pmot) + '}{' + kn(r.s.alt, 2) + ' \\times ' + kn(r.s.tope, 2) + '} = ' + kW(need) + ' \\qquad \\Rightarrow\\; ' + (r.motor ? iec(r.motor).replace(',', '{,}') + '\\ \\mathrm{kW}' : '\\text{más de 315 kW}'),
             libro: [C14 + '#sec-agi-potencia', 'Libro, sección 14.3, El motor'] },
           { titulo: 'La hoja de datos',
             texto: 'Una solicitud de cotización dice los líquidos, los sólidos y los gases, sus cantidades y cuál importa más, si el proceso es por lotes o continuo, el tamaño y la densidad de las partículas y lo que se busca con la agitación. El proveedor completa el agitador. La hoja de esta escena junta los números del sistema en pantalla, que salen de las escenas anteriores.',
