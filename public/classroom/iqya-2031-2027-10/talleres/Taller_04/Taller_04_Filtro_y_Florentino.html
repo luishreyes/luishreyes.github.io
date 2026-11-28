@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller 4 · El filtro de la winterización y el florentino · Proyecto de Operaciones Unitarias</title>
+<meta name="description" content="Taller 4 de POU 2027-10: el florentino de una planta de aceite esencial y el filtro de la winterización, con datos y ensayos distintos para cada pareja y dos hojas de datos por llenar.">
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 56ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; line-height: 1.7; }
+  .doc-body li { margin-bottom: 7px; }
+  .doc-body ul ul, .doc-body ol ul { font-size: 16px; margin: 6px 0 4px; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+  a.platform-link { color: var(--teal); font-weight: 600; }
+  a.platform-link::after { content: " ↗"; font-size: .82em; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: .88em; background: var(--gris-5); color: var(--gris-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---- Logo de la herramienta ---- */
+  .tool-logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px;
+    padding: 14px 22px; margin: 4px 0 22px; min-height: 64px;
+  }
+  .tool-logo img { height: 40px; width: auto; max-width: 280px; object-fit: contain; display: block; }
+
+  /* ---- Índice / sumario por partes ---- */
+  .toc-intro { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 30px 0 14px; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 8px; }
+  .part-card {
+    background: var(--papel); border-radius: 8px; padding: 24px 26px;
+    border-top: 5px solid var(--verde);
+  }
+  .part-card .pt-k { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .part-card h3 { font-size: 20px; margin: 5px 0 16px; letter-spacing: -.005em; }
+  .part-card ol { list-style: none; margin: 0; padding: 0; counter-reset: p; display: grid; gap: 9px; font-size: 16px; }
+  .part-card li { counter-increment: p; margin: 0; }
+  .part-card a {
+    display: flex; align-items: baseline; gap: 13px; text-decoration: none; cursor: pointer;
+    color: var(--gris-1); font-size: 16px; font-weight: 600; transition: color .18s ease;
+  }
+  .part-card a::before { content: counter(p, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 13px; min-width: 24px; }
+  .part-card a:hover { color: var(--verde-osc); }
+  .part-card a.is-active { color: var(--verde-osc); font-weight: 700; }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block code { font-size: 13px; word-break: break-word; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+  .block--bad { border-top-color: #DC2626; }
+  .block--bad b { color: #991B1B; }
+  .block--good { border-top-color: var(--verde); }
+  .block--good b { color: var(--verde-osc); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul { font-size: 15.5px; margin: 6px 0 0; padding-left: 20px; color: var(--gris-1); line-height: 1.5; }
+  .callout ul li { margin-bottom: 6px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; font-size: 15px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3, .parts { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .parts { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .parts { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1200px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 8px; padding: 0 4px; }
+  .sn-label.sn-label2 { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gris-4); }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item:target { color: var(--verde-osc); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+  /* ── El diagrama en la página ──────────────────────────────────────
+     El PFD es una hoja A2: a tamaño de página no se lee. Se muestra
+     reducido y se abre en un visor a pantalla completa. */
+  .pfd-caja { position: relative; border: 1px solid var(--gris-4); background: #fff; border-radius: 8px; overflow: hidden; margin: 0; }
+  .pfd-caja > img { display: block; width: 100%; height: auto; cursor: zoom-in; background: #fff; }
+  .pfd-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px 18px; flex-wrap: wrap; border-top: 1px solid var(--gris-4); padding: 12px 14px; font-size: 14px; line-height: 1.45; color: var(--gris-2); background: var(--papel); }
+  .pfd-pie b { color: var(--gris-1); }
+  .pfd-texto { flex: 1 1 300px; min-width: 0; }
+  .pfd-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pfd-abrir, .doc-body a.pfd-bajar { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; box-sizing: border-box; padding: 10px 16px; border-radius: 5px; font-family: var(--tipo); font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
+  .pfd-abrir { color: #fff; background: var(--verde); border: 2px solid var(--verde); }
+  .pfd-abrir:hover { background: var(--verde-osc); border-color: var(--verde-osc); }
+  .doc-body a.pfd-bajar { color: var(--gris-1); background: transparent; border: 2px solid var(--gris-1); }
+  .doc-body a.pfd-bajar:hover { color: #fff; background: var(--gris-1); }
+  .pfd-abrir:focus-visible, .doc-body a.pfd-bajar:focus-visible { outline: 3px solid var(--gris-1); outline-offset: 2px; }
+
+  /* ── Visor a pantalla completa ─────────────────────────────────────
+     La hoja se acerca cambiando su tamaño, no con una transformación, para
+     que el navegador vuelva a dibujar el vector y el texto se vea nítido.
+     Dentro del visor los gestos son del visor (touch-action: none); fuera
+     de él la página conserva el zoom del navegador. */
+  .visor { position: fixed; inset: 0; z-index: 300; display: none; background: #11161E; color: #fff; font-family: var(--tipo); }
+  .visor.abierto { display: block; }
+  .visor-lienzo { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; }
+  .visor-lienzo.arrastrando { cursor: grabbing; }
+  .visor-lienzo img { position: absolute; left: 0; top: 0; max-width: none; background: #fff; pointer-events: none; -webkit-user-drag: none; user-select: none; }
+  .visor-barra { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: rgba(17,22,30,.92); }
+  .visor-tit { flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 600; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .visor-btn { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 44px; box-sizing: border-box; padding: 0 12px; font-family: var(--tipo); font-size: 22px; font-weight: 700; line-height: 1; color: #fff; text-decoration: none; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.32); border-radius: 0; cursor: pointer; }
+  .visor-btn.texto { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+  .visor-btn:hover { background: rgba(255,255,255,.22); }
+  .visor-btn:disabled { opacity: .35; cursor: default; }
+  .visor-btn:disabled:hover { background: rgba(255,255,255,.1); }
+  .visor-btn:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 2px; }
+  .visor-pie { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: rgba(17,22,30,.92); }
+  .visor-mandos { display: flex; align-items: center; gap: 8px; }
+  .visor-nivel { min-width: 60px; text-align: center; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .visor-ayuda { max-width: 92ch; margin: 0; font-size: 13px; line-height: 1.35; text-align: center; color: rgba(255,255,255,.8); }
+  .ayuda-tactil { display: none; }
+  /* Celular acostado: la hoja necesita la altura. Los mandos suben a la
+     barra de arriba, el título y la ayuda se esconden. */
+  @media (max-height: 500px) {
+    .visor-barra { padding: 6px 12px; }
+    .visor-tit { visibility: hidden; }
+    .visor-pie { top: 0; bottom: auto; right: auto; left: 50%; transform: translateX(-50%); padding: 6px 0; background: transparent; }
+    .visor-ayuda { display: none; }
+  }
+  @media (hover: none) and (pointer: coarse) {
+    .ayuda-raton { display: none; }
+    .ayuda-tactil { display: inline; }
+  }
+
+  /* Puntaje de cada parte */
+  .pts { display: inline-block; margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-osc); background: var(--verde-claro); border-radius: 4px; padding: 3px 9px; vertical-align: middle; }
+  .preg { margin: 0 0 6px; font-weight: 700; color: var(--gris-1); }
+  .preg + ul, .preg + ol { margin-top: 0; }
+
+  /* Tablas para llenar: filas vacías con altura de escritura */
+  table.ou.llenar td { height: 30px; }
+
+  .solo-impreso { display: none; }
+  @media print {
+    .side-nav, .visor, .pfd-pie, .solo-pantalla { display: none !important; }
+    .outer-layout { display: block; max-width: none; margin: 0; padding: 0; }
+    .doc-head { padding: 28px 32px 26px; }
+    .doc-body { padding: 0 32px 24px; }
+    .doc-body section { padding-top: 26px; break-inside: auto; }
+    h2.sec, h3.sub, .preg { break-after: avoid; }
+    .doc-body li, .callout, .tbl-wrap { break-inside: avoid; }
+    p.solo-impreso { display: block; }
+    /* El PFD va solo en una hoja, al final de su sección y girado para que
+       quepa a lo largo: la cabeza del plano queda hacia el lomo, a la izquierda. */
+    #diagrama { display: flex; flex-direction: column; }
+    .pfd-caja { order: 10; break-before: page; break-after: page; height: 9.2in; border: 0; border-radius: 0; overflow: visible; }
+    .pfd-caja > img { position: absolute; left: 50%; top: 50%; width: 9.1in; max-width: none; height: auto; cursor: default; transform: translate(-50%, -50%) rotate(-90deg); }
+  }
+
+  /* La hoja de servicio de práctica */
+  .servicio { border: 1.5px solid #19222F; margin: 8px 0 12px; }
+  .sv-cab { display: flex; justify-content: space-between; align-items: baseline; background: #FFF500; padding: 7px 12px; }
+  .sv-cab b { font-size: 16px; } .sv-cab span { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  table.sv { margin: 0; } table.sv th { width: 30%; font-weight: 600; border-top: none; border-bottom: 1px solid #D3D9DF; padding: 6px 10px 6px 12px; vertical-align: top; }
+  table.sv td { padding: 6px 12px 6px 0; } table.sv tr:last-child th, table.sv tr:last-child td { border-bottom: none; }
+  .servicio table.sv { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .servicio table.sv th { text-align: left; }
+  @media print { .servicio { break-inside: avoid; } .servicio table.sv { font-size: 10pt; } }
+</style>
+<link rel="stylesheet" href="assets/lectura-curso.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add('incrustado');</script>
+</head>
+<body>
+<header class="barra"><span class="marca">Uniandes · IQYA-2031</span><span class="cual">Taller 4 · El filtro de la winterización y el florentino</span></header>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">Contenido</p>
+  <a class="sn-item" href="#material"><span class="sn-num">00</span>El caso y el material</a>
+  <a class="sn-item" href="#p1"><span class="sn-num">01</span>El florentino</a>
+  <a class="sn-item" href="#p2"><span class="sn-num">02</span>La winterización</a>
+  <a class="sn-item" href="#boleto"><span class="sn-num">03</span>Boleto de salida</a>
+  <a class="sn-item" href="#entrega"><span class="sn-num">04</span>Entrega</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Taller 4 · Proyecto de Operaciones Unitarias</div>
+    <h1>El filtro de la winterización y el florentino</h1>
+    <p class="subtitle">El florentino de una planta del tamaño de la del reto y el filtro de placas que termina su aceite. Cada pareja diseña los dos equipos con sus datos y sus ensayos, y llena dos hojas de datos.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2027-10</div>
+      <div><b>Modalidad</b>En parejas que asigna el profesor; la pareja cambia en cada taller</div>
+      <div><b>Sesión</b>Martes 13 de abril, la primera de la semana 11: 80 minutos</div>
+      <div><b>Entrega</b>En papel, al final de la sesión</div>
+      <div><b>Puntaje</b>100 puntos: 50 de la pareja y 50 del boleto de salida, individual</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">El aceite esencial sale del florentino con agua de dos maneras: disuelta, y en gotas tan finas que el florentino no alcanza a separarlas. La winterización lo enfría, lo deja reposar para que caiga una parte de esas gotas y lo pasa por un filtro de placas de celulosa que retiene el resto. En este taller la pareja diseña el florentino de su planta con la regla del área, ubica la pierna del agua y encuentra la gota de agua más grande que se lleva el aceite; con esa gota sigue el lote por el reposo, calcula cuánta agua llega al filtro y escoge el área de placa con los ensayos de su caso. Todo queda escrito en dos hojas de datos. Es la práctica de la Bitácora 3, el domingo 18 de abril, que pide el florentino y la winterización de la planta, y del Examen 2, el martes 20 de abril. Cada pareja tiene su propio caso.</p>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Nivel de uso de IA generativa: 1</b>
+          <p>Sin IA. El taller se hace en papel, sin computador ni celular, con el material impreso y una calculadora.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Cómo se trabaja esta sesión</b>
+          <p>Al comenzar, cada pareja recibe la hoja de su caso, la hoja de consulta y las dos hojas de datos en blanco. Tiene unos 65 minutos para las Partes 1 y 2: los cálculos van en hojas de respuesta y los resultados, en las hojas de datos. Los últimos 12 minutos son para el boleto de salida, que cada integrante responde solo. Sobre la mesa van ese material, calculadora, regla y lápiz: sin apuntes, computador ni celular.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Lo que hay que haber leído</b>
+          <p>Del capítulo 17 del libro, la sección 17.6, el decantador y la regla del área, con el ejemplo 17.6, el florentino de la planta y su pierna; del capítulo 18, la ecuación de la filtración de la sección 18.2 y la sección 18.7, la filtración de profundidad, con el ejemplo 18.5, la winterización del aceite. Las guías de lectura de las semanas 9 y 10 dicen qué secciones son, y la presentación de filtración y winterización recorre el mismo lote.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="material">
+      <div class="eyebrow">Material</div>
+      <h2 class="sec"><span class="secnum">0.</span> El caso y el material</h2>
+      <p>La <b>hoja del caso</b> de la pareja describe su planta: el condensado que llega al florentino V‑202 y el aceite que trae, su temperatura en el punto más frío y la capa de aceite que debe quedar sobre la interfase; el turno del recibidor TK‑203, el diámetro de los tanques TK‑201, la temperatura del enfriado y las horas de cada paso del lote; el agua libre que trae el aceite, medida con Karl Fischer; y dos ensayos de la placa del filtro F‑201: uno con agua, que da su resistencia, y uno de capacidad, que dice cuánta agua retiene antes de soltarla.</p>
+      <p>La <b>hoja de consulta</b> tiene las ecuaciones de los capítulos 4, 17 y 18 y una tabla con las propiedades del agua y del limoneno y el agua que disuelve el limoneno, grado por grado entre 2 y 30 °C. Las <b>hojas de datos</b> son las dos que la pareja llena y entrega: la del florentino y la de la winterización.</p>
+      <ul class="solo-pantalla">
+        <li><a href="Taller_04_Hoja_de_consulta.html" target="_blank" rel="noopener">La hoja de consulta</a> (<a href="Taller_04_Hoja_de_consulta.pdf" target="_blank" rel="noopener" download>PDF</a>)</li>
+        <li><a href="Taller_04_Hojas_de_datos.html" target="_blank" rel="noopener">Las hojas de datos en blanco</a> (<a href="Taller_04_Hojas_de_datos.pdf" target="_blank" rel="noopener" download>PDF</a>)</li>
+      </ul>
+      <p class="solo-impreso">La hoja de consulta y las hojas de datos se publican con este taller, en la misma carpeta, y se reparten impresas en la sesión.</p>
+      <p>Para practicar antes de la sesión, este es un <b>caso de práctica</b>, con la misma forma de la hoja que recibirá la pareja. No le toca a ninguna pareja, así que no sirve memorizar su respuesta: sirve recorrer una vez las ecuaciones y la tabla.</p>
+      <!-- PRACTICA_START -->
+<div class="servicio"><div class="sv-cab"><b>Taller 4 · Hoja del caso</b><span>Caso de práctica</span></div><table class="sv"><tr><th>Condensado</th><td>llega al florentino V‑202 desde el condensador: 1050 L/h de agua con 16 g de aceite por kilo de agua; 22 °C en su punto más frío</td></tr><tr><th>Florentino V‑202</th><td>vertical, dos veces más alto que ancho, con el aceite rebosando al 90 % de la altura y una capa de aceite de 11 cm sobre la interfase</td></tr><tr><th>Recibidor TK‑203</th><td>junta el aceite del florentino durante 12 h; al terminar el turno, el lote pasa a un tanque de winterización</td></tr><tr><th>Tanques de winterización TK‑201</th><td>0,70 m de diámetro, con camisa de frío; cada lote se enfría a 7 °C en 1,5 h, reposa 6 h, se purga el agua del fondo y se filtra en 2,0 h por F‑201, con la bomba P‑201</td></tr><tr><th>Agua libre del aceite</th><td>470 mg/kg en gotas, medida con Karl Fischer (el agua total menos la disuelta); las gotas miden entre 2 µm y la más grande que deja pasar el florentino</td></tr><tr><th>Ensayo de la placa con agua</th><td>un disco de 100 cm² de la placa del filtro dejó pasar 1,42 L de agua a 20 °C en 30 s, con 1,00 bar; grado fino</td></tr><tr><th>Ensayo de capacidad</th><td>una placa de 400 × 400 mm retuvo toda el agua libre de 28,0 kg de aceite frío con 750 mg/kg; con el kilo siguiente, el filtrado empezó a salir con agua</td></tr><tr><th>Caída de presión limpia que admite el filtro</th><td>0,15 bar</td></tr></table></div>
+<!-- PRACTICA_END -->
+    </section>
+
+    <section id="p1">
+      <div class="eyebrow">Parte 1</div>
+      <h2 class="sec"><span class="secnum">1.</span> El florentino <span class="pts">25 puntos</span></h2>
+      <p>Use en toda la Parte 1 las propiedades a la temperatura más fría del condensado, de la tabla de la hoja de consulta. Escriba cada cálculo con sus unidades, en el orden del enunciado, y pase los resultados a la hoja de datos del florentino.</p>
+
+      <h3 class="sub">1.1 La gota de diseño <span class="pts">5 pts</span></h3>
+      <ul>
+        <li>Lea la densidad y la viscosidad del agua y del aceite y calcule la diferencia de densidad.</li>
+        <li>Calcule la velocidad con que sube la gota de diseño con la ley de Stokes, su número de Reynolds, y compárela con el tope de la hoja de consulta.</li>
+        <li>Diga por qué el florentino se diseña con el condensado más frío.</li>
+      </ul>
+
+      <h3 class="sub">1.2 El tamaño <span class="pts">7 pts</span></h3>
+      <ul>
+        <li>Calcule el área de la interfase con la regla del área y la holgura, y el diámetro y la altura del recipiente que se construye.</li>
+        <li>Con el diámetro construido, calcule la velocidad del agua hacia su salida y su número de Reynolds, el tiempo de retención hasta el rebose del aceite y el espesor de la banda de dispersión. ¿Qué dice la retención del tamaño?</li>
+      </ul>
+
+      <h3 class="sub">1.3 El agua que se lleva el aceite <span class="pts">4 pts</span></h3>
+      <p>Calcule el caudal del aceite, en kilos y en litros por hora, la velocidad con que sube hacia su rebose y la gota de agua más grande que se lleva. Esa gota es la más grande del agua libre que llega a la winterización, en la Parte 2.</p>
+
+      <h3 class="sub">1.4 La pierna y la entrada <span class="pts">6 pts</span></h3>
+      <ul>
+        <li>Ubique el rebose del aceite, la interfase y el codo de la pierna del agua para la capa de aceite de su caso, y diga cuánto se mueve la interfase por cada milímetro de error en la pierna.</li>
+        <li>Escoja el tubo de la entrada del condensado.</li>
+      </ul>
+
+      <h3 class="sub">1.5 La hoja de datos del florentino <span class="pts">3 pts</span></h3>
+      <p>Llene la hoja de datos del florentino, con el venteo y el rompe-sifón: dónde van y para qué.</p>
+    </section>
+
+    <section id="p2">
+      <div class="eyebrow">Parte 2</div>
+      <h2 class="sec"><span class="secnum">2.</span> La winterización <span class="pts">25 puntos</span></h2>
+      <p>El aceite que sale del florentino se junta en el recibidor TK‑203 durante un turno; cada lote pasa a un tanque TK‑201, se enfría, reposa, se purga el agua del fondo y se filtra por las placas de F‑201. Use las propiedades a la temperatura del enfriado, salvo donde se diga otra cosa, y pase los resultados a la hoja de datos de la winterización.</p>
+
+      <h3 class="sub">2.1 El lote y los tanques <span class="pts">5 pts</span></h3>
+      <ul>
+        <li>Calcule el lote, en kilos y en litros a la temperatura del enfriado, y la altura del líquido en el tanque TK‑201.</li>
+        <li>Calcule el ciclo de un tanque, cuántos tanques pide y cada cuánto recibe un lote cada uno.</li>
+      </ul>
+
+      <h3 class="sub">2.2 El reposo <span class="pts">6 pts</span></h3>
+      <ul>
+        <li>Calcule la gota de agua más pequeña que llega al fondo desde la superficie durante el reposo.</li>
+        <li>Con las gotas libres entre 2 µm y la gota que encontró en la 1.3, calcule la fracción del agua libre que cae y el agua libre que sigue al filtro.</li>
+      </ul>
+
+      <h3 class="sub">2.3 El agua que llega al filtro <span class="pts">3 pts</span></h3>
+      <p>Calcule el agua que sale de solución al enfriar, desde la temperatura del condensado, y el agua que llega al filtro, en miligramos por kilo y en gramos por lote. ¿Cuánta se queda disuelta?</p>
+
+      <h3 class="sub">2.4 El área de placa <span class="pts">8 pts</span></h3>
+      <ul>
+        <li>Calcule el caudal al filtro y, con el ensayo con agua, el flujo de la placa y su resistencia.</li>
+        <li>Calcule el área que pide cada criterio: la caída de presión limpia que admite el filtro, el flujo recomendado para el grado de su placa y el agua, con la capacidad que da el ensayo de capacidad.</li>
+        <li>Diga qué criterio manda y cuántas placas de 400 × 400 mm lleva el filtro. Con esas placas, calcule la caída de presión limpia y la carga de agua al final del lote.</li>
+      </ul>
+
+      <h3 class="sub">2.5 La hoja de datos de la winterización <span class="pts">3 pts</span></h3>
+      <p>Llene la hoja de datos de la winterización, con lo que el filtro no quita y lo que haría si la rectificación pidiera un aceite más seco.</p>
+    </section>
+
+    <section id="boleto">
+      <div class="eyebrow">Individual</div>
+      <h2 class="sec"><span class="secnum">3.</span> Boleto de salida <span class="pts">50 puntos</span></h2>
+      <p>En los últimos 12 minutos, cada integrante responde solo, sin hablar con su pareja, un boleto con tres preguntas: el caso de su pareja en una condición distinta, un cálculo corto con números nuevos y una pregunta de criterio sobre el florentino o la winterización. Tiene a la mano la hoja del caso, la hoja de consulta y la calculadora. Los dos integrantes reciben versiones distintas. El boleto vale la mitad de la nota del taller: muestra lo que cada uno entendió, más allá de lo que escribió la pareja.</p>
+    </section>
+
+    <section id="entrega">
+      <div class="eyebrow">Cierre</div>
+      <h2 class="sec"><span class="secnum">4.</span> Entrega</h2>
+      <ul>
+        <li>La pareja entrega, al final de la sesión, las dos hojas de datos llenas y sus hojas de cálculo en el orden del enunciado, con el nombre y el código de los dos y el número de la pareja.</li>
+        <li>Cada integrante entrega su boleto de salida, aparte.</li>
+        <li>No hay entrega en <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">Bloque Neón</a> ni prórroga: lo que no se entrega en la sesión no se califica.</li>
+      </ul>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2027-10</span>
+      <span>Taller 4 · Universidad de los Andes</span>
+    </div>
+
+  </div>
+
+</article>
+</div>
+
+<script>
+/* ── Barra de progreso ─────────────────────────────────────────────── */
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ── Índice: desplazamiento suave y sección activa (scroll-spy) ────── */
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.side-nav .sn-item'));
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      e.preventDefault();
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+      if (history.replaceState) history.replaceState(null, '', '#' + el.id);
+    });
+  });
+  var sects = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); })
+                   .filter(Boolean);
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + Math.min(220, window.innerHeight * 0.3);
+    var cur = null;
+    for (var i = 0; i < sects.length; i++) {
+      if (sects[i].getBoundingClientRect().top + window.scrollY <= y) cur = sects[i].id;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) cur = sects[sects.length - 1].id;
+    links.forEach(function (a) {
+      var on = cur !== null && a.getAttribute('href') === '#' + cur;
+      a.classList.toggle('is-active', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+</body>
+</html>

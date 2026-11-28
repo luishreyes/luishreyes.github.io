@@ -1,0 +1,218 @@
+/* ===================================================================
+   POU 2027-10 · Capa del curso para las LECTURAS (solo pantalla)
+
+   Las lecturas traen su plantilla en un <style> propio: una tarjeta
+   redondeada con sombra sobre fondo gris, píldoras e íconos. Esta hoja
+   se carga DESPUÉS de ese bloque y la convierte, en pantalla, al lenguaje
+   del landing del curso: barra azul noche y amarillo, encabezado en un
+   campo amarillo a sangre, índice como rampa de azules y capítulos como
+   bandas de tono alterno. Esquinas cuadradas y nada en reposo con sombra.
+
+   La impresión no pasa por aquí: el PDF sigue saliendo de la plantilla.
+   Fuente maestra: 202710/Plantillas/assets/lectura-curso.css. Cada lectura
+   lleva su copia en assets/, como deloitte.css.
+   =================================================================== */
+
+@media print {
+  .barra { display: none !important; }
+}
+
+@media screen {
+
+:root {
+  --nieve: #FFFFFF;
+  --tinta: #19222F;
+  --sec: #525C64;
+  /* Seis tamaños y nada por debajo de 13px. */
+  --t-xs: 13px;
+  --t-s: 15px;
+  --t-m: 18px;
+  --t-l: clamp(20px, 2vw, 25px);
+  --t-h2: clamp(32px, 4.4vw, 60px);
+  --t-h1: clamp(36px, 5.8vw, 80px);
+  --margen: clamp(16px, 4vw, 56px);
+  --ancho: 900px;
+  --riel: 252px;
+}
+
+body { background: var(--nieve); color: var(--tinta); font-size: var(--t-m); }
+a { color: var(--oliva); text-underline-offset: 3px; }
+
+/* Una sola esquina, y es cuadrada. Lo único que flota puede sombrearse. */
+.doc-head, .doc-head *, .doc-body, .doc-body *, .side-nav, .side-nav *,
+.doc-body *::before, .doc-body *::after {
+  border-radius: 0 !important;
+  box-shadow: none !important; /* taste-skill-ignore: quita sombras, no las pone */
+}
+
+/* ── Barra del curso ─────────────────────────────────────────────── */
+.barra { display: flex; align-items: stretch; background: var(--amarillo); }
+.barra .marca { background: var(--navy); color: #fff; padding: 14px 20px; font-size: var(--t-s);
+                font-weight: 600; line-height: 21px; white-space: nowrap; }
+.barra .cual { display: flex; align-items: center; padding: 0 20px; min-width: 0; color: var(--navy);
+               font-size: var(--t-s); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Dentro del visor del sitio la barra del visor ya cumple ese papel. */
+.incrustado .barra { display: none; }
+
+.progress { top: 0; height: 5px; background: var(--oliva); }
+
+/* ── Armazón: encabezado, índice y cuerpo, uno debajo del otro ───── */
+.outer-layout { display: flex; flex-direction: column; align-items: stretch; max-width: none; margin: 0; padding: 0; gap: 0; }
+.page { display: contents; }
+.doc-head { order: 1; }
+.side-nav { order: 2; }
+.doc-body { order: 3; }
+
+/* ── Encabezado: campo amarillo a sangre ─────────────────────────── */
+.doc-head { background: var(--amarillo); color: var(--navy); border: 0;
+            padding: clamp(40px, 7vw, 104px) max(var(--margen), calc((100% - var(--ancho)) / 2)) clamp(32px, 4vw, 56px); }
+.doc-head .org, .doc-head .badge { display: none; }
+.doc-head h1 { font-size: var(--t-h1); line-height: .96; letter-spacing: -.04em; font-weight: 600;
+               max-width: 18ch; margin: 0 0 .4em; color: var(--navy); }
+.doc-head .subtitle { font-size: var(--t-l); line-height: 1.35; color: var(--navy); font-weight: 400; max-width: 40ch; }
+.doc-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 28px; border: 0;
+            margin-top: clamp(28px, 4vw, 48px); padding: 0; }
+.doc-meta div { font-size: var(--t-s); color: var(--navy); }
+.doc-meta b { font-size: var(--t-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--navy); }
+@media (min-width: 760px) { .doc-meta { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* ── Índice: la rampa de azules del landing ──────────────────────── */
+.side-nav { display: block; position: static; max-height: none; overflow: visible; padding: 0;
+            border: 0; background: var(--navy); }
+.sn-label { margin: 0; padding: 18px max(var(--margen), calc((100% - var(--ancho)) / 2)) 14px;
+            font-size: var(--t-xs); font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+            color: var(--amarillo); }
+.sn-item { display: flex; align-items: baseline; gap: 16px; width: 100%; margin: 0; border: 0;
+           padding: 16px max(var(--margen), calc((100% - var(--ancho)) / 2));
+           font-size: var(--t-m); line-height: 1.3; color: #EDEFF2; text-decoration: none;
+           transition: padding-left .25s ease, background-color .18s ease; }
+.sn-item:hover { color: #fff; background: #0B1018 !important; }
+.sn-num { font-size: var(--t-s); font-weight: 600; color: var(--amarillo); min-width: 2ch; }
+.side-nav > :nth-child(2)  { background: #0E141D; }
+.side-nav > :nth-child(3)  { background: #151D28; }
+.side-nav > :nth-child(4)  { background: #1F2A37; }
+.side-nav > :nth-child(5)  { background: #2A3644; }
+.side-nav > :nth-child(6)  { background: #364452; }
+.side-nav > :nth-child(7)  { background: #455361; }
+.side-nav > :nth-child(8)  { background: #4E5B67; }
+.side-nav > :nth-child(9)  { background: #56636F; }
+.side-nav > :nth-child(10) { background: #5E6A76; }
+/* Arriba del texto la rampa es solo un índice: no marca sección activa. */
+.sn-item.is-active { color: #EDEFF2; font-weight: 400; border: 0;
+                     padding-left: max(var(--margen), calc((100% - var(--ancho)) / 2)); }
+
+/* En pantalla ancha el índice se vuelve un riel fijo a la izquierda. */
+@media (min-width: 1280px) {
+  .side-nav { position: fixed; top: 0; left: 0; bottom: 0; width: var(--riel); overflow-y: auto; z-index: 10;
+              scrollbar-width: thin; }
+  .sn-label { padding: 28px 22px 14px; }
+  .sn-item { padding: 14px 22px; font-size: var(--t-s); }
+  /* En el riel sí: la sección en la que va el lector, con el amarillo como campo. */
+  .sn-item.is-active, .sn-item.is-active:hover { background: var(--amarillo) !important; color: var(--navy);
+                                                  font-weight: 600; padding-left: 22px; }
+  .sn-item.is-active .sn-num { color: var(--navy); }
+  .doc-head, .doc-body { margin-left: var(--riel); }
+  .barra { margin-left: var(--riel); }
+  .progress { left: var(--riel) !important; }
+}
+
+/* ── Capítulos: bandas a sangre de tono alterno ──────────────────── */
+.doc-body { padding: 0; }
+.doc-body section { padding: clamp(48px, 7vw, 104px) max(var(--margen), calc((100% - var(--ancho)) / 2));
+                    scroll-margin-top: 0; background: var(--nieve); }
+.doc-body section:nth-of-type(even) { background: var(--papel); }
+#s0 { padding-top: clamp(40px, 5vw, 72px); }
+.toc { display: none; }  /* El índice ya está en la rampa. */
+
+/* La ceja se conserva en documentos largos: orienta en pantalla (CLAUDE.md). */
+.eyebrow { /* taste-skill-ignore: ceja de documento */ display: flex; align-items: center; gap: 12px; font-size: var(--t-xs); font-weight: 600;
+           letter-spacing: .12em; color: var(--oliva-osc); margin-bottom: 16px; }
+.eyebrow::before { width: 32px; height: 5px; background: var(--amarillo); }
+h2.sec { font-size: var(--t-h2); line-height: .98; letter-spacing: -.03em; font-weight: 600; max-width: 18ch;
+         margin: 0 0 .55em; color: var(--tinta); }
+h2.sec .secnum { color: var(--oliva); }
+h3.sub { font-size: var(--t-l); line-height: 1.2; letter-spacing: -.01em; font-weight: 600; margin: 1.8em 0 .5em; }
+.doc-body p { font-size: var(--t-m); line-height: 1.6; color: var(--tinta); max-width: 68ch; }
+.lead { font-size: var(--t-l) !important; line-height: 1.45 !important; color: var(--tinta) !important; }
+.doc-body li { font-size: var(--t-m); }
+
+/* Superficies internas: un paso de tono contra la banda en que caen. */
+.callout, .block, .eqbox, .fig-frame, .doccard, .portrait .pf, .bookcard .bimg { background: var(--papel); }
+section:nth-of-type(even) .callout, section:nth-of-type(even) .block, section:nth-of-type(even) .eqbox,
+section:nth-of-type(even) .fig-frame, section:nth-of-type(even) .doccard,
+section:nth-of-type(even) .portrait .pf, section:nth-of-type(even) .bookcard .bimg { background: var(--nieve); }
+
+/* Notas: barra gruesa que dice qué son, sin ícono. */
+.callout { display: block; padding: 22px 26px; border-left: 6px solid var(--navy); max-width: 74ch; }
+.callout .ic { display: none; }
+.callout > div > b { font-size: var(--t-m); font-weight: 600; color: var(--tinta) !important; margin-bottom: 6px; }
+.callout p { font-size: var(--t-m); line-height: 1.55; }
+.callout--tip { border-left-color: var(--oliva); }
+.callout--warn { border-left-color: var(--ambar); }
+
+/* Fichas: barra superior amarilla, una columna en el celular. */
+.blocks { grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 600px) { .blocks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.block { border: 0; border-top: 6px solid var(--amarillo); padding: 22px 24px; }
+.block .bn { font-size: var(--t-xs); font-weight: 600; letter-spacing: .1em; color: var(--oliva-osc); }
+.block b { font-size: var(--t-l); line-height: 1.15; font-weight: 600; }
+.block span { font-size: var(--t-s); color: var(--sec); }
+
+/* Figuras y retratos: sin marco, sin sombra. */
+.fig-frame { border: 0; padding: clamp(8px, 2vw, 20px); }
+figure.fig figcaption, .portrait figcaption, .tbl-cap { font-size: var(--t-s); border-left: 3px solid var(--oliva); }
+.portrait .pf, .bookcard .bimg { border: 0; }
+.bookcard b { font-size: var(--t-s); }
+.bookcard span, .bookcard .yr { font-size: var(--t-xs); }
+
+/* Cita destacada: campo azul noche con barra amarilla. */
+blockquote.pull { background: var(--navy); border-left: 8px solid var(--amarillo); }
+blockquote.pull p { font-size: var(--t-l); font-weight: 400; }
+blockquote.pull .qmark { color: var(--amarillo); opacity: 1; font-family: var(--tipo); }
+blockquote.pull cite { font-size: var(--t-s); }
+blockquote.pull cite b { color: var(--amarillo); }
+
+/* Línea de tiempo: el punto es un cuadro amarillo. */
+.tl-dot { background: var(--amarillo); border: 3px solid var(--navy); box-shadow: none !important; } /* taste-skill-ignore: quita la sombra */
+.tl-year { color: var(--oliva-osc); font-size: var(--t-l); }
+.tl-body b { font-size: var(--t-m); }
+.tl-body span { display: block; font-size: var(--t-s); line-height: 1.45; margin-top: 4px; }
+
+/* Tablas: son tablas de verdad, así que las líneas se quedan. */
+.tbl-wrap { background: var(--nieve); }
+table.ou { font-size: var(--t-s); }
+table.ou thead th { background: var(--navy); font-size: var(--t-xs); font-weight: 600; letter-spacing: .04em; }
+table.ou tbody tr:nth-child(even) { background: #F6F8FA; }
+
+/* Ecuaciones */
+.eqbox { border-left: 5px solid var(--oliva); }
+.vardefs li { font-size: var(--t-s); }
+.vardefs li::before { background: var(--oliva); }
+
+/* Marcadores de cita: cuadro azul noche con el número. */
+.cite { background: var(--navy); }
+.cite:hover, .cite:focus, .cite.is-open { background: var(--oliva); }
+.ref-pop { border-radius: 0; }
+.ref-pop .rp-num { border-radius: 0; background: var(--navy); }
+.ref-pop .rp-head { color: var(--oliva-osc); font-size: var(--t-xs); }
+.ref-pop .rp-body { font-size: var(--t-s); }
+.refhint { border-radius: 0 !important; background: var(--amarillo-claro); color: var(--navy); font-size: var(--t-s); }
+.refhint .dot { background: var(--navy); }
+ol.refs li { font-size: var(--t-s); }
+ol.refs li::before { background: var(--navy); color: #fff; }
+ol.refs li.flash { background: var(--amarillo-claro); }
+ol.refs li.flash::before { background: var(--amarillo); color: var(--navy); }
+
+/* Documentos de consulta */
+.doccard { border: 0; border-left: 6px solid var(--oliva); }
+.doccard:hover { transform: none; border-left-color: var(--navy); }
+.doccard .dtxt b { font-size: var(--t-m); }
+.doccard .dtxt span { font-size: var(--t-s); }
+.doccard .dtxt em { font-size: var(--t-xs); }
+
+/* ── Cierre: banda azul noche, como el pie del landing ───────────── */
+.doc-foot { margin: 0; border: 0; background: var(--navy); color: #EDEFF2; flex-wrap: wrap; gap: 8px 32px;
+            padding: clamp(40px, 6vw, 72px) max(var(--margen), calc((100% - var(--ancho)) / 2));
+            font-size: var(--t-s); }
+
+}

@@ -795,6 +795,22 @@ export const pou202710Course: Course = {
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l05.jpg',
     },
     {
+      // Nuevo en 2027-10: ocupa el lugar del Taller 6 de 2026-20 (separación de levadura).
+      // El banner es el florentino del capítulo 17 del libro, una figura propia, sin sus rótulos.
+      slug: 'taller-04-filtro-y-florentino',
+      week: 11,
+      order: 104,
+      title: 'Taller 4 · El filtro de la winterización y el florentino',
+      summary:
+        'Se hace en papel, en la sesión del martes 13 de abril, en parejas que asigna el profesor. Cada pareja recibe el caso de su planta: el condensado que llega al florentino, el lote de la winterización y dos ensayos de la placa del filtro, uno con agua y otro de capacidad. Dimensiona el florentino con la regla del área, ubica la pierna del agua, encuentra la gota de agua que se lleva el aceite, sigue el lote por el reposo, calcula el agua que llega al filtro y escoge el área de placa por tres criterios, y deja todo en dos hojas de datos. Al final, cada integrante responde un boleto de salida. La página trae la hoja de consulta, las hojas de datos en blanco y un caso de práctica.',
+      date: '2026-11-28',
+      readingMinutes: 15,
+      tags: ['florentino', 'winterización', 'filtración de profundidad', 'decantación', 'hoja de datos', 'taller en papel'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2027-10/talleres/Taller_04/Taller_04_Filtro_y_Florentino.html',
+      bannerImg: '/classroom/iqya-2031-2027-10/lecturas-banners/taller04.jpg',
+    },
+    {
       // La clase de condensación y decantación no tenía lectura propia en 2026-20.
       slug: 'guia-semana-09-condensacion',
       week: 9,
