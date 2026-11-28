@@ -18,6 +18,12 @@
    sombra en reposo. Letra: la pila --sans del libro (Dax si está, Archivo
    autoalojada si no) para la interfaz y Source Serif 4 para el texto de
    «¿Cómo se calcula?». Nada por debajo de 13 px.
+
+   Esta hoja va con el armazón /classroom/explorador-libro.js, que arma la
+   página; la guía está en SIMULADORES.md, «Exploradores con la imagen del
+   libro (2027-10)». Dax llega del kit de Adobe del curso (el <link> a
+   use.typekit.net/zyg3ceo.css en el <head> de cada explorador); Archivo,
+   autoalojada, es el respaldo si el kit no carga.
    ==================================================================== */
 
 @font-face { font-family: "Archivo Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
@@ -154,7 +160,7 @@ button.xl-sn:hover { color: #fff; background: rgba(255, 255, 255, .06); }
 .xl-cab h1 { margin: 0; font-size: 32px; line-height: 1.05; letter-spacing: -.025em; font-weight: 600; }
 .xl-preg { margin: 6px 0 0; font-size: var(--t-m); color: var(--sec); line-height: 1.35; }
 
-.xl-kpis { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--nieve); }
+.xl-kpis { flex: none; display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); background: var(--nieve); }
 .xl-kpi { padding: 10px 16px 11px; min-width: 0; }
 .xl-kpi + .xl-kpi { border-left: 1px solid var(--borde); }
 .xl-kpi .k { display: block; font-size: var(--t-xs); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--oliva-osc); line-height: 1.3; }
@@ -166,7 +172,8 @@ button.xl-sn:hover { color: #fff; background: rgba(255, 255, 255, .06); }
 .xl-figs { flex: 1 1 0; min-height: 0; display: flex; gap: 12px; }
 .xl-fig { position: relative; flex: 1 1 0; min-width: 0; margin: 0; background: var(--nieve); }
 .xl-fig.ancha { flex-grow: 1.12; }
-.xl-fig > svg { position: absolute; top: 40px; left: 0; right: 0; bottom: 0; width: 100%; height: calc(100% - 40px); display: block; }
+/* El cuerpo de cada figura, del tipo que sea (svg, iso, canvas, three, html), llena el recuadro bajo la cabecera */
+.xl-fig > .xl-cuerpo { position: absolute; top: 40px; left: 0; right: 0; bottom: 0; width: 100%; height: calc(100% - 40px); display: block; }
 .xl-fig-cab {
   position: absolute; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding: 0 6px 0 14px; border-bottom: 1px solid var(--zona);
@@ -178,6 +185,46 @@ button.xl-sn:hover { color: #fff; background: rgba(255, 255, 255, .06); }
 }
 .xl-mini:hover { border-color: var(--navy); }
 .xl-mini .xl-ico { width: 15px; height: 15px; }
+.xl-fig-cab .xl-mini { flex: none; }
+/* Las vistas de una figura (la máquina y el corte, por ejemplo): botones de a varios en la cabecera */
+.xl-fig-vistas { display: flex; flex: none; margin-left: auto; border: 1.5px solid var(--navy); }
+.xl-fig-vistas button { min-height: 30px; padding: 0 10px; border: 0; background: var(--nieve); font-size: var(--t-xs); font-weight: 600; white-space: nowrap; }
+.xl-fig-vistas button + button { border-left: 1.5px solid var(--navy); }
+.xl-fig-vistas button[aria-pressed="true"] { background: var(--navy); color: #fff; }
+.xl-fig-vistas button:hover:not([aria-pressed="true"]) { background: var(--amarillo-claro); }
+
+/* Isométricas del skill anatomy: el SVG llena el recuadro (meet), con los rótulos encima y el acercamiento abajo */
+.xl-iso .iz-wrap { position: absolute; inset: 0; }
+.xl-iso .xl-slot { position: absolute; inset: 0; }
+.xl-iso .xl-slot > svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-height: none; margin: 0; overflow: hidden; }
+.xl-iso .iz-wrap.iz-on .xl-slot > svg { cursor: grab; }
+.xl-iso .iz-wrap.iz-on .xl-slot > svg:active { cursor: grabbing; }
+.xl-rotulos { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.xl-rot {
+  position: absolute; transform: translate(10px, -50%); font: 400 var(--t-xs) / 1.3 var(--sans); color: var(--sec); white-space: nowrap;
+  text-shadow: 0 0 3px var(--nieve), 0 0 3px var(--nieve), 0 0 2px var(--nieve), 0 0 2px var(--nieve);
+}
+.xl-rot b { font-weight: 600; color: var(--navy); }
+.xl-rot.d { transform: translate(calc(-100% - 10px), -50%); text-align: right; }
+.xl-rot.b { transform: translate(-50%, 10px); text-align: center; }
+.iz-ctl { position: absolute; right: 8px; bottom: 8px; display: flex; gap: 4px; }
+.iz-ctl button {
+  display: grid; place-items: center; min-width: 36px; height: 36px; padding: 0 8px; border: 1.5px solid var(--navy);
+  background: var(--nieve); color: var(--navy); font-size: var(--t-m); font-weight: 600; line-height: 1;
+}
+.iz-ctl button[data-z="fit"] { font-size: var(--t-xs); }
+.iz-ctl button:hover:not(:disabled) { background: var(--amarillo-claro); }
+.iz-ctl button:disabled { opacity: .35; cursor: default; }
+
+/* Lienzos canvas y escenas 3D */
+.xl-lienzo canvas, .xl-tres canvas { display: block; width: 100%; height: 100%; }
+.xl-tres canvas { touch-action: none; }
+.xl-html { overflow: auto; }
+
+/* Mientras una figura carga, o si no pudo cargar */
+.xl-cuerpo.xl-cargando::after { content: "Cargando la figura…"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--sec); font-size: var(--t-s); }
+.xl-cuerpo.xl-cargando > * { opacity: .25; }
+.xl-error { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; text-align: center; background: var(--nieve); color: var(--alerta); font-size: var(--t-s); line-height: 1.4; }
 
 .xl-ver { flex: none; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 10px 8px 14px; background: var(--nieve); border-left: 6px solid var(--navy); }
 .xl-ver.alerta { border-left-color: var(--alerta); }
@@ -370,11 +417,11 @@ ol.xl-pasos { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 4px
   .xl-riel .xl-sn.is-active { background: var(--amarillo); }
   .xl-cab, .xl-fig, .xl-kpis, .xl-ver, .xl-pred { margin: 0 16px 12px; }
   .xl-cab { order: 1; margin-top: 14px; }
-  .xl-fig.ancha { order: 2; }
+  .xl-fig.primera { order: 2; }
   .xl-kpis { order: 3; }
   .xl-ver { order: 4; }
   .xl-pred { order: 5; }
-  .xl-fig:not(.ancha) { order: 6; }
+  .xl-fig:not(.primera) { order: 6; }
   .xl-cab h1 { font-size: 28px; }
   .xl-kpi { padding: 8px 10px 9px; }
   .xl-kpi .k { font-size: 12px; letter-spacing: .04em; }
@@ -382,7 +429,8 @@ ol.xl-pasos { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 4px
   .xl-kpi .s { display: none; }
   .xl-fig { flex: none; display: flex; flex-direction: column; }
   .xl-fig-cab { position: static; flex: none; }
-  .xl-fig > svg { position: static; height: auto; aspect-ratio: var(--ar, 5 / 6); }
+  .xl-fig > .xl-cuerpo { position: relative; top: auto; height: auto; aspect-ratio: var(--ar, 5 / 6); }
+  .xl-fig > .xl-html { aspect-ratio: var(--ar, auto); }
   .xl-ctl-t { display: none; }
   .xl-ver { align-items: flex-start; flex-wrap: wrap; }
   .xl-ver p { font-size: var(--t-s); flex-basis: calc(100% - 40px); }
@@ -401,7 +449,8 @@ ol.xl-pasos { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 4px
   .xl-movil .xl-b { flex: 1; min-height: 46px; }
   body.hoja-abierta .xl-movil { display: none; }
   input[type=range].xl-r { height: 44px; }
-  .xl-seg button, .xl-cont button, .xl-cont span, .xl-op, .xl-mini, .xl-cerrar, .xl-caso-b, .xl-info button, details.xl-mas > summary, .xl-pred .otra { min-height: 44px; }
+  .xl-seg button, .xl-cont button, .xl-cont span, .xl-op, .xl-mini, .xl-cerrar, .xl-caso-b, .xl-info button, details.xl-mas > summary, .xl-pred .otra, .xl-fig-vistas button { min-height: 44px; }
+  .iz-ctl button { min-width: 44px; height: 44px; }
   .xl-capa { overflow-y: auto; }
   .xl-capa-cab { padding: 16px 16px 14px; align-items: flex-start; }
   .xl-capa-cab .xl-cerrar { min-width: 44px; }
@@ -431,5 +480,6 @@ ol.xl-pasos { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 4px
 }
 @media (pointer: coarse) {
   input[type=range].xl-r { height: 44px !important; }
-  .xl-seg button, .xl-cont button, .xl-op, .xl-mini, .xl-b, .xl-sn, .xl-cerrar, details.xl-mas > summary { min-height: 44px !important; }
+  .xl-seg button, .xl-cont button, .xl-op, .xl-mini, .xl-b, .xl-sn, .xl-cerrar, details.xl-mas > summary, .xl-fig-vistas button { min-height: 44px !important; }
+  .iz-ctl button { min-width: 44px !important; height: 44px !important; }
 }
