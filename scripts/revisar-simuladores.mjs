@@ -53,7 +53,8 @@ const medir = (min) => {
 for (const f of archivos) {
   const html = readFileSync(path.join(ROOT, f), 'utf8');
   const notas = [];
-  const usaHoja = html.includes('href="/classroom/simulador.css"');
+  // los exploradores con la imagen del libro (POU 2027-10) cargan su propia hoja común en lugar de simulador.css
+  const usaHoja = html.includes('href="/classroom/simulador.css"') || html.includes('href="/classroom/explorador-libro.css"');
   const propio = (html.match(/<style>([\s\S]*?)<\/style>/) || [, ''])[1].replace(/\/\*[A-Z]+_CSS_START\*\/[\s\S]*?\/\*[A-Z]+_CSS_END\*\//g, '');
   const chicos = [...propio.matchAll(/([^{}]*)\{[^}]*font-size:\s*([0-9.]+)px/g)].filter((m) => +m[2] < 10 && !/svg|text|\.iso/.test(m[1]));
   if (chicos.length) notas.push(`letra de menos de 10 px en ${chicos.map((m) => m[1].trim()).join(', ')}`);
@@ -63,7 +64,7 @@ for (const f of archivos) {
     const p = await ctx.newPage();
     const errs = []; p.on('pageerror', (e) => errs.push(e.message));
     await p.goto(base + f, { waitUntil: 'networkidle' }); await p.waitForTimeout(700);
-    if (nombre === 'dedo') await p.evaluate(() => document.querySelectorAll('.ctl').forEach((c) => c.classList.add('open')));
+    if (nombre === 'dedo') await p.evaluate(() => { document.querySelectorAll('.ctl').forEach((c) => c.classList.add('open')); document.body.classList.add('hoja-abierta'); });
     const r = await p.evaluate(medir, min);
     if (errs.length) notas.push(`${nombre}: error de JavaScript: ${errs[0]}`);
     if (r.ancho) notas.push(`${nombre}: la página se sale a lo ancho`);
@@ -72,7 +73,7 @@ for (const f of archivos) {
     await p.close();
   }
   const sinHoja = !usaHoja && /Explorador_/.test(f) && !/Graficos/i.test(f);
-  if (sinHoja) notas.push('no carga /classroom/simulador.css');
+  if (sinHoja) notas.push('no carga /classroom/simulador.css ni /classroom/explorador-libro.css');
   console.log(`${notas.length ? '✗' : '✓'} ${f}${notas.length ? '\n    ' + notas.join('\n    ') : ''}`);
   malos += notas.length ? 1 : 0;
 }

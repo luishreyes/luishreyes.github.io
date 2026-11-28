@@ -1,0 +1,435 @@
+/* ====================================================================
+   Exploradores con la imagen del libro (POU 2027-10, piloto: el Explorador
+   de filtración, 28 nov 2026). Reemplaza, para los exploradores que la cargan,
+   la apariencia neutra de simulador.css.
+
+   Una sola pantalla en el computador, sin desplazar la página: la barra de
+   arriba con el caso y los dos botones, el riel de escenas a la izquierda
+   (azul noche, como el índice del libro), la escena en el centro (la figura
+   grande, tres números y una línea de veredicto) y los mandos a la derecha,
+   con la pregunta para predecir en un campo amarillo a sangre. En el celular,
+   una columna: las escenas en una fila de botones y los mandos en una hoja
+   que sube desde abajo.
+
+   Colores del libro (estilo-libro/documento.css y la paleta de las figuras):
+   azul noche para la tinta y los campos, amarillo solo como campo, relleno y
+   marca (nunca texto), oliva para los números de paso y los enlaces, el rojo
+   de alerta solo para lo que pasa de un límite. Esquinas cuadradas y nada con
+   sombra en reposo. Letra: la pila --sans del libro (Dax si está, Archivo
+   autoalojada si no) para la interfaz y Source Serif 4 para el texto de
+   «¿Cómo se calcula?». Nada por debajo de 13 px.
+   ==================================================================== */
+
+@font-face { font-family: "Archivo Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
+  src: url(estilo-libro/fuentes/archivo-latin-ext-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "Archivo Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
+  src: url(estilo-libro/fuentes/archivo-latin-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: "Archivo Variable"; font-style: italic; font-display: swap; font-weight: 100 900;
+  src: url(estilo-libro/fuentes/archivo-latin-wght-italic.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: "Source Serif 4 Text"; font-weight: 400; font-style: normal; font-display: swap; src: url(estilo-libro/fuentes/SourceSerif4Text-Regular.woff2) format("woff2"); }
+@font-face { font-family: "Source Serif 4 Text"; font-weight: 400; font-style: italic; font-display: swap; src: url(estilo-libro/fuentes/SourceSerif4Text-Italic.woff2) format("woff2"); }
+@font-face { font-family: "Source Serif 4 Text"; font-weight: 600; font-style: normal; font-display: swap; src: url(estilo-libro/fuentes/SourceSerif4Text-Semibold.woff2) format("woff2"); }
+
+:root {
+  --amarillo: #FFF500;
+  --amarillo-claro: #FFFCCC;
+  --oliva: #6E6A00;
+  --oliva-osc: #565200;
+  --navy: #19222F;
+  --navy-osc: #0E141D;
+  --navy-2: #151D28;
+  --navy-3: #2A3644;
+  --nieve: #FFFFFF;
+  --papel: #EDF0F3;
+  --blanco: #F6F8FA;
+  --zona: #E3E8EE;
+  --sec: #525C64;
+  --guia: #8A96A3;
+  --borde: #D3D9DF;
+  --claro: #EDEFF2;
+  --alerta: #B3261E;
+  --azul: #2E5E9E;
+
+  --sans: "ff-dax-pro", "Archivo Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Source Serif 4 Text", Georgia, serif;
+
+  --t-xs: 13px;
+  --t-s: 15px;
+  --t-m: 17px;
+  --t-l: 22px;
+
+  --barra: 54px;
+  --riel: 220px;
+  --panel: 324px;
+}
+
+*, *::before, *::after { box-sizing: border-box; border-radius: 0; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--papel); color: var(--navy);
+  font-family: var(--sans); font-size: var(--t-m); line-height: 1.45;
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+a { color: var(--oliva); text-underline-offset: 3px; }
+a:hover { color: var(--oliva-osc); }
+b, strong { font-weight: 600; }
+[hidden] { display: none !important; }
+.xl-ico { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── El armazón: una pantalla ─────────────────────────────────────── */
+.xl {
+  display: grid; height: 100vh; height: 100dvh; overflow: hidden;
+  grid-template-columns: var(--riel) minmax(0, 1fr) var(--panel);
+  grid-template-rows: var(--barra) minmax(0, 1fr);
+}
+
+/* La barra de arriba */
+.xl-barra {
+  grid-column: 1 / -1; display: flex; align-items: center; gap: 20px; padding: 0 16px 0 0;
+  background: var(--navy); color: var(--claro); border-bottom: 1px solid var(--navy-3);
+}
+.xl-marca { display: flex; align-items: center; gap: 12px; min-width: var(--riel); height: 100%; flex: none; padding-left: 16px; white-space: nowrap; }
+.xl-cap { display: grid; place-items: center; width: 34px; height: 34px; background: var(--amarillo); color: var(--navy); font-weight: 600; font-size: var(--t-s); }
+.xl-marca b { display: block; color: #fff; font-size: var(--t-s); line-height: 1.15; }
+.xl-marca small { display: block; color: var(--claro); font-size: var(--t-xs); line-height: 1.2; opacity: .85; }
+.xl-caso { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: var(--t-s); }
+.xl-caso .k { color: var(--amarillo); font-size: var(--t-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.xl-caso .v { color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.xl-caso .m { color: var(--claro); font-style: italic; white-space: nowrap; }
+.xl-caso button { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 10px; border: 1px solid var(--navy-3); background: transparent; color: var(--claro); font-size: var(--t-xs); }
+.xl-caso button:hover { border-color: var(--claro); color: #fff; }
+.xl-caso button .xl-ico { width: 15px; height: 15px; }
+.xl-acc { margin-left: auto; display: flex; gap: 10px; }
+.xl-b {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; padding: 0 14px;
+  border: 1.5px solid transparent; font-size: var(--t-s); font-weight: 600; white-space: nowrap; text-decoration: none;
+}
+.xl-b--linea { background: transparent; color: #fff; border-color: #5D6B7A; }
+.xl-b--linea:hover { border-color: #fff; }
+.xl-b--amarillo { background: var(--amarillo); color: var(--navy); }
+.xl-b--amarillo:hover { background: #fff; }
+.xl-b--navy { background: var(--navy); color: #fff; }
+.xl-b--navy:hover { background: var(--navy-3); }
+.xl-b--blanco { background: var(--nieve); color: var(--navy); border-color: var(--navy); }
+.xl-b--blanco:hover { background: var(--amarillo-claro); }
+.xl-barra :focus-visible, .xl-riel :focus-visible { outline-color: var(--amarillo); }
+
+/* El riel de escenas */
+.xl-riel {
+  grid-row: 2; display: flex; flex-direction: column; gap: 0; overflow-y: auto; scrollbar-width: thin;
+  background: var(--navy); color: var(--claro); padding: 14px 12px 16px; font-size: var(--t-s);
+}
+.xl-parte { padding: 6px 4px 8px; margin-bottom: 8px; background: var(--navy-osc); }
+.xl-parte + .xl-parte { background: var(--navy-2); }
+.xl-parte-t { display: block; padding: 8px 8px 6px; color: var(--amarillo); font-size: var(--t-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; line-height: 1.35; }
+.xl-parte-t small { display: block; color: var(--guia); font-weight: 400; letter-spacing: .02em; text-transform: none; font-size: var(--t-xs); }
+.xl-sn {
+  display: flex; align-items: baseline; gap: .6em; width: 100%; min-height: 36px; padding: 8px 8px; border: 0;
+  background: transparent; color: var(--claro); text-align: left; line-height: 1.25; font-size: var(--t-s);
+}
+button.xl-sn:hover { color: #fff; background: rgba(255, 255, 255, .06); }
+.xl-sn .n { min-width: 1.3em; color: var(--amarillo); font-weight: 600; }
+.xl-sn.is-active { background: var(--amarillo); color: var(--navy); font-weight: 600; }
+.xl-sn.is-active .n { color: var(--navy); }
+.xl-sn .corto { display: none; }
+.xl-sn[aria-disabled="true"] { color: var(--guia); cursor: default; }
+.xl-sn[aria-disabled="true"] .n { color: var(--guia); }
+.xl-riel-pie { margin-top: auto; padding: 12px 8px 0; font-size: var(--t-xs); line-height: 1.4; color: var(--claro); }
+.xl-riel-pie a { color: var(--amarillo); }
+
+/* ── La escena ───────────────────────────────────────────────────── */
+.xl-escena { grid-row: 2; display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 16px 22px 14px; gap: 12px; }
+.xl-cab { flex: none; }
+.xl-ceja {
+  margin: 0 0 4px; padding-left: 40px; color: var(--oliva-osc); font-size: var(--t-xs); font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; line-height: 1.4; background: linear-gradient(var(--amarillo), var(--amarillo)) left center / 30px 5px no-repeat;
+}
+.xl-cab h1 { margin: 0; font-size: 32px; line-height: 1.05; letter-spacing: -.025em; font-weight: 600; }
+.xl-preg { margin: 6px 0 0; font-size: var(--t-m); color: var(--sec); line-height: 1.35; }
+
+.xl-kpis { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--nieve); }
+.xl-kpi { padding: 10px 16px 11px; min-width: 0; }
+.xl-kpi + .xl-kpi { border-left: 1px solid var(--borde); }
+.xl-kpi .k { display: block; font-size: var(--t-xs); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--oliva-osc); line-height: 1.3; }
+.xl-kpi .v { display: block; margin-top: 2px; font-size: 26px; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; white-space: nowrap; }
+.xl-kpi .v small { font-size: var(--t-s); font-weight: 400; color: var(--sec); letter-spacing: 0; }
+.xl-kpi .s { display: block; margin-top: 2px; font-size: var(--t-xs); color: var(--sec); line-height: 1.3; }
+.xl-kpi.alerta .v { color: var(--alerta); }
+
+.xl-figs { flex: 1 1 0; min-height: 0; display: flex; gap: 12px; }
+.xl-fig { position: relative; flex: 1 1 0; min-width: 0; margin: 0; background: var(--nieve); }
+.xl-fig.ancha { flex-grow: 1.12; }
+.xl-fig > svg { position: absolute; top: 40px; left: 0; right: 0; bottom: 0; width: 100%; height: calc(100% - 40px); display: block; }
+.xl-fig-cab {
+  position: absolute; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 0 6px 0 14px; border-bottom: 1px solid var(--zona);
+}
+.xl-fig-cab > span { font-size: var(--t-xs); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--oliva-osc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.xl-mini {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; border: 1px solid var(--borde);
+  background: var(--nieve); color: var(--navy); font-size: var(--t-xs); font-weight: 600;
+}
+.xl-mini:hover { border-color: var(--navy); }
+.xl-mini .xl-ico { width: 15px; height: 15px; }
+
+.xl-ver { flex: none; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 10px 8px 14px; background: var(--nieve); border-left: 6px solid var(--navy); }
+.xl-ver.alerta { border-left-color: var(--alerta); }
+.xl-ver .ic { display: grid; place-items: center; color: var(--navy); }
+.xl-ver.alerta .ic { color: var(--alerta); }
+.xl-ver p { margin: 0; flex: 1; font-size: var(--t-m); line-height: 1.35; }
+.xl-ver.alerta p b { color: var(--alerta); }
+.xl-sig { flex: none; }
+
+/* ── Los mandos ──────────────────────────────────────────────────── */
+.xl-panel { grid-row: 2; overflow-y: auto; scrollbar-width: thin; background: var(--nieve); border-left: 1px solid var(--borde); }
+
+/* La pregunta para predecir: campo amarillo a sangre */
+.xl-pred { padding: 16px 18px 18px; background: var(--amarillo); color: var(--navy); }
+.xl-pred .k { display: flex; align-items: center; gap: 8px; font-size: var(--t-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.xl-pred .k .xl-ico { width: 16px; height: 16px; }
+.xl-pred .q { margin: 8px 0 10px; font-size: var(--t-m); font-weight: 600; line-height: 1.3; }
+.xl-pred ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.xl-op {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 38px; padding: 7px 10px; text-align: left;
+  border: 1.5px solid var(--navy); background: var(--nieve); font-size: var(--t-s); line-height: 1.25;
+}
+.xl-op:hover:not([disabled]) { background: var(--amarillo-claro); }
+.xl-op .l { display: grid; place-items: center; flex: none; width: 22px; height: 22px; border: 1.5px solid var(--navy); font-size: var(--t-xs); font-weight: 600; }
+.xl-op.elegida { background: var(--navy); color: #fff; }
+.xl-op.elegida .l { border-color: #fff; }
+.xl-op[disabled] { cursor: default; }
+.xl-op[disabled]:not(.elegida):not(.correcta) { opacity: .62; }
+.xl-op.correcta:not(.elegida) { border-width: 3px; }
+.xl-pred .paso { margin: 10px 0 0; font-size: var(--t-s); line-height: 1.4; }
+.xl-pred .fila { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.xl-pred .res { margin: 12px 0 0; padding: 10px 12px; background: var(--nieve); font-size: var(--t-s); line-height: 1.45; }
+.xl-pred .res b:first-child { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.xl-pred .otra { margin-top: 10px; background: none; border: 0; padding: 4px 0; min-height: 30px; font-size: var(--t-xs); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+.xl-ctl { padding: 14px 18px 22px; }
+.xl-ctl-t { margin: 0 0 6px; font-size: var(--t-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--oliva-osc); }
+.xl-c { padding: 10px 0 12px; border-bottom: 1px solid var(--zona); }
+.xl-c-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.xl-c-cab label, .xl-c-cab .lb { font-size: var(--t-s); line-height: 1.3; }
+.xl-c-cab output { font-size: var(--t-m); font-weight: 600; white-space: nowrap; }
+.xl-c-nota { display: flex; justify-content: space-between; gap: 8px; margin: 2px 0 0; font-size: var(--t-xs); color: var(--sec); line-height: 1.35; }
+.xl-caso-b { border: 0; background: none; padding: 0; min-height: 24px; color: var(--oliva-osc); font-size: var(--t-xs); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.xl-caso-b[disabled] { color: var(--sec); text-decoration: none; cursor: default; }
+
+/* El deslizador: riel delgado, la parte recorrida en azul noche, el mando cuadrado */
+input[type=range].xl-r { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 30px; margin: 4px 0 0; background: transparent; cursor: pointer; --p: 50%; }
+input[type=range].xl-r::-webkit-slider-runnable-track { height: 6px; background: linear-gradient(90deg, var(--navy) var(--p), var(--borde) var(--p)); }
+input[type=range].xl-r::-moz-range-track { height: 6px; background: var(--borde); }
+input[type=range].xl-r::-moz-range-progress { height: 6px; background: var(--navy); }
+input[type=range].xl-r::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -7px; background: var(--navy); border: 3px solid var(--nieve); outline: 1.5px solid var(--navy); }
+input[type=range].xl-r::-moz-range-thumb { width: 14px; height: 14px; background: var(--navy); border: 3px solid var(--nieve); outline: 1.5px solid var(--navy); border-radius: 0; }
+input[type=range].xl-r:focus-visible { outline: none; }
+input[type=range].xl-r:focus-visible::-webkit-slider-thumb { background: var(--amarillo); outline: 3px solid var(--navy); }
+input[type=range].xl-r:focus-visible::-moz-range-thumb { background: var(--amarillo); outline: 3px solid var(--navy); }
+
+/* Botones de a varios (un grado, un modo) y el contador con − y + */
+.xl-seg { display: flex; margin-top: 8px; border: 1.5px solid var(--navy); }
+.xl-seg button { flex: 1; min-height: 34px; padding: 0 6px; border: 0; background: var(--nieve); font-size: var(--t-s); white-space: nowrap; }
+.xl-seg button + button { border-left: 1.5px solid var(--navy); }
+.xl-seg button[aria-pressed="true"] { background: var(--navy); color: #fff; font-weight: 600; }
+.xl-seg button:hover:not([aria-pressed="true"]) { background: var(--amarillo-claro); }
+.xl-cont { display: flex; align-items: center; gap: 0; margin-top: 8px; }
+.xl-cont button { display: grid; place-items: center; width: 40px; min-height: 36px; border: 1.5px solid var(--navy); background: var(--nieve); }
+.xl-cont button:hover:not([disabled]) { background: var(--amarillo-claro); }
+.xl-cont button[disabled] { opacity: .4; cursor: default; }
+.xl-cont span { flex: 1; display: grid; place-items: center; min-height: 36px; border-top: 1.5px solid var(--navy); border-bottom: 1.5px solid var(--navy); font-weight: 600; }
+
+.xl-info { margin: 12px 0 0; padding: 10px 12px; background: var(--papel); font-size: var(--t-xs); line-height: 1.45; color: var(--sec); }
+.xl-info b { color: var(--navy); }
+.xl-info button { border: 0; background: none; padding: 0; min-height: 24px; color: var(--oliva-osc); font-size: var(--t-xs); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+details.xl-mas { margin-top: 14px; border-top: 1.5px solid var(--navy); }
+details.xl-mas > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 42px; cursor: pointer; list-style: none;
+  font-size: var(--t-s); font-weight: 600;
+}
+details.xl-mas > summary::-webkit-details-marker { display: none; }
+details.xl-mas > summary .xl-ico { transition: transform .15s; }
+details.xl-mas[open] > summary .xl-ico { transform: rotate(180deg); }
+
+/* ── Las figuras (SVG): letras y trazos ──────────────────────────── */
+/* El dibujo cabe en 400 × 400 y se ve a escala 0,9 a 1,05: estas letras quedan en 13 px o más en pantalla. */
+.f-t { font: 400 15px var(--sans); fill: var(--sec); }
+.f-ts { font: 400 14px var(--sans); fill: var(--sec); }
+.f-v { font: 600 15px var(--sans); fill: var(--navy); }
+.f-vg { font: 600 19px var(--sans); fill: var(--navy); }
+.f-tag { font: 600 14px var(--sans); fill: var(--navy); letter-spacing: .02em; }
+.f-azul { fill: var(--azul); }
+.f-alerta { fill: var(--alerta); }
+.f-halo { paint-order: stroke; stroke: var(--nieve); stroke-width: 4px; stroke-linejoin: round; }
+.f-eje { fill: none; stroke: #AEB8C2; stroke-width: 1.2; }
+.f-rej { stroke: var(--zona); stroke-width: 1; }
+.f-pared { fill: none; stroke: var(--navy); stroke-width: 2.2; stroke-linejoin: round; }
+.f-linea { fill: none; stroke: var(--navy); stroke-width: 1.4; }
+
+/* ── «¿Cómo se calcula?»: la capa con la imagen de una página del libro ── */
+.xl-capa { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: var(--nieve); }
+.xl-capa-cab { flex: none; display: flex; align-items: flex-end; gap: 24px; padding: 14px 28px 14px; background: var(--amarillo); }
+.xl-capa-cab > div { flex: 1; min-width: 0; }
+.xl-capa-cab h2 { margin: 0; font-size: clamp(26px, 2.6vw, 38px); line-height: 1; letter-spacing: -.03em; font-weight: 600; }
+.xl-capa-cab .xl-ceja { color: var(--navy); background-image: linear-gradient(var(--navy), var(--navy)); }
+.xl-capa-ent { margin: 6px 0 0; font-size: var(--t-s); line-height: 1.35; max-width: 80ch; }
+.xl-capa-cuerpo { flex: 1; min-height: 0; display: grid; grid-template-columns: var(--riel) minmax(0, 1fr); }
+.xl-capa-lado { background: var(--navy); padding: 14px 12px; overflow-y: auto; }
+.xl-capa-riel .xl-parte { margin-bottom: 0; }
+.xl-capa-doc { overflow-y: auto; scroll-behavior: smooth; }
+.xl-doc { max-width: 820px; padding: 26px 34px 80px; }
+.xl-doc h3 { margin: 0 0 6px; font-size: 30px; line-height: 1.1; letter-spacing: -.02em; font-weight: 600; }
+.xl-doc .xl-preg { margin: 0 0 18px; }
+.xl-intro, .xl-paso p, .xl-paso li { font-family: var(--serif); font-size: 18px; line-height: 1.6; }
+.xl-doc .xl-ceja { margin-bottom: 6px; }
+/* Sus datos: los mismos controles de la escena, a la vista mientras se lee */
+.xl-datos { margin: 14px 0 0; padding: 10px 12px 4px; background: var(--nieve); border-top: 6px solid var(--amarillo); }
+.xl-datos .xl-c { padding: 6px 0 8px; }
+.xl-datos .xl-c:last-child { border-bottom: 0; }
+.xl-datos .xl-c-cab label, .xl-datos .xl-c-cab .lb { font-size: var(--t-xs); }
+.xl-datos .xl-c-cab output { font-size: var(--t-s); }
+.xl-datos .xl-seg button { font-size: var(--t-xs); padding: 0 2px; }
+.xl-datos .xl-c-nota span { display: none; }
+.xl-datos .t { display: block; font-size: var(--t-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--oliva-osc); }
+.xl-datos .d { margin: 4px 0 2px; font-size: var(--t-xs); line-height: 1.4; color: var(--sec); }
+ol.xl-pasos { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 4px solid var(--oliva); }
+.xl-paso { position: relative; margin: 0 0 22px; padding: 4px 0 0 22px; }
+.xl-paso .pn {
+  position: absolute; left: -33px; top: 6px; display: grid; place-items: center; width: 26px; height: 26px;
+  background: var(--amarillo); border: 2px solid var(--navy); font: 700 var(--t-xs) / 1 var(--sans);
+}
+.xl-paso h4 { margin: 0 0 6px; font-size: var(--t-l); line-height: 1.2; font-weight: 600; }
+.xl-paso p { margin: 0 0 10px; }
+.xl-ec { margin: 6px 0 10px; overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
+.xl-ec .katex-display { margin: 0; }
+.xl-num { margin: 8px 0 12px; padding: 10px 16px; background: var(--papel); border-left: 6px solid var(--oliva); overflow-x: auto; }
+.xl-num .k { display: block; font: 600 var(--t-xs) / 1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--oliva-osc); margin-bottom: 2px; }
+.xl-num .katex-display { margin: .3em 0; }
+.xl-num p { margin: 6px 0 0; font-size: 17px; }
+.xl-fuente { margin: 0; font-family: var(--sans) !important; font-size: var(--t-s) !important; line-height: 1.5 !important; color: var(--sec); }
+.xl-fuente a { white-space: nowrap; }
+.xl-avance { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 4px 0 26px 22px; font-size: var(--t-s); color: var(--sec); }
+.xl-libro { margin: 26px 0 0; padding: 16px 20px; background: var(--papel); border-top: 6px solid var(--amarillo); }
+.xl-libro h4 { margin: 0 0 8px; font-size: var(--t-m); font-weight: 600; }
+.xl-libro ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.xl-libro li { font-family: var(--sans) !important; font-size: var(--t-s) !important; line-height: 1.4 !important; }
+.xl-libro a { display: inline-flex; align-items: center; gap: 6px; }
+.xl-libro a .xl-ico { width: 14px; height: 14px; }
+
+/* ── Configuraciones ─────────────────────────────────────────────── */
+.xl-velo { position: fixed; inset: 0; z-index: 50; background: rgba(14, 20, 29, .55); display: grid; place-items: center; padding: 20px; }
+.xl-modal { width: min(920px, 100%); max-height: calc(100dvh - 40px); overflow-y: auto; background: var(--nieve); }
+.xl-modal-cab { display: flex; align-items: flex-start; gap: 16px; padding: 20px 24px 14px; background: var(--navy); color: var(--claro); }
+.xl-modal-cab > div { flex: 1; }
+.xl-modal-cab h2 { margin: 0; font-size: 26px; line-height: 1.1; font-weight: 600; color: #fff; }
+.xl-modal-cab p { margin: 6px 0 0; font-size: var(--t-s); }
+.xl-modal-cab .xl-ceja { color: var(--amarillo); }
+.xl-cerrar { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 1.5px solid currentColor; background: transparent; font-size: var(--t-s); font-weight: 600; }
+.xl-cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 18px 24px 24px; }
+.xl-cfg { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; background: var(--papel); border-top: 6px solid var(--papel); }
+.xl-cfg.activa { border-top-color: var(--amarillo); }
+.xl-cfg .e { font-size: var(--t-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--oliva-osc); }
+.xl-cfg h3 { margin: 0; font-size: 20px; line-height: 1.2; font-weight: 600; }
+.xl-cfg p { margin: 0; font-size: var(--t-s); line-height: 1.45; }
+.xl-cfg .r { color: var(--navy); font-weight: 600; }
+.xl-cfg .r.alerta { color: var(--alerta); }
+.xl-cfg .xl-b { align-self: flex-start; margin-top: auto; }
+
+/* ── Movimiento reducido ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+  .xl-repetir { display: none !important; }
+}
+
+/* ── Celular y pantallas angostas: una columna ───────────────────── */
+.xl-movil, .xl-hoja-t { display: none; }
+@media (max-width: 1099.98px), (max-height: 599.98px) {
+  html, body { height: auto; }
+  /* una columna: la figura arriba, los números, el veredicto, la pregunta y la gráfica */
+  .xl { display: flex; flex-direction: column; height: auto; overflow: visible; padding-bottom: 76px; }
+  .xl-escena, .xl-panel, .xl-figs { display: contents; }
+  .xl-barra { order: -2; position: sticky; top: 0; z-index: 30; height: 56px; padding: 0 12px 0 0; gap: 10px; }
+  .xl-marca { width: auto; padding-left: 12px; }
+  .xl-caso, .xl-acc .xl-b--amarillo { display: none; }
+  .xl-acc .xl-b--linea { padding: 0 10px; min-height: 44px; }
+  .xl-acc .xl-b--linea span { display: none; }
+  .xl-riel { order: -1; display: block; padding: 10px 12px; overflow: visible; }
+  .xl-riel .xl-parte { display: flex; gap: 6px; padding: 0; margin: 0; background: none; }
+  .xl-riel .xl-parte-t, .xl-riel .xl-pronto, .xl-riel-pie { display: none; }
+  .xl-riel .xl-sn { flex: 1; justify-content: center; min-height: 44px; padding: 6px 4px; background: var(--navy-osc); font-size: var(--t-s); }
+  .xl-riel .xl-sn .largo { display: none; }
+  .xl-riel .xl-sn .corto, .xl-capa-riel .xl-sn .corto { display: inline; }
+  .xl-riel .xl-sn.is-active { background: var(--amarillo); }
+  .xl-cab, .xl-fig, .xl-kpis, .xl-ver, .xl-pred { margin: 0 16px 12px; }
+  .xl-cab { order: 1; margin-top: 14px; }
+  .xl-fig.ancha { order: 2; }
+  .xl-kpis { order: 3; }
+  .xl-ver { order: 4; }
+  .xl-pred { order: 5; }
+  .xl-fig:not(.ancha) { order: 6; }
+  .xl-cab h1 { font-size: 28px; }
+  .xl-kpi { padding: 8px 10px 9px; }
+  .xl-kpi .k { font-size: 12px; letter-spacing: .04em; }
+  .xl-kpi .v { font-size: 20px; }
+  .xl-kpi .s { display: none; }
+  .xl-fig { flex: none; display: flex; flex-direction: column; }
+  .xl-fig-cab { position: static; flex: none; }
+  .xl-fig > svg { position: static; height: auto; aspect-ratio: var(--ar, 5 / 6); }
+  .xl-ctl-t { display: none; }
+  .xl-ver { align-items: flex-start; flex-wrap: wrap; }
+  .xl-ver p { font-size: var(--t-s); flex-basis: calc(100% - 40px); }
+  .xl-ver .xl-sig { margin-left: auto; }
+  /* los mandos: una hoja que sube desde abajo, sin tapar la página entera */
+  .xl-ctl {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; max-height: 46vh; overflow-y: auto;
+    padding: 0 16px 20px; background: var(--nieve); border-top: 4px solid var(--navy);
+    transform: translateY(100%); transition: transform .2s ease; visibility: hidden;
+  }
+  body.hoja-abierta .xl-ctl { transform: none; visibility: visible; }
+  body.hoja-abierta .xl { padding-bottom: 48vh; }
+  .xl-hoja-t { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; margin: 0 -16px 4px; padding: 8px 16px; background: var(--nieve); border-bottom: 1px solid var(--zona); }
+  .xl-hoja-t b { font-size: var(--t-s); }
+  .xl-movil { position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; display: flex; gap: 8px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: var(--navy); }
+  .xl-movil .xl-b { flex: 1; min-height: 46px; }
+  body.hoja-abierta .xl-movil { display: none; }
+  input[type=range].xl-r { height: 44px; }
+  .xl-seg button, .xl-cont button, .xl-cont span, .xl-op, .xl-mini, .xl-cerrar, .xl-caso-b, .xl-info button, details.xl-mas > summary, .xl-pred .otra { min-height: 44px; }
+  .xl-capa { overflow-y: auto; }
+  .xl-capa-cab { padding: 16px 16px 14px; align-items: flex-start; }
+  .xl-capa-cab .xl-cerrar { min-width: 44px; }
+  .xl-capa-cab .xl-cerrar span { display: none; }
+  .xl-capa-cuerpo { display: block; }
+  .xl-capa-lado { padding: 10px 12px 12px; overflow: visible; }
+  .xl-capa-riel .xl-parte { display: flex; gap: 6px; padding: 0; margin: 0; background: none; width: 100%; }
+  .xl-cfgs { grid-template-columns: 1fr; }
+  .xl-capa-riel .xl-parte-t { display: none; }
+  .xl-capa-riel .xl-sn { flex: 1; justify-content: center; min-height: 44px; background: var(--navy-osc); }
+  .xl-capa-riel .xl-sn .largo { display: none; }
+  .xl-capa-riel .xl-sn.is-active { background: var(--amarillo); }
+  .xl-capa-doc { overflow: visible; }
+  .xl-doc { padding: 18px 16px 60px; }
+  .xl-doc h3 { font-size: 26px; }
+  .xl-intro, .xl-paso p, .xl-paso li { font-size: 17px; }
+  .xl-capa-ent { display: none; }
+  .xl-num, .xl-ec { padding-left: 10px; padding-right: 10px; }
+  .xl-num .katex-display > .katex, .xl-ec .katex-display > .katex { font-size: 1.02em; }
+  ol.xl-pasos { padding-left: 14px; }
+  .xl-paso { padding-left: 16px; }
+  .xl-paso .pn { left: -29px; }
+  .xl-velo { padding: 0; place-items: stretch; }
+  .xl-modal { max-height: 100dvh; height: 100dvh; }
+  .xl-modal-cab { padding: 16px; }
+  .xl-cfgs { padding: 14px 16px 24px; }
+}
+@media (pointer: coarse) {
+  input[type=range].xl-r { height: 44px !important; }
+  .xl-seg button, .xl-cont button, .xl-op, .xl-mini, .xl-b, .xl-sn, .xl-cerrar, details.xl-mas > summary { min-height: 44px !important; }
+}

@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Explorador de filtración · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/classroom/explorador-libro.css">
+<style>
+/* Solo lo propio de este explorador: el movimiento de las líneas del filtro. */
+.fl-flujo { stroke-dasharray: 10 8; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-rot" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+  <symbol id="i-abajo" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-der" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-cuadros" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></symbol>
+  <symbol id="i-sigma" viewBox="0 0 24 24"><path d="M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2"/></symbol>
+  <symbol id="i-ajustes" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></symbol>
+  <symbol id="i-ayuda" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-alerta" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-libro" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+  <symbol id="i-fuera" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+  <symbol id="i-menos" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-mas" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+</svg>
+
+<div class="xl" id="app">
+  <header class="xl-barra">
+    <div class="xl-marca"><span class="xl-cap" aria-hidden="true">18</span><span><b>Explorador de filtración</b><small>POU · 2027-10</small></span></div>
+    <div class="xl-caso" aria-live="polite">
+      <span class="k">Caso</span><span class="v" id="casoNom">El caso del libro</span><span class="m" id="casoMod" hidden>con cambios</span>
+      <button type="button" id="casoReset" hidden><svg class="xl-ico" aria-hidden="true"><use href="#i-rot"/></svg>Volver al caso</button>
+    </div>
+    <div class="xl-acc">
+      <button type="button" class="xl-b xl-b--linea" id="btnCfg" aria-label="Configuraciones"><svg class="xl-ico" aria-hidden="true"><use href="#i-cuadros"/></svg><span>Configuraciones</span></button>
+      <button type="button" class="xl-b xl-b--amarillo" id="btnCalc"><svg class="xl-ico" aria-hidden="true"><use href="#i-sigma"/></svg>¿Cómo se calcula?</button>
+    </div>
+  </header>
+
+  <nav class="xl-riel" id="riel" aria-label="Escenas"></nav>
+
+  <main class="xl-escena" id="escena">
+    <div class="xl-cab">
+      <p class="xl-ceja" id="ceja"></p>
+      <h1 id="titulo"></h1>
+      <p class="xl-preg" id="pregunta"></p>
+    </div>
+    <div class="xl-kpis" id="kpis" aria-live="polite"></div>
+    <div class="xl-figs" id="figs"></div>
+    <div class="xl-ver" id="veredicto" aria-live="polite">
+      <span class="ic" id="verIc"></span><p id="verTx"></p>
+      <button type="button" class="xl-b xl-b--navy xl-sig" id="btnSig"></button>
+    </div>
+  </main>
+
+  <aside class="xl-panel" id="panel" aria-label="Predicción y controles">
+    <section class="xl-pred" id="pred" aria-live="polite"></section>
+    <section class="xl-ctl" id="ctl" aria-label="Controles"></section>
+  </aside>
+</div>
+
+<div class="xl-movil">
+  <button type="button" class="xl-b xl-b--blanco" id="btnHoja"><svg class="xl-ico" aria-hidden="true"><use href="#i-ajustes"/></svg>Controles</button>
+  <button type="button" class="xl-b xl-b--amarillo" id="btnCalcM"><svg class="xl-ico" aria-hidden="true"><use href="#i-sigma"/></svg>¿Cómo se calcula?</button>
+</div>
+
+<div class="xl-capa" id="capa" role="dialog" aria-modal="true" aria-labelledby="capaT" hidden>
+  <div class="xl-capa-cab">
+    <div>
+      <p class="xl-ceja">Explorador de filtración · El modelo</p>
+      <h2 id="capaT">¿Cómo se calcula?</h2>
+      <p class="xl-capa-ent">Cada escena, paso por paso, con los números que usted tiene en pantalla. Si mueve un dato aquí, las cuentas cambian con él, y el explorador queda igual al cerrar.</p>
+    </div>
+    <button type="button" class="xl-cerrar" id="capaX"><svg class="xl-ico" aria-hidden="true"><use href="#i-x"/></svg><span>Cerrar</span></button>
+  </div>
+  <div class="xl-capa-cuerpo">
+    <div class="xl-capa-lado">
+      <nav class="xl-capa-riel" id="capaRiel" aria-label="Escenas del cálculo"></nav>
+      <div class="xl-datos" id="capaDatos" role="group" aria-labelledby="capaDatosT"></div>
+    </div>
+    <div class="xl-capa-doc" id="capaDoc"><article class="xl-doc" id="doc"></article></div>
+  </div>
+</div>
+
+<div class="xl-velo" id="velo" hidden>
+  <div class="xl-modal" role="dialog" aria-modal="true" aria-labelledby="cfgT">
+    <div class="xl-modal-cab">
+      <div>
+        <p class="xl-ceja">Explorador de filtración</p>
+        <h2 id="cfgT">Configuraciones</h2>
+        <p>Al cargar una, el sistema vuelve al caso del libro con los cambios de la tarjeta. Los resultados de cada tarjeta salen del mismo modelo.</p>
+      </div>
+      <button type="button" class="xl-cerrar" id="cfgX"><svg class="xl-ico" aria-hidden="true"><use href="#i-x"/></svg><span>Cerrar</span></button>
+    </div>
+    <div class="xl-cfgs" id="cfgs"></div>
+  </div>
+</div>
+
+<script src="/classroom/vendor/katex/katex.min.js"></script>
+
+<script id="modelo">
+/* El modelo de la winterización: el del libro de operaciones unitarias (herramientas/filtros.py, sección 5, y el
+   ejemplo 18.5 del capítulo 18). Los números por defecto son los del caso: 166 kg de aceite cada 8 h, enfriado a
+   5 °C, 8 h de reposo y un filtro de placas de celulosa que pasa el lote en 2 h.
+   El aceite es d-limoneno (Clará y coautores, 2009); el agua, IAPWS-95 a la presión de Bogotá (la tabla entre 0 y 40 °C
+   que escribe filtros.py); el agua disuelta, el modelo de Li y Tamura en cinco puntos, interpolado en ln w contra 1/T;
+   las placas, las hojas Seitz K y Seitz ZD de Pall. El agua libre (500 mg/kg) y lo que retiene la placa (100 g/m²)
+   son ilustrativos en el libro. Este bloque no toca la página: la prueba de los números lo carga solo. */
+window.Modelo = (function () {
+  'use strict';
+  var G = 9.80665, BAR = 1e5, PLACA = 0.4 * 0.4;
+  // [T °C, ρ kg/m³, μ Pa·s] del agua líquida a 73,7 kPa
+  var AGUA = [[0,999.8290,1.791818e-03],[1,999.8879,1.731078e-03],[2,999.9291,1.673567e-03],[3,999.9534,1.619056e-03],[4,999.9612,1.567335e-03],[5,999.9531,1.518212e-03],[6,999.9294,1.471513e-03],[7,999.8908,1.427076e-03],[8,999.8377,1.384754e-03],[9,999.7703,1.344412e-03],[10,999.6893,1.305925e-03],[11,999.5948,1.269177e-03],[12,999.4873,1.234064e-03],[13,999.3670,1.200486e-03],[14,999.2344,1.168354e-03],[15,999.0897,1.137583e-03],[16,998.9332,1.108095e-03],[17,998.7652,1.079818e-03],[18,998.5859,1.052685e-03],[19,998.3956,1.026633e-03],[20,998.1945,1.001605e-03],[21,997.9829,9.775446e-04],[22,997.7609,9.544026e-04],[23,997.5289,9.321313e-04],[24,997.2869,9.106864e-04],[25,997.0352,8.900263e-04],[26,996.7739,8.701124e-04],[27,996.5034,8.509082e-04],[28,996.2236,8.323796e-04],[29,995.9348,8.144943e-04],[30,995.6371,7.972224e-04],[31,995.3308,7.805353e-04],[32,995.0159,7.644064e-04],[33,994.6925,7.488104e-04],[34,994.3609,7.337237e-04],[35,994.0211,7.191238e-04],[36,993.6733,7.049896e-04],[37,993.3176,6.913011e-04],[38,992.9541,6.780393e-04],[39,992.5829,6.651863e-04],[40,992.2042,6.527253e-04]];
+  var DISUELTA = [[5, 517], [10, 566], [20, 673], [25, 731], [35, 856]];   // mg de agua por kg de limoneno saturado
+  var PALL = { 'K 900': 1700, 'K 250': 510, 'K 100': 146, 'EKS': 29 };     // L/(m²·min) de agua a 20 °C y 1 bar
+  var ZD = { fino: 525, pulido: 850 };                                     // L/(m²·h), flujo recomendado
+  var MU_W20 = AGUA[20][2];
+  var CASO = {
+    T: 5, Tllega: 20, kgh: 20.76244550342911, loteH: 8,                    // el enfriado y el lote
+    reposo: 8, libre: 500, da: 2, db: 16.392631578041878, hd: 1,            // el reposo (db: la gota que deja el florentino)
+    placas: 6, grado: 'K 250', cap: 100, tf: 2, dpAdm: 0.1                  // el filtro
+  };
+
+  function agua(tc) {
+    var i = Math.max(0, Math.min(AGUA.length - 2, Math.floor(tc))), a = AGUA[i], b = AGUA[i + 1], t = tc - a[0];
+    return { rho: a[1] + (b[1] - a[1]) * t, mu: Math.exp(Math.log(a[2]) + (Math.log(b[2]) - Math.log(a[2])) * t) };
+  }
+  function limoneno(tc) { var T = tc + 273.15; return { rho: 1077.4 - 0.793 * T, mu: 0.017e-3 * Math.exp(1173 / T) }; }
+  function tramo(tc) {
+    var xs = DISUELTA.map(function (p) { return 1 / (p[0] + 273.15); }), x = 1 / (tc + 273.15);
+    var n = xs.filter(function (xx) { return xx > x; }).length;
+    var i = Math.max(0, Math.min(xs.length - 2, n - 1)), f = (x - xs[i]) / (xs[i + 1] - xs[i]);
+    return { i: i, f: f, T1: DISUELTA[i][0], T2: DISUELTA[i + 1][0], w1: DISUELTA[i][1], w2: DISUELTA[i + 1][1],
+      w: Math.exp(Math.log(DISUELTA[i][1]) + f * (Math.log(DISUELTA[i + 1][1]) - Math.log(DISUELTA[i][1]))) };
+  }
+  function disuelta(tc) { return tramo(tc).w; }
+  // Fracción del agua libre (repartida pareja en ln d entre da y db) que llega al fondo: cada tamaño cae en la
+  // fracción min[1, (d/dc)²]; con dc infinito (sin reposo) no cae nada.
+  function eta(da, db, dc) {
+    if (!(db > da)) return 0;
+    if (!isFinite(dc)) return 0;
+    var L = Math.log(db / da), c = Math.min(db, dc);
+    var parte = c > da ? (c * c - da * da) / (2 * dc * dc) : 0;
+    var entera = db > dc ? Math.log(db / Math.max(dc, da)) : 0;
+    return (parte + entera) / L;
+  }
+
+  function calcular(s) {
+    var o = limoneno(s.T), w = agua(s.T), drho = w.rho - o.rho;
+    var kg = s.kgh * s.loteH, V = kg / o.rho;                               // kg y m³ del lote
+    var D = Math.pow(4 * V / (Math.PI * s.hd), 1 / 3), H = s.hd * D;
+    var tr = s.reposo * 3600, da = s.da * 1e-6, db = s.db * 1e-6;
+    function dcEn(h) { return h > 0 ? Math.sqrt(18 * o.mu * H / (G * drho * h * 3600)) : Infinity; }
+    var dc = dcEn(s.reposo), et = eta(da, db, dc);
+    var wLl = disuelta(s.Tllega), wT = disuelta(s.T);
+    var sale = Math.max(0, wLl - wT), queda = Math.min(wT, wLl);
+    var purga = s.libre * et, libreFiltro = s.libre - purga;
+    var mgkg = libreFiltro + sale, g = mgkg * kg / 1000;
+    var Q = V / (s.tf * 3600);
+    var Rm = BAR / (MU_W20 * PALL[s.grado] / 60000);
+    var A1 = o.mu * Rm * Q / (s.dpAdm * BAR);
+    var A2 = [Q * 3.6e6 / ZD.pulido, Q * 3.6e6 / ZD.fino];
+    var A3 = g / s.cap;
+    var crit = [['caida', A1], ['flujo', A2[1]], ['agua', A3]].sort(function (a, b) { return b[1] - a[1]; });
+    var Amax = crit[0][1];
+    var A = s.placas * PLACA;
+    return {
+      s: s, o: o, w: w, drho: drho, kg: kg, V: V, D: D, H: H, tr: tr, da: da, db: db, dc: dc, eta: et,
+      wLl: wLl, wT: wT, sale: sale, queda: queda, fracQueda: queda / wLl, gSale: sale * kg / 1000,
+      muLl: limoneno(s.Tllega).mu,
+      libre: s.libre, purga: purga, libreFiltro: libreFiltro, gPurga: purga * kg / 1000,
+      mgkg: mgkg, g: g, Q: Q, Rm: Rm, A1: A1, A2: A2, A3: A3, Amax: Amax, decide: crit[0][0],
+      nAgua: Math.ceil(A3 / PLACA - 1e-9), nReq: Math.ceil(Amax / PLACA - 1e-9),
+      A: A, carga: g / (s.cap * A), dp: o.mu * Rm * Q / A / BAR,
+      residuo: [0.0008 * kg, 0.014 * kg],
+      v: function (d) { return G * drho * d * d / (18 * o.mu); },
+      re: function (d) { return o.rho * (G * drho * d * d / (18 * o.mu)) * d / o.mu; },
+      dcEn: dcEn,
+      etaEn: function (h) { return eta(da, db, dcEn(h)); }
+    };
+  }
+  return { G: G, BAR: BAR, PLACA: PLACA, AGUA: AGUA, DISUELTA: DISUELTA, PALL: PALL, ZD: ZD, MU_W20: MU_W20, CASO: CASO,
+    agua: agua, limoneno: limoneno, tramo: tramo, disuelta: disuelta, eta: eta, calcular: calcular };
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var M = window.Modelo;
+  var mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  var LIBRO = 'https://libro.luishreyes.com/';
+
+  /* ================= Formato ================= */
+  var NB = '\u00a0';
+  function num(x, d) {
+    if (x === Infinity) return '∞';
+    if (!isFinite(x)) return 'sin dato';
+    var t = Math.abs(x).toFixed(d == null ? 0 : d), neg = x < 0 && Number(t) !== 0, p = t.split('.'), e = p[0];
+    if (e.length > 4) e = e.replace(/\B(?=(\d{3})+(?!\d))/g, NB);
+    return (neg ? '−' : '') + e + (p[1] ? ',' + p[1] : '');
+  }
+  function un(x, d, u) { return num(x, d) + NB + u; }
+  function pct(f, d) { return num(100 * f, d || 0) + NB + '%'; }
+  function kn(x, d) { return num(x, d).replace(',', '{,}').replace(/\u00a0/g, '\\,').replace('−', '-'); }
+  function man(x) { var e = Math.floor(Math.log10(Math.abs(x))), c = x / Math.pow(10, e); if (Math.abs(c) >= 9.995) { c /= 10; e += 1; } return [c, e]; }
+  function kc(x, d) { var m = man(x); return kn(m[0], d == null ? 2 : d) + '\\times10^{' + m[1] + '}'; }
+  function hc(x, d) {
+    var m = man(x), sup = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' };
+    return num(m[0], d == null ? 2 : d) + NB + '×' + NB + '10' + String(m[1]).split('').map(function (c) { return sup[c]; }).join('');
+  }
+  function mbar(bar) { var m = bar * 1000; return un(m, m < 3 ? 1 : 0, 'mbar'); }
+  function placasTxt(n) { return n === 1 ? 'una placa' : n + NB + 'placas'; }
+  function ico(id) { return '<svg class="xl-ico" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; }
+  function K(tex) {
+    if (!window.katex) return '<code>' + tex + '</code>';
+    return katex.renderToString(tex, { displayMode: true, throwOnError: false, strict: false });
+  }
+  // En pantallas angostas, una ecuación larga se parte antes de su último «=» y en cada \qquad, para que el
+  // resultado no quede fuera de la vista.
+  function aNivel0(t, pat) {
+    var out = [], d = 0;
+    for (var i = 0; i < t.length; i++) {
+      var c = t[i];
+      if (c === '\\' && t[i + 1] === '{') { i++; continue; }
+      if (c === '{') d++; else if (c === '}') d--;
+      else if (d === 0 && t.substr(i, pat.length) === pat) out.push(i);
+    }
+    return out;
+  }
+  function partir(tex) {
+    if (window.innerWidth >= 700) return tex;
+    var out = [];
+    tex.split('\\\\').forEach(function (l) {
+      var cortes = aNivel0(l, '\\qquad'), piezas = [], a = 0;
+      cortes.forEach(function (c) { piezas.push(l.slice(a, c)); a = c + 6; });
+      piezas.push(l.slice(a));
+      piezas.forEach(function (p) {
+        var visible = p.replace(/\\[a-zA-Z]+/g, ' ').replace(/[{}^_]/g, '').replace(/\s+/g, ' ').trim();
+        var iguales = aNivel0(p, '=');
+        if (visible.length > 30 && iguales.length > 1) { var k = iguales[iguales.length - 1]; out.push(p.slice(0, k)); out.push(p.slice(k)); }
+        else out.push(p);
+      });
+    });
+    return out.length > 1 ? '\\begin{gathered}' + out.join('\\\\ ') + '\\end{gathered}' : out[0];
+  }
+  function enlace(ruta, txt) { return '<a href="' + LIBRO + ruta + '" target="_blank" rel="noopener">' + txt + ico('fuera') + '</a>'; }
+
+  /* ================= Dibujo ================= */
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { tinta: '#19222F', sec: '#525C64', guia: '#8A96A3', eje: '#AEB8C2', borde: '#D3D9DF', rej: '#E3E8EE', zona: '#F1F3F5', blanco: '#FFFFFF',
+    amarillo: '#FFF500', oliva: '#6E6A00', azul: '#2E5E9E', alerta: '#B3261E', fuera: '#F6D9C8',
+    agua: '#E4EEF7', aguaM: '#BCD0E6', aguaO: '#8FB0CF', aceite: '#F3E9BE', aceiteM: '#E3CF7A', aceiteO: '#B08A1E',
+    metal: '#C9D1D9', metalM: '#AEB8C2', metalO: '#8A96A3', metalC: '#E1E4E7' };
+  function s(tag, at, padre) { var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); if (padre) padre.appendChild(e); return e; }
+  function tx(padre, x, y, txt, cls, anc) { var e = s('text', { x: x, y: y, class: cls || 'f-t' }, padre); if (anc) e.setAttribute('text-anchor', anc); e.textContent = txt; return e; }
+  function set(e, at) { for (var k in at) e.setAttribute(k, at[k]); }
+  function hex(c) { return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; }
+  function mezcla(a, b, f) { var x = hex(a), y = hex(b); return 'rgb(' + x.map(function (v, i) { return Math.round(v + (y[i] - v) * f); }).join(',') + ')'; }
+  function entre(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  function azar(semilla) { var a = semilla >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function suave(f) { f = entre(f, 0, 1); return f * f * (3 - 2 * f); }
+  function lienzo(fig, w, h, aria) {
+    var svg = s('svg', { viewBox: '0 0 ' + w + ' ' + h, role: 'img', 'aria-label': aria, preserveAspectRatio: 'xMidYMid meet' });
+    fig.appendChild(svg);
+    fig.style.setProperty('--ar', w + ' / ' + h);
+    return svg;
+  }
+  function burbuja(padre, cx, cy, l1, l2) {
+    var g = s('g', {}, padre);
+    s('circle', { cx: cx, cy: cy, r: 19, fill: C.blanco, stroke: C.tinta, 'stroke-width': 1.4 }, g);
+    tx(g, cx, cy - 2, l1, 'f-tag', 'middle'); tx(g, cx, cy + 13, l2, 'f-tag', 'middle');
+    return g;
+  }
+  function valvula(padre, x, y, abierta) {
+    return s('path', { d: 'M' + (x - 9) + ' ' + (y - 7) + 'L' + (x + 9) + ' ' + (y + 7) + 'L' + (x + 9) + ' ' + (y - 7) + 'L' + (x - 9) + ' ' + (y + 7) + 'Z',
+      fill: abierta ? C.blanco : C.tinta, stroke: C.tinta, 'stroke-width': 1.4, transform: 'rotate(90 ' + x + ' ' + y + ')' }, padre);
+  }
+  function flecha(padre, x1, y1, x2, y2, color, w) {
+    var a = Math.atan2(y2 - y1, x2 - x1), L = 8;
+    s('line', { x1: x1, y1: y1, x2: x2 - Math.cos(a) * 4, y2: y2 - Math.sin(a) * 4, stroke: color, 'stroke-width': w || 2 }, padre);
+    s('path', { d: 'M' + x2 + ' ' + y2 + 'L' + (x2 - L * Math.cos(a - 0.45)) + ' ' + (y2 - L * Math.sin(a - 0.45)) + 'L' + (x2 - L * Math.cos(a + 0.45)) + ' ' + (y2 - L * Math.sin(a + 0.45)) + 'Z', fill: color }, padre);
+  }
+  // Tangentes exteriores entre dos círculos (para la lupa)
+  function tangentes(x1, y1, r1, x2, y2, r2) {
+    var dx = x2 - x1, dy = y2 - y1, d = Math.hypot(dx, dy), a = Math.atan2(dy, dx), b = Math.acos((r1 - r2) / d), out = [];
+    [a + b, a - b].forEach(function (t) { out.push([x1 + r1 * Math.cos(t), y1 + r1 * Math.sin(t), x2 + r2 * Math.cos(t), y2 + r2 * Math.sin(t)]); });
+    return out;
+  }
+  function colorFrio(T) { return mezcla(C.agua, C.aguaO, entre((20 - T) / 20, 0, 1) * 0.85); }
+
+  /* ================= El sistema ================= */
+  var estado = Object.assign({}, M.CASO);
+  var R = M.calcular(estado);
+  var cfgActiva = 'caso';
+  var escena = 0;
+
+  var CTRL = {
+    T: { etq: 'Temperatura del enfriado', min: 0, max: 20, paso: 0.5, d: 1, u: '°C' },
+    Tllega: { etq: 'Temperatura del aceite que llega', min: 15, max: 30, paso: 0.5, d: 1, u: '°C', nota: 'la del florentino' },
+    kgh: { etq: 'Aceite que llega por hora', min: 5, max: 40, paso: 0.1, d: 1, u: 'kg/h' },
+    loteH: { etq: 'Horas de aceite por lote', min: 4, max: 16, paso: 1, d: 0, u: 'h' },
+    reposo: { etq: 'Horas de reposo', min: 0, max: 24, paso: 0.5, d: 1, u: 'h' },
+    libre: { etq: 'Agua libre que trae el aceite', min: 0, max: 1000, paso: 10, d: 0, u: 'mg/kg', nota: 'ilustrativa' },
+    db: { etq: 'Gota más grande que deja el florentino', min: 6, max: 30, paso: 0.1, d: 1, u: 'µm' },
+    da: { etq: 'Gota más pequeña del agua libre', min: 0.5, max: 5, paso: 0.1, d: 1, u: 'µm' },
+    hd: { etq: 'Altura del líquido sobre el diámetro', min: 0.5, max: 2, paso: 0.05, d: 2, u: '' },
+    placas: { etq: 'Placas de 400 × 400 mm', tipo: 'cont', min: 1, max: 12 },
+    grado: { etq: 'Grado de la placa', tipo: 'seg', ops: ['K 900', 'K 250', 'K 100', 'EKS'], nota: 'la más abierta a la izquierda' },
+    cap: { etq: 'Agua que retiene cada m² de placa', min: 50, max: 200, paso: 5, d: 0, u: 'g/m²', nota: 'ilustrativa' },
+    tf: { etq: 'Horas para pasar el lote', min: 1, max: 4, paso: 0.5, d: 1, u: 'h' },
+    dpAdm: { etq: 'Caída limpia admisible', min: 0.05, max: 0.5, paso: 0.05, d: 2, u: 'bar' }
+  };
+  function fmtCtrl(k, v) {
+    var c = CTRL[k];
+    if (c.tipo === 'cont') return v + ' (' + un(v * M.PLACA, 2, 'm²') + ')';
+    if (c.tipo === 'seg') return v;
+    return c.u ? un(v, c.d, c.u) : num(v, c.d);
+  }
+  function igual(a, b) { return typeof a === 'number' ? Math.abs(a - b) < 1e-9 : a === b; }
+
+  var CONFIGS = [
+    { id: 'caso', e: 'Ejemplo 18.5 del libro', t: 'El caso del libro', cambios: {},
+      fija: 'Enfriado a 5 °C, 8 h de reposo y seis placas K 250 que retienen 100 g/m² cada una.',
+      res: function (r) { return un(r.g, 0, 'g') + ' de agua al filtro; las placas terminan al ' + pct(r.carga) + '.'; } },
+    { id: 'sinreposo', e: 'Variante del caso', t: 'Sin reposo', cambios: { reposo: 0 },
+      fija: 'Después del enfriado, el aceite va directo al filtro, sin reposar.',
+      res: function (r) { return un(r.g, 0, 'g') + ' al filtro; ' + (r.carga > 1 ? 'las seis placas se saturan y hacen falta ' + r.nAgua + '.' : 'las placas terminan al ' + pct(r.carga) + '.'); } },
+    { id: 'reposo16', e: 'Variante del caso', t: 'Reposo de 16 h', cambios: { reposo: 16 },
+      fija: 'El reposo dura el doble: 16 h en lugar de 8.',
+      res: function (r) { return un(r.g, 0, 'g') + ' al filtro; bastarían ' + placasTxt(r.nAgua) + '.'; } },
+    { id: 'quince', e: 'Variante del caso', t: 'Enfriado a 15 °C', cambios: { T: 15 },
+      fija: 'El lote se enfría solo hasta 15 °C, con el mismo reposo.',
+      res: function (r) { return un(r.g, 0, 'g') + ' al filtro, pero el aceite se queda con ' + un(r.queda, 0, 'mg/kg') + ' de agua disuelta.'; } }
+  ];
+
+  /* ================= Las escenas ================= */
+  var ESCENAS = [];
+
+  /* ---------- 1. El enfriado ---------- */
+  ESCENAS.push((function () {
+    var S = {};
+    var X0 = 54, X1 = 384, Y0 = 40, Y1 = 232;
+    function xT(T) { return X0 + T / 30 * (X1 - X0); }
+    function yW(w) { return Y1 - (w - 400) / 400 * (Y1 - Y0); }
+    return {
+      id: 'enfriado', titulo: 'El enfriado', corto: 'Enfriado', figTit: ['El tanque TK‑201 A', 'El agua disuelta'],
+      pregunta: '¿Cuánta agua sale de solución cuando el lote se enfría?',
+      controles: ['T'], mas: ['Tllega', 'kgh', 'loteH'], datos: ['T', 'Tllega'],
+      kpis: function (r) {
+        return [
+          { k: 'Sale de solución', v: num(r.sale, 0), u: 'mg/kg', s: un(r.gSale, 1, 'g') + ' en el lote de ' + un(r.kg, 0, 'kg') },
+          { k: 'Sigue disuelta', v: num(r.queda, 0), u: 'mg/kg', s: pct(r.fracQueda) + ' de la que traía' },
+          { k: 'Viscosidad del aceite', v: num(r.o.mu * 1000, 2), u: 'mPa·s', s: un(r.muLl * 1000, 2, 'mPa·s') + ' a ' + un(r.s.Tllega, 0, '°C') }
+        ];
+      },
+      veredicto: function (r) {
+        if (r.s.T < 3) return { alerta: true, html: 'A ' + un(r.s.T, 1, '°C') + ' el agua libre puede congelarse en las placas del filtro y taparlas; el explorador avisa por debajo de 3 °C.' };
+        if (r.sale <= 0) return { alerta: false, html: 'El aceite llega a ' + un(r.s.Tllega, 1, '°C') + ': si no se enfría por debajo de esa temperatura, no sale agua de solución.' };
+        return { alerta: false, html: 'Enfriado a ' + un(r.s.T, 1, '°C') + ', el aceite suelta <b>' + un(r.sale, 0, 'mg/kg') + '</b> de agua en gotas finas; los ' + un(r.queda, 0, 'mg/kg') + ' que siguen disueltos no los quita ningún filtro.' };
+      },
+      pred: {
+        base: { T: 5 }, llevar: { T: 0 },
+        q: function (rb) { return 'A 5 °C salen de solución ' + un(rb.sale, 0, 'mg/kg') + '. Si el aceite se enfría a 0 °C, ¿cuánta agua sale?'; },
+        ops: ['Un poco más que a 5 °C', 'El doble que a 5 °C', 'Lo mismo: a 5 °C ya salió toda'],
+        instr: 'Lleve la temperatura del enfriado a 0 °C y mire el número de la izquierda.',
+        cumple: function (st) { return st.T <= 0.001; },
+        correcta: function (rn, rb) { var q = rn.sale / rb.sale; return q < 1.02 ? 2 : q > 1.8 ? 1 : 0; },
+        explica: function (rn, rb) { return 'A 0 °C salen ' + un(rn.sale, 0, 'mg/kg') + ', ' + num(rn.sale - rb.sale, 0) + ' más que a 5 °C. La solubilidad del agua baja despacio con el frío, y ese poco más se paga con un aceite más viscoso (' + un(rn.o.mu * 1000, 2, 'mPa·s') + ') y con el riesgo de hielo en las placas.'; }
+      },
+      montar: function (a, b) {
+        // El tanque
+        var x0 = 80, x1 = 250, xm = 165, yl = 90, yb = 314;
+        S.svgA = lienzo(a, 400, 400, 'El tanque de winterización TK-201 A en corte, con su camisa de glicol, el termómetro TT-201 y un círculo de detalle donde aparecen las gotas finas de agua que salen de solución a medida que el aceite se enfría.');
+        var g = S.svgA;
+        s('line', { x1: 222, y1: 6, x2: 222, y2: 52, stroke: C.aceiteO, 'stroke-width': 4 }, g);
+        tx(g, 232, 20, 'de TK‑203', 'f-ts');
+        S.camisa = s('path', { d: 'M68 110V314A97 28 0 0 0 262 314V110Z', fill: colorFrio(20), stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        s('path', { d: 'M' + x0 + ' ' + yl + 'V' + yb + 'A85 20 0 0 0 ' + x1 + ' ' + yb + 'V' + yl + 'Z', fill: C.aceite }, g);
+        s('line', { x1: x0, y1: yl, x2: x1, y2: yl, stroke: C.aceiteO, 'stroke-width': 1.4 }, g);
+        S.gotas = s('g', {}, g);
+        s('path', { d: 'M' + x0 + ' 62V' + yb + 'A85 20 0 0 0 ' + x1 + ' ' + yb + 'V62', class: 'f-pared' }, g);
+        s('path', { d: 'M' + x0 + ' 62A85 14 0 0 1 ' + x1 + ' 62', class: 'f-pared' }, g);
+        tx(g, xm, 112, 'aceite del lote', 'f-ts f-halo', 'middle');
+        // la purga
+        s('line', { x1: xm, y1: 334, x2: xm, y2: 394, stroke: C.tinta, 'stroke-width': 1.6 }, g);
+        valvula(g, xm, 366, false);
+        tx(g, xm + 16, 371, 'purga', 'f-ts');
+        // el glicol de la camisa
+        flecha(g, 262, 124, 300, 124, C.tinta, 1.6); tx(g, 304, 129, 'glicol', 'f-ts');
+        flecha(g, 300, 300, 262, 300, C.tinta, 1.6); tx(g, 304, 305, 'glicol', 'f-ts');
+        tx(g, 34, 352, 'camisa', 'f-ts', 'middle');
+        s('line', { x1: 36, y1: 338, x2: 66, y2: 312, stroke: C.guia, 'stroke-width': 1 }, g);
+        // el termómetro
+        s('line', { x1: 55, y1: 170, x2: 96, y2: 170, stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        burbuja(g, 36, 170, 'TT', '201');
+        S.lecT = tx(g, 36, 216, '', 'f-vg', 'middle');
+        // la lupa
+        var lx = 326, ly = 182, lr = 48, cx = 222, cy = 236, cr = 8;
+        tangentes(cx, cy, cr, lx, ly, lr).forEach(function (q) { s('line', { x1: q[0], y1: q[1], x2: q[2], y2: q[3], stroke: C.guia, 'stroke-width': 1 }, g); });
+        s('circle', { cx: cx, cy: cy, r: cr, fill: 'none', stroke: C.tinta, 'stroke-width': 1.2 }, g);
+        var clip = s('clipPath', { id: 'lupa1' }, s('defs', {}, g));
+        s('circle', { cx: lx, cy: ly, r: lr }, clip);
+        s('circle', { cx: lx, cy: ly, r: lr, fill: C.aceite }, g);
+        S.gLupa = s('g', { 'clip-path': 'url(#lupa1)' }, g);
+        s('circle', { cx: lx, cy: ly, r: lr, fill: 'none', stroke: C.tinta, 'stroke-width': 1.6 }, g);
+        tx(g, lx, 250, 'gotas que salen', 'f-ts', 'middle');
+        tx(g, lx, 266, 'de solución,', 'f-ts', 'middle');
+        tx(g, lx, 282, 'aumentadas', 'f-ts', 'middle');
+        S.estadoTx = tx(g, 36, 236, '', 'f-ts', 'middle');
+        // las gotas, cada una con el agua que tiene que salir para que aparezca
+        var rnd = azar(11);
+        S.puntos = []; S.lupa = [];
+        for (var i = 0; i < 160; i++) {
+          var px = x0 + 7 + rnd() * (x1 - x0 - 14), py = yl + 8 + rnd() * (yb - yl - 12);
+          S.puntos.push({ u: (i + rnd()) / 160, el: s('circle', { cx: px.toFixed(1), cy: py.toFixed(1), r: 1.5, fill: C.azul, opacity: 0 }, S.gotas) });
+        }
+        for (i = 0; i < 36; i++) {
+          var ang = rnd() * Math.PI * 2, rr = Math.sqrt(rnd()) * (lr - 6);
+          S.lupa.push({ u: (i + rnd()) / 36, el: s('circle', { cx: (lx + rr * Math.cos(ang)).toFixed(1), cy: (ly + rr * Math.sin(ang)).toFixed(1), r: (2 + rnd() * 2.4).toFixed(1), fill: C.aguaO, stroke: C.azul, 'stroke-width': 0.8, opacity: 0 }, S.gLupa) });
+        }
+
+        // La curva del agua disuelta
+        S.svgB = lienzo(b, 400, 400, 'Gráfica del agua disuelta en el aceite contra la temperatura, con el punto del aceite que llega del florentino, el punto después del enfriado y la diferencia que sale de solución; abajo, una barra con el agua disuelta al llegar partida en la que sale y la que se queda.');
+        g = S.svgB;
+        tx(g, X0, 24, 'agua disuelta en el aceite, mg/kg', 'f-t');
+        S.hielo = s('rect', { x: xT(0), y: Y0, width: xT(3) - xT(0), height: Y1 - Y0, fill: C.fuera }, g);
+        tx(g, xT(3) + 6, Y0 + 16, 'riesgo de hielo', 'f-ts f-halo');
+        for (var T = 0; T <= 30; T += 5) { s('line', { x1: xT(T), x2: xT(T), y1: Y0, y2: Y1, class: 'f-rej' }, g); tx(g, xT(T), Y1 + 18, String(T), 'f-ts', 'middle'); }
+        for (var w = 400; w <= 800; w += 100) { s('line', { x1: X0, x2: X1, y1: yW(w), y2: yW(w), class: 'f-rej' }, g); tx(g, X0 - 6, yW(w) + 4, String(w), 'f-ts', 'end'); }
+        s('path', { d: 'M' + X0 + ' ' + Y0 + 'V' + Y1 + 'H' + X1, class: 'f-eje' }, g);
+        tx(g, X1, Y1 + 38, 'temperatura, °C', 'f-t', 'end');
+        var pts = [], ptsX = [];
+        for (T = 0; T <= 30.001; T += 0.25) (T < 5 ? ptsX : pts).push(xT(T).toFixed(1) + ' ' + yW(M.disuelta(T)).toFixed(1));
+        ptsX.push(pts[0]);
+        s('path', { d: 'M' + ptsX.join('L'), fill: 'none', stroke: C.azul, 'stroke-width': 2.2, 'stroke-dasharray': '5 4' }, g);
+        s('path', { d: 'M' + pts.join('L'), fill: 'none', stroke: C.azul, 'stroke-width': 2.4 }, g);
+        S.guia = s('line', { stroke: C.guia, 'stroke-width': 1.2, 'stroke-dasharray': '4 3' }, g);
+        S.brazo = s('line', { stroke: C.azul, 'stroke-width': 3 }, g);
+        S.punta = s('path', { fill: C.azul }, g);
+        S.lbSale = tx(g, 0, 0, '', 'f-v f-azul f-halo');
+        S.pLl = s('circle', { r: 6, fill: C.blanco, stroke: C.tinta, 'stroke-width': 1.6 }, g);
+        S.lbLl = tx(g, 0, 0, '', 'f-v f-halo');
+        S.pT = s('circle', { r: 7, fill: C.amarillo, stroke: C.tinta, 'stroke-width': 1.6 }, g);
+        S.lbT = tx(g, 0, 0, '', 'f-v f-halo');
+        // la barra: lo que traía, partido
+        S.barTit = tx(g, X0, 296, '', 'f-t');
+        S.barQ = s('rect', { x: X0, y: 306, height: 22, fill: C.metal, stroke: C.tinta, 'stroke-width': 1 }, g);
+        S.barS = s('rect', { y: 306, height: 22, fill: C.aguaO, stroke: C.tinta, 'stroke-width': 1 }, g);
+        S.lbQ = tx(g, X0, 346, '', 'f-v');
+        S.lbS = tx(g, X1, 346, '', 'f-v f-azul', 'end');
+        tx(g, X0, 372, 'Lo que se queda disuelto no lo quita ningún filtro.', 'f-ts');
+        tx(g, X0, 390, 'La curva punteada, bajo 5 °C, es extrapolada.', 'f-ts');
+        S.Tvis = estado.Tllega; S.anim = null;
+      },
+      poner: function (r, inmediato) {
+        // la curva y la barra se ponen ya; el tanque sigue a la temperatura que se anima
+        var T = r.s.T, Tl = r.s.Tllega;
+        set(S.hielo, { opacity: 1 });
+        var xl = xT(entre(Tl, 0, 30)), yl = yW(r.wLl), xt = xT(T), yt = yW(r.wT);
+        set(S.pLl, { cx: xl, cy: yl }); set(S.pT, { cx: xt, cy: yt });
+        set(S.lbLl, { x: xl + 10, y: yl - 10 }); S.lbLl.textContent = 'llega: ' + num(r.wLl, 0);
+        set(S.lbT, { x: xt + 12, y: yt + 20 }); S.lbT.textContent = 'después: ' + num(r.wT, 0);
+        var hay = r.sale > 0.5;
+        set(S.guia, { x1: xl, y1: yl, x2: xt, y2: yl, opacity: hay ? 1 : 0 });
+        set(S.brazo, { x1: xt, y1: yl, x2: xt, y2: yt - 9, opacity: hay ? 1 : 0 });
+        set(S.punta, { d: 'M' + xt + ' ' + (yt - 2) + 'L' + (xt - 6) + ' ' + (yt - 12) + 'L' + (xt + 6) + ' ' + (yt - 12) + 'Z', opacity: hay ? 1 : 0 });
+        var izq = xt > X0 + 120;
+        set(S.lbSale, { x: izq ? xt - 10 : xt + 10, y: (yl + yt) / 2 + 5, 'text-anchor': izq ? 'end' : 'start', opacity: hay ? 1 : 0 });
+        S.lbSale.textContent = 'sale ' + num(r.sale, 0);
+        var W = X1 - X0, fq = r.queda / r.wLl;
+        S.barTit.textContent = 'agua disuelta al llegar: ' + un(r.wLl, 0, 'mg/kg');
+        set(S.barQ, { width: W * fq }); set(S.barS, { x: X0 + W * fq, width: Math.max(0, W * (1 - fq)) });
+        S.lbQ.textContent = 'se queda ' + num(r.queda, 0);
+        S.lbS.textContent = hay ? 'sale ' + num(r.sale, 0) : '';
+        if (inmediato === 'entrar' && !mq.matches) { this.repetir(r); this.dibujarTanque(r); }
+        else if (inmediato || mq.matches) { S.anim = null; S.Tvis = T; this.dibujarTanque(r); }
+        else S.anim = { desde: S.Tvis, hasta: T, t: 0, dur: Math.min(1.6, 0.35 + Math.abs(S.Tvis - T) * 0.08) };
+      },
+      repetir: function (r) { S.Tvis = r.s.Tllega; S.anim = { desde: r.s.Tllega, hasta: r.s.T, t: 0, dur: 1.8 }; },
+      dibujarTanque: function (r) {
+        var T = S.Tvis, Tl = r.s.Tllega;
+        S.camisa.setAttribute('fill', colorFrio(Math.min(T, Tl)));
+        S.lecT.textContent = un(T, 1, '°C');
+        var maxS = Math.max(1, M.disuelta(Tl) - M.disuelta(0)), ahora = Math.max(0, M.disuelta(Tl) - M.disuelta(T));
+        var f = ahora / maxS;
+        S.puntos.forEach(function (p) { p.el.setAttribute('opacity', p.u <= f ? 1 : 0); });
+        S.lupa.forEach(function (p) { p.el.setAttribute('opacity', p.u <= f ? 1 : 0); });
+        S.estadoTx.textContent = S.anim ? 'enfriando…' : '';
+      },
+      cuadro: function (dt, r) {
+        if (!S.anim) return;
+        S.anim.t += dt;
+        var f = suave(S.anim.t / S.anim.dur);
+        S.Tvis = S.anim.desde + (S.anim.hasta - S.anim.desde) * f;
+        if (S.anim.t >= S.anim.dur) { S.Tvis = S.anim.hasta; S.anim = null; }
+        this.dibujarTanque(r);
+      },
+      repetirTxt: 'Repetir el enfriado',
+      calculo: function (r) {
+        var tr = M.tramo(r.s.T);
+        return {
+          intro: 'El lote llega al tanque con la temperatura del florentino y la camisa lo enfría. El cálculo responde cuánta agua deja de caber disuelta en el aceite frío, y qué pasa con ella.',
+          pasos: [
+            { t: 'El aceite como limoneno',
+              p: 'El explorador trata el aceite como d‑limoneno puro, su componente principal. La densidad y la viscosidad salen de un ajuste a medidas entre 10 y 80 °C, con la temperatura en kelvin; por debajo de 10 °C las dos fórmulas se usan fuera del intervalo medido.',
+              eq: '\\rho = 1077{,}4 - 0{,}793\\,T \\qquad \\mu = 0{,}017\\,e^{1173/T}\\ \\ (\\mathrm{mPa\\cdot s})',
+              num: 'T = ' + kn(r.s.T, 1) + ' + 273{,}15 = ' + kn(r.s.T + 273.15, 2) + '\\ \\mathrm{K} \\\\ \\rho = 1077{,}4 - 0{,}793 \\times ' + kn(r.s.T + 273.15, 2) + ' = ' + kn(r.o.rho, 1) + '\\ \\mathrm{kg/m^3} \\\\ \\mu = 0{,}017\\,e^{1173/' + kn(r.s.T + 273.15, 2) + '} = ' + kn(r.o.mu * 1000, 3) + '\\ \\mathrm{mPa\\cdot s}',
+              fuente: 'Clará y coautores (2009), en las referencias del capítulo 18.', libro: ['filtracion.html#eq-fil-limoneno', 'Libro, ecuación 18.11'] },
+            { t: 'El agua que cabe disuelta',
+              p: 'La solubilidad del agua en el limoneno baja con la temperatura. El explorador la toma de cinco valores del modelo de Li y Tamura, a 5, 10, 20, 25 y 35 °C, e interpola el logaritmo de la solubilidad contra el inverso de la temperatura absoluta. Por fuera de esos cinco puntos prolonga el tramo más cercano.',
+              eq: '\\ln w = \\ln w_i + \\frac{1/T - 1/T_i}{1/T_{i+1} - 1/T_i}\\,\\ln\\frac{w_{i+1}}{w_i}',
+              num: 'f = \\frac{1/' + kn(r.s.T + 273.15, 2) + ' - 1/' + kn(tr.T1 + 273.15, 2) + '}{1/' + kn(tr.T2 + 273.15, 2) + ' - 1/' + kn(tr.T1 + 273.15, 2) + '} = ' + kn(tr.f, 3) + ' \\\\ w = ' + tr.w1 + '\\left(\\frac{' + tr.w2 + '}{' + tr.w1 + '}\\right)^{' + kn(tr.f, 3) + '} = ' + kn(r.wT, 0) + '\\ \\mathrm{mg/kg}',
+              res: 'Con la misma cuenta, el aceite que llega a ' + un(r.s.Tllega, 1, '°C') + ' puede tener disueltos ' + un(r.wLl, 0, 'mg/kg') + '.',
+              fuente: 'Son estimaciones: el modelo se ajustó a 25 °C y aquí se extrapola. En el benceno la solubilidad del agua cambia con la temperatura más que en este modelo, así que el agua que sale puede ser algo más.', libro: ['filtracion.html#sec-fil-profundidad', 'Libro, sección 18.7'] },
+            { t: 'El agua que sale de solución',
+              p: 'El lote junta las horas de aceite que salen del florentino. Al enfriarlo, ya no puede tener disuelta toda el agua que traía, y la diferencia aparece en gotas muy finas que casi no caen en el reposo y terminan en el filtro.',
+              eq: 'm_{\\text{lote}} = \\dot m\\,t_{\\text{lote}} \\qquad w_{\\text{sale}} = w(T_{\\text{llega}}) - w(T) \\qquad m_{\\text{sale}} = w_{\\text{sale}}\\,m_{\\text{lote}}',
+              num: 'm_{\\text{lote}} = ' + kn(r.s.kgh, 2) + ' \\times ' + kn(r.s.loteH, 0) + ' = ' + kn(r.kg, 1) + '\\ \\mathrm{kg} \\\\ w_{\\text{sale}} = ' + kn(r.wLl, 0) + ' - ' + kn(r.queda, 0) + ' = ' + kn(r.sale, 0) + '\\ \\mathrm{mg/kg} \\\\ m_{\\text{sale}} = ' + kn(r.sale, 0) + ' \\times ' + kn(r.kg, 1) + '/1000 = ' + kn(r.gSale, 1) + '\\ \\mathrm{g}',
+              res: 'Se queda disuelto ' + pct(r.fracQueda) + ' del agua que traía el aceite. Ningún filtro lo quita; para secarlo más haría falta un secante, como el sulfato de sodio anhidro.',
+              fuente: 'El aceite que sale del florentino, ' + un(M.CASO.kgh, 2, 'kg/h') + ', es el del capítulo 17 del libro.', libro: ['filtracion.html#exm-fil-winter', 'Libro, ejemplo 18.5'] },
+            { t: 'El límite del frío',
+              p: 'Más frío saca más agua de solución, pero el aceite se vuelve más viscoso y, cerca de 0 °C, el agua libre puede congelarse en las placas y taparlas. El explorador avisa por debajo de 3 °C. Las fuentes que cita el libro no dan una temperatura para un aceite destilado; el caso escoge 5 °C.',
+              res: (function () { var c = M.calcular(Object.assign({}, r.s, { T: 0 })); return 'A 0 °C saldrían ' + un(c.sale, 0, 'mg/kg') + ', ' + num(c.sale - r.sale, 0) + ' más que con su temperatura de ' + un(r.s.T, 1, '°C') + ', y el aceite tendría ' + un(c.o.mu * 1000, 2, 'mPa·s') + '.'; })() }
+          ],
+          libro: [['filtracion.html#sec-fil-profundidad', 'Sección 18.7, El aceite frío'], ['filtracion.html#exm-fil-winter', 'Ejemplo 18.5, la winterización del aceite'], ['filtracion.html#eq-fil-limoneno', 'Ecuación 18.11, el limoneno']]
+        };
+      }
+    };
+  })());
+
+  /* ---------- 2. El reposo ---------- */
+  ESCENAS.push((function () {
+    var S = {};
+    var x0 = 120, x1 = 300, Y0 = 62, Y1 = 318, N = 120, DUR = 5.5;
+    var X0 = 50, X1 = 384, GY0 = 40, GY1 = 222;
+    var LA = Math.log10(1), LB = Math.log10(30);
+    function xd(d) { return X0 + (Math.log10(d) - LA) / (LB - LA) * (X1 - X0); }
+    function yf(f) { return GY1 - f * (GY1 - GY0); }
+    function capa(gr) { return Math.min(40, 1.0 * gr); }
+    return {
+      id: 'reposo', titulo: 'El reposo', corto: 'Reposo', figTit: ['El tanque en reposo', 'La fracción que cae'],
+      pregunta: '¿Qué gotas alcanzan a caer al fondo mientras el lote reposa?',
+      controles: ['reposo', 'libre'], mas: ['db', 'da', 'hd'], datos: ['reposo', 'libre'],
+      info: function (r) { return 'Aceite a <b>' + un(r.s.T, 1, '°C') + '</b>: ' + un(r.o.mu * 1000, 2, 'mPa·s') + ' y ' + un(r.drho, 0, 'kg/m³') + ' menos denso que el agua. <button type="button" data-ir="0">Cambiar en El enfriado</button>'; },
+      kpis: function (r) {
+        return [
+          { k: 'Gota de corte', v: isFinite(r.dc) ? num(r.dc * 1e6, 2) : '∞', u: 'µm', s: 'la que baja ' + un(r.H, 2, 'm') + ' en ' + un(r.s.reposo, 1, 'h') },
+          { k: 'Agua libre purgada', v: num(100 * r.eta, 1), u: '%', s: un(r.purga, 0, 'mg/kg') + ', ' + un(r.gPurga, 1, 'g') + ' por lote' },
+          { k: 'Agua libre al filtro', v: num(r.libreFiltro, 0), u: 'mg/kg', s: 'sigue con el aceite' }
+        ];
+      },
+      veredicto: function (r) {
+        if (r.s.reposo <= 0) return { alerta: false, html: 'Sin reposo no cae ninguna gota: toda el agua libre sigue al filtro.' };
+        if (r.dc > r.db) return { alerta: false, html: 'En ' + un(r.s.reposo, 1, 'h') + ' ninguna gota de las que deja el florentino cae entera: el reposo purga el <b>' + pct(r.eta) + '</b> del agua libre.' };
+        return { alerta: false, html: 'En ' + un(r.s.reposo, 1, 'h') + ' caen enteras las gotas de más de ' + un(r.dc * 1e6, 1, 'µm') + ', y el reposo purga el <b>' + pct(r.eta) + '</b> del agua libre.' };
+      },
+      pred: {
+        base: { reposo: 8 }, llevar: { reposo: 16 },
+        q: function (rb) { return 'Con 8 h de reposo se purga el ' + pct(rb.eta) + ' del agua libre. Si el reposo dura 16 h, ¿cuánto se purga?'; },
+        ops: ['El doble', 'Más, pero menos del doble', 'Lo mismo'],
+        instr: 'Lleve las horas de reposo a 16 y mire el número del centro.',
+        cumple: function (st) { return Math.abs(st.reposo - 16) < 0.001; },
+        correcta: function (rn, rb) { var q = rn.eta / rb.eta; return q > 1.97 ? 0 : q < 1.03 ? 2 : 1; },
+        explica: function (rn, rb) {
+          if (rn.dc < rn.db) return 'Con 16 h cada gota baja el doble, así que la fracción de cada tamaño que llega al fondo se duplica, salvo en las gotas de más de ' + un(rn.dc * 1e6, 1, 'µm') + ', que ya caen todas. Por eso el agua purgada sube a ' + pct(rn.eta) + ' y no al ' + pct(2 * rb.eta) + ' que daría el doble.';
+          return 'Con 16 h cada gota baja el doble y ningún tamaño alcanza a caer entero, así que la fracción purgada se duplica: ' + pct(rn.eta) + '.';
+        }
+      },
+      montar: function (a, b) {
+        S.svgA = lienzo(a, 400, 400, 'El tanque de winterización en reposo, en corte, con gotas de agua de varios tamaños que caen hacia el fondo; las grandes caen más rápido. El agua que llega se junta en el fondo, sobre la válvula de purga.');
+        var g = S.svgA;
+        s('rect', { x: x0 - 12, y: 84, width: x1 - x0 + 24, height: Y1 - 84 + 12, fill: colorFrio(5), stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        S.camisa = g.lastChild;
+        s('rect', { x: x0, y: Y0, width: x1 - x0, height: Y1 - Y0, fill: C.aceite }, g);
+        s('line', { x1: x0, y1: Y0, x2: x1, y2: Y0, stroke: C.aceiteO, 'stroke-width': 1.4 }, g);
+        S.capa = s('rect', { x: x0, width: x1 - x0, fill: C.aguaO }, g);
+        S.gG = s('g', {}, g);
+        s('path', { d: 'M' + x0 + ' 46V' + Y1 + 'H' + x1 + 'V46', class: 'f-pared' }, g);
+        // la altura
+        s('line', { x1: 92, x2: 92, y1: Y0, y2: Y1, stroke: C.tinta, 'stroke-width': 1.2 }, g);
+        s('line', { x1: 86, x2: 98, y1: Y0, y2: Y0, stroke: C.tinta, 'stroke-width': 1.2 }, g);
+        s('line', { x1: 86, x2: 98, y1: Y1, y2: Y1, stroke: C.tinta, 'stroke-width': 1.2 }, g);
+        S.lbH = tx(g, 0, 0, '', 'f-v', 'middle'); set(S.lbH, { transform: 'translate(80 ' + ((Y0 + Y1) / 2) + ') rotate(-90)' });
+        // el reloj
+        S.reloj = tx(g, (x0 + x1) / 2, 18, '', 'f-v', 'middle');
+        s('rect', { x: x0, y: 26, width: x1 - x0, height: 6, fill: C.rej }, g);
+        S.barra = s('rect', { x: x0, y: 26, height: 6, fill: C.tinta }, g);
+        // la purga
+        var xm = (x0 + x1) / 2;
+        s('line', { x1: xm, y1: Y1, x2: xm, y2: 372, stroke: C.tinta, 'stroke-width': 1.6 }, g);
+        valvula(g, xm, 348, false);
+        tx(g, xm + 16, 352, 'purga', 'f-ts');
+        S.lbPurga = tx(g, xm + 16, 370, '', 'f-v');
+        S.lbCapa = s('text', { x: x1 + 16, class: 'f-ts' }, g);
+        s('tspan', { x: x1 + 16, dy: 0 }, S.lbCapa).textContent = 'agua';
+        s('tspan', { x: x1 + 16, dy: 16 }, S.lbCapa).textContent = 'del fondo';
+        tx(g, 200, 394, 'Las gotas van dibujadas más grandes que su tamaño real.', 'f-ts', 'middle');
+        var rnd = azar(23);
+        S.gotas = [];
+        for (var i = 0; i < N; i++) S.gotas.push({ f: (i + rnd()) / N, z0: rnd(), x: x0 + 7 + rnd() * (x1 - x0 - 14), el: s('circle', { fill: C.aguaO, stroke: C.azul, 'stroke-width': 0.8 }, S.gG) });
+
+        // La fracción que cae, por tamaño
+        S.svgB = lienzo(b, 400, 400, 'Gráfica de la fracción de cada tamaño de gota que llega al fondo en el reposo, contra el diámetro en escala logarítmica: crece con el cuadrado del diámetro hasta la gota de corte, donde llega a uno. La franja de las gotas que deja el florentino y el área bajo la curva dan la fracción purgada; abajo, una barra con el agua libre partida en la que se purga y la que sigue al filtro.');
+        g = S.svgB;
+        tx(g, X0, 24, 'fracción de cada tamaño que llega al fondo', 'f-t');
+        S.banda = s('rect', { y: GY0, height: GY1 - GY0, fill: C.rej }, g);
+        S.lbBanda = tx(g, 0, GY0 + 18, 'gotas del florentino', 'f-ts', 'middle');
+        [1, 2, 5, 10, 20].forEach(function (d) { s('line', { x1: xd(d), x2: xd(d), y1: GY0, y2: GY1, class: 'f-rej' }, g); tx(g, xd(d), GY1 + 18, String(d), 'f-ts', 'middle'); });
+        [0, 0.25, 0.5, 0.75, 1].forEach(function (f) { s('line', { x1: X0, x2: X1, y1: yf(f), y2: yf(f), class: 'f-rej' }, g); tx(g, X0 - 6, yf(f) + 4, num(100 * f, 0) + ' %', 'f-ts', 'end'); });
+        S.area = s('path', { fill: C.aguaM, opacity: 0.85 }, g);
+        s('path', { d: 'M' + X0 + ' ' + GY0 + 'V' + GY1 + 'H' + X1, class: 'f-eje' }, g);
+        tx(g, X1, GY1 + 38, 'diámetro de la gota, µm (escala logarítmica)', 'f-t', 'end');
+        S.curva = s('path', { fill: 'none', stroke: C.azul, 'stroke-width': 2.4 }, g);
+        S.media = s('line', { stroke: C.tinta, 'stroke-width': 1.6, 'stroke-dasharray': '6 4' }, g);
+        S.lbEta = tx(g, 0, 0, '', 'f-vg f-azul f-halo', 'middle');
+        S.corte = s('line', { y1: GY0, y2: GY1, stroke: C.tinta, 'stroke-width': 1.2, 'stroke-dasharray': '4 3' }, g);
+        S.lbCorte = tx(g, 0, GY0 + 40, '', 'f-v f-halo');
+        S.barTit = tx(g, X0, 292, '', 'f-t');
+        S.barP = s('rect', { x: X0, y: 302, height: 24, fill: C.aguaO, stroke: C.tinta, 'stroke-width': 1 }, g);
+        S.barF = s('rect', { y: 302, height: 24, fill: C.agua, stroke: C.tinta, 'stroke-width': 1 }, g);
+        S.lbP = tx(g, X0, 346, '', 'f-v');
+        S.lbF = tx(g, X1, 346, '', 'f-v', 'end');
+        tx(g, X0, 374, 'Las gotas finas que salen de solución en el', 'f-ts');
+        tx(g, X0, 391, 'enfriado no alcanzan a caer: van al filtro.', 'f-ts');
+        S.t = 0; S.corre = false;
+      },
+      poner: function (r, inmediato) {
+        S.lbH.textContent = 'H = ' + un(r.H, 2, 'm');
+        S.camisa.setAttribute('fill', colorFrio(Math.min(r.s.T, r.s.Tllega)));
+        var la = Math.log(r.s.da), lb = Math.log(r.s.db);
+        S.gotas.forEach(function (q) { q.d = Math.exp(la + q.f * (lb - la)) * 1e-6; q.v = r.v(q.d); q.el.setAttribute('r', (1.6 + 3.2 * q.f).toFixed(2)); q.el.setAttribute('cx', q.x.toFixed(1)); });
+        // la gráfica
+        var a = r.s.da, bb = r.s.db;
+        set(S.banda, { x: xd(entre(a, 1, 30)), width: Math.max(0, xd(entre(bb, 1, 30)) - xd(entre(a, 1, 30))) });
+        S.lbBanda.setAttribute('x', (xd(entre(a, 1, 30)) + xd(entre(bb, 1, 30))) / 2);
+        var dcu = r.dc * 1e6, fr = function (d) { return isFinite(dcu) ? Math.min(1, Math.pow(d / dcu, 2)) : 0; };
+        var c = [], ar = [];
+        for (var i = 0; i <= 120; i++) { var d = Math.pow(10, LA + (LB - LA) * i / 120); c.push(xd(d).toFixed(1) + ' ' + yf(fr(d)).toFixed(1)); }
+        S.curva.setAttribute('d', 'M' + c.join('L'));
+        var lo = Math.max(a, 1), hi = Math.min(bb, 30);
+        ar.push(xd(lo).toFixed(1) + ' ' + GY1);
+        for (i = 0; i <= 60; i++) { d = lo * Math.pow(hi / lo, i / 60); ar.push(xd(d).toFixed(1) + ' ' + yf(fr(d)).toFixed(1)); }
+        ar.push(xd(hi).toFixed(1) + ' ' + GY1);
+        S.area.setAttribute('d', 'M' + ar.join('L') + 'Z');
+        set(S.media, { x1: xd(lo), x2: xd(hi), y1: yf(r.eta), y2: yf(r.eta) });
+        set(S.lbEta, { x: (xd(lo) + xd(hi)) / 2, y: Math.max(GY0 + 44, yf(r.eta) - 12) });
+        S.lbEta.textContent = 'η = ' + num(r.eta, 3);
+        if (isFinite(dcu) && dcu <= 30) {
+          set(S.corte, { x1: xd(dcu), x2: xd(dcu), opacity: 1 });
+          var izq = xd(dcu) > X1 - 120;
+          set(S.lbCorte, { x: izq ? xd(dcu) - 8 : xd(dcu) + 8, 'text-anchor': izq ? 'end' : 'start', y: GY1 - 30 });
+          S.lbCorte.textContent = 'corte: ' + un(dcu, 2, 'µm');
+        } else {
+          set(S.corte, { opacity: 0 });
+          set(S.lbCorte, { x: X1 - 4, 'text-anchor': 'end', y: GY1 - 30 });
+          S.lbCorte.textContent = isFinite(dcu) ? 'corte: ' + un(dcu, 1, 'µm') + ' →' : 'sin reposo, no cae nada';
+        }
+        S.barTit.textContent = 'agua libre que trae el aceite: ' + un(r.libre, 0, 'mg/kg');
+        var W = X1 - X0;
+        set(S.barP, { width: W * r.eta }); set(S.barF, { x: X0 + W * r.eta, width: W * (1 - r.eta) });
+        S.lbP.textContent = 'se purga ' + num(r.purga, 0);
+        S.lbF.textContent = 'sigue al filtro ' + num(r.libreFiltro, 0);
+        S.lbPurga.textContent = 'se purgan ' + un(r.gPurga, 1, 'g');
+        S.r = r;
+        if (inmediato === 'entrar' && !mq.matches && r.s.reposo > 0) { S.t = 0; S.corre = true; }
+        else { S.t = r.s.reposo; S.corre = false; }
+        this.dibujarTanque(r);
+      },
+      repetir: function (r) { if (r.s.reposo > 0 && !mq.matches) { S.t = 0; S.corre = true; } },
+      dibujarTanque: function (r) {
+        var t = S.t, H = r.H, alto = Y1 - Y0 - 6;
+        S.gotas.forEach(function (q) {
+          var z = q.z0 + q.v * t * 3600 / H;
+          if (z >= 1) q.el.setAttribute('opacity', 0);
+          else { q.el.setAttribute('opacity', 1); q.el.setAttribute('cy', (Y0 + 4 + z * alto).toFixed(1)); }
+        });
+        var gr = r.libre * r.etaEn(t) * r.kg / 1000, th = capa(gr);
+        set(S.capa, { y: Y1 - th, height: th });
+        S.lbCapa.setAttribute('y', Y1 - th - 18);
+        S.lbCapa.style.opacity = th > 1 ? 1 : 0;
+        S.reloj.textContent = r.s.reposo > 0 ? 'reposo: ' + num(t, 1) + ' h de ' + un(r.s.reposo, 1, 'h') : 'sin reposo';
+        S.barra.setAttribute('width', r.s.reposo > 0 ? (x1 - x0) * t / r.s.reposo : 0);
+      },
+      cuadro: function (dt, r) {
+        if (!S.corre) return;
+        S.t += dt * r.s.reposo / DUR;
+        if (S.t >= r.s.reposo) { S.t = r.s.reposo; S.corre = false; }
+        this.dibujarTanque(r);
+      },
+      repetirTxt: 'Repetir el reposo',
+      calculo: function (r) {
+        var dg = r.db, v = r.v(dg), dcu = r.dc * 1e6, lnab = Math.log(r.db / r.da);
+        var etaNum;
+        if (!isFinite(r.dc)) etaNum = '\\eta = 0\\quad(\\text{sin reposo, } d_c \\to \\infty)';
+        else if (r.dc >= r.db) etaNum = '\\eta = \\frac{' + kn(r.s.db, 2) + '^2 - ' + kn(r.s.da, 2) + '^2}{2 \\times ' + kn(dcu, 2) + '^2 \\times \\ln(' + kn(r.s.db, 2) + '/' + kn(r.s.da, 2) + ')} = ' + kn(r.eta, 3);
+        else if (r.dc > r.da) etaNum = '\\eta = \\frac{' + kn(dcu, 2) + '^2 - ' + kn(r.s.da, 2) + '^2}{2 \\times ' + kn(dcu, 2) + '^2 \\times ' + kn(lnab, 3) + '} + \\frac{\\ln(' + kn(r.s.db, 2) + '/' + kn(dcu, 2) + ')}{' + kn(lnab, 3) + '} = ' + kn(r.eta, 3);
+        else etaNum = '\\eta = 1\\quad(\\text{todas las gotas son mayores que } d_c)';
+        return {
+          intro: 'Mientras el lote reposa, las gotas de agua libre bajan hacia el fondo. El cálculo busca qué parte del agua libre alcanza a llegar al fondo para purgarla antes del filtro.',
+          pasos: [
+            { t: 'El lote y el tanque',
+              p: 'El lote ocupa un tanque cilíndrico. El caso pone la altura del líquido igual al diámetro; con el volumen del aceite frío salen las dos medidas.',
+              eq: 'V = \\frac{m_{\\text{lote}}}{\\rho} \\qquad D = \\left(\\frac{4V}{\\pi\\,(H/D)}\\right)^{1/3} \\qquad H = (H/D)\\,D',
+              num: 'V = ' + kn(r.kg, 1) + '/' + kn(r.o.rho, 1) + ' = ' + kn(r.V, 4) + '\\ \\mathrm{m^3} = ' + kn(r.V * 1000, 0) + '\\ \\mathrm{L} \\\\ D = \\left(\\frac{4 \\times ' + kn(r.V, 4) + '}{\\pi \\times ' + kn(r.s.hd, 2) + '}\\right)^{1/3} = ' + kn(r.D, 3) + '\\ \\mathrm{m} \\qquad H = ' + kn(r.H, 3) + '\\ \\mathrm{m}',
+              fuente: 'La relación H/D = 1 es del caso del libro.', libro: ['filtracion.html#exm-fil-winter', 'Libro, ejemplo 18.5'] },
+            { t: 'La velocidad de una gota',
+              p: 'Una gota de agua cae en el aceite porque es más densa. Si es pequeña y lenta, el aceite la frena como dice la ley de Stokes, que vale mientras el número de Reynolds de la gota no pase de 0,2. La cuenta va con la gota más grande del agua libre, la más rápida.',
+              eq: 'v = \\frac{g\\,\\Delta\\rho\\,d^2}{18\\,\\mu} \\qquad \\mathrm{Re} = \\frac{\\rho\\,v\\,d}{\\mu}',
+              num: '\\Delta\\rho = ' + kn(r.w.rho, 2) + ' - ' + kn(r.o.rho, 2) + ' = ' + kn(r.drho, 1) + '\\ \\mathrm{kg/m^3} \\\\ v = \\frac{9{,}807 \\times ' + kn(r.drho, 1) + ' \\times (' + kn(r.s.db, 2) + '\\times10^{-6})^2}{18 \\times ' + kc(r.o.mu, 3) + '} \\\\ = ' + kc(v, 2) + '\\ \\mathrm{m/s} = ' + kn(v * 360000, 2) + '\\ \\mathrm{cm/h} \\\\ \\mathrm{Re} = \\frac{' + kn(r.o.rho, 1) + ' \\times ' + kc(v, 2) + ' \\times ' + kc(dg, 2) + '}{' + kc(r.o.mu, 3) + '} = ' + kc(r.re(dg), 1),
+              fuente: 'El agua sale de IAPWS‑95 a la presión de Bogotá; el aceite, del primer paso de El enfriado.', libro: ['analisis-dimensional-y-escalado.html#eq-ade-stokes', 'Libro, ecuación 4.5'] },
+            { t: 'La gota de corte',
+              p: 'En el reposo una gota baja v·t. La más pequeña que alcanza a bajar toda la altura del líquido, desde la superficie, es la gota de corte: las de ese tamaño o mayores llegan todas al fondo, arranquen de donde arranquen.',
+              eq: 'd_c = \\left(\\frac{18\\,\\mu\\,H}{g\\,\\Delta\\rho\\,t_r}\\right)^{1/2}',
+              num: isFinite(r.dc) ? 'd_c = \\left(\\frac{18 \\times ' + kc(r.o.mu, 3) + ' \\times ' + kn(r.H, 3) + '}{9{,}807 \\times ' + kn(r.drho, 1) + ' \\times ' + kn(r.s.reposo, 1) + ' \\times 3600}\\right)^{1/2} = ' + kn(dcu, 2) + '\\ \\mathrm{\\mu m}' : 't_r = 0 \\;\\Rightarrow\\; d_c \\to \\infty',
+              fuente: 'Es la misma cuenta con la que el capítulo 17 halla las gotas que arrastra la fase liviana de un decantador.', libro: ['sedimentacion-y-decantacion.html#eq-sed-arrastre', 'Libro, ecuación 17.14'] },
+            { t: 'La fracción que cae',
+              p: 'Al empezar el reposo las gotas están repartidas parejo en la altura. Una gota menor que la de corte llega al fondo solo si arrancó a menos de v·t del fondo, y eso le pasa a la fracción (<i>d</i>/<i>d</i><sub>c</sub>)² de las de su tamaño, como en el tanque ideal de Hazen. El agua libre se supone repartida por igual en el logaritmo del diámetro, entre la gota más pequeña y la más grande que deja pasar el florentino; el promedio da la fracción purgada.',
+              eq: '\\eta = \\frac{1}{\\ln(d_b/d_a)}\\int_{d_a}^{d_b}\\min\\!\\left[1,\\left(\\frac{d}{d_c}\\right)^{2}\\right]\\mathrm{d}\\ln d',
+              num: etaNum,
+              fuente: 'El agua libre, ' + un(M.CASO.libre, 0, 'mg/kg') + ', y su reparto son ilustrativos: cuánta trae el aceite se mide con una titulación de Karl Fischer. La gota más grande, ' + un(M.CASO.db, 1, 'µm') + ', es la que deja pasar el florentino del capítulo 17.', libro: ['sedimentacion-y-decantacion.html#eq-sed-retencion', 'Libro, ecuación 17.8'] },
+            { t: 'Lo que se purga y lo que sigue',
+              p: 'El agua que llega al fondo se purga antes de bombear el aceite. El resto del agua libre sigue con el aceite hacia el filtro.',
+              eq: 'w_{\\text{purga}} = \\eta\\,w_{\\text{libre}} \\qquad w_{\\text{libre,filtro}} = (1-\\eta)\\,w_{\\text{libre}}',
+              num: 'w_{\\text{purga}} = ' + kn(r.eta, 3) + ' \\times ' + kn(r.libre, 0) + ' = ' + kn(r.purga, 0) + '\\ \\mathrm{mg/kg} \\;\\rightarrow\\; ' + kn(r.gPurga, 1) + '\\ \\mathrm{g} \\\\ w_{\\text{libre,filtro}} = ' + kn(1 - r.eta, 3) + ' \\times ' + kn(r.libre, 0) + ' = ' + kn(r.libreFiltro, 0) + '\\ \\mathrm{mg/kg}' }
+          ],
+          libro: [['filtracion.html#exm-fil-winter', 'Ejemplo 18.5, la winterización del aceite'], ['analisis-dimensional-y-escalado.html#eq-ade-stokes', 'Ecuación 4.5, la ley de Stokes'], ['sedimentacion-y-decantacion.html#eq-sed-retencion', 'Ecuación 17.8, la retención de Hazen'], ['sedimentacion-y-decantacion.html#eq-sed-arrastre', 'Ecuación 17.14, la gota que arrastra la fase liviana']]
+        };
+      }
+    };
+  })());
+
+  /* ---------- 3. El filtro de placas ---------- */
+  ESCENAS.push((function () {
+    var S = {};
+    var DUR = 4.5, PY0 = 98, PY1 = 274, XS = 76, WP = 232;
+    var BX0 = 22, BX1 = 400, LA = Math.log10(0.01), LB = Math.log10(3);
+    function xa(A) { return BX0 + (Math.log10(entre(A, 0.01, 3)) - LA) / (LB - LA) * (BX1 - BX0); }
+    var FILAS = [64, 124, 184];
+    return {
+      id: 'filtro', titulo: 'El filtro de placas', corto: 'Filtro', figTit: ['El filtro F‑201', 'El área por criterio'],
+      pregunta: '¿Cuánta placa pide el lote, y qué criterio decide el área?',
+      controles: ['placas', 'grado', 'cap'], mas: ['tf', 'dpAdm'], datos: ['placas', 'grado', 'cap'],
+      info: function (r) { return 'Llegan del reposo <b>' + un(r.libreFiltro, 0, 'mg/kg') + '</b> de agua libre y del enfriado ' + un(r.sale, 0, 'mg/kg') + ' que salieron de solución. <button type="button" data-ir="1">Cambiar en El reposo</button>'; },
+      kpis: function (r) {
+        var nom = { caida: 'la caída limpia', flujo: 'el flujo recomendado', agua: 'el agua' }[r.decide];
+        return [
+          { k: 'Agua al filtro', v: num(r.g, 0), u: 'g', s: un(r.mgkg, 0, 'mg/kg') + ' en ' + un(r.kg, 0, 'kg') },
+          { k: 'Área que pide el lote', v: num(r.Amax, 2), u: 'm²', s: 'decide ' + nom + '; ' + placasTxt(r.nReq) },
+          { k: 'Carga de sus placas', v: num(100 * r.carga, 0), u: '%', s: placasTxt(r.s.placas) + ', al terminar el lote', alerta: r.carga > 1 }
+        ];
+      },
+      veredicto: function (r) {
+        var nom = { caida: 'la caída limpia', flujo: 'el flujo recomendado', agua: 'el agua' }[r.decide];
+        if (r.carga > 1) return { alerta: true, html: 'Con ' + placasTxt(r.s.placas) + ' el agua las satura antes de terminar el lote y pasa con el aceite: hacen falta <b>' + r.nReq + '</b>.' };
+        if (r.dp > r.s.dpAdm) return { alerta: true, html: 'La caída limpia, <b>' + un(r.dp * 1000, 0, 'mbar') + '</b>, pasa del límite de ' + un(r.s.dpAdm * 1000, 0, 'mbar') + ': hacen falta ' + r.nReq + ' placas.' };
+        if (r.carga < 0.6 && r.nReq < r.s.placas) return { alerta: false, html: 'Las ' + r.s.placas + ' placas terminan el lote al ' + pct(r.carga) + ': sobra área, y con ' + placasTxt(r.nReq) + ' bastaría.' };
+        return { alerta: false, html: (r.s.placas === 1 ? 'La placa termina' : 'Las ' + r.s.placas + ' placas terminan') + ' el lote al <b>' + pct(r.carga) + '</b>. Decide ' + nom + ', y la caída limpia es de ' + mbar(r.dp) + '.' };
+      },
+      pred: {
+        base: { grado: 'K 250' }, llevar: { grado: 'EKS' },
+        q: function (rb) { return 'Con la placa K 250 el lote pide ' + placasTxt(rb.nReq) + '. Si se cambia por la EKS, la más cerrada, ¿cuántas pide?'; },
+        ops: ['Más placas', 'Las mismas', 'Menos placas'],
+        instr: 'Escoja el grado EKS y mire el número del centro.',
+        cumple: function (st) { return st.grado === 'EKS'; },
+        correcta: function (rn, rb) { return rn.nReq > rb.nReq ? 0 : rn.nReq < rb.nReq ? 2 : 1; },
+        explica: function (rn, rb) {
+          if (rn.nReq === rb.nReq) return 'La EKS frena más el aceite: pide ' + un(rn.A1, 2, 'm²') + ' para que la caída limpia no pase de ' + un(rn.s.dpAdm * 1000, 0, 'mbar') + ', contra ' + un(rb.A1, 3, 'm²') + ' de la K 250. Pero el agua pide ' + un(rn.A3, 2, 'm²') + ', y sigue decidiendo el área; con sus placas la caída limpia sube a ' + mbar(rn.dp) + '.';
+          return 'La EKS pide ' + un(rn.A1, 2, 'm²') + ' para que la caída limpia no pase de ' + un(rn.s.dpAdm * 1000, 0, 'mbar') + ', más que los otros criterios: ahora decide la caída de presión, y hacen falta ' + placasTxt(rn.nReq) + '.';
+        }
+      },
+      montar: function (a, b) {
+        S.svgA = lienzo(a, 420, 400, 'El filtro de placas F-201 de lado: el cabezal fijo, las placas de celulosa entre sus marcos, el cabezal móvil y el tornillo de cierre. La bomba P-201 lleva el aceite del tanque por abajo, el aceite filtrado sale por arriba y el indicador PDI-202 marca la caída de presión. Cada placa se va llenando de agua a medida que pasa el lote.');
+        var g = S.svgA;
+        // la base y los cabezales
+        s('rect', { x: 30, y: 282, width: 368, height: 8, fill: C.metalM, stroke: C.tinta, 'stroke-width': 1 }, g);
+        s('rect', { x: 38, y: 290, width: 12, height: 14, fill: C.metalM, stroke: C.tinta, 'stroke-width': 1 }, g);
+        s('rect', { x: 378, y: 290, width: 12, height: 14, fill: C.metalM, stroke: C.tinta, 'stroke-width': 1 }, g);
+        s('rect', { x: 40, y: 86, width: 30, height: 196, fill: C.metal, stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        s('rect', { x: 382, y: 86, width: 14, height: 196, fill: C.metal, stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        S.husillo = s('line', { y1: 186, y2: 186, x2: 382, stroke: C.metalO, 'stroke-width': 5 }, g);
+        S.movil = s('rect', { y: 86, width: 22, height: 196, fill: C.metal, stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        S.pack = s('g', {}, g);
+        // la entrada: la bomba y la línea del tanque
+        S.flujos = [];
+        ['M6 350H40', 'M55 334V282', 'M55 86V58H414'].forEach(function (d) { s('path', { d: d, fill: 'none', stroke: C.aceiteM, 'stroke-width': 7 }, g); });
+        S.flujos.push(s('path', { d: 'M6 350H40', class: 'fl-flujo', fill: 'none', stroke: C.aceiteO, 'stroke-width': 2.5 }, g));
+        S.flujos.push(s('path', { d: 'M55 334V282', class: 'fl-flujo', fill: 'none', stroke: C.aceiteO, 'stroke-width': 2.5 }, g));
+        s('circle', { cx: 55, cy: 350, r: 16, fill: C.blanco, stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        s('path', { d: 'M47 342L67 350L47 358Z', fill: 'none', stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        tx(g, 80, 355, 'P‑201', 'f-tag');
+        tx(g, 6, 386, 'del TK‑201', 'f-ts');
+        // la salida y el indicador
+        S.salida = s('path', { d: 'M55 86V58H414', class: 'fl-flujo', fill: 'none', stroke: C.aceiteO, 'stroke-width': 2.5 }, g);
+        S.flujos.push(S.salida);
+        tx(g, 414, 46, 'aceite filtrado', 'f-ts', 'end');
+        s('line', { x1: 150, y1: 43, x2: 150, y2: 58, stroke: C.tinta, 'stroke-width': 1.4 }, g);
+        burbuja(g, 150, 24, 'PDI', '202');
+        tx(g, 178, 18, 'caída limpia', 'f-ts');
+        S.lecDp = tx(g, 178, 38, '', 'f-vg');
+        S.paso = s('g', {}, g);
+        S.lbPasa = tx(g, 300, 78, 'el agua pasa', 'f-v f-alerta f-halo', 'middle');
+        S.lbPlacas = tx(g, 230, 324, '', 'f-v', 'middle');
+        tx(g, 230, 342, 'en azul, el agua que retienen', 'f-ts', 'middle');
+        S.prog = tx(g, 250, 388, '', 'f-v', 'middle');
+        S.gotasPasa = [];
+        for (var i = 0; i < 8; i++) S.gotasPasa.push(s('circle', { r: 3.2, fill: C.aguaO, stroke: C.alerta, 'stroke-width': 1.2, opacity: 0 }, S.paso));
+
+        // Los tres criterios
+        S.svgB = lienzo(b, 420, 400, 'Gráfica del área de placa que pide cada criterio, en escala logarítmica: la caída de presión limpia, el flujo recomendado por el fabricante y el agua que retiene la placa, con una línea en el área del filtro escogido; abajo, una barra con la carga de agua de las placas al terminar el lote.');
+        g = S.svgB;
+        tx(g, BX0, 24, 'área de placa, m² (escala logarítmica)', 'f-t');
+        [0.01, 0.03, 0.1, 0.3, 1, 3].forEach(function (A) { s('line', { x1: xa(A), x2: xa(A), y1: 40, y2: 230, class: 'f-rej' }, g); tx(g, xa(A), 248, num(A, A < 0.1 ? 2 : A < 1 ? 1 : 0), 'f-ts', 'middle'); });
+        s('line', { x1: BX0, x2: BX1, y1: 230, y2: 230, class: 'f-eje' }, g);
+        S.selBanda = s('rect', { y: 40, height: 190, width: 10, fill: C.amarillo }, g);
+        S.selLinea = s('line', { y1: 40, y2: 230, stroke: C.tinta, 'stroke-width': 1.6 }, g);
+        S.lbSel = tx(g, 0, 270, '', 'f-v f-halo', 'middle');
+        S.filas = FILAS.map(function (y) {
+          var o = {};
+          s('line', { x1: BX0, x2: BX1, y1: y + 24, y2: y + 24, stroke: C.borde, 'stroke-width': 1 }, g);
+          o.lb = tx(g, BX0, y - 10, '', 'f-v');
+          o.sub = tx(g, BX0, y + 6, '', 'f-ts');
+          o.est = tx(g, BX1, y - 10, '', 'f-v', 'end');
+          o.bar = s('rect', { y: y + 17, height: 14, fill: C.metal, stroke: C.metalO, 'stroke-width': 1 }, g);
+          o.pt = s('circle', { cy: y + 24, r: 7, 'stroke-width': 1.8 }, g);
+          return o;
+        });
+        // la carga
+        S.cargaTit = tx(g, BX0, 312, 'carga de agua de sus placas al terminar el lote', 'f-t');
+        s('rect', { x: BX0, y: 324, width: BX1 - BX0, height: 24, fill: C.zona, stroke: C.borde, 'stroke-width': 1 }, g);
+        S.cargaBar = s('rect', { x: BX0, y: 324, height: 24 }, g);
+        var x100 = BX0 + (BX1 - BX0) / 1.25;
+        s('line', { x1: x100, x2: x100, y1: 318, y2: 354, stroke: C.tinta, 'stroke-width': 1.6 }, g);
+        tx(g, x100, 372, '100 %', 'f-ts', 'middle');
+        S.cargaLb = tx(g, 0, 341, '', 'f-v');
+        S.t = 0; S.corre = false; S.fase = 0;
+      },
+      poner: function (r, inmediato) {
+        // las placas: tantas como haya, con su marco
+        var n = r.s.placas, p = Math.min(30, WP / n), w = Math.max(5, p * 0.42), ancho = n * p;
+        S.pack.innerHTML = '';
+        S.hojas = [];
+        for (var i = 0; i < n; i++) {
+          var x = XS + i * p;
+          s('rect', { x: x, y: PY0 - 6, width: p - w, height: PY1 - PY0 + 12, fill: C.metalC, stroke: C.metalO, 'stroke-width': 1 }, S.pack);
+          var hoja = s('rect', { x: x + p - w, y: PY0, width: w, height: PY1 - PY0, fill: C.blanco, stroke: C.metalO, 'stroke-width': 1 }, S.pack);
+          var agua = s('rect', { x: x + p - w, width: w, fill: C.aguaO }, S.pack);
+          S.hojas.push({ hoja: hoja, agua: agua });
+        }
+        var xm = XS + ancho + 4;
+        set(S.movil, { x: xm }); set(S.husillo, { x1: xm + 22 });
+        S.lbPlacas.textContent = (n === 1 ? 'Una placa' : n + NB + 'placas') + ' de 400 × 400 mm, ' + un(r.A, 2, 'm²');
+        S.lecDp.textContent = mbar(r.dp);
+        S.lecDp.setAttribute('class', 'f-vg' + (r.dp > r.s.dpAdm ? ' f-alerta' : ''));
+        // los criterios
+        var datos = [
+          { lb: 'Caída limpia de ' + un(r.s.dpAdm * 1000, 0, 'mbar'), sub: 'placa ' + r.s.grado + ', ' + un(M.PALL[r.s.grado], 0, 'L/(m²·min)') + ' de agua', A: r.A1, k: 'caida' },
+          { lb: 'Flujo recomendado', sub: 'entre 525 y 850 L/(m²·h)', A: r.A2[1], A0: r.A2[0], k: 'flujo' },
+          { lb: 'Agua retenida', sub: un(r.s.cap, 0, 'g/m²') + ', ilustrativo; ' + un(r.g, 0, 'g') + ' por lote', A: r.A3, k: 'agua' }
+        ];
+        datos.forEach(function (d, j) {
+          var f = S.filas[j], ok = r.A >= d.A - 1e-12, decide = r.decide === d.k;
+          f.lb.textContent = d.lb + (decide ? ' · decide' : '');
+          f.sub.textContent = d.sub;
+          f.est.textContent = ok ? 'cumple' : 'falta área';
+          f.est.setAttribute('class', 'f-v' + (ok ? '' : ' f-alerta'));
+          if (d.A0) set(f.bar, { x: xa(d.A0), width: Math.max(2, xa(d.A) - xa(d.A0)), opacity: 1 }); else set(f.bar, { opacity: 0 });
+          set(f.pt, { cx: xa(d.A), fill: ok ? (decide ? C.tinta : C.blanco) : C.alerta, stroke: ok ? C.tinta : C.alerta });
+        });
+        var xs = xa(r.A);
+        set(S.selBanda, { x: xs - 5 }); set(S.selLinea, { x1: xs, x2: xs });
+        set(S.lbSel, { x: entre(xs, BX0 + 80, BX1 - 80) });
+        S.lbSel.textContent = 'sus placas: ' + un(r.A, 2, 'm²');
+        S.r = r;
+        if (inmediato === 'entrar' && !mq.matches) { S.t = 0; S.corre = true; } else { S.t = r.s.tf; S.corre = false; }
+        this.dibujarTanque(r);
+      },
+      repetir: function (r) { if (!mq.matches) { S.t = 0; S.corre = true; } },
+      dibujarTanque: function (r) {
+        var f = r.s.tf > 0 ? S.t / r.s.tf : 1, cg = r.carga * f, lleno = cg > 1;
+        S.hojas.forEach(function (h) {
+          var hh = (PY1 - PY0) * Math.min(1, cg);
+          set(h.agua, { y: PY1 - hh, height: hh });
+          set(h.hoja, { stroke: lleno ? C.alerta : C.metalO, 'stroke-width': lleno ? 2 : 1 });
+        });
+        S.lbPasa.style.opacity = lleno ? 1 : 0;
+        S.pasando = lleno;
+        S.prog.textContent = 'filtrado: ' + num(S.t, 1) + ' h de ' + un(r.s.tf, 1, 'h') + ' · ' + un(r.V * 1000 * f, 0, 'L');
+        var W = BX1 - BX0, fc = Math.min(1.25, cg) / 1.25;
+        set(S.cargaBar, { width: W * fc, fill: lleno ? C.alerta : C.aguaO });
+        var xl = BX0 + W * fc, dentro = W * fc > 70;
+        set(S.cargaLb, { x: dentro ? xl - 8 : xl + 6, 'text-anchor': dentro ? 'end' : 'start' });
+        S.cargaLb.style.fill = dentro && lleno ? C.blanco : C.tinta;
+        S.cargaLb.textContent = pct(cg);
+      },
+      cuadro: function (dt, r) {
+        if (!mq.matches) S.fase = (S.fase + dt * 30) % 36;
+        S.flujos.forEach(function (p) { p.style.strokeDashoffset = -S.fase; });
+        if (S.pasando) {
+          S.gotasPasa.forEach(function (c, i) {
+            var u = ((S.fase / 36 + i / 8) % 1), L = 28 + 359, d = u * L, x, y;
+            if (d < 28) { x = 55; y = 86 - d; } else { x = 55 + (d - 28); y = 58; }
+            set(c, { cx: x, cy: y, opacity: 1 });
+          });
+        } else S.gotasPasa.forEach(function (c) { c.setAttribute('opacity', 0); });
+        if (!S.corre) return;
+        S.t += dt * r.s.tf / DUR;
+        if (S.t >= r.s.tf) { S.t = r.s.tf; S.corre = false; }
+        this.dibujarTanque(r);
+      },
+      siempre: true,
+      repetirTxt: 'Repetir el filtrado',
+      calculo: function (r) {
+        var J = M.PALL[r.s.grado];
+        var nom = { caida: 'la caída de presión limpia', flujo: 'el flujo recomendado', agua: 'el agua que retiene la placa' }[r.decide];
+        return {
+          intro: 'Lo que no se purgó llega al filtro de placas. El cálculo suma esa agua y compara tres maneras de escoger el área; manda la que pide más.',
+          pasos: [
+            { t: 'El agua que llega al filtro',
+              p: 'Al filtro llegan el agua libre que no cayó en el reposo y toda el agua que salió de solución en el enfriado.',
+              eq: 'w_{\\text{filtro}} = w_{\\text{libre,filtro}} + w_{\\text{sale}} \\qquad m_{\\text{agua}} = w_{\\text{filtro}}\\,m_{\\text{lote}}',
+              num: 'w_{\\text{filtro}} = ' + kn(r.libreFiltro, 0) + ' + ' + kn(r.sale, 0) + ' = ' + kn(r.mgkg, 0) + '\\ \\mathrm{mg/kg} \\\\ m_{\\text{agua}} = ' + kn(r.mgkg, 0) + ' \\times ' + kn(r.kg, 1) + '/1000 = ' + kn(r.g, 1) + '\\ \\mathrm{g}' },
+            { t: 'El caudal por el filtro',
+              p: 'La bomba pasa el lote por el filtro en el tiempo que fija el caso.',
+              eq: 'Q = \\frac{V}{t_f}',
+              num: 'Q = \\frac{' + kn(r.V, 4) + '}{' + kn(r.s.tf, 1) + ' \\times 3600} = ' + kc(r.Q, 2) + '\\ \\mathrm{m^3/s} = ' + kn(r.Q * 3.6e6, 1) + '\\ \\mathrm{L/h}' },
+            { t: 'Primer criterio: la caída limpia',
+              p: 'Sin torta, la ecuación de la filtración deja solo la resistencia del medio. El fabricante da cuánta agua pasa por la placa limpia con 1 bar; de ahí sale la resistencia de la placa, y con la viscosidad del aceite frío, el área que deja pasar el caudal sin superar la caída admisible.',
+              eq: 'Q = \\frac{A\\,\\Delta p}{\\mu\\,R_m} \\;\\Rightarrow\\; R_m = \\frac{\\Delta p_{\\text{ens}}}{\\mu_{\\text{agua}}\\,J_{\\text{agua}}} \\qquad A_1 = \\frac{\\mu\\,R_m\\,Q}{\\Delta p_{\\text{adm}}}',
+              num: 'R_m = \\frac{10^5}{' + kc(M.MU_W20, 3) + ' \\times ' + kn(J, 0) + '/60\\,000} = ' + kc(r.Rm, 2) + '\\ \\mathrm{m^{-1}} \\\\ A_1 = \\frac{' + kc(r.o.mu, 3) + ' \\times ' + kc(r.Rm, 2) + ' \\times ' + kc(r.Q, 2) + '}{' + kc(r.s.dpAdm * 1e5, 1) + '} = ' + kn(r.A1, 3) + '\\ \\mathrm{m^2}',
+              fuente: 'Agua que deja pasar cada placa Seitz K de Pall a 20 °C con 1 bar: 1700 L/(m²·min) la K 900, 510 la K 250, 146 la K 100 y 29 la EKS. La hoja de las placas ZD, de celulosa pura, no trae ese dato; el caso supone que la K 250 ZD deja pasar el agua como la K 250.', libro: ['filtracion.html#eq-fil-torta', 'Libro, ecuación 18.1'] },
+            { t: 'Segundo criterio: el flujo recomendado',
+              p: 'Pall pide no pasar de 525 L/(m²·h) en sus grados finos ni de 850 en los de pulido. El explorador compara con el área mayor, la del grado fino, que es el lado seguro.',
+              eq: 'A_2 = \\frac{Q}{J_{\\text{rec}}}',
+              num: 'A_2 = \\frac{' + kn(r.Q * 3.6e6, 1) + '}{850} = ' + kn(r.A2[0], 3) + '\\ \\mathrm{m^2} \\qquad A_2 = \\frac{' + kn(r.Q * 3.6e6, 1) + '}{525} = ' + kn(r.A2[1], 3) + '\\ \\mathrm{m^2}',
+              fuente: 'Hojas técnicas Seitz K y Seitz ZD de Pall, en las referencias del capítulo 18.' },
+            { t: 'Tercer criterio: el agua que retiene la placa',
+              p: 'Cada metro cuadrado de placa guarda una cantidad de agua antes de empezar a soltarla con el aceite. El lote pide el área que alcanza para toda el agua que llega.',
+              eq: 'A_3 = \\frac{m_{\\text{agua}}}{c_{\\text{ret}}} \\qquad n = \\left\\lceil \\frac{A_3}{A_{\\text{placa}}} \\right\\rceil',
+              num: 'A_3 = \\frac{' + kn(r.g, 1) + '}{' + kn(r.s.cap, 0) + '} = ' + kn(r.A3, 3) + '\\ \\mathrm{m^2} \\qquad n = \\left\\lceil \\frac{' + kn(r.A3, 3) + '}{0{,}16} \\right\\rceil = ' + r.nAgua,
+              fuente: 'Los ' + un(M.CASO.cap, 0, 'g/m²') + ' son una cifra ilustrativa del libro: ninguna hoja técnica la da.' },
+            { t: 'Las placas que usted escogió',
+              p: 'El área que manda es la mayor de las tres; ahora la decide ' + nom + ', con ' + un(r.Amax, 3, 'm²') + ' y ' + placasTxt(r.nReq) + '. Con las placas que usted tiene en pantalla:',
+              eq: 'A = n\\,A_{\\text{placa}} \\qquad \\text{carga} = \\frac{m_{\\text{agua}}}{c_{\\text{ret}}\\,A} \\qquad \\Delta p_{\\text{limpia}} = \\frac{\\mu\\,R_m\\,Q}{A}',
+              num: 'A = ' + r.s.placas + ' \\times 0{,}16 = ' + kn(r.A, 2) + '\\ \\mathrm{m^2} \\\\ \\text{carga} = \\frac{' + kn(r.g, 1) + '}{' + kn(r.s.cap, 0) + ' \\times ' + kn(r.A, 2) + '} = ' + kn(r.carga, 2) + ' \\\\ \\Delta p_{\\text{limpia}} = \\frac{' + kc(r.o.mu, 3) + ' \\times ' + kc(r.Rm, 2) + ' \\times ' + kc(r.Q, 2) + '}{' + kn(r.A, 2) + '} \\\\ = ' + kn(r.dp * 1e5, 0) + '\\ \\mathrm{Pa} = ' + kn(r.dp * 1000, 1) + '\\ \\mathrm{mbar}',
+              res: 'El agua puede no ser toda la carga de las placas: si una parte del residuo no volátil del aceite destilado precipita en frío, se suma. Con un residuo entre 0,08 y 1,4 %, el lote trae entre ' + un(r.residuo[0], 2, 'kg') + ' y ' + un(r.residuo[1], 1, 'kg') + ', y qué parte precipita se averigua enfriando una muestra y filtrándola.',
+              libro: ['filtracion.html#fig-fil-aceite', 'Libro, figura 18.7'] }
+          ],
+          libro: [['filtracion.html#sec-fil-profundidad', 'Sección 18.7, El aceite frío'], ['filtracion.html#exm-fil-winter', 'Ejemplo 18.5, la winterización del aceite'], ['filtracion.html#fig-fil-aceite', 'Figura 18.7, el área de placa según el criterio'], ['filtracion.html#eq-fil-torta', 'Ecuación 18.1, la torta y la tela']]
+        };
+      }
+    };
+  })());
+
+  /* ================= El armazón ================= */
+  var $ = function (id) { return document.getElementById(id); };
+  var PARTES_TORTA = ['La recta de Ruth', 'La torta compresible', 'La prensa del lodo', 'El tambor'];
+
+  function riel(cont, enCapa) {
+    var h = '<div class="xl-parte"><span class="xl-parte-t">La winterización</span>';
+    ESCENAS.forEach(function (e, i) {
+      h += '<button type="button" class="xl-sn" data-escena="' + i + '"' + '><span class="n">' + (i + 1) + '</span><span><span class="largo">' + e.titulo + '</span><span class="corto">' + e.corto + '</span></span></button>';
+    });
+    h += '</div>';
+    if (!enCapa) {
+      h += '<div class="xl-parte xl-pronto"><span class="xl-parte-t">La torta<small>en la próxima entrega</small></span>';
+      PARTES_TORTA.forEach(function (t, i) { h += '<span class="xl-sn" aria-disabled="true"><span class="n">' + (i + 4) + '</span><span>' + t + '</span></span>'; });
+      h += '</div><p class="xl-riel-pie">El modelo es el del capítulo 18 del libro. ' + '<a href="' + LIBRO + 'filtracion.html" target="_blank" rel="noopener">Abrir el capítulo</a></p>';
+    }
+    cont.innerHTML = h;
+    cont.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button[data-escena]');
+      if (b) { if (enCapa) irCapa(+b.dataset.escena); else ir(+b.dataset.escena); }
+    });
+  }
+
+  // Los controles: cada uno cambia solo su clave
+  var vivos = [];
+  function control(k, cont, compacto) {
+    var c = CTRL[k], el = document.createElement('div'), id = 'c-' + k + (compacto ? '-d' : '');
+    el.className = 'xl-c';
+    var nota = '<p class="xl-c-nota"><span>' + (c.nota || '') + '</span><button type="button" class="xl-caso-b" data-caso>caso: ' + fmtCtrl(k, M.CASO[k]) + '</button></p>';
+    if (c.tipo === 'seg') {
+      el.innerHTML = '<div class="xl-c-cab"><span class="lb" id="' + id + '">' + c.etq + '</span></div><div class="xl-seg" role="group" aria-labelledby="' + id + '">' +
+        c.ops.map(function (o) { return '<button type="button" data-v="' + o + '">' + o + '</button>'; }).join('') + '</div>' + nota;
+      el.querySelector('.xl-seg').addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (b) cambiar(k, b.dataset.v); });
+    } else if (c.tipo === 'cont') {
+      el.innerHTML = '<div class="xl-c-cab"><span class="lb" id="' + id + '">' + c.etq + '</span><output></output></div><div class="xl-cont" role="group" aria-labelledby="' + id + '">' +
+        '<button type="button" data-d="-1" aria-label="Una placa menos">' + ico('menos') + '</button><span aria-live="polite"></span><button type="button" data-d="1" aria-label="Una placa más">' + ico('mas') + '</button></div>' + nota;
+      el.querySelector('.xl-cont').addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (b) cambiar(k, entre(estado[k] + (+b.dataset.d), c.min, c.max)); });
+    } else {
+      el.innerHTML = '<div class="xl-c-cab"><label for="' + id + '">' + c.etq + '</label><output for="' + id + '"></output></div>' +
+        '<input class="xl-r" type="range" id="' + id + '" min="' + c.min + '" max="' + c.max + '" step="' + c.paso + '">' + nota;
+      var inp = el.querySelector('input');
+      inp.addEventListener('input', function () { cambiar(k, +inp.value); });
+    }
+    el.querySelector('[data-caso]').addEventListener('click', function () { cambiar(k, M.CASO[k]); });
+    cont.appendChild(el);
+    var v = {
+      cont: cont,
+      refrescar: function () {
+        var val = estado[k], esCaso = igual(val, M.CASO[k]);
+        var cb = el.querySelector('[data-caso]'); cb.disabled = esCaso;
+        if (c.tipo === 'seg') el.querySelectorAll('.xl-seg button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === val ? 'true' : 'false'); });
+        else if (c.tipo === 'cont') {
+          el.querySelector('output').textContent = un(val * M.PLACA, 2, 'm²');
+          el.querySelector('.xl-cont span').textContent = val;
+          el.querySelector('[data-d="-1"]').disabled = val <= c.min; el.querySelector('[data-d="1"]').disabled = val >= c.max;
+        } else {
+          var inp = el.querySelector('input');
+          if (document.activeElement !== inp || Math.abs(+inp.value - val) > c.paso / 2) inp.value = val;
+          inp.style.setProperty('--p', (100 * (entre(val, c.min, c.max) - c.min) / (c.max - c.min)) + '%');
+          el.querySelector('output').textContent = fmtCtrl(k, val);
+          inp.setAttribute('aria-valuetext', fmtCtrl(k, val));
+        }
+      }
+    };
+    vivos.push(v);
+    v.refrescar();
+    return v;
+  }
+  function limpiarVivos(cont) { vivos = vivos.filter(function (v) { return v.cont !== cont && !cont.contains(v.cont); }); }
+
+  function armarPanel() {
+    var e = ESCENAS[escena], ctl = $('ctl');
+    limpiarVivos(ctl);
+    ctl.innerHTML = '<div class="xl-hoja-t"><b>Controles · ' + e.titulo + '</b><button type="button" class="xl-cerrar" id="hojaX" aria-label="Cerrar los controles">' + ico('x') + '</button></div><p class="xl-ctl-t">Controles</p>';
+    var caja = document.createElement('div'); ctl.appendChild(caja);
+    e.controles.forEach(function (k) { control(k, caja); });
+    if (e.info) { var inf = document.createElement('p'); inf.className = 'xl-info'; inf.id = 'info'; ctl.appendChild(inf); }
+    var det = document.createElement('details'); det.className = 'xl-mas';
+    det.innerHTML = '<summary>Más ajustes' + ico('abajo') + '</summary>';
+    var caja2 = document.createElement('div'); det.appendChild(caja2);
+    e.mas.forEach(function (k) { control(k, caja2); });
+    ctl.appendChild(det);
+    $('hojaX').addEventListener('click', function () { hoja(false); });
+  }
+  function infoIr(ev) { var b = ev.target.closest('[data-ir]'); if (b) { hoja(false); ir(+b.dataset.ir); } }
+
+  // La pregunta para predecir: sin puntaje, no se guarda
+  var preds = ESCENAS.map(function () { return { elegida: null, revelada: false }; });
+  function armarPred() {
+    var e = ESCENAS[escena], P = e.pred, st = preds[escena], box = $('pred');
+    var rb = M.calcular(Object.assign({}, estado, P.base));
+    var rn = M.calcular(Object.assign({}, estado, P.llevar));
+    var ok = P.correcta(rn, rb);
+    var h = '<p class="k">' + ico('ayuda') + 'Prediga antes de mover</p><p class="q">' + P.q(rb) + '</p><ul>';
+    P.ops.forEach(function (o, i) {
+      var cls = 'xl-op' + (st.elegida === i ? ' elegida' : '') + (st.revelada && i === ok ? ' correcta' : '');
+      h += '<li><button type="button" class="' + cls + '" data-op="' + i + '"' + (st.elegida !== null ? ' disabled' : '') + '><span class="l">' + 'ABC'[i] + '</span><span>' + o + '</span></button></li>';
+    });
+    h += '</ul>';
+    if (st.elegida !== null && !st.revelada) h += '<p class="paso">' + P.instr + '</p><div class="fila"><button type="button" class="xl-b xl-b--navy" data-llevar>' + ico('der') + 'Llevarlo ahí</button></div>';
+    if (st.revelada) {
+      var acerto = st.elegida === ok;
+      h += '<div class="res"><b>' + ico(acerto ? 'ok' : 'info') + (acerto ? 'Acertó.' : 'La respuesta es la ' + 'ABC'[ok] + '.') + '</b>' + P.explica(rn, rb) + '</div><button type="button" class="otra" data-otra>Volver a intentarlo</button>';
+    }
+    box.innerHTML = h;
+  }
+  $('pred').addEventListener('click', function (ev) {
+    var P = ESCENAS[escena].pred, st = preds[escena], b;
+    if ((b = ev.target.closest('[data-op]')) && st.elegida === null) { st.elegida = +b.dataset.op; if (P.cumple(estado)) st.revelada = true; armarPred(); var f = $('pred').querySelector('[data-llevar], .otra'); if (f) f.focus(); return; }
+    if (ev.target.closest('[data-llevar]')) { var k = Object.keys(P.llevar)[0]; cambiar(k, P.llevar[k]); return; }
+    if (ev.target.closest('[data-otra]')) { st.elegida = null; st.revelada = false; armarPred(); var p = $('pred').querySelector('[data-op]'); if (p) p.focus(); }
+  });
+
+  // La escena en pantalla
+  var figs = [];
+  function armarFiguras() {
+    var cont = $('figs');
+    ESCENAS.forEach(function (e, i) {
+      var a = document.createElement('figure'), b = document.createElement('figure');
+      a.className = 'xl-fig ancha'; b.className = 'xl-fig';
+      a.hidden = b.hidden = i !== escena;
+      a.innerHTML = '<div class="xl-fig-cab"><span>' + e.figTit[0] + '</span><button type="button" class="xl-mini xl-repetir">' + ico('rot') + e.repetirTxt + '</button></div>';
+      b.innerHTML = '<div class="xl-fig-cab"><span>' + e.figTit[1] + '</span></div>';
+      a.querySelector('button').addEventListener('click', function () { e.repetir(R); });
+      cont.appendChild(a); cont.appendChild(b);
+      e.montar(a, b);
+      figs.push([a, b]);
+    });
+  }
+
+  function pintarKpis() {
+    var e = ESCENAS[escena];
+    $('kpis').innerHTML = e.kpis(R).map(function (q) {
+      return '<div class="xl-kpi' + (q.alerta ? ' alerta' : '') + '"><span class="k">' + q.k + '</span><span class="v">' + q.v + ' <small>' + q.u + '</small></span><span class="s">' + q.s + '</span></div>';
+    }).join('');
+    var v = e.veredicto(R), box = $('veredicto');
+    box.classList.toggle('alerta', v.alerta);
+    $('verIc').innerHTML = ico(v.alerta ? 'alerta' : 'ok');
+    $('verTx').innerHTML = v.html;
+    if (e.info && $('info')) $('info').innerHTML = e.info(R);
+  }
+
+  function casoActual() {
+    var cfg = CONFIGS.filter(function (c) { return c.id === cfgActiva; })[0] || CONFIGS[0];
+    var ref = Object.assign({}, M.CASO, cfg.cambios), mod = Object.keys(ref).some(function (k) { return !igual(estado[k], ref[k]); });
+    $('casoNom').textContent = cfg.t;
+    $('casoMod').hidden = !mod;
+    $('casoReset').hidden = !mod && cfgActiva === 'caso';
+  }
+
+  function ir(i) {
+    escena = i;
+    var e = ESCENAS[i];
+    document.querySelectorAll('#riel .xl-sn[data-escena]').forEach(function (b) { var on = +b.dataset.escena === i; b.classList.toggle('is-active', on); if (on) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+    $('ceja').textContent = 'Escena ' + (i + 1) + ' de ' + ESCENAS.length + ' · La winterización';
+    $('titulo').textContent = e.titulo;
+    $('pregunta').textContent = e.pregunta;
+    figs.forEach(function (p, j) { p[0].hidden = p[1].hidden = j !== i; });
+    var sig = $('btnSig');
+    if (i < ESCENAS.length - 1) { sig.hidden = false; sig.innerHTML = '<span>Siguiente: ' + ESCENAS[i + 1].titulo + '</span>' + ico('der'); sig.onclick = function () { ir(i + 1); }; }
+    else { sig.hidden = false; sig.innerHTML = ico('sigma') + '<span>¿Cómo se calcula?</span>'; sig.onclick = function () { abrirCapa(); }; }
+    armarPanel(); armarPred(); pintarKpis();
+    e.poner(R, 'entrar');
+    try { history.replaceState(null, '', '#' + e.id); } catch (err) { /* sin historial */ }
+  }
+
+  function cambiar(k, v) {
+    if (igual(estado[k], v)) return;
+    estado[k] = v;
+    recalcular();
+  }
+  function recalcular() {
+    R = M.calcular(estado);
+    vivos.forEach(function (v) { v.refrescar(); });
+    var st = preds[escena];
+    if (st.elegida !== null && !st.revelada && ESCENAS[escena].pred.cumple(estado)) st.revelada = true;
+    armarPred(); pintarKpis(); casoActual();
+    ESCENAS.forEach(function (e, j) { e.poner(R, j === escena ? false : true); });
+    if (!$('capa').hidden) pintarDoc();
+  }
+
+  /* ---------- «¿Cómo se calcula?» ---------- */
+  var escCapa = 0, vistos = ESCENAS.map(function () { return 1; }), ultimoFoco = null;
+  function abrirCapa() {
+    ultimoFoco = document.activeElement;
+    hoja(false);
+    $('capa').hidden = false; document.body.style.overflow = 'hidden';
+    irCapa(escena);
+    $('capaX').focus();
+  }
+  function cerrarCapa() {
+    $('capa').hidden = true; document.body.style.overflow = '';
+    limpiarVivos($('capaDatos'));
+    if (ultimoFoco && ultimoFoco.focus) ultimoFoco.focus();
+  }
+  function irCapa(i) {
+    escCapa = i;
+    document.querySelectorAll('#capaRiel .xl-sn').forEach(function (b) { b.classList.toggle('is-active', +b.dataset.escena === i); });
+    var e = ESCENAS[i], doc = $('doc');
+    limpiarVivos(doc);
+    doc.innerHTML = '<p class="xl-ceja">Escena ' + (i + 1) + ' · La winterización</p><h3>' + e.titulo + '</h3><p class="xl-preg">' + e.pregunta + '</p><div id="docCuerpo"></div>';
+    var dd = $('capaDatos');
+    limpiarVivos(dd);
+    dd.innerHTML = '<span class="t" id="capaDatosT">Sus datos</span><p class="d">Mueva uno y mire cómo cambian las cuentas.</p>';
+    e.datos.forEach(function (k) { control(k, dd, true); });
+    pintarDoc();
+    $('capaDoc').scrollTop = 0;
+  }
+  function pintarDoc() {
+    var e = ESCENAS[escCapa], c = e.calculo(R), n = vistos[escCapa], cuerpo = $('docCuerpo');
+    if (!cuerpo) return;
+    var h = '<p class="xl-intro">' + c.intro + '</p><ol class="xl-pasos">';
+    c.pasos.forEach(function (p, j) {
+      if (j >= n) return;
+      h += '<li class="xl-paso" id="paso-' + j + '"><span class="pn">' + (j + 1) + '</span><h4>' + p.t + '</h4><p>' + p.p + '</p>';
+      if (p.eq) h += '<div class="xl-ec">' + K(partir(p.eq)) + '</div>';
+      if (p.num || p.res) {
+        h += '<div class="xl-num"><span class="k">Con sus números</span>';
+        if (p.num) { var nt = partir(p.num); h += K(nt.indexOf('\\\\') >= 0 && nt.indexOf('gathered') < 0 ? '\\begin{gathered}' + nt + '\\end{gathered}' : nt); }
+        if (p.res) h += '<p>' + p.res + '</p>';
+        h += '</div>';
+      }
+      if (p.fuente || p.libro) h += '<p class="xl-fuente">' + (p.fuente ? p.fuente + ' ' : '') + (p.libro ? enlace(p.libro[0], p.libro[1]) : '') + '</p>';
+      h += '</li>';
+    });
+    h += '</ol>';
+    if (n < c.pasos.length) h += '<div class="xl-avance"><button type="button" class="xl-b xl-b--navy" data-paso>' + ico('der') + 'Siguiente paso</button><span>Paso ' + n + ' de ' + c.pasos.length + '</span><button type="button" class="xl-caso-b" data-todos>Ver todos los pasos</button></div>';
+    else h += '<div class="xl-libro"><h4>En el libro</h4><ul>' + c.libro.map(function (l) { return '<li>' + enlace(l[0], l[1]) + '</li>'; }).join('') + '</ul></div>';
+    var sc = $('capaDoc').scrollTop;
+    cuerpo.innerHTML = h;
+    $('capaDoc').scrollTop = sc;
+  }
+  $('doc').addEventListener('click', function (ev) {
+    var c = ESCENAS[escCapa].calculo(R).pasos.length;
+    if (ev.target.closest('[data-paso]')) { vistos[escCapa] = Math.min(c, vistos[escCapa] + 1); pintarDoc(); var nuevo = $('paso-' + (vistos[escCapa] - 1)); if (nuevo) nuevo.scrollIntoView({ behavior: mq.matches ? 'auto' : 'smooth', block: 'start' }); var b = $('doc').querySelector('[data-paso]'); if (b) b.focus({ preventScroll: true }); }
+    else if (ev.target.closest('[data-todos]')) { vistos[escCapa] = c; pintarDoc(); }
+  });
+
+  /* ---------- Configuraciones ---------- */
+  function abrirCfg() {
+    ultimoFoco = document.activeElement;
+    hoja(false);
+    $('cfgs').innerHTML = CONFIGS.map(function (c) {
+      var r = M.calcular(Object.assign({}, M.CASO, c.cambios)), alerta = r.carga > 1;
+      return '<div class="xl-cfg' + (c.id === cfgActiva ? ' activa' : '') + '"><span class="e">' + c.e + (c.id === cfgActiva ? ' · en pantalla' : '') + '</span><h3>' + c.t + '</h3><p>' + c.fija + '</p><p class="r' + (alerta ? ' alerta' : '') + '">' + c.res(r) + '</p>' +
+        '<button type="button" class="xl-b xl-b--navy" data-cfg="' + c.id + '">Cargar</button></div>';
+    }).join('');
+    $('velo').hidden = false; document.body.style.overflow = 'hidden';
+    $('cfgX').focus();
+  }
+  function cerrarCfg() { $('velo').hidden = true; document.body.style.overflow = ''; if (ultimoFoco && ultimoFoco.focus) ultimoFoco.focus(); }
+  function cargarCfg(id) {
+    var c = CONFIGS.filter(function (x) { return x.id === id; })[0];
+    cfgActiva = id;
+    estado = Object.assign({}, M.CASO, c.cambios);
+    recalcular();
+    ESCENAS[escena].poner(R, 'entrar');
+  }
+  $('cfgs').addEventListener('click', function (ev) { var b = ev.target.closest('[data-cfg]'); if (b) { cargarCfg(b.dataset.cfg); cerrarCfg(); } });
+  $('velo').addEventListener('click', function (ev) { if (ev.target === $('velo')) cerrarCfg(); });
+
+  /* ---------- La hoja de controles del celular ---------- */
+  function hoja(abrir) {
+    document.body.classList.toggle('hoja-abierta', !!abrir);
+    if (abrir) {
+      // la figura queda a la vista sobre la hoja
+      var svg = figs[escena][0].querySelector('svg'), barra = document.querySelector('.xl-barra');
+      if (svg) window.scrollTo({ top: Math.max(0, svg.getBoundingClientRect().top + window.scrollY - barra.offsetHeight - 4), behavior: mq.matches ? 'auto' : 'smooth' });
+      var f = $('ctl').querySelector('input, button:not(#hojaX)'); if (f) f.focus({ preventScroll: true });
+    }
+  }
+
+  /* ---------- Teclado y foco en las capas ---------- */
+  function atrapar(cont, ev) {
+    var f = Array.prototype.filter.call(cont.querySelectorAll('button, [href], input, summary, [tabindex]:not([tabindex="-1"])'), function (x) { return !x.disabled && x.offsetParent !== null; });
+    if (!f.length) return;
+    var a = f[0], z = f[f.length - 1];
+    if (ev.shiftKey && document.activeElement === a) { ev.preventDefault(); z.focus(); }
+    else if (!ev.shiftKey && document.activeElement === z) { ev.preventDefault(); a.focus(); }
+  }
+  document.addEventListener('keydown', function (ev) {
+    var capa = !$('capa').hidden, velo = !$('velo').hidden;
+    if (ev.key === 'Escape') { if (velo) cerrarCfg(); else if (capa) cerrarCapa(); else hoja(false); return; }
+    if (ev.key === 'Tab') { if (velo) atrapar($('velo'), ev); else if (capa) atrapar($('capa'), ev); return; }
+    if (capa || velo || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+    var tag = (ev.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    var n = parseInt(ev.key, 10);
+    if (n >= 1 && n <= ESCENAS.length) ir(n - 1);
+  });
+
+  /* ---------- Arranque ---------- */
+  riel($('riel'), false);
+  riel($('capaRiel'), true);
+  armarFiguras();
+  $('btnCfg').addEventListener('click', abrirCfg);
+  $('cfgX').addEventListener('click', cerrarCfg);
+  $('btnCalc').addEventListener('click', abrirCapa);
+  $('btnCalcM').addEventListener('click', abrirCapa);
+  $('capaX').addEventListener('click', cerrarCapa);
+  $('btnHoja').addEventListener('click', function () { hoja(true); });
+  $('ctl').addEventListener('click', infoIr);
+  $('casoReset').addEventListener('click', function () { cargarCfg('caso'); });
+  var inicio = ESCENAS.map(function (e) { return e.id; }).indexOf((location.hash || '').slice(1));
+  ESCENAS.forEach(function (e) { e.poner(R, true); });
+  ir(inicio >= 0 ? inicio : 0);
+  casoActual();
+
+  // Un solo reloj para las animaciones de la escena en pantalla
+  var antes = 0;
+  function bucle(t) {
+    var dt = antes ? Math.min(0.05, (t - antes) / 1000) : 0;
+    antes = t;
+    if (!document.hidden && $('capa').hidden) ESCENAS[escena].cuadro(dt, R);
+    requestAnimationFrame(bucle);
+  }
+  requestAnimationFrame(bucle);
+  var anchoAntes = window.innerWidth;
+  window.addEventListener('resize', function () { var w = window.innerWidth; if ((w < 700) !== (anchoAntes < 700) && !$('capa').hidden) pintarDoc(); anchoAntes = w; });
+  window.Explorador = { estado: function () { return Object.assign({}, estado); }, R: function () { return R; }, ir: ir, cambiar: cambiar, abrirCapa: abrirCapa, abrirCfg: abrirCfg, cargarCfg: cargarCfg };
+})();
+</script>
+</body>
+</html>
