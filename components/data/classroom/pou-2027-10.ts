@@ -690,20 +690,20 @@ export const pou202710Course: Course = {
           }
         : r.slug === 'lectura-09-filtracion'
         ? {
-            // La filtración de 2027-10 es su propia Lectura 12 (filtración y
-            // winterización), no la Lectura 09 de pectina. Conserva el banner
-            // de filtración de 2026-20 mientras no haya uno propio.
+            // La guía de lectura de la semana 10 ocupa la entrada de la filtración; la
+            // Lectura 12 de 2027-10 (filtración y winterización) queda en su carpeta, sin
+            // entrada en el Material, como las demás lecturas largas.
             ...r,
-            slug: 'lectura-12-filtracion-winterizacion',
-            order: 12,
+            slug: 'guia-semana-10-filtracion',
+            order: 11,
             week: 10,
-            title: 'Filtración industrial y winterización',
+            title: 'Guía de lectura · Semana 10: filtración y winterización',
             summary:
-              'La barrera porosa que separa sólidos y gotas de un líquido: mecanismos de retención, la ley de Darcy con la resistencia de la torta y la del medio, el ensayo a presión constante, la compresibilidad, los equipos, los medios y las ayudas filtrantes. Después, la filtración de profundidad con cartuchos y placas (retención nominal y absoluta, razón beta, caída de presión limpia, ensayos de capacidad y cambio del medio) y la winterización de la planta: enfriar el aceite del florentino a 5-10 °C y pasarlo por un filtro de profundidad para quitarle el agua y la turbidez. No es un desencerado.',
-            date: '2026-10-23',
-            readingMinutes: 45,
-            tags: ['filtración', 'ley de Darcy', 'torta', 'resistencia del medio', 'filtración de profundidad', 'cartuchos', 'placas filtrantes', 'razón beta', 'winterización', 'aceite esencial'],
-            href: '/classroom/iqya-2031-2027-10/lecturas/Lectura_12/Lectura_12_Filtracion.html',
+              'Qué leer del capítulo 18 del libro: la filtración con torta y la ley de Darcy, la resistencia de la torta y la del medio, los ensayos a presión constante, la compresibilidad, las ayudas filtrantes y la filtración de profundidad, con la winterización del aceite: el reposo, el agua que llega al filtro y el área de las placas. Con las preguntas de la semana. De ahí sale el Quiz 9, y es la base del filtro de la winterización en la Bitácora 3 y del Taller 4.',
+            date: '2026-11-28',
+            readingMinutes: 70,
+            tags: ['guía de lectura', 'libro', 'filtración', 'ley de Darcy', 'torta', 'ayudas filtrantes', 'filtración de profundidad', 'winterización'],
+            href: GUIA + 'Guia_Semana_10_Filtracion.html',
           }
         : SEMANA_2027[r.slug]
         ? { ...r, week: SEMANA_2027[r.slug] }
