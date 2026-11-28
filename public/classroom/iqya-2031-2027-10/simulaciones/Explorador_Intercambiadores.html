@@ -3431,7 +3431,8 @@ var CD_E202 = (function () {
         h += '<p class="tb-t">Los tres pares del capítulo 23, de ' + T1(p.Tsal) + ' a ' + T1(p.e202.Tflor) + '</p><table class="tb"><thead><tr><th>Par, in</th><th>U</th><th>Horq.</th><th>Caída</th><th>Re ánulo</th></tr></thead><tbody>' +
           ds.map(function (d, i) { return '<tr' + (i === best ? ' class="esc"' : '') + '><th scope="row">' + M.PAR_TXT[i].replace(' in', '') + '</th><td>' + num(d.U, 0) + '</td><td>' + d.nh + '</td><td' + (d.dp_tubo > 6894.76 ? ' class="al"' : '') + '>' + kPa(d.dp_tubo) + '</td><td>' + num(d.Re_anulo, 0) + '</td></tr>'; }).join('') + '</tbody></table>' +
           '<p class="tb-nota">' + (best != null ? 'Cumple y escoge el libro el de ' + M.PAR_TXT[best] + ', el de menos horquillas que no pierde más de 1 psi y lleva el ánulo turbulento. ' : 'Ningún par cumple las dos reglas. ') + 'El agua de servicios que pide el diseño: ' + un(ds[0].m3_h, 2, 'm³/h') + '.</p>';
-      } else h += '<p class="tb-nota">Con lo que pide el proceso el diseño de E-202 no es posible: la salida de E-201 menos el acercamiento tiene que quedar sobre el agua de servicios, y el florentino entre las dos.</p>';
+      } else if (!p.e202.on) h += '<p class="tb-nota">E-202 está fuera de servicio. Los tres pares del capítulo 23 y el agua de servicios que pide su diseño aparecen al ponerlo en servicio.</p>';
+      else h += '<p class="tb-nota">Con lo que pide el proceso el diseño de E-202 no es posible: la salida de E-201 menos el acercamiento tiene que quedar sobre el agua de servicios, y el florentino entre las dos.</p>';
       pintar(S.d, h);
     }
   };
@@ -3458,11 +3459,11 @@ var CD_E202 = (function () {
       return { alerta: false, html: 'E-202 lleva el condensado de ' + T1(R.T_sal) + ' a <b>' + T1(R.T_flor) + '</b> con ' + un(e.dp_tubo / 1000, 2, 'kPa') + ' de caída, menos de 1 psi.' };
     },
     prediccion: {
-      base: { cdTsw: 15 }, llevar: { cdTsw: 2 },
+      base: { cdE202: true, cdTsw: 15 }, llevar: { cdE202: true, cdTsw: 2 },
       pregunta: function (rb) { return 'Con agua de servicios a 15 °C el condensado llega al florentino a ' + (okCd(rb.cd) ? T1(rb.cd.T_flor) : 'sin dato') + '. Si el agua llega a 2 °C, 13 K más fría, ¿cuánto baja el condensado?'; },
       opciones: ['Casi los mismos 13 K', 'Baja, pero bastante menos de 13 K', 'Nada'],
-      instruccion: 'Lleve la llegada del agua de servicios a 2 °C y mire el número de la izquierda.',
-      cumple: function (e) { return Math.abs(e.cdTsw - 2) < 0.01; },
+      instruccion: 'Con E-202 en servicio, lleve la llegada del agua de servicios a 2 °C en «Más ajustes» y mire el número de la izquierda.',
+      cumple: function (e) { return e.cdE202 === true && Math.abs(e.cdTsw - 2) < 0.01; },
       correcta: function (rn, rb) { if (!okCd(rn.cd) || !okCd(rb.cd)) return 2; var d = rb.cd.T_flor - rn.cd.T_flor; return d > 0.8 * 13 ? 0 : (d > 0.3 ? 1 : 2); },
       explica: function (rn, rb) {
         if (!rn.cd.e202) return 'Con E-202 fuera de servicio, el agua de servicios no cambia nada.';
