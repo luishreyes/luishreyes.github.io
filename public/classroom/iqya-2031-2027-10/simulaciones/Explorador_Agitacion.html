@@ -2864,7 +2864,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       var cv = this.cv = hq.curva || [], t = this.t = hq.t, fin = cv.length ? cv[cv.length - 1][0] : 0, kR = t && hq.Areq ? s.tH * 60 / t : null;
       var tEnd = t ? Math.max(s.tH * 60 * 1.5, t * 1.25, 600) : Math.max(s.tH * 60 * 1.5, Math.min(fin, 4 * s.tH * 60), 600);
       var pts = cv.filter(function (p) { return p[0] <= tEnd * 1.02; }), ptsR = kR ? cv.map(function (p) { return [p[0] * kR, p[1]]; }).filter(function (p) { return p[0] <= tEnd * 1.02; }) : [];
-      var a = this.a = ejes(g, { x0: 52, x1: 426, y0: 44, y1: 300, xmin: 0, xmax: tEnd / 60, ymin: Math.min(s.T0, s.Tgoal) - 5, ymax: s.Tw + 5, ylab: 'temperatura del lote, °C', xlab: 'tiempo, min' });
+      var a = this.a = ejes(g, { x0: 52, x1: 426, y0: 44, y1: 300, xmin: 0, xmax: tEnd / 60, ymin: Math.min(s.T0, s.Tgoal) - 5, ymax: Math.max(s.Tw, s.Tgoal) + 8, ylab: 'temperatura del lote, °C', xlab: 'tiempo, min' });
       var cg = el('g', { 'clip-path': a.clip }, g);
       el('line', { x1: 52, x2: 426, y1: a.Y(s.Tgoal), y2: a.Y(s.Tgoal), stroke: C.oliva, 'stroke-width': 1.3, 'stroke-dasharray': '5 4' }, g); tx(g, 58, a.Y(s.Tgoal) - 6, 'objetivo, ' + un(s.Tgoal, 0, '°C'), 'f-ts f-halo');
       el('line', { x1: 52, x2: 426, y1: a.Y(s.Tw), y2: a.Y(s.Tw), stroke: C.tinta, 'stroke-width': 1, 'stroke-dasharray': '3 3' }, g); tx(g, 58, a.Y(s.Tw) + 17, 'vapor a ' + un(s.Tw, 1, '°C') + ', ' + un(hq.Psat / 100, 2, 'bara'), 'f-ts f-halo');
@@ -2872,7 +2872,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
       if (ptsR.length) linea(cg, ptsR.map(function (p) { return [a.X(p[0] / 60), a.Y(p[1])]; }), { stroke: C.tinta, 'stroke-width': 1.6, 'stroke-dasharray': '6 4' });
       linea(cg, pts.map(function (p) { return [a.X(p[0] / 60), a.Y(p[1])]; }), { stroke: C.azul, 'stroke-width': 2.6 });
       if (hq.t) { punto(g, a.X(hq.t / 60), a.Y(s.Tgoal), 6); tx(g, a.X(hq.t / 60) + 10, a.Y(s.Tgoal) + 20, fTm(hq.t), 'f-v f-halo'); }
-      this.lec.textContent = s.Tgoal <= s.T0 ? 'Este lote no se calienta: la temperatura objetivo no pasa de la inicial.' : (s.Tw <= s.T0 ? 'El vapor no está más caliente que el lote.' : 'La punteada es la curva que daría el área necesaria. Pase el cursor para leer la temperatura.');
+      this.lec.textContent = s.Tgoal <= s.T0 ? 'Este lote no se calienta: el objetivo no pasa de la inicial.' : (s.Tw <= s.T0 ? 'El vapor no está más caliente que el lote.' : 'La punteada es la del área necesaria. Pase el cursor para leer.');
     }
   };
   var RES_FIG = {
