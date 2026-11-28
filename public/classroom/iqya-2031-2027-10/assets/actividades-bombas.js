@@ -1882,11 +1882,11 @@
   });
 
   /* El caudal máximo antes de cavitar: NPSH disponible y NPSH3 contra caudal, en la instalación que cavita. */
-  var NQ = [[0, 2.586, 2.538], [2, 2.584, 2.47], [4, 2.579, 2.409], [6, 2.57, 2.355], [8, 2.558, 2.307], [10, 2.543, 2.266], [12, 2.523, 2.23], [14, 2.501, 2.201], [16, 2.475, 2.177], [18, 2.445, 2.16], [20, 2.412, 2.149], [22, 2.376, 2.143], [23, 2.356, 2.143], [24, 2.336, 2.144], [26, 2.293, 2.151], [28, 2.246, 2.165], [30, 2.195, 2.185], [31, 2.169, 2.197], [32, 2.142, 2.211], [34, 2.084, 2.244], [36, 2.023, 2.279], [38, 1.959, 2.317], [40, 1.892, 2.356], [42, 1.82, 2.397], [44, 1.746, 2.441], [46, 1.668, 2.486], [48, 1.586, 2.534], [50, 1.501, 2.583], [52, 1.412, 2.635], [54, 1.32, 2.688], [56, 1.225, 2.744], [58, 1.126, 2.801], [60, 1.024, 2.861]];
-  var Qx = 30.5, Nx = 2.19, QOP = 35.9, NAOP = 2.027, N3OP = 2.277;
+  var NQ = [[0, 2.578, 2.538], [2, 2.577, 2.47], [4, 2.571, 2.409], [6, 2.563, 2.355], [8, 2.551, 2.307], [10, 2.535, 2.266], [12, 2.516, 2.23], [14, 2.493, 2.201], [16, 2.467, 2.177], [18, 2.438, 2.16], [20, 2.405, 2.149], [22, 2.368, 2.144], [23, 2.349, 2.143], [24, 2.328, 2.144], [26, 2.285, 2.151], [28, 2.238, 2.165], [30, 2.188, 2.185], [31, 2.161, 2.197], [32, 2.134, 2.211], [34, 2.077, 2.244], [36, 2.016, 2.279], [38, 1.952, 2.317], [40, 1.884, 2.356], [42, 1.813, 2.397], [44, 1.738, 2.441], [46, 1.66, 2.486], [48, 1.578, 2.534], [50, 1.493, 2.583], [52, 1.405, 2.635], [54, 1.313, 2.688], [56, 1.217, 2.744], [58, 1.118, 2.801], [60, 1.016, 2.861]];
+  var Qx = 30.1, Nx = 2.186, QOP = 35.8, NAOP = 2.023, N3OP = 2.275;
   ZB.animacion('npsh-caudal', {
     vista: [0, 0, 640, 340],
-    alt: 'NPSH disponible y NPSH3 contra caudal en una instalación con el tanque 3 m bajo el eje, agua a 60 °C y 3500 r/min: se cruzan en 30,5 m³/h; a la derecha la bomba cavita, y con la regla del margen no sirve con ningún caudal.',
+    alt: 'NPSH disponible y NPSH3 contra caudal en una instalación con el tanque 3 m bajo el eje, agua a 60 °C y 3500 r/min: se cruzan en 30,1 m³/h; a la derecha la bomba cavita, y con la regla del margen no sirve con ningún caudal.',
     montar: function (svg) {
       var S = {};
       var e = S.e = D.ejes(svg, { x: 64, y: 34, w: 540, h: 250, xmin: 0, xmax: 60, ymin: 0, ymax: 4, xt: [0, 10, 20, 30, 40, 50, 60], yt: [0, 1, 2, 3, 4], dy: 0, xr: 'Q (m³/h)', yr: 'NPSH (m)' });
@@ -1905,17 +1905,17 @@
       S.dis = oculto(s('g', {}, svg));
       s('line', { x1: e.X(48), x2: e.X(48), y1: e.Y(0), y2: e.Y(2.534), stroke: K.tinta2, 'stroke-width': 1.2, 'stroke-dasharray': '4 4' }, S.dis);
       D.t(S.dis, e.X(48) + 6, e.Y(0.35), 'diseño: 48 m³/h', { tam: 12.5, peso: 600, color: K.tinta2, halo: true });
-      D.flecha(S.dis, e.X(48) + 8, e.Y(1.586) + 1, e.X(48) + 8, e.Y(2.534) - 1, { color: K.alerta, ancho: 1.4, punta: 6 });
-      D.t(S.dis, e.X(48) + 14, e.Y(2.06), 'faltan 0,95 m', { tam: 12.5, peso: 700, color: K.alerta, halo: true });
+      D.flecha(S.dis, e.X(48) + 8, e.Y(1.578) + 1, e.X(48) + 8, e.Y(2.534) - 1, { color: K.alerta, ancho: 1.4, punta: 6 });
+      D.t(S.dis, e.X(48) + 14, e.Y(2.06), 'faltan 0,96 m', { tam: 12.5, peso: 700, color: K.alerta, halo: true });
       D.punto(S.dis, e.X(QOP), e.Y(NAOP), { r: 6, color: K.blanco, borde: K.serie[0] });
-      D.t(S.dis, e.X(QOP) - 6, e.Y(NAOP) + 20, 'opera en 35,9', { tam: 12.5, peso: 650, ancla: 'end', halo: true });
+      D.t(S.dis, e.X(QOP) - 6, e.Y(NAOP) + 20, 'opera en 35,8', { tam: 12.5, peso: 650, ancla: 'end', halo: true });
       return S;
     },
     pasos: [
-      { texto: 'Una instalación que cavita: el tanque 3 m por debajo del eje, el agua a 60 °C y la bomba a 3500 r/min. El NPSH disponible arranca en 2,59 m y baja con el caudal, porque crecen las pérdidas de la succión.', dur: 2, ir: function (S, t) { S.na.dibujar(t); D.ver(S.tna, T(t, 0.6, 1)); } },
+      { texto: 'Una instalación que cavita: el tanque 3 m por debajo del eje, el agua a 60 °C y la bomba a 3500 r/min. El NPSH disponible arranca en 2,58 m y baja con el caudal, porque crecen las pérdidas de la succión.', dur: 2, ir: function (S, t) { S.na.dibujar(t); D.ver(S.tna, T(t, 0.6, 1)); } },
       { texto: 'El NPSH3 de la bomba tiene su mínimo hacia 23 m³/h y sube con el caudal, cada vez más rápido.', dur: 2, ir: function (S, t) { S.n3.dibujar(t); D.ver(S.tn3, T(t, 0.6, 1)); } },
-      { texto: 'Las dos curvas se cruzan en 30,5 m³/h. A la derecha del cruce la bomba no tiene el NPSH que pide: cavita.', dur: 1.8, ir: function (S, t) { D.ver(S.px, T(t, 0, 0.4)); D.ver(S.tx, T(t, 0.2, 0.5)); D.ver(S.zona, 0.4 * T(t, 0.4, 1)); D.ver(S.tZona, T(t, 0.6, 1)); } },
-      { texto: 'La instalación se diseñó para 48 m³/h, y ahí faltarían 0,95 m. La bomba se queda en 35,9 m³/h, con 0,25 m menos de lo que pide, y pierde un 20 % de su cabeza.', dur: 2, ir: function (S, t) { D.ver(S.dis, t); } },
+      { texto: 'Las dos curvas se cruzan en 30,1 m³/h. A la derecha del cruce la bomba no tiene el NPSH que pide: cavita.', dur: 1.8, ir: function (S, t) { D.ver(S.px, T(t, 0, 0.4)); D.ver(S.tx, T(t, 0.2, 0.5)); D.ver(S.zona, 0.4 * T(t, 0.4, 1)); D.ver(S.tZona, T(t, 0.6, 1)); } },
+      { texto: 'La instalación se diseñó para 48 m³/h, y ahí faltarían 0,96 m. La bomba se queda en 35,8 m³/h, con 0,25 m menos de lo que pide, y pierde un 20 % de su cabeza.', dur: 2, ir: function (S, t) { D.ver(S.dis, t); } },
       { texto: 'Con la regla del margen, el mayor entre $1,25\\,\\mathrm{NPSH_3}$ y $\\mathrm{NPSH_3} + 0,6$ m, la curva de lo que hace falta queda siempre por encima: esta instalación no sirve con ningún caudal.', dur: 1.8, ir: function (S, t) { S.mg.dibujar(t); D.ver(S.tmg, T(t, 0.3, 1)); } }
     ]
   });
