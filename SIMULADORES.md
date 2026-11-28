@@ -344,7 +344,7 @@ Cada figura declara su tipo y las funciones de su ciclo de vida. El armazón le 
 | `vista` | `[ancho, alto]` en las unidades del dibujo: el `viewBox` del SVG, las unidades del lienzo o el tamaño de la isométrica. Da también la proporción en el celular. |
 | `repetir(r)`, `repetirTexto` | Si la figura tiene una animación que se puede volver a ver, el botón de la cabecera («Repetir el reposo») la llama. Con movimiento reducido el botón no aparece. |
 | `repetirReducido` | `true` deja el botón de repetir con movimiento reducido, cuando repetir da otra cosa y no solo la animación («Otra muestra»). |
-| `pausa`, `velocidades`, `velocidad` | Para una figura que se anima sola: `pausa: true` pone en su cabecera el botón de pausar y seguir; `velocidades: [0.5, 1, 3]`, los botones de la velocidad (un número multiplica el tiempo; `{ valor, texto }` lleva otro rótulo y deja el tiempo como está, para que la figura lo interprete); `velocidad`, la de arranque (1 si está en la lista). En pausa la figura no recibe `cuadro`; con otra velocidad, `dt` llega multiplicado. Con movimiento reducido no aparecen. |
+| `pausa`, `velocidades`, `velocidad` | Para una figura que se anima sola: `pausa: true` pone en su cabecera el botón de pausar y seguir; `velocidades: [0.5, 1, 3]`, los botones de la velocidad (un número multiplica el tiempo; `{ valor, texto }` lleva otro rótulo y deja el tiempo como está, para que la figura lo interprete); `velocidad`, la de arranque (1 si está en la lista). En pausa, `cuadro` llega con `dt = 0` (la figura no se mueve, pero puede volver a dibujarse, por ejemplo si se acerca); con otra velocidad, `dt` llega multiplicado. Con movimiento reducido no aparecen. |
 | `proporcionCel`, `altoCel` | La forma de la figura en el celular, `[ancho, alto]`, o su alto fijo en px, cuando no debe ser la de `vista` (una barra angosta y alta en el computador, por ejemplo). |
 | `liberar` | `true` desmonta la figura cada vez que el estudiante sale de su escena (las 3D lo hacen siempre). |
 
@@ -362,7 +362,8 @@ El ciclo de vida, igual para todos los tipos:
 `X` es el contexto de la figura: `X.reducido()` (movimiento reducido: la figura no se mueve y va derecho al estado
 final), `X.R()` y `X.estado()`, `X.pausada()` y `X.velocidad()` (la pausa y la velocidad que escogió el estudiante),
 `X.preferencia(clave)`, `X.leyenda(html, lado)` (isométricas, lienzos y 3D: un recuadro arriba a la izquierda, o abajo
-con `'abajo'` sin tapar el acercamiento; sin `html` se quita; sus piezas, `XL.gradiente([colores])` y
+con `'abajo'` sin tapar el acercamiento, que en un celular de menos de 600 px se esconde, así que el `alt` de la figura
+dice lo que significan sus colores; sin `html` se quita; sus piezas, `XL.gradiente([colores])` y
 `XL.muestra(color)`, con el texto en `<em>`) y lo propio de cada tipo. `X.app` es la interfaz del explorador:
 `X.app.repintar()` vuelve a pintar los números, el veredicto y la capa sin cambiar el estado, para lo que llega de la
 figura (una medición del trazador, por ejemplo). El título de la cabecera admite un símbolo con su caja (`XL.nt('t₉₅')`). Todas las funciones corren con la figura como `this`, así

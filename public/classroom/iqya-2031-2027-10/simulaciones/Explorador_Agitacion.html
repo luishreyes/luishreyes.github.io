@@ -10,17 +10,8 @@
 <link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
 <link rel="stylesheet" href="/classroom/explorador-libro.css">
 <style>
-/* Solo lo propio de este explorador: los botones de a varios que no caben en una fila, los mandos y las lecturas del
-   tanque en corte, y las tablas de las figuras en HTML. */
-.xl-seg[aria-labelledby^="c-imp"], .xl-seg[aria-labelledby^="c-fluid"], .xl-seg[aria-labelledby^="c-crit"], .xl-seg[aria-labelledby^="c-pared"] {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5px; background: var(--navy);
-}
-.xl-seg[aria-labelledby^="c-pared"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.xl-seg[aria-labelledby^="c-fluid"] button:last-child:nth-child(3n+1), .xl-seg[aria-labelledby^="c-crit"] button:last-child:nth-child(3n+1) { grid-column: 1 / -1; }
-.xl-seg[aria-labelledby^="c-imp"] button + button, .xl-seg[aria-labelledby^="c-fluid"] button + button,
-.xl-seg[aria-labelledby^="c-crit"] button + button, .xl-seg[aria-labelledby^="c-pared"] button + button { border-left: 0; }
-.xl-datos .xl-seg[aria-labelledby^="c-imp"] button, .xl-datos .xl-seg[aria-labelledby^="c-fluid"] button,
-.xl-datos .xl-seg[aria-labelledby^="c-crit"] button { white-space: normal; line-height: 1.15; }
+/* Solo lo propio de este explorador: los mandos y las lecturas del tanque en corte, y las tablas de las figuras en
+   HTML. */
 
 /* El tanque en corte: las lecturas arriba y los mandos de la animación abajo, sobre el lienzo */
 .ag-hud { position: absolute; left: 8px; top: 8px; display: flex; flex-wrap: wrap; gap: 4px; pointer-events: none; }
@@ -46,7 +37,6 @@
 .ag-menu > div button[aria-pressed="true"] { background: var(--navy); color: #fff; }
 .ag-menu > div p { margin: 2px 0 0; font-size: var(--t-xs); line-height: 1.35; color: var(--sec); white-space: normal; }
 .ag-lienzo canvas { cursor: crosshair; }
-.ag-nt { text-transform: none; letter-spacing: 0; }
 
 /* Las figuras en HTML: tablas, la hoja de datos y el diagnóstico */
 .ag-html { padding: 10px 14px 16px; font-size: var(--t-s); line-height: 1.4; }
@@ -78,13 +68,6 @@
 .ag-diag li.c .e { color: var(--alerta); }
 
 @media (max-width: 1099.98px), (max-height: 599.98px) {
-  /* las nueve escenas, en botones de a tres por fila, en la página y en la capa */
-  .xl-riel { display: flex !important; flex-direction: row !important; flex-wrap: wrap; gap: 6px; }
-  .xl-riel .xl-parte { display: contents !important; }
-  .xl-riel .xl-sn { flex: 1 1 28% !important; width: auto !important; min-width: 0 !important; }
-  .xl-capa-riel { display: flex; flex-wrap: wrap; gap: 6px; }
-  .xl-capa-riel .xl-parte { display: contents !important; }
-  .xl-capa-riel .xl-sn { flex: 1 1 28% !important; width: auto !important; min-width: 0 !important; }
   .ag-barra button, .ag-menu > summary { min-width: 44px; min-height: 44px; }
 }
 @media (pointer: coarse) {
@@ -898,7 +881,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
   function um(x) { return un(x * 1e6, x * 1e6 < 10 ? 1 : 0, 'µm'); }
   function npTxt(x) { return num(x, x < 10 ? 2 : 1); }
   function pvClass(pv) { return pv < 0.1 ? 'agitación suave' : (pv < 0.4 ? 'agitación moderada' : (pv < 0.8 ? 'agitación vigorosa' : (pv <= 2 ? 'agitación intensa' : 'muy intensa: gas y emulsiones'))); }
-  function nt(t) { return '<span class="ag-nt">' + t + '</span>'; }
+  var nt = XL.nt;   // un símbolo dentro de un rótulo en versalitas (t₉₅, kLa) conserva su caja
   function regTxt(r) { return r.reg === 'transición' ? 'de transición' : r.reg; }
   function cap1(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
   function kW(P) { return P < 1000 ? kn(P, P < 10 ? 2 : (P < 100 ? 1 : 0)) + '\\ \\mathrm{W}' : kn(P / 1000, 2) + '\\ \\mathrm{kW}'; }
@@ -936,7 +919,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
   };
   function fluDe(st) { return byId(M.FLUIDS, st.fluid); }
   var CONTROLES = {
-    imp: { etiqueta: 'Impulsor', tipo: 'opciones', opciones: IMP_OP },
+    imp: { etiqueta: 'Impulsor', tipo: 'opciones', columnas: 3, opciones: IMP_OP },
     baff: { etiqueta: 'Bafles', tipo: 'opciones', opciones: [{ valor: true, texto: '4 de Dₜ/10' }, { valor: false, texto: 'Sin bafles' }] },
     lT: { etiqueta: 'Diámetro del tanque, Dₜ', min: -1.1, max: 0.6, paso: 0.005, formato: function (v) { var T = pot10(v); return un(T, T < 1 ? 3 : 2, 'm'); } },
     HT: { etiqueta: 'Altura del líquido, H/Dₜ', min: 0.6, max: 2, paso: 0.01, decimales: 2 },
@@ -946,7 +929,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
     lrpm: { etiqueta: 'Velocidad del agitador, N', min: 0.7, max: 3.3, paso: 0.002, formato: function (v) { return rpm(pot10(v)); } },
     alt: { etiqueta: 'Lo que da el motor en la altitud', min: 0.8, max: 1, paso: 0.01, formato: function (v) { return num(100 * v, 0) + NB + '%'; }, nota: 'a 2600 m: 95 % con aire frío, 89 % caliente' },
     tope: { etiqueta: 'Tope de la carga del impulsor', min: 0.8, max: 0.9, paso: 0.01, formato: function (v) { return num(100 * v, 0) + NB + '%'; } },
-    fluid: { etiqueta: 'Líquido', tipo: 'opciones', opciones: FLU_OP },
+    fluid: { etiqueta: 'Líquido', tipo: 'opciones', columnas: 3, opciones: FLU_OP },
     Tf: { etiqueta: 'Temperatura del líquido', paso: 1, decimales: 0, unidad: '°C',
       min: function (st) { var f = fluDe(st); return f.T ? f.T[0] : 0; }, max: function (st) { var f = fluDe(st); return f.T ? f.T[1] : 100; } },
     pMu: { etiqueta: 'Viscosidad del extracto', min: 1, max: 60, paso: 0.5, decimales: 1, unidad: 'mPa·s', nota: 'solo con el extracto; mídala' },
@@ -963,9 +946,9 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
     phi: { etiqueta: 'Fracción dispersa, φ', min: 0.005, max: 0.4, paso: 0.005, decimales: 3, nota: 'la correlación vale hasta 0,3' },
     sig: { etiqueta: 'Tensión interfacial, σ', min: 1, max: 50, paso: 0.5, decimales: 1, unidad: 'mN/m', nota: 'los 6 del laboratorio son supuestos' },
     lV2: { etiqueta: 'Volumen de la otra escala', min: -3.5, max: 2.3, paso: 0.01, formato: function (v) { return fV(pot10(v)); } },
-    crit: { etiqueta: 'Lo que se conserva al escalar', tipo: 'opciones', opciones: CRIT_OP },
+    crit: { etiqueta: 'Lo que se conserva al escalar', tipo: 'opciones', columnas: 3, opciones: CRIT_OP },
     Tw: { etiqueta: 'Vapor en la camisa', min: 30, max: 160, paso: 0.5, decimales: 1, unidad: '°C', nota: 'vapor saturado' },
-    pared: { etiqueta: 'Pared de la camisa', tipo: 'opciones', opciones: [{ valor: 'vidriado', texto: 'Vidriado' }, { valor: 'inox8', texto: 'Inox 8 mm' }, { valor: 'inox6', texto: 'Inox 6 mm' }, { valor: 'carbono', texto: 'Carbono' }] },
+    pared: { etiqueta: 'Pared de la camisa', tipo: 'opciones', columnas: 2, opciones: [{ valor: 'vidriado', texto: 'Vidriado' }, { valor: 'inox8', texto: 'Inox 8 mm' }, { valor: 'inox6', texto: 'Inox 6 mm' }, { valor: 'carbono', texto: 'Carbono' }] },
     T0: { etiqueta: 'Temperatura inicial del lote', min: 5, max: 60, paso: 1, decimales: 0, unidad: '°C' },
     Tgoal: { etiqueta: 'Temperatura objetivo', min: 20, max: 98, paso: 1, decimales: 0, unidad: '°C' },
     tH: { etiqueta: 'Tiempo de calentamiento deseado', min: 5, max: 240, paso: 1, decimales: 0, unidad: 'min' }
@@ -1722,6 +1705,8 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
           var st = X.estado();
           MEAS.push({ key: measKey(st), rpm: Math.pow(10, st.lrpm), th: th }); if (MEAS.length > 60) MEAS.shift();
           alMedir.forEach(function (fn) { fn(); });
+          // la nota de la escena y la capa leen la medición: el armazón las vuelve a pintar sin cambiar el estado
+          X.app.repintar();
         };
         t.lienzo(X.ctx, X.ancho || cv.clientWidth, X.alto || cv.clientHeight);
         if (op.alMontar) op.alMontar(t);
@@ -3064,6 +3049,7 @@ return { buildFlow: buildFlow, uTheta: uTheta, sampleUV: sampleUV, Tracer: Trace
     capitulo: '14',
     curso: 'POU · 2027-10',
     limpiar: ['pou-agitacion:'],
+    rielCelular: 'rejilla',   // las nueve escenas, de a tres por fila en el celular
     modelo: { caso: M.CASO, calcular: M.calcular, ajustar: ajustar },
     libro: { pie: 'El modelo es el de los capítulos 14 y 15 del libro.', enlaces: [[C14, 'Capítulo 14'], [C15, 'Capítulo 15']] },
     controles: CONTROLES,

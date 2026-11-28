@@ -11,8 +11,8 @@
 <link rel="stylesheet" href="/classroom/explorador-libro.css">
 <style>
 /* Solo lo propio de este explorador: el CSS de la instalación en isométrico (entre sus marcadores, lo escribe
-   scripts/figuras/bomba/splice.mjs), los mandos de la cabecera de algunas figuras (la animación, las unidades y
-   las islas), la leyenda de las presiones y las dos figuras en HTML (la comparación de arreglos y la selección). */
+   scripts/figuras/bomba/splice.mjs), el botón de las islas en la cabecera de la carta y las dos figuras en HTML (la
+   comparación de arreglos y la selección). */
 /*PBFIG_CSS_START*/
 .iso{
   --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
@@ -147,26 +147,12 @@
 .pb-spoke{fill:none;stroke:#8e979f;stroke-width:.9px;stroke-linecap:round}
 .pb-bolt{fill:var(--anatomy-ink,#2b2b2b);opacity:.75}
 /*PBFIG_CSS_END*/
-.xl-iso.iso[data-theme="light"] { --anatomy-paper: #fff; --anatomy-card: #fff; }
 
-/* Mandos de la cabecera de una figura: con la misma línea que las vistas del armazón */
-.bc-mandos { display: flex; align-items: center; gap: 6px; flex: none; margin-left: auto; }
-.bc-mandos + .xl-repetir { margin-left: 6px; }
-.bc-seg { display: flex; border: 1.5px solid var(--navy); }
-.bc-seg button, .bc-uno { min-height: 30px; padding: 0 9px; border: 0; background: var(--nieve); font-size: var(--t-xs); font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
-.bc-seg button + button { border-left: 1.5px solid var(--navy); }
-.bc-seg button[aria-pressed="true"] { background: var(--navy); color: #fff; }
-.bc-seg button:hover:not([aria-pressed="true"]) { background: var(--amarillo-claro); }
-.bc-uno { border: 1.5px solid var(--navy); min-width: 32px; justify-content: center; }
+/* El botón de las islas en la cabecera de la carta: con la misma línea que las vistas del armazón */
+.bc-mandos { display: flex; align-items: center; gap: 6px; flex: none; }
+.bc-uno { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 32px; min-height: 30px; padding: 0 9px; border: 1.5px solid var(--navy); background: var(--nieve); font-size: var(--t-xs); font-weight: 600; white-space: nowrap; }
 .bc-uno:hover { background: var(--amarillo-claro); }
-.bc-uno .xl-ico { width: 15px; height: 15px; }
 .bc-uno[aria-pressed="false"] { color: var(--sec); }
-
-/* La leyenda de las presiones sobre la isométrica */
-.bc-ley { position: absolute; left: 10px; bottom: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; max-width: calc(100% - 170px); padding: 4px 6px; background: rgba(255, 255, 255, .86); font-size: var(--t-xs); line-height: 1.2; color: var(--sec); pointer-events: none; }
-.bc-ley i { display: block; width: 74px; height: 9px; background: linear-gradient(90deg, rgb(43,76,126), rgb(89,128,166), rgb(143,184,201), rgb(232,195,90), rgb(217,130,43)); }
-.bc-ley em { font-style: normal; display: inline-flex; align-items: center; gap: 4px; }
-.bc-ley em::before { content: ""; width: 9px; height: 9px; background: #C8452B; }
 
 /* Figuras en HTML: la comparación de los arreglos, la lista de chequeo y el motor */
 .bc-html { padding: 8px 14px 12px; font-size: var(--t-s); line-height: 1.35; }
@@ -206,20 +192,10 @@
 .bc-escala span:last-child { transform: translateX(-100%); }
 
 @media (max-width: 1099.98px), (max-height: 599.98px) {
-  .bc-seg button, .bc-uno { min-height: 44px; }
-  .bc-uno { min-width: 44px; }
-  .bc-ley { max-width: calc(100% - 200px); }
-  /* la barra de la cabeza: angosta y alta en el computador, de alto fijo en el celular */
-  .xl-fig.bc-col > .xl-cuerpo { aspect-ratio: auto; height: 400px; }
-}
-@media (max-width: 599.98px) {
-  .bc-ley { display: none; }
+  .bc-uno { min-height: 44px; min-width: 44px; }
 }
 @media (pointer: coarse) {
-  .bc-seg button, .bc-uno { min-height: 44px !important; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bc-anim { display: none !important; }
+  .bc-uno { min-height: 44px !important; }
 }
 </style>
 </head>
@@ -969,13 +945,14 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
   var S1 = '#2E5E9E', S2 = '#6E6A00', S3 = '#C2410C', S4 = C.tinta, S5 = C.guia;
 
   /* ================= Unidades: una preferencia de vista, que no se guarda ================= */
-  var US = false;
-  function uQ(Qs) { return US ? Qs * 15850.32 : Qs * 3600; }
-  function lQ() { return US ? 'gpm' : 'm³/h'; }
-  function uH(m) { return US ? m * 3.28084 : m; }
-  function lH() { return US ? 'pie' : 'm'; }
-  function uP(kW) { return US ? kW / 0.7457 : kW; }
-  function lP() { return US ? 'hp' : 'kW'; }
+  // las unidades son una preferencia de vista del armazón (la barra de arriba): m³/h y m, o gpm y pie
+  function esUS() { return !!(XL.preferencia && XL.preferencia('u') === 'us'); }
+  function uQ(Qs) { return esUS() ? Qs * 15850.32 : Qs * 3600; }
+  function lQ() { return esUS() ? 'gpm' : 'm³/h'; }
+  function uH(m) { return esUS() ? m * 3.28084 : m; }
+  function lH() { return esUS() ? 'pie' : 'm'; }
+  function uP(kW) { return esUS() ? kW / 0.7457 : kW; }
+  function lP() { return esUS() ? 'hp' : 'kW'; }
   function fq(Qs) { var v = uQ(Qs); return num(v, Math.abs(v) < 10 ? 2 : Math.abs(v) < 100 ? 1 : 0); }
   function fh(m) { var v = uH(m); return num(v, Math.abs(v) < 10 ? 2 : 1); }
   function fp(kW) { var v = uP(kW); return num(v, Math.abs(v) < 10 ? 2 : 1); }
@@ -1092,23 +1069,23 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
   }
   function iec(kw) { return M.IEC_MOTORS.indexOf(kw); }
   var CONFIGURACIONES = [
-    { id: 'agua', ceja: 'Tabla 11.1 del libro', titulo: 'Línea de agua de servicios', cambios: {}, alerta: fuera, resultado: resultado,
+    { id: 'agua', ceja: 'Tabla 11.1 del libro', titulo: 'Línea de agua de servicios', cambios: {}, conserva: [], alerta: fuera, resultado: resultado,
       fija: 'La 2×3‑8 a 1750 r/min con el impulsor de 190 mm y un motor de 3,0 kW, en una línea de agua a 25 °C diseñada para 25 m³/h hacia un tanque 10 m más arriba.' },
-    { id: 'extracto', ceja: 'Ejemplo del explorador · datos supuestos', titulo: 'Extracto caliente al filtro prensa', alerta: fuera, resultado: resultado,
+    { id: 'extracto', ceja: 'Ejemplo del explorador · datos supuestos', titulo: 'Extracto caliente al filtro prensa', conserva: [], alerta: fuera, resultado: resultado,
       cambios: { casing: 's', N0: 3500, D: 117, fluid: 'extracto', T: 85, lQd: Math.log10(15), zs: 1.5, zd: 3.5, P2: 150, hfs: 0.35, hfd: 6, imotor: iec(3) },
       fija: 'Un extracto acuoso a 85 °C va al filtro prensa, que trabaja a 150 kPa, con la 1½×2‑6 a 3500 r/min, el impulsor recortado a 117 mm y un motor de 3,0 kW. Su viscosidad, 4 mPa·s, es de referencia: cámbiela por la que mida.' },
     { id: 'sobre', ceja: 'Sección 11.13 del libro', titulo: 'Bomba sobredimensionada', alerta: fuera, resultado: resultado,
       cambios: { casing: 'l', D: 254, lQd: Math.log10(20), zs: 2, zd: 34, hfs: 0.3, hfd: 2, imotor: iec(11) },
-      fija: 'La carcasa grande 3×4‑10 con su impulsor máximo y un motor de 11 kW, en una línea de agua de 20 m³/h hacia un tanque 32 m más arriba.' },
-    { id: 'cavita', ceja: 'Figura 11.10 del libro', titulo: 'Succión negativa con agua caliente', alerta: fuera, resultado: resultado,
+      fija: 'La carcasa grande 3×4‑10 con su impulsor máximo y un motor de 11 kW, en una línea de 20 m³/h hacia un tanque 32 m más arriba, con el líquido que usted tenga escogido.' },
+    { id: 'cavita', ceja: 'Figura 11.10 del libro', titulo: 'Succión negativa con agua caliente', conserva: [], alerta: fuera, resultado: resultado,
       cambios: { N0: 3500, D: 195, T: 60, lQd: Math.log10(48), zs: -3, zd: 55, hfs: 1.0, hfd: 12, imotor: iec(18.5) },
       fija: 'El tanque 3 m por debajo del eje, agua a 60 °C en Bogotá y la bomba a 3500 r/min con el impulsor de 195 mm y un motor de 18,5 kW, en una línea de 48 m³/h.' },
-    { id: 'viscoso', ceja: 'Ejemplo 11.12 del libro', titulo: 'Bombeo de aceite viscoso', alerta: fuera, resultado: resultado,
+    { id: 'viscoso', ceja: 'Ejemplo 11.12 del libro', titulo: 'Bombeo de aceite viscoso', conserva: [], alerta: fuera, resultado: resultado,
       cambios: { fluid: 'aceite', T: 20, D: 203, lQd: Math.log10(20), zs: 2, zd: 14, hfs: 0.5, hfd: 3, imotor: iec(3) },
       fija: 'Aceite ISO VG 32 a 20 °C, de 86 cSt, con el impulsor de 203 mm y el motor de 3,0 kW en una línea de 20 m³/h; la carta va corregida con ANSI/HI 9.6.7.' },
     { id: 'paralelo', ceja: 'Sección 11.8 del libro', titulo: 'Dos bombas en paralelo', alerta: fuera, resultado: resultado,
       cambios: { D: 203, arr: 'paralelo', lQd: Math.log10(45), zs: 2, zd: 12, hfs: 0.4, hfd: 8, imotor: iec(3) },
-      fija: 'Dos 2×3‑8 iguales con el impulsor de 203 mm y un motor de 3,0 kW cada una comparten la succión y la descarga en una línea de agua de 45 m³/h.' }
+      fija: 'Dos 2×3‑8 iguales con el impulsor de 203 mm y un motor de 3,0 kW cada una comparten la succión y la descarga en una línea de 45 m³/h, con el líquido que usted tenga escogido.' }
   ];
 
   /* ================= Dibujo en SVG, como texto ================= */
@@ -1147,9 +1124,9 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     if (o.clip) h += E('clipPath', { id: o.clip }, E('rect', { x: o.x0, y: o.y0 - 2, width: o.x1 - o.x0, height: o.y1 - o.y0 + 2 }));
     return { svg: h, X: X, Y: Y };
   }
-  function xsQ() { return US ? 15850.32 : 3600; }
-  function ysH() { return US ? 3.28084 : 1; }
-  function ysP() { return US ? 1 / 0.7457 : 1; }
+  function xsQ() { return esUS() ? 15850.32 : 3600; }
+  function ysH() { return esUS() ? 3.28084 : 1; }
+  function ysP() { return esUS() ? 1 / 0.7457 : 1; }
   // un punto de la pantalla en las unidades del viewBox de un SVG
   function enSvg(svg, e) { var p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; var m = svg.getScreenCTM(); return m ? p.matrixTransform(m.inverse()) : { x: 0, y: 0 }; }
   // la lectura con el cursor (o el dedo) sobre una gráfica: fn(x en el viewBox) devuelve el SVG del cursor o '' fuera
@@ -1167,22 +1144,7 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     box.addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (b) alClic(b, box); });
     return box;
   }
-  // pausa y velocidad de una animación (y, en el lienzo, reiniciar el flujo); con movimiento reducido no aparecen
-  function mandosAnim(X, fig, vels, reinicio) {
-    var corre = fig.corre !== false, v = fig.vel || 1;
-    var h = '<button type="button" class="bc-uno bc-anim" data-a="pausa" aria-label="' + (corre ? 'Pausar' : 'Seguir') + ' la animación">' + XL.ico(corre ? 'pausa' : 'play') + '</button>' +
-      '<div class="bc-seg bc-anim" role="group" aria-label="Velocidad de la animación">' + vels.map(function (x) {
-        return '<button type="button" data-v="' + x + '" aria-pressed="' + (x === v) + '">' + (x === 0.25 ? '¼' : x === 0.5 ? '½' : num(x, 0)) + '×</button>';
-      }).join('') + '</div>' +
-      (reinicio ? '<button type="button" class="bc-uno bc-anim" data-a="rei" aria-label="Reiniciar el flujo">' + XL.ico('rot') + '</button>' : '');
-    mandos(X, h, function (b, box) {
-      if (b.dataset.a === 'pausa') {
-        fig.corre = fig.corre === false;
-        b.innerHTML = XL.ico(fig.corre ? 'pausa' : 'play'); b.setAttribute('aria-label', (fig.corre ? 'Pausar' : 'Seguir') + ' la animación');
-      } else if (b.dataset.a === 'rei') { if (fig.sc) fig.sc.reset(); }
-      else if (b.dataset.v) { fig.vel = +b.dataset.v; box.querySelectorAll('[data-v]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }
-    });
-  }
+
 
   /* ================= La instalación en isométrico ================= */
   /* Lo que la figura necesita del modelo: velocidades, presiones, cavitación, lecturas de los manómetros y nivel.
@@ -1237,14 +1199,12 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
       svg: function (v) { return 'fig/bomba/bomba-' + v + '.svg'; },
       vista: function (v) { return recorte(v).slice(2); },
       origen: function (v) { return recorte(v).slice(0, 2); },
+      // la pausa y las velocidades de la animación, en la cabecera (el armazón multiplica el tiempo)
+      pausa: true, velocidades: [0.5, 1, 3],
       montar: function (slot, X) {
         this.D = PB_FIGS[X.variante]; this.f = new FPump(slot, this.D);
-        mandosAnim(X, this, [0.5, 1, 3], false);
-        if (!slot.parentNode.querySelector('.bc-ley')) {
-          var l = document.createElement('div'); l.className = 'bc-ley'; l.setAttribute('aria-hidden', 'true');
-          l.innerHTML = '<span>presión: baja</span><i></i><span>alta</span><em>bajo la de vapor</em>';
-          slot.parentNode.appendChild(l);
-        }
+        X.leyenda('<span>presión: baja</span>' + XL.gradiente(['rgb(43,76,126)', 'rgb(89,128,166)', 'rgb(143,184,201)', 'rgb(232,195,90)', 'rgb(217,130,43)']) +
+          '<span>alta</span><em>' + XL.muestra('#C8452B') + 'bajo la de vapor</em>', 'abajo');
       },
       poner: function (r, modo, X) {
         var o = this.o = estadoFig(r);
@@ -1252,10 +1212,10 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
         this.f.update(o);
         X.rotulos(rotulosIso(r, o, this, this.modoRot));
       },
-      cuadro: function (dt) {
+      cuadro: function (dt, r, X) {
         if (!this.o || !this.f) return;
-        var corre = this.corre !== false && !reducido();
-        this.o.dt = corre ? dt * (this.vel || 1) : 0; this.o.snap = !corre;
+        var corre = !X.pausada() && !reducido();
+        this.o.dt = corre ? dt : 0; this.o.snap = !corre;
         this.f.update(this.o);
       },
       desmontar: function () { this.f = null; this.o = null; }
@@ -1451,18 +1411,20 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
   };
   function figLienzo(titulo) { return {
     titulo: titulo, tipo: 'canvas', ancha: true, proporcion: [1, 1],
+    // la escena lleva su propia velocidad (PumpScene.speed): el armazón no multiplica el tiempo
+    pausa: true, velocidades: [{ valor: 0.25, texto: '¼×' }, { valor: 1, texto: '1×' }, { valor: 3, texto: '3×' }],
+    repetirTexto: 'Reiniciar', repetir: function () { if (this.sc) this.sc.reset(); },
     alt: 'El impulsor y la voluta de frente, en cámara lenta: el líquido entra por el ojo, los álabes lo llevan a la periferia y la voluta lo junta hacia la descarga. El color de cada partícula es su presión estática; donde baja de la presión de vapor nacen burbujas en el borde de ataque de los álabes, que colapsan unos milímetros adelante. A caudal bajo, remolinos de recirculación.',
     montar: function (cv, X) {
       var sc = this.sc = new PumpScene(cv);
       sc.resize = function () { };          // el armazón mide el lienzo
       sc.ctx = X.ctx; sc.W = X.ancho; sc.H = X.alto;
-      mandosAnim(X, this, [0.25, 1, 3], true);
     },
     redimensionar: function (w, h) { var sc = this.sc; if (!sc) return; sc.W = w; sc.H = h; if (sc.R) sc.layout(); },
     poner: function (r, modo, X) { var sc = this.sc; sc.W = X.ancho; sc.H = X.alto; sc.configure(r); X.limpiar(); sc.draw(); },
     cuadro: function (dt, r, X) {
       var sc = this.sc; if (!sc || !sc.R) return;
-      if (!reducido() && this.corre !== false) { sc.speed = this.vel || 1; sc.step(dt); }
+      if (!reducido() && !X.pausada()) { sc.speed = X.velocidad(); sc.step(dt); }
       X.limpiar(); sc.draw();
     },
     desmontar: function () { this.sc = null; }
@@ -1500,9 +1462,9 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     return h;
   }
   var CABEZA = {
-    titulo: 'La cabeza', tipo: 'svg', vista: [200, 400], peso: 1,
+    titulo: 'La cabeza', tipo: 'svg', vista: [200, 400], peso: 1, altoCel: 400,
     alt: 'Una barra con la cabeza que pide la línea en el punto de operación, partida en la cabeza estática y las pérdidas de la succión, de la descarga y de la válvula; arriba, la marca de la cabeza que da la bomba, que es la misma.',
-    montar: function (g, X) { this.g = el('g', {}, g); X.figura.ranura.el.classList.add('bc-col'); },
+    montar: function (g) { this.g = el('g', {}, g); },
     poner: function (r) { this.g.innerHTML = dibCabeza(r); }
   };
 
@@ -1672,15 +1634,8 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
       this.pista = '';
       this.leer = function (x) { return leerCarta(fig, x); };
       cursor(this, X.svg);
-      mandos(X, '<div class="bc-seg" role="group" aria-label="Unidades"><button type="button" data-u="si" aria-pressed="' + !US + '">m³/h · m</button><button type="button" data-u="us" aria-pressed="' + US + '">gpm · pie</button></div>' +
-        '<button type="button" class="bc-uno" data-isl aria-pressed="' + ISLAS + '">Islas</button>', function (b, box) {
-        if (b.dataset.u) {
-          US = b.dataset.u === 'us';
-          box.querySelectorAll('[data-u]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-          window.Explorador.ir(window.Explorador.escena());
-        } else if (b.hasAttribute('data-isl')) {
-          ISLAS = !ISLAS; b.setAttribute('aria-pressed', String(ISLAS)); pintarCarta(X.R());
-        }
+      mandos(X, '<button type="button" class="bc-uno" data-isl aria-pressed="' + ISLAS + '">Islas</button>', function (b) {
+        ISLAS = !ISLAS; b.setAttribute('aria-pressed', String(ISLAS)); pintarCarta(X.R());
       });
     },
     poner: function (r, modo) {
@@ -2767,7 +2722,10 @@ var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"
     limpiar: ['pou-bombas:'],
     modelo: { caso: M.CASO, calcular: M.calcular, ajustar: ajustar },
     libro: { capitulo: 'bombas.html', pie: 'El modelo es el del capítulo 11 del libro.' },
-    textos: { configuraciones: 'Al cargar una, el sistema vuelve al caso del libro con los cambios de la tarjeta, líquido incluido. Los resultados de cada tarjeta salen del mismo modelo.' },
+    textos: { configuraciones: 'Al cargar una, el sistema vuelve al caso del libro con los cambios de la tarjeta. Las que no fijan el líquido conservan el que usted tiene escogido. Los resultados de cada tarjeta salen del mismo modelo.' },
+    // las tarjetas que no fijan el líquido lo conservan, con su temperatura y sus propiedades
+    conserva: ['fluid', 'T', 'pMu', 'cRho', 'cMuExp', 'cPv'],
+    preferencias: [{ clave: 'u', etiqueta: 'Unidades', opciones: [{ valor: 'si', texto: 'm³/h · m' }, { valor: 'us', texto: 'gpm · pie' }] }],
     controles: CONTROLES,
     configuraciones: CONFIGURACIONES,
     alCambiar: function (r, st) { casAntes = st.casing; },

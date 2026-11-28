@@ -710,6 +710,7 @@
     var vs = spec.velocidades;
     this.pausada = false;
     this.vel = spec.velocidad != null ? spec.velocidad : (vs && vs.length ? (vs.map(velValor).indexOf(1) >= 0 ? 1 : velValor(vs[0])) : 1);
+    this.ponerVel(this.vel);
     var self = this;
     // el contexto que recibe cada función de la figura
     this.X = { app: app, spec: spec, figura: this, reducido: XL.reducido, R: function () { return app.R(); }, estado: function () { return app.estado(); },
@@ -722,6 +723,12 @@
     if (spec.altoCel) { this.cuerpo.style.setProperty('--alto-cel', spec.altoCel + 'px'); this.cuerpo.classList.add('xl-alto-cel'); }
     ranura.el.appendChild(this.cuerpo);
   }
+  // la velocidad escogida: un número de la lista multiplica el tiempo; una velocidad { valor, texto } lo deja como está
+  Fig.prototype.ponerVel = function (v) {
+    var e = (this.spec.velocidades || []).filter(function (x) { return velValor(x) === v; })[0];
+    this.vel = v;
+    this.multiplica = typeof v === 'number' && (e === undefined || typeof e === 'number');
+  };
   // La leyenda de una figura (isométricas, lienzos y 3D): un recuadro arriba a la izquierda, o abajo con lado 'abajo',
   // que no tapa los botones del acercamiento. Sin html, se quita.
   Fig.prototype.leyenda = function (html, lado) {
@@ -765,12 +772,12 @@
     if (this.tipo.despuesDePoner) this.tipo.despuesDePoner(this);
   };
   Fig.prototype.redibujar = function () { if (this.estado === 'lista') this.poner(this.app.R(), 'fijo'); this.rotular(); };
-  // en pausa la figura no recibe cuadros (una 3D se sigue dibujando para la cámara); con otra velocidad, dt va
-  // multiplicado por ella
-  Fig.prototype.anima = function () { return !!(this.tipo.cuadro || (this.spec.cuadro && !this.pausada)); };
+  // en pausa la figura recibe cuadros con dt = 0 (sigue dibujando lo que no es movimiento, como el acercamiento de una
+  // isométrica); con otra velocidad de la lista, dt va multiplicado por ella
+  Fig.prototype.anima = function () { return !!(this.tipo.cuadro || this.spec.cuadro); };
   Fig.prototype.cuadro = function (dt) {
     if (this.estado !== 'lista') return;
-    if (!this.pausada) this.llamar('cuadro', typeof this.vel === 'number' ? dt * this.vel : dt, this.app.R());
+    this.llamar('cuadro', this.pausada ? 0 : this.multiplica ? dt * this.vel : dt, this.app.R());
     if (this.tipo.cuadro) this.tipo.cuadro(this, dt);
   };
   Fig.prototype.activar = function (on) {
@@ -843,7 +850,7 @@
     this.mandos.addEventListener('click', function (ev) {
       var b = ev.target.closest('button'), g = self.actual(); if (!b) return;
       if (b.dataset.anim === 'pausa') g.pausada = !g.pausada;
-      else if (b.dataset.vel != null) g.vel = velValor(g.spec.velocidades[+b.dataset.vel]);
+      else if (b.dataset.vel != null) g.ponerVel(velValor(g.spec.velocidades[+b.dataset.vel]));
       self.pintarCab();
       var nuevo = self.mandos.querySelector(b.dataset.anim ? '[data-anim]' : '[data-vel="' + b.dataset.vel + '"]'); if (nuevo) nuevo.focus();
       app._actividad();
@@ -1353,7 +1360,8 @@
       var p = PREFS.filter(function (x) { return x.clave === clave; })[0];
       if (!p || igual(prefVal[clave], valor)) return valor;
       prefVal[clave] = valor;
-      XL.pref(clave, valor);
+      // la de arranque no se guarda: si el estudiante vuelve a ella, no queda nada en el navegador
+      XL.pref(clave, igual(valor, p.inicial !== undefined ? p.inicial : valorDe(p, p.opciones[0])) ? undefined : valor);
       document.querySelectorAll('[data-pref]').forEach(function (b) {
         if (b.dataset.pref === clave) b.setAttribute('aria-pressed', igual(valorDe(p, p.opciones[+b.dataset.i]), valor) ? 'true' : 'false');
       });
@@ -1483,10 +1491,11 @@
     function volverAlCaso() {
       var pi = piActual(), c = casoDe(pi), cl = clavesDe(pi);
       if (!cl) { cargarCfg(c.id); return; }
-      var ref = estadoCfg(c), cambios = {};
-      Object.keys(ref).forEach(function (k) { if (cl(k)) cambios[k] = ref[k]; });
+      // como al cargar una tarjeta, las claves vuelven tal cual, sin ajustar: el caso ya es un estado coherente
+      var ref = estadoCfg(c), hay = false;
+      Object.keys(ref).forEach(function (k) { if (cl(k) && !igual(estado[k], ref[k])) { estado[k] = ref[k]; hay = true; } });
       activa[pi] = { id: c.id, ref: ref };
-      if (!ponerVarios(cambios)) { refrescarVivos(); casoActual(); }
+      if (hay) recalcular('cambio'); else { refrescarVivos(); casoActual(); }
     }
     $('cfgs').addEventListener('click', function (ev) { var b = ev.target.closest('[data-cfg]'); if (b) { cargarCfg(b.dataset.cfg); cerrarCfg(); } });
     $('velo').addEventListener('click', function (ev) { if (ev.target === $('velo')) cerrarCfg(); });

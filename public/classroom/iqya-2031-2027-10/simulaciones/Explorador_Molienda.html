@@ -11,16 +11,12 @@
 <link rel="stylesheet" href="/classroom/explorador-libro.css">
 <style>
 /* Lo propio de este explorador: las isométricas de las máquinas y de la tamizadora (su CSS va entre sus marcadores,
-   como lo escribe el splice), la capa de partículas sobre la máquina, las tablas de la selección, de la cadena de la
-   energía y del tamizado, y los botones de a varios del material y del equipo, que van en dos o tres columnas. */
-.xl-iso.iso[data-theme="light"] { --anatomy-paper: #fff; --anatomy-card: #fff; }
+   como lo escribe el splice), la capa de partículas sobre la máquina y las tablas de la selección, de la cadena de la
+   energía y del tamizado. */
 .xl-iso canvas.ml-live { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .xl-rot .ml-tab { color: var(--sec); font-weight: 400; }
 
-/* el material (siete) y el equipo (seis): una rejilla en lugar de una fila */
-.xl-seg[aria-labelledby^="c-mat"], .xl-seg[aria-labelledby^="c-mill"] { flex-wrap: wrap; border: 0; padding: 1.5px 0 0 1.5px; }
-.xl-seg[aria-labelledby^="c-mat"] button, .xl-seg[aria-labelledby^="c-mill"] button { flex: 0 0 calc(50% + 0.75px); min-width: 0; margin: -1.5px 0 0 -1.5px; border: 1.5px solid var(--navy); }
-.xl-seg[aria-labelledby^="c-mill"] button { flex-basis: calc(33.34% + 0.5px); }
+/* la serie de tamices: dos nombres largos en una fila */
 .xl-seg[aria-labelledby^="c-series"] button { font-size: var(--t-xs); }
 
 /* las tablas, como las del libro: filetes finos, cabeceras en versalitas oliva */
@@ -67,12 +63,6 @@
 .ml-tamiz th { letter-spacing: 0; text-transform: none; font-size: var(--t-xs); }
 .ml-tamiz th, .ml-tamiz td { padding-left: 4px; padding-right: 4px; }
 
-/* en el celular, la cabecera de una figura con vistas se parte en dos renglones: el título arriba, los botones abajo */
-@media (max-width: 1099px), (max-height: 599px) {
-  .xl-fig-cab:has(.xl-fig-vistas) { flex-wrap: wrap; height: auto; padding-top: 6px; padding-bottom: 6px; row-gap: 6px; }
-  .xl-fig-cab:has(.xl-fig-vistas) > span { flex: 1 0 100%; }
-  .xl-fig-cab:has(.xl-fig-vistas) .xl-fig-vistas { margin-left: 0; }
-}
 @media (max-height: 820px) and (min-width: 1100px) { .ml-flujo td { font-size: var(--t-xs); padding: 4px 6px; } }
 .ml-tabla th.sym { text-transform: none; font-style: italic; letter-spacing: 0; }
 
@@ -1858,8 +1848,8 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
   /* ================= Los controles: cada uno cambia solo su clave ================= */
   function esHumeda(st) { return !!mat(st.mat).noBond; }
   var CONTROLES = {
-    mat: { etiqueta: 'Material', tipo: 'opciones', opciones: MATS.map(function (m) { return { valor: m.id, texto: CORTO[m.id] }; }) },
-    mill: { etiqueta: 'Equipo', tipo: 'opciones', opciones: MILLS.map(function (m) { return { valor: m.id, texto: m.short }; }) },
+    mat: { etiqueta: 'Material', tipo: 'opciones', columnas: 2, opciones: MATS.map(function (m) { return { valor: m.id, texto: CORTO[m.id] }; }) },
+    mill: { etiqueta: 'Equipo', tipo: 'opciones', columnas: 3, opciones: MILLS.map(function (m) { return { valor: m.id, texto: m.short }; }) },
     modo: { etiqueta: 'Modo de operación', tipo: 'opciones', opciones: [{ valor: 'seca', texto: 'En seco' }, { valor: 'hum', texto: 'En húmedo' }] },
     hum: { etiqueta: 'Humedad del material, w', paso: 0.5, decimales: 1, unidad: '%', nota: 'en base seca; solo en seco',
       min: function (st) { return esHumeda(st) ? 233 : 0; }, max: function (st) { return esHumeda(st) ? 400 : 25; },
@@ -1922,7 +1912,6 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
   };
   // una simulación de partículas sin su propio lienzo: corre en las 900 × 490 unidades de la máquina, y la vista
   // «Corte» le presta el contexto del lienzo del armazón para dibujarla
-  function letra(X) { var k = X.escala / Math.min(2, window.devicePixelRatio || 1); return k > 0 ? Math.max(15, 13 / k) : 15; }
   function nuevaSimulacion() {
     var a = new MillAnim({ getContext: function () { return null; } });
     a.resize = function () { this.W = 900; this.H = 490; };
@@ -1964,13 +1953,16 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     X.rotulos(L.filter(function (q) { return q.p; }).map(function (q) { var p = fm.C.pr(q.p[0], q.p[1], q.p[2]); return { x: p[0], y: p[1], lado: q.a, lineas: q.t }; }));
   }
   // la ranura de la máquina: la isométrica y el corte, con una simulación para las dos vistas
+  // la pausa y las velocidades de la simulación del molino, como en el explorador anterior: la simulación lleva su
+  // propia velocidad (MillAnim.speed), así que el armazón no multiplica el tiempo
+  var VEL_MOLINO = [{ valor: 0.5, texto: '½×' }, { valor: 1, texto: '1×' }, { valor: 2, texto: '2×' }];
   function ranuraMolino(cfg) {
     var Z = { sim: null, rr: null };
     function sim() { if (!Z.sim) Z.sim = nuevaSimulacion(); return Z.sim; }
     function conf(r, X) { Z.rr = cfg.res(r); sim().configure(Z.rr, { J: X.estado().J }); return Z.rr; }
     function reiniciar() { sim().reset(); }
     var maquina = {
-      etiqueta: 'Máquina', tipo: 'iso', repetirTexto: 'Reiniciar', repetir: reiniciar,
+      etiqueta: 'Máquina', tipo: 'iso', repetirTexto: 'Reiniciar', repetir: reiniciar, pausa: true, velocidades: VEL_MOLINO,
       variante: function (r) { return cfg.res(r).mill.id; },
       svg: function (v) { return 'fig/molienda/molino-' + v + '.svg'; },
       vista: function (v) { var d = ML_FIGS[v]; return [d.W, d.H]; },
@@ -1979,9 +1971,9 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
         this.fm = new FMill(slot, ML_FIGS[X.variante]);
       },
       poner: function (r, modo, X) { var rr = conf(r, X); this.dibujar(); rotulosMolino(rr, this.fm, X); },
-      // con movimiento reducido la máquina queda quieta: solo se vuelve a pintar si cambia el acercamiento
+      // con movimiento reducido o en pausa la máquina queda quieta: solo se vuelve a pintar si cambia el acercamiento
       cuadro: function (dt, r, X) {
-        if (X.reducido()) { var vb = X.svg && X.svg.getAttribute('viewBox'); if (vb === this.vb) return; this.vb = vb; } else sim().step(dt);
+        if (X.reducido() || X.pausada()) { var vb = X.svg && X.svg.getAttribute('viewBox'); if (vb === this.vb) return; this.vb = vb; } else { this.vb = null; sim().speed = X.velocidad(); sim().step(dt); }
         this.dibujar();
       },
       dibujar: function () {
@@ -1992,11 +1984,11 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
       desmontar: function () { this.fm = null; }
     };
     var corte = {
-      etiqueta: 'Corte', tipo: 'canvas', vista: [900, 490], repetirTexto: 'Reiniciar', repetir: reiniciar,
+      etiqueta: 'Corte', tipo: 'canvas', vista: [900, 490], repetirTexto: 'Reiniciar', repetir: reiniciar, pausa: true, velocidades: VEL_MOLINO,
       montar: function () {},
       poner: function (r, modo, X) { conf(r, X); this.dibujar(X); },
-      cuadro: function (dt, r, X) { if (!X.reducido()) sim().step(dt); this.dibujar(X); },
-      dibujar: function (X) { var a = sim(); if (!a.W) return; X.limpiar(); a.ctx = X.ctx; a.fs = letra(X); a.draw(); }
+      cuadro: function (dt, r, X) { if (X.pausada()) return; if (!X.reducido()) { sim().speed = X.velocidad(); sim().step(dt); } this.dibujar(X); },
+      dibujar: function (X) { var a = sim(); if (!a.W) return; X.limpiar(); a.ctx = X.ctx; a.fs = X.letra(15); a.draw(); }
     };
     return { titulo: cfg.titulo, ancha: true, alt: cfg.alt, vistas: [maquina, corte] };
   }
@@ -2871,7 +2863,7 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
     titulo: 'La tamizadora de golpeteo', ancha: true,
     alt: 'La tamizadora de golpeteo con los tamices del análisis, abierta por la mitad que mira al lector, o en esquema: cada partícula de la muestra cae hasta el tamiz que la retiene, y lo retenido en cada tamiz se compara con la tabla.',
     vistas: [{
-      etiqueta: 'Máquina', tipo: 'iso', repetirTexto: 'Otra muestra', repetir: function (r) { tamizar(r, true); },
+      etiqueta: 'Máquina', tipo: 'iso', repetirTexto: 'Otra muestra', repetirReducido: true, repetir: function (r) { tamizar(r, true); },
       variante: nPila,
       svg: function (v) { return 'fig/molienda/tamiz-' + v + '.svg'; },
       vista: function (v) { var d = ML_TAMIZ[v]; return [d.W, d.H]; },
@@ -2902,11 +2894,11 @@ var ML_TAMIZ = {"3":{"eq":"tamiz","P":{"origin":[236.2936,563.6922],"scale":5.19
       },
       desmontar: function () { this.fs = null; }
     }, {
-      etiqueta: 'Esquema', tipo: 'canvas', vista: [560, 420], repetirTexto: 'Otra muestra', repetir: function (r) { tamizar(r, true); },
+      etiqueta: 'Esquema', tipo: 'canvas', vista: [560, 420], repetirTexto: 'Otra muestra', repetirReducido: true, repetir: function (r) { tamizar(r, true); },
       montar: function () {},
       poner: function (r, modo, X) { tamizar(r); this.dibujar(X); },
       cuadro: function (dt, r, X) { if (!X.reducido()) simTamiz().step(dt); this.dibujar(X); },
-      dibujar: function (X) { var a = simTamiz(); X.limpiar(); a.ctx = X.ctx; a.fs = letra(X); a.draw(); }
+      dibujar: function (X) { var a = simTamiz(); X.limpiar(); a.ctx = X.ctx; a.fs = X.letra(15); a.draw(); }
     }]
   };
   var TAMIZ = {

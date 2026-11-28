@@ -10,18 +10,8 @@
 <link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
 <link rel="stylesheet" href="/classroom/explorador-libro.css">
 <style>
-/* Solo lo propio de este explorador: los botones de a varios en rejilla, la leyenda de temperatura de las isométricas,
-   las tablas y el diagnóstico de las figuras en HTML, la imagen del tren y el riel de escenas en el celular, que aquí
-   tiene cinco partes. */
-.xl-seg.rej { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: 1.5px; background: var(--navy); }
-.xl-seg.rej button { border-left: 0; min-width: 0; padding: 0 4px; }
-.xl-c[hidden] { display: none !important; }
+/* Solo lo propio de este explorador: las tablas y el diagnóstico de las figuras en HTML y la imagen del tren. */
 
-/* las isométricas: fondo blanco y la leyenda del color de la temperatura */
-.xl-iso.iso[data-theme="light"] { --anatomy-paper: #fff; --anatomy-card: #fff; }
-.hx-ley { position: absolute; left: 10px; top: 10px; display: flex; align-items: center; gap: 6px; padding: 3px 8px; background: rgba(255, 255, 255, .88); color: var(--sec); font-size: var(--t-xs); line-height: 1.3; pointer-events: none; }
-.hx-ley i { display: block; width: 84px; height: 9px; background: linear-gradient(90deg, rgb(47, 109, 181), rgb(111, 168, 220), rgb(233, 227, 211), rgb(236, 154, 96), rgb(200, 69, 43)); }
-.hx-ley em { font-style: normal; }
 
 /* las figuras en HTML: fichas, tablas, listas y el diagnóstico */
 .xl-html { padding: 12px 16px 16px; font-size: var(--t-s); line-height: 1.4; }
@@ -62,23 +52,9 @@ table.tb tr.esc td, table.tb tr.esc th { background: var(--amarillo-claro); font
 .cd-img img { display: block; width: 100%; height: auto; min-height: 0; flex: 1 1 auto; object-fit: contain; }
 .cd-img figcaption { flex: none; font-size: var(--t-xs); line-height: 1.4; color: var(--sec); }
 
-/* el celular: las escenas de las cinco partes en una sola fila que se desliza, con el nombre de cada parte */
+/* en el celular, la imagen del tren toma su alto */
 @media (max-width: 1099.98px), (max-height: 599.98px) {
-  .xl-riel { display: flex; flex-direction: row; align-items: stretch; gap: 12px; overflow-x: auto; scrollbar-width: thin; }
-  .xl-riel .xl-parte { flex: none; }
-  .xl-riel .xl-parte-t { display: flex; align-items: center; padding: 0 2px 0 0; font-size: var(--t-xs); letter-spacing: .06em; white-space: nowrap; }
-  .xl-riel .xl-sn { flex: none; width: auto; padding: 6px 12px; white-space: nowrap; }
-  .xl-capa-riel { display: flex; flex-direction: row; gap: 12px; overflow-x: auto; }
-  .xl-capa-riel .xl-parte { flex: none; width: auto; }
-  .xl-capa-riel .xl-sn { flex: none; width: auto; padding: 6px 12px; white-space: nowrap; }
   .cd-img { height: auto; }
-}
-
-/* «¿Cómo se calcula?»: el riel tiene treinta escenas, así que los datos de la escena van arriba, a la vista */
-@media (min-width: 1100px) and (min-height: 600px) {
-  .xl-capa-lado { display: flex; flex-direction: column; }
-  .xl-capa-lado .xl-datos { order: -1; margin: 0 0 14px; }
-  .xl-capa-lado .xl-datos[hidden] { display: none; }
 }
 
 /* Las isométricas de los cuatro equipos (scripts/figuras/intercambiador, placas, doble-tubo y aeroenfriador). */
@@ -3887,21 +3863,19 @@ function escenasGen(q) {
     variante: function (r) { return KI.variante(r[q]); },
     svg: function (v) { return KI.svg(v); },
     vista: function (v) { var Dd = KI.data(v); return [Dd.W, Dd.H]; },
-    montar: function (slot, X) {
-      this.D = KI.data(X.variante); this.f = KI.hacer(slot, this.D);
-      this.ley = document.createElement('div'); this.ley.className = 'hx-ley'; this.ley.setAttribute('aria-hidden', 'true');
-      slot.parentNode.appendChild(this.ley);
-    },
+    montar: function (slot, X) { this.D = KI.data(X.variante); this.f = KI.hacer(slot, this.D); },
     poner: function (r, modo, X) {
       var R = r[q];
-      if (!R.bal.physical) { this.o = null; X.rotulos([]); return; }
+      if (!R.bal.physical) { this.o = null; X.rotulos([]); X.leyenda(''); return; }
       this.o = estadoFig(R); this.o.dt = 0; this.o.snap = true; this.f.update(this.o);
       X.rotulos(rotulosFig(R, this.f, this.D));
       var Tlo = Math.min(R.Tci, R.Thi), Thi = Math.max(R.Thi, R.Tci);
-      this.ley.innerHTML = '<span>' + num(Tlo, 0) + NB + '°C</span><i></i><span>' + num(Thi, 0) + NB + '°C</span><em>temperatura local</em>';
+      // la leyenda del color de la temperatura, la del armazón
+      X.leyenda('<span>' + num(Tlo, 0) + NB + '°C</span>' + XL.gradiente(['rgb(47, 109, 181)', 'rgb(111, 168, 220)', 'rgb(233, 227, 211)', 'rgb(236, 154, 96)', 'rgb(200, 69, 43)']) +
+        '<span>' + num(Thi, 0) + NB + '°C</span><em>temperatura local</em>');
     },
     cuadro: function (dt, r, X) { if (!this.o) return; this.o.dt = X.reducido() ? 0 : dt; this.o.snap = X.reducido(); this.f.update(this.o); },
-    desmontar: function () { if (this.ley && this.ley.parentNode) this.ley.parentNode.removeChild(this.ley); this.f = null; this.o = null; }
+    desmontar: function () { this.f = null; this.o = null; }
   };
 
   /* ---------- el perfil de temperatura ---------- */
@@ -4402,10 +4376,8 @@ function escenasGen(q) {
       cumple: function (e) { return typeof P.n === 'number' ? Math.abs(e[K(P.k)] - P.n) < 1e-6 : e[K(P.k)] === P.n; } };
   }
   var PRED_C_N = predDe(PRED_C), PRED_C_V = ST ? predDe(PRED_C_VAP) : null;
-  Object.defineProperty(COEF, 'prediccion', { enumerable: true, get: function () {
-    var a = XL._app, s = a && a.estado ? a.estado() : null;
-    return PRED_C_V && s && s[K('hot')] === 'vapor' ? PRED_C_V : PRED_C_N;
-  } });
+  // con vapor en la coraza la pregunta es otra: el armazón acepta una predicción que depende del estado
+  COEF.prediccion = function (e) { return PRED_C_V && e[K('hot')] === 'vapor' ? PRED_C_V : PRED_C_N; };
   function calculoCoef(R) {
     if (!R.bal.physical) return { intro: 'Sin intercambio no hay coeficientes que calcular.', pasos: [{ titulo: 'Sin intercambio', texto: sinIntercambio(R), libro: [LIB + '#sec-hx-lados', 'Libro, sección 22.6'] }], libro: [[LIB + '#sec-hx-lados', 'Sección 22.6']] };
     var t = R.tube, sh = R.shell, g = R.geo, p = partesU(R), tot = p.reduce(function (s, x) { return s + x[1]; }, 0), pasos = [];
@@ -4652,34 +4624,18 @@ var CONFIGS = [{
   resultado: function (r) { return 'E-201 deja el condensado a ' + fT(r.cd.T_sal) + '; la glicerina sale a ' + fT(r.st.bal.Tho) + '; las placas dejan el agua a ' + fT(r.pl.bal.Tho) + '; el doble tubo, el aceite a ' + fT(r.dp.bal.Tho) + '; el aeroenfriador, el agua a ' + fT(r.ac.bal.Tho) + '.'; }
 }].concat(M.TARJETAS.map(function (c) {
   var q = M.equipoDe(c), t = TEXTOS_CFG[c.id];
-  return { id: c.id, _eq: q, ceja: t[0], titulo: t[1], fija: t[2], cambios: M.cambiosDe(c.id),
+  return { id: c.id, _eq: q, parte: q, ceja: t[0], titulo: t[1], fija: t[2], cambios: M.cambiosDe(c.id),
     resultado: function (r) { return q === 'cd' ? resCd(r.cd) : resGen(r[q], c); },
     alerta: function (r) { return q === 'cd' ? alertaCd(r.cd) : alertaGen(r[q]); } };
 }));
 
 /* ================= El explorador ================= */
-var PARTES = [{ titulo: 'El condensador del arrastre', escenas: ESCENAS_CD }].concat(M.EQUIPOS.map(function (q) { return { titulo: NOMBRE_EQ[q], escenas: escenasGen(q) }; }));
-function verCtl() {
-  var e = window.Explorador ? Explorador.estado() : M.CASO;
-  ['ctl', 'capaDatos'].forEach(function (id) {
-    var cont = document.getElementById(id); if (!cont) return;
-    Array.prototype.forEach.call(cont.querySelectorAll('.xl-c'), function (n) {
-      var lb = n.querySelector('[id^="c-"]'); if (!lb) return;
-      var k = lb.id.slice(2).replace(/-d$/, ''), c = CTRL[k]; if (!c) return;
-      var ver = c.ver ? !!c.ver(e) : true;
-      if (n.hidden === ver) n.hidden = !ver;
-      if (c.columnas) {
-        var sg = n.querySelector('.xl-seg');
-        if (sg && !sg.classList.contains('rej')) {
-          sg.classList.add('rej'); sg.style.setProperty('--cols', c.columnas);
-          var bs = sg.querySelectorAll('button'), resto = bs.length % c.columnas;   // el último ocupa lo que sobra de su fila
-          if (resto) bs[bs.length - 1].style.gridColumn = 'span ' + (c.columnas - resto + 1);
-        }
-      }
-    });
-    Array.prototype.forEach.call(cont.querySelectorAll('details.xl-mas'), function (d) { d.hidden = !d.querySelector('.xl-c:not([hidden])'); });
-  });
-}
+// cada parte es un equipo, con su caso (la tarjeta de su equipo en EQ_HOME) y sus claves: la barra muestra el caso de la
+// parte en pantalla, «con cambios» mira solo sus claves y «Volver al caso» solo las devuelve
+function clavesGen(q) { return function (k) { return k.indexOf(q + '_') === 0 || M.COMUNES.indexOf(k) >= 0; }; }
+var PARTES = [{ id: 'cd', titulo: 'El condensador del arrastre', escenas: ESCENAS_CD, caso: M.EQ_HOME.cd, claves: M.CD_KEYS }].concat(M.EQUIPOS.map(function (q) {
+  return { id: q, titulo: NOMBRE_EQ[q], escenas: escenasGen(q), caso: M.EQ_HOME[q], claves: clavesGen(q) };
+}));
 XL.explorador({
   id: 'intercambiadores',
   nombre: 'Explorador de intercambiadores',
@@ -4691,31 +4647,7 @@ XL.explorador({
   controles: CTRL,
   configuraciones: CONFIGS,
   textos: { configuraciones: 'Cada tarjeta es un equipo completo y dice de dónde sale: el capítulo 23, McCabe o un ejemplo del explorador. Al cargarla, todo vuelve al caso con los cambios de la tarjeta, y el explorador abre en la parte de su equipo.' },
-  partes: PARTES,
-  alCambiar: function () { verCtl(); }
-});
-
-/* ================= Lo que la página agrega al armazón ================= */
-// los controles que no aplican se esconden y los botones de a varios van en rejilla, cada vez que el armazón arma un panel
-verCtl();
-if (window.MutationObserver) ['ctl', 'capaDatos'].forEach(function (id) { var n = document.getElementById(id); if (n) new MutationObserver(verCtl).observe(n, { childList: true }); });
-// el riel es largo: la escena activa se mantiene a la vista, en el riel de la izquierda o en la fila del celular
-function enfocarRiel() {
-  var r = document.getElementById('riel'), b = r && r.querySelector('.xl-sn.is-active'); if (!b) return;
-  var rr = r.getBoundingClientRect(), br = b.getBoundingClientRect();
-  if (r.scrollWidth > r.clientWidth + 2) { if (br.left < rr.left || br.right > rr.right) r.scrollLeft += br.left - rr.left - (rr.width - br.width) / 2; }
-  else if (r.scrollHeight > r.clientHeight + 2) { if (br.top < rr.top || br.bottom > rr.bottom) r.scrollTop += br.top - rr.top - rr.height / 3; }
-}
-if (window.MutationObserver) new MutationObserver(enfocarRiel).observe(document.getElementById('riel'), { subtree: true, attributes: true, attributeFilter: ['class'] });
-enfocarRiel();
-// al cargar una tarjeta, el explorador abre en la parte de su equipo (el armazón ya la cargó y cerró la ventana)
-var PRIMERA = {};
-Explorador.escenas.forEach(function (e, i) { if (PRIMERA[e._eq] == null) PRIMERA[e._eq] = i; });
-document.getElementById('cfgs').addEventListener('click', function (ev) {
-  var b = ev.target.closest('[data-cfg]'); if (!b) return;
-  var c = CONFIGS.filter(function (x) { return x.id === b.dataset.cfg; })[0];
-  if (!c || !c._eq) return;
-  if (Explorador.escenas[Explorador.escena()]._eq !== c._eq) Explorador.ir(PRIMERA[c._eq]);
+  partes: PARTES
 });
 })();
 </script>
