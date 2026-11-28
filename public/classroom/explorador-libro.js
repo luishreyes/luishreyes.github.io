@@ -6,12 +6,17 @@
    Cada explorador declara solo lo suyo: el modelo (el caso y la función
    que calcula), los controles, las configuraciones y las escenas (la
    pregunta, los números, el veredicto, la predicción, las figuras y los
-   pasos del cálculo). El armazón pone todo lo demás: la barra de arriba,
-   el riel de escenas y las teclas, los mandos con su «caso: …» y «Más
-   ajustes», la tarjeta para predecir, las configuraciones, el estado «con
-   cambios», la capa «¿Cómo se calcula?» con KaTeX, la hoja del celular y
-   el ciclo de vida de las figuras: SVG propio, isométricas del skill
-   anatomy con su acercamiento, lienzos canvas y escenas 3D con three.js.
+   pasos del cálculo). El armazón pone todo lo demás: la barra de arriba
+   con el caso de la parte y las preferencias de vista, el riel de escenas
+   (con sus tres formas en el celular) y las teclas, los mandos con su
+   «caso: …», sus columnas, los que se muestran según el estado y «Más
+   ajustes», la tarjeta para predecir, las configuraciones (con las claves
+   que conservan y la parte o la escena a la que llevan), el estado «con
+   cambios», la capa «¿Cómo se calcula?» con KaTeX y las ecuaciones partidas
+   en el celular, la hoja del celular y el ciclo de vida de las figuras: SVG
+   propio, isométricas del skill anatomy con su acercamiento, su leyenda y su
+   recorte del celular, lienzos canvas con su letra mínima y escenas 3D con
+   three.js, con la pausa y las velocidades de las que se animan.
 
    JavaScript sin dependencias. KaTeX (/classroom/vendor/katex/) se carga
    en la página antes de este archivo; three.js (/classroom/vendor/three/)
@@ -40,15 +45,29 @@
   }
   function un(x, d, u) { return num(x, d) + NB + u; }
   function pct(f, d) { return num(100 * f, d || 0) + NB + '%'; }
-  // el mismo número para KaTeX: {,} decimal, \, de miles y - de menos
-  function kn(x, d) { return num(x, d).replace(',', '{,}').replace(/ /g, '\\,').replace('−', '-'); }
+  function finito(x) { return typeof x === 'number' && isFinite(x); }
+  // el mismo número para KaTeX: {,} decimal, \, de miles y - de menos; sin dato, en texto
+  function kn(x, d) {
+    if (x === Infinity) return '\\infty';
+    if (x === -Infinity) return '-\\infty';
+    if (!finito(x)) return '\\text{sin dato}';
+    return num(x, d).replace(',', '{,}').replace(/ /g, '\\,').replace('−', '-');
+  }
   function man(x) { var e = Math.floor(Math.log10(Math.abs(x))), c = x / Math.pow(10, e); if (Math.abs(c) >= 9.995) { c /= 10; e += 1; } return [c, e]; }
-  function kc(x, d) { var m = man(x); return kn(m[0], d == null ? 2 : d) + '\\times10^{' + m[1] + '}'; }
+  // en notación científica; el cero es 0 y lo que no es un número, «sin dato»
+  function kc(x, d) { if (x === 0) return '0'; if (!finito(x)) return kn(x); var m = man(x); return kn(m[0], d == null ? 2 : d) + '\\times10^{' + m[1] + '}'; }
   function hc(x, d) {
+    if (x === 0) return '0';
+    if (!finito(x)) return num(x);
     var m = man(x), sup = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' };
     return num(m[0], d == null ? 2 : d) + NB + '×' + NB + '10' + String(m[1]).split('').map(function (c) { return sup[c]; }).join('');
   }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // un símbolo o una unidad dentro de un rótulo en versalitas (t₉₅, ρ, µm, r/min): conserva su caja
+  function nt(t) { return '<span class="xl-nt">' + t + '</span>'; }
+  // las piezas de una leyenda: una franja de color y una muestra
+  function gradiente(colores) { return '<i class="xl-grad" style="background:linear-gradient(90deg,' + colores.join(',') + ')"></i>'; }
+  function muestra(color) { return '<i class="xl-muestra" style="background:' + color + '"></i>'; }
   function ico(id) { return '<svg class="xl-ico" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; }
   function K(tex) {
     if (!window.katex) return '<code>' + esc(tex) + '</code>';
@@ -58,40 +77,157 @@
     if (!window.katex) return '<code>' + esc(tex) + '</code>';
     return katex.renderToString(tex, { displayMode: false, throwOnError: false, strict: false });
   }
-  // En pantallas angostas, una ecuación larga se parte antes de su último «=» y en cada \qquad, para que el
-  // resultado no quede fuera de la vista.
-  function aNivel0(t, pat) {
-    var out = [], d = 0;
-    for (var i = 0; i < t.length; i++) {
-      var c = t[i];
-      if (c === '\\' && t[i + 1] === '{') { i++; continue; }
-      if (c === '{') d++; else if (c === '}') d--;
-      else if (d === 0 && t.substr(i, pat.length) === pat) out.push(i);
+  /* En pantallas angostas, una ecuación que no cabe se parte en renglones: primero en sus separadores (\\, \qquad,
+     \quad y \Rightarrow), después antes de un «=» (o ≥, ≤, ≈) y, si todavía no cabe, antes de un + o un −. Solo se parte
+     a nivel 0: nunca dentro de llaves, paréntesis, corchetes, \left…\right o \begin…\end. El ancho se estima en
+     caracteres (una fracción vale lo de su parte más ancha); lo que aun así no cabe lo encoge ajustarEcuaciones. */
+  // dónde aparece cada patrón a nivel 0: [{ i, p }]
+  function aNivel0(t, pats) {
+    var out = [], d = 0, i = 0, n = t.length, m;
+    while (i < n) {
+      if (d === 0) {
+        var hit = null;
+        for (var j = 0; j < pats.length; j++) {
+          var p = pats[j];
+          if (t.substr(i, p.length) === p && !(/^\\[a-zA-Z]+$/.test(p) && /[a-zA-Z]/.test(t.charAt(i + p.length)))) { hit = p; break; }
+        }
+        if (hit) { out.push({ i: i, p: hit }); i += hit.length; continue; }
+      }
+      var c = t.charAt(i);
+      if (c === '\\') {
+        m = /^\\([a-zA-Z]+)/.exec(t.substr(i, 24));
+        if (!m) { i += 2; continue; }                       // \{ \} \, \; \\ y demás
+        i += m[0].length;
+        if (m[1] === 'left' || m[1] === 'right') {
+          d += m[1] === 'left' ? 1 : -1;
+          while (t.charAt(i) === ' ') i++;
+          if (t.charAt(i) === '\\') { var m2 = /^\\([a-zA-Z]+|.)/.exec(t.substr(i, 24)); i += m2 ? m2[0].length : 1; } else i++;
+        } else if (m[1] === 'begin' || m[1] === 'end') {
+          d += m[1] === 'begin' ? 1 : -1;
+          if (t.charAt(i) === '{') { var k = t.indexOf('}', i); i = k < 0 ? n : k + 1; }
+        }
+        continue;
+      }
+      if (c === '{' || c === '(' || c === '[') d++;
+      else if (c === '}' || c === ')' || c === ']') d--;
+      i++;
     }
     return out;
   }
-  function partir(tex) {
-    if (window.innerWidth >= 700) return tex;
-    var out = [];
-    tex.split('\\\\').forEach(function (l) {
-      var cortes = aNivel0(l, '\\qquad'), piezas = [], a = 0;
-      cortes.forEach(function (c) { piezas.push(l.slice(a, c)); a = c + 6; });
-      piezas.push(l.slice(a));
-      piezas.forEach(function (p) {
-        var visible = p.replace(/\\[a-zA-Z]+/g, ' ').replace(/[{}^_]/g, '').replace(/\s+/g, ' ').trim();
-        var iguales = aNivel0(p, '=');
-        if (visible.length > 30 && iguales.length > 1) { var k = iguales[iguales.length - 1]; out.push(p.slice(0, k)); out.push(p.slice(k)); }
-        else out.push(p);
-      });
+  // el grupo {…} (o el símbolo suelto) que empieza en k: [contenido, fin]
+  function grupoTex(t, k) {
+    while (t.charAt(k) === ' ') k++;
+    if (t.charAt(k) !== '{') {
+      if (t.charAt(k) === '\\') { var m = /^\\([a-zA-Z]+|.)/.exec(t.substr(k, 30)); return [m ? m[0] : '', k + (m ? m[0].length : 1)]; }
+      return [t.charAt(k), k + 1];
+    }
+    var d = 0, j = k;
+    for (; j < t.length; j++) { var c = t.charAt(j); if (c === '\\') { j++; continue; } if (c === '{') d++; else if (c === '}' && --d === 0) break; }
+    return [t.slice(k + 1, j), j + 1];
+  }
+  var BINARIOS = /^(times|cdot|le|ge|leq|geq|approx|Rightarrow|to|pm|mp|ne|equiv|sim|propto)$/;
+  // el ancho aproximado de un TeX, en caracteres de una cifra
+  function anchoTex(t) {
+    var w = 0, i = 0, n = t.length, g, h;
+    while (i < n) {
+      var c = t.charAt(i);
+      if (c === '\\') {
+        var m = /^\\([a-zA-Z]+|.)/.exec(t.substr(i, 30)), nom = m ? m[1] : '';
+        i += m ? m[0].length : 1;
+        if (nom === 'frac' || nom === 'dfrac' || nom === 'tfrac') { g = grupoTex(t, i); h = grupoTex(t, g[1]); i = h[1]; w += Math.max(anchoTex(g[0]), anchoTex(h[0])) + 0.6; }
+        else if (nom === 'sqrt') { g = grupoTex(t, i); i = g[1]; w += anchoTex(g[0]) + 1.2; }
+        else if (/^(text|textrm|textit|mathrm|mathit|mathbf|operatorname)$/.test(nom)) { g = grupoTex(t, i); i = g[1]; w += g[0].replace(/\\[a-zA-Z]+|[{}\\]/g, '').length * 0.9; }
+        else if (nom === 'left' || nom === 'right') { g = grupoTex(t, i); i = g[1]; w += g[0] === '.' ? 0 : 0.6; }
+        else if (nom === 'begin' || nom === 'end') { g = grupoTex(t, i); i = g[1]; }
+        else if (nom === 'qquad') w += 4;
+        else if (nom === 'quad') w += 2;
+        else if (nom === ',' || nom === ';' || nom === ':' || nom === '!' || nom === ' ') w += 0.4;
+        else if (BINARIOS.test(nom)) w += 2.4;
+        else if (/^(ln|log|exp|max|min|sin|cos|tan|lim)$/.test(nom)) w += nom.length;
+        else if (nom) w += 1.1;
+        continue;
+      }
+      if (c === '^' || c === '_') { g = grupoTex(t, i + 1); i = g[1]; w += 0.72 * anchoTex(g[0]); continue; }
+      if (c === '{') { g = grupoTex(t, i); i = g[1]; w += anchoTex(g[0]); continue; }
+      i++;
+      if (c === '}' || c === ' ' || c === '&') continue;
+      if (c === '=' || c === '+' || c === '-' || c === '<' || c === '>') w += 2.4;
+      else if (c === ',' || c === '.' || c === ';' || c === ':') w += 0.45;
+      else w += 1;
+    }
+    return w;
+  }
+  var RELACIONES = ['\\approx', '\\geq', '\\leq', '\\ge', '\\le', '='];
+  var SUMAS = ['\\times', '\\cdot', '+', '-'];
+  // los trozos de una línea, cada uno empezando en un patrón a nivel 0 (un − o un + que es signo no parte)
+  function trozos(l, pats) {
+    var cortes = aNivel0(l, pats).filter(function (h) {
+      if (!h.i) return false;
+      var antes = l.slice(0, h.i).replace(/\s+$/, '');
+      if (!antes) return false;
+      if (h.p === '\\times' && /^\\times\s*10\^/.test(l.slice(h.i))) return false;   // 1,2 × 10⁵ no se parte
+      if (h.p === '+' || h.p === '-') return !/(=|\(|\{|\[|\+|-|\\times|\\cdot|\\ge|\\le|\\geq|\\leq|\\approx|,|;|\\;|\\,|\\quad|\\qquad)$/.test(antes);
+      return true;
+    }).map(function (h) { return h.i; });
+    var out = [], a = 0;
+    cortes.forEach(function (p) { if (l.slice(a, p).trim()) { out.push(l.slice(a, p)); a = p; } });
+    out.push(l.slice(a));
+    return out;
+  }
+  // junta los trozos en renglones de a lo sumo L; un renglón nuevo no empieza con \quad
+  function empacar(segs, L) {
+    var out = [], cur = '';
+    segs.forEach(function (s) {
+      if (cur && anchoTex(cur + s) > L) { out.push(cur); cur = s.replace(/^\s*\\q?quad\b\s*/, ''); } else cur += s;
     });
-    return out.length > 1 ? '\\begin{gathered}' + out.join('\\\\ ') + '\\end{gathered}' : out[0];
+    if (cur.trim()) out.push(cur);
+    return out;
+  }
+  function partirLinea(l, L) {
+    if (anchoTex(l) <= L) return [l];
+    var segs = trozos(l, ['\\qquad', '\\quad', '\\Rightarrow']);
+    if (segs.length > 1) return [].concat.apply([], empacar(segs, L).map(function (x) { return partirRel(x, L); }));
+    return partirRel(l, L);
+  }
+  function partirRel(l, L) {
+    if (anchoTex(l) <= L) return [l];
+    var r = empacar(trozos(l, RELACIONES), L);
+    if (r.every(function (x) { return anchoTex(x) <= L; })) return r;
+    return empacar(trozos(l, RELACIONES.concat(SUMAS)), L);
+  }
+  function partir(tex, ancho) {
+    var W = ancho || window.innerWidth;
+    if (W >= 700) return tex;
+    var L = Math.max(16, (W - 92) / 9.2), out = [];
+    aNivel0(tex, ['\\\\']).map(function (h) { return h.i; }).concat([tex.length]).reduce(function (a, b) {
+      out = out.concat(partirLinea(tex.slice(a, b), L));
+      return b + 2;
+    }, 0);
+    out = out.map(function (x) { return x.trim(); }).filter(function (x) { return x; });
+    return out.length > 1 ? '\\begin{gathered}' + out.join('\\\\ ') + '\\end{gathered}' : (out[0] || tex);
+  }
+  // Lo que aun así no cabe en su recuadro se encoge, hasta el 82 %; si todavía no cabe, el recuadro se desliza de lado.
+  function ajustarEcuaciones(cont) {
+    Array.prototype.forEach.call(cont.querySelectorAll('.xl-ec, .xl-num'), function (e) {
+      var ks = e.querySelectorAll('.katex-display > .katex');
+      Array.prototype.forEach.call(ks, function (k) { k.style.fontSize = ''; });
+      var exceso = e.scrollWidth - e.clientWidth;
+      if (exceso <= 1 || !ks.length) return;
+      var cs = getComputedStyle(e), util = e.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      var f = Math.max(0.82, util / (util + exceso) - 0.01);
+      Array.prototype.forEach.call(ks, function (k) { k.style.fontSize = (parseFloat(getComputedStyle(k).fontSize) * f).toFixed(2) + 'px'; });
+    });
   }
   function enlace(ruta, txt) {
     var url = /^(https?:)?\/\//.test(ruta) ? ruta : XL.LIBRO + ruta;
     return '<a href="' + url + '" target="_blank" rel="noopener">' + txt + ico('fuera') + '</a>';
   }
-  XL.num = num; XL.un = un; XL.pct = pct; XL.kn = kn; XL.kc = kc; XL.hc = hc; XL.esc = esc;
-  XL.ico = ico; XL.K = K; XL.Ki = Ki; XL.partir = partir; XL.enlace = enlace;
+  XL.num = num; XL.un = un; XL.pct = pct; XL.kn = kn; XL.kc = kc; XL.hc = hc; XL.esc = esc; XL.nt = nt;
+  XL.ico = ico; XL.K = K; XL.Ki = Ki; XL.partir = partir; XL.enlace = enlace; XL.gradiente = gradiente; XL.muestra = muestra;
+  // si la pantalla es la del celular (o una ventana angosta o baja): la misma condición de la hoja
+  var mqCel = window.matchMedia ? matchMedia('(max-width: 1099.98px), (max-height: 599.98px)') : { matches: false };
+  XL.celular = function () { return !!mqCel.matches; };
+  function alCambiarMq(q, fn) { if (q.addEventListener) q.addEventListener('change', fn); else if (q.addListener) q.addListener(fn); }
 
   /* ================= Dibujo en SVG ================= */
   var NS = 'http://www.w3.org/2000/svg';
@@ -331,6 +467,9 @@
   }
   function medida(v, arg) { return typeof v === 'function' ? v(arg) : v; }
   function ponerAr(elm, vista) { if (vista && vista[0] && vista[1]) elm.style.setProperty('--ar', vista[0] + ' / ' + vista[1]); }
+  // la familia de la letra de la página (la pila --sans), para los lienzos
+  var familia = null;
+  function familiaSans() { if (!familia) familia = getComputedStyle(document.body).fontFamily || 'sans-serif'; return familia; }
   function div(cls, padre) { var d = document.createElement('div'); d.className = cls; if (padre) padre.appendChild(d); return d; }
 
   var TIPOS = {};
@@ -388,10 +527,16 @@
         svg.removeAttribute('width'); svg.removeAttribute('height');
         svg.setAttribute('aria-hidden', 'true');
         var vb = (svg.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number);
-        var vista = medida(s.vista, v) || [vb[2], vb[3]];
-        ponerAr(f.cuerpo, vista);
+        var completa = medida(s.vista, v) || [vb[2], vb[3]], vista = completa;
         var o = s.origen ? medida(s.origen, v) : [vb[0] || 0, vb[1] || 0];
-        f.X.svg = svg; f.X.slot = f.slot; f.X.variante = v; f.X.vista = vista;
+        // en el celular, la figura puede abrir en un recorte suyo (vistaCel y origenCel, en unidades del viewBox)
+        f.celular = !!(s.vistaCel && mqCel.matches);
+        if (f.celular) {
+          vista = medida(s.vistaCel, v) || completa;
+          o = medida(s.origenCel, v) || [o[0] + (completa[0] - vista[0]) / 2, o[1] + (completa[1] - vista[1]) / 2];
+        }
+        ponerAr(f.cuerpo, vista);
+        f.X.svg = svg; f.X.slot = f.slot; f.X.variante = v; f.X.vista = vista; f.X.vistaCompleta = completa;
         f.zoom = f.X.zoom = new IsoZoom(f.wrap, svg, vista[0], vista[1], o[0], o[1]);
         f.zoom.alCambiar = function () { f.rotular(); };
         f.llamar('montar', f.slot);
@@ -425,6 +570,16 @@
       X.canvas = cv; X.ctx = cv.getContext('2d');
       X.ancho = v ? v[0] : 0; X.alto = v ? v[1] : 0;
       X.limpiar = function () { var c = X.ctx; c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cv.width, cv.height); c.restore(); };
+      // el tamaño de letra, en unidades del lienzo, que en pantalla no baja de min px (13 por defecto); y la fuente
+      // completa para ctx.font, con la letra de la página
+      X.letra = function (tam, min) {
+        var k = (X.escala || 1) / (X._dpr || 1);
+        tam = tam == null ? 15 : tam; min = min == null ? 13 : min;
+        return k > 0 ? Math.max(tam, min / k) : tam;
+      };
+      X.fuente = function (tam, peso) { return (peso || 400) + ' ' + X.letra(tam).toFixed(2) + 'px ' + familiaSans(); };
+      // al volver a montarse se mide siempre, aunque el recuadro no haya cambiado de tamaño
+      X._dpr = 0;
       TIPOS.canvas.medir(f);
       f.ro = window.ResizeObserver ? new ResizeObserver(function () { if (TIPOS.canvas.medir(f)) f.redibujar(); }) : null;
       if (f.ro) f.ro.observe(f.cuerpo);
@@ -521,18 +676,45 @@
   };
   XL.tipos = TIPOS;
 
+  // las velocidades de una animación: un número (multiplica el tiempo) o { valor, texto }
+  function velValor(v) { return v !== null && typeof v === 'object' ? v.valor : v; }
+  function velTexto(v) {
+    if (v !== null && typeof v === 'object') return v.texto;
+    var f = { 0.25: '¼', 0.5: '½', 0.75: '¾' }[v];
+    return (f || num(v, Math.round(v) === v ? 0 : (Math.round(v * 10) === v * 10 ? 1 : 2))) + '×';
+  }
   function Fig(spec, ranura, app) {
     this.spec = spec; this.ranura = ranura; this.app = app;
     this.tipo = TIPOS[spec.tipo || 'svg'];
     if (!this.tipo) throw new Error('Tipo de figura desconocido: ' + spec.tipo);
     this.estado = 'vacia'; this.activa = false;
+    // la pausa y la velocidad de la animación, si la figura las declara (pausa, velocidades)
+    var vs = spec.velocidades;
+    this.pausada = false;
+    this.vel = spec.velocidad != null ? spec.velocidad : (vs && vs.length ? (vs.map(velValor).indexOf(1) >= 0 ? 1 : velValor(vs[0])) : 1);
     var self = this;
     // el contexto que recibe cada función de la figura
     this.X = { app: app, spec: spec, figura: this, reducido: XL.reducido, R: function () { return app.R(); }, estado: function () { return app.estado(); },
-      rotulos: function (lista) { self.rot = lista || null; self.rotular(); } };
+      rotulos: function (lista) { self.rot = lista || null; self.rotular(); },
+      pausada: function () { return self.pausada; }, velocidad: function () { return self.vel; },
+      preferencia: function (clave) { return app.preferencia ? app.preferencia(clave) : undefined; },
+      leyenda: function (html, lado) { self.leyenda(html, lado); } };
     this.cuerpo = this.tipo.crear(this);
+    if (spec.proporcionCel) this.cuerpo.style.setProperty('--ar-cel', spec.proporcionCel[0] + ' / ' + spec.proporcionCel[1]);
+    if (spec.altoCel) { this.cuerpo.style.setProperty('--alto-cel', spec.altoCel + 'px'); this.cuerpo.classList.add('xl-alto-cel'); }
     ranura.el.appendChild(this.cuerpo);
   }
+  // La leyenda de una figura (isométricas, lienzos y 3D): un recuadro arriba a la izquierda, o abajo con lado 'abajo',
+  // que no tapa los botones del acercamiento. Sin html, se quita.
+  Fig.prototype.leyenda = function (html, lado) {
+    var host = this.wrap || (this.cuerpo.tagName.toLowerCase() === 'div' ? this.cuerpo : null), d = this.ley;
+    if (!host) return;
+    if (!html) { if (d) d.hidden = true; return; }
+    if (!d || d.parentNode !== host) { d = this.ley = div('xl-ley', host); d.setAttribute('aria-hidden', 'true'); }
+    d.hidden = false;
+    d.classList.toggle('abajo', lado === 'abajo');
+    if (d.innerHTML !== html) d.innerHTML = html;
+  };
   Fig.prototype.llamar = function (fn) {
     var f = this.spec[fn];
     if (typeof f !== 'function') return undefined;
@@ -565,9 +747,12 @@
     if (this.tipo.despuesDePoner) this.tipo.despuesDePoner(this);
   };
   Fig.prototype.redibujar = function () { if (this.estado === 'lista') this.poner(this.app.R(), 'fijo'); this.rotular(); };
+  // en pausa la figura no recibe cuadros (una 3D se sigue dibujando para la cámara); con otra velocidad, dt va
+  // multiplicado por ella
+  Fig.prototype.anima = function () { return !!(this.tipo.cuadro || (this.spec.cuadro && !this.pausada)); };
   Fig.prototype.cuadro = function (dt) {
     if (this.estado !== 'lista') return;
-    this.llamar('cuadro', dt, this.app.R());
+    if (!this.pausada) this.llamar('cuadro', typeof this.vel === 'number' ? dt * this.vel : dt, this.app.R());
     if (this.tipo.cuadro) this.tipo.cuadro(this, dt);
   };
   Fig.prototype.activar = function (on) {
@@ -581,6 +766,7 @@
     if (this.estado === 'lista') this.llamar('desmontar');
     this.token = null;
     if (this.tipo.desmontar) this.tipo.desmontar(this);
+    if (this.ley) { this.ley.remove(); this.ley = null; }
     var e = this.cuerpo.querySelector('.xl-error'); if (e) e.remove();
     this.cuerpo.classList.remove('xl-cargando');
     this.estado = 'vacia';
@@ -621,8 +807,9 @@
     f.className = 'xl-fig' + (spec.ancha ? ' ancha' : '') + (i === 0 ? ' primera' : '');
     if (spec.peso) f.style.flexGrow = spec.peso;
     f.hidden = true;
-    var cab = div('xl-fig-cab', f), tit = document.createElement('span');
-    tit.textContent = spec.titulo || ''; cab.appendChild(tit);
+    var cab = this.cab = div('xl-fig-cab', f), tit = document.createElement('span');
+    // el título admite un símbolo con su caja (XL.nt)
+    tit.className = 'xl-fig-t'; tit.innerHTML = spec.titulo || ''; cab.appendChild(tit);
     var vistas = spec.vistas || [spec];
     this.vista = 0;
     if (spec.vistas) {
@@ -632,6 +819,17 @@
       seg.addEventListener('click', function (ev) { var b = ev.target.closest('[data-vista]'); if (b) self.escoger(+b.dataset.vista); });
       this.seg = seg;
     }
+    // la pausa y las velocidades de la animación, si la vista en pantalla las declara
+    this.mandos = div('xl-fig-mandos', cab);
+    this.mandos.setAttribute('role', 'group'); this.mandos.setAttribute('aria-label', 'La animación');
+    this.mandos.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button'), g = self.actual(); if (!b) return;
+      if (b.dataset.anim === 'pausa') g.pausada = !g.pausada;
+      else if (b.dataset.vel != null) g.vel = velValor(g.spec.velocidades[+b.dataset.vel]);
+      self.pintarCab();
+      var nuevo = self.mandos.querySelector(b.dataset.anim ? '[data-anim]' : '[data-vel="' + b.dataset.vel + '"]'); if (nuevo) nuevo.focus();
+      app._actividad();
+    });
     this.btnRep = document.createElement('button');
     this.btnRep.type = 'button'; this.btnRep.className = 'xl-mini xl-repetir';
     this.btnRep.addEventListener('click', function () { var g = self.actual(); if (g.estado === 'lista') g.llamar('repetir', app.R()); });
@@ -646,9 +844,22 @@
   }
   Ranura.prototype.actual = function () { return this.figs[this.vista]; };
   Ranura.prototype.pintarCab = function () {
-    var g = this.actual(), rep = typeof g.spec.repetir === 'function' && g.spec.repetirTexto;
+    var g = this.actual(), s = g.spec, red = XL.reducido();
+    // con movimiento reducido no aparecen el botón de repetir (salvo repetirReducido: una muestra nueva, por ejemplo)
+    // ni la pausa y las velocidades
+    var rep = typeof s.repetir === 'function' && s.repetirTexto && (!red || s.repetirReducido) ? s.repetirTexto : '';
     this.btnRep.hidden = !rep;
+    this.btnRep.classList.toggle('xl-rep-siempre', !!s.repetirReducido);
     if (rep) this.btnRep.innerHTML = ico('rot') + rep;
+    var vs = s.velocidades && s.velocidades.length ? s.velocidades : null, anim = !red && !!(s.pausa || vs);
+    this.mandos.hidden = !anim;
+    this.mandos.innerHTML = !anim ? '' :
+      (s.pausa ? '<button type="button" class="xl-mini xl-pausa" data-anim="pausa" aria-label="' + (g.pausada ? 'Seguir' : 'Pausar') + ' la animación" title="' + (g.pausada ? 'Seguir' : 'Pausar') + '">' + ico(g.pausada ? 'play' : 'pausa') + '</button>' : '') +
+      (vs ? '<div class="xl-vel" role="group" aria-label="Velocidad de la animación">' + vs.map(function (v, j) {
+        return '<button type="button" data-vel="' + j + '" aria-pressed="' + (velValor(v) === g.vel) + '">' + velTexto(v) + '</button>';
+      }).join('') + '</div>' : '');
+    // en el celular, una cabecera con vistas o con mandos se parte en dos renglones: el título arriba
+    this.cab.classList.toggle('xl-cab-doble', !!(this.seg || anim));
     // con el atributo: un <svg> no tiene la propiedad hidden de los elementos HTML
     this.figs.forEach(function (x, j) { x.cuerpo.toggleAttribute('hidden', j !== this.vista); }, this);
     if (this.seg) this.seg.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.vista === this.vista ? 'true' : 'false'); }, this);
@@ -679,6 +890,8 @@
     var PARTES = def.partes || [{ titulo: '', escenas: def.escenas || [] }];
     var ESCENAS = [];
     PARTES.forEach(function (p) { if (!p.pronto) p.escenas.forEach(function (e) { e._parte = p; ESCENAS.push(e); }); });
+    // el riel del celular: una fila por parte, una sola fila que se desliza o una rejilla de a tres
+    var MOVIL = def.rielCelular || (ESCENAS.length > 9 ? 'fila' : 'partes');
     var T = Object.assign({
       capa: 'Cada escena, paso por paso, con los números que usted tiene en pantalla. Si mueve un dato aquí, las cuentas cambian con él, y el explorador queda igual al cerrar.',
       configuraciones: 'Al cargar una, el sistema vuelve al caso del libro con los cambios de la tarjeta. Los resultados de cada tarjeta salen del mismo modelo.',
@@ -688,10 +901,55 @@
     var api = {};   // la interfaz pública; se llena al final
     var estado = Object.assign({}, CASO);
     var R = calcular(estado);
-    var cfgActiva = CONFIGS[0].id;
     var escena = 0;
     var $ = function (id) { return document.getElementById(id); };
     function igual(a, b) { return typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 1e-9 : a === b; }
+
+    /* ---------- Las configuraciones de cada parte ---------- */
+    // Una configuración puede ser de una parte (parte: su id o su número en partes, desde 0): al cargarla, el explorador
+    // abre en esa parte. Cada parte puede tener su caso (caso: el id de una configuración) y sus claves (claves: las del
+    // estado que mueven sus controles): la barra muestra la configuración de la parte en pantalla, «con cambios» mira sus
+    // claves y «Volver al caso» lleva al caso de la parte.
+    function cfgDe(id) { return CONFIGS.filter(function (c) { return c.id === id; })[0]; }
+    function parteIdx(x) {
+      if (x == null) return -1;
+      if (typeof x === 'number') return x >= 0 && x < PARTES.length ? x : -1;
+      for (var i = 0; i < PARTES.length; i++) if (PARTES[i].id === x || PARTES[i].titulo === x) return i;
+      return -1;
+    }
+    CONFIGS.forEach(function (c) { c._pi = parteIdx(c.parte); });
+    function casoDe(pi) { var p = PARTES[pi]; return (p && p.caso && cfgDe(p.caso)) || CONFIGS[0]; }
+    function clavesDe(pi) { var p = PARTES[pi], k = p && p.claves; return !k ? null : (typeof k === 'function' ? k : function (x) { return k.indexOf(x) >= 0; }); }
+    // las claves que una tarjeta conserva del estado del estudiante (el líquido, por ejemplo), salvo que la tarjeta las cambie
+    function conservaDe(c) { return c.conserva !== undefined ? (c.conserva || []) : (def.conserva || []); }
+    function estadoCfg(c) {
+      var e = Object.assign({}, CASO);
+      conservaDe(c).forEach(function (k) { if (k in estado) e[k] = estado[k]; });
+      return Object.assign(e, c.cambios);
+    }
+    // la configuración en pantalla en cada parte: { id, ref }, con ref el estado con que quedó al cargarla
+    var activa = PARTES.map(function (p, pi) { var c = casoDe(pi); return { id: c.id, ref: Object.assign({}, CASO, c.cambios) }; });
+    function piActual() { return PARTES.indexOf(ESCENAS[escena]._parte); }
+    function refDe(k) { var v = activa[piActual()].ref[k]; return v === undefined ? CASO[k] : v; }
+
+    /* ---------- Las preferencias de vista (las unidades, por ejemplo) ---------- */
+    // preferencias: [{ clave, etiqueta, opciones: [valor | { valor, texto }], inicial }]. Van en la barra de arriba (en el
+    // celular, arriba de la hoja de controles), se recuerdan con XL.pref y nunca entran al modelo.
+    var PREFS = def.preferencias || [];
+    var prefVal = {};
+    function valorDe(c, x) { return x !== null && typeof x === 'object' ? x.valor : x; }
+    function textoDe(c, x) { return x !== null && typeof x === 'object' ? (x.texto != null ? x.texto : String(x.valor)) : String(x); }
+    PREFS.forEach(function (p) {
+      var g = XL.pref(p.clave), ok = p.opciones.some(function (o) { return igual(valorDe(p, o), g); });
+      prefVal[p.clave] = g !== undefined && ok ? g : (p.inicial !== undefined ? p.inicial : valorDe(p, p.opciones[0]));
+    });
+    function htmlPrefs(donde) {
+      return PREFS.map(function (p) {
+        var id = 'pref-' + donde + '-' + p.clave;
+        return '<div class="xl-pref"><span class="k" id="' + id + '">' + p.etiqueta + '</span><div class="xl-pref-seg" role="group" aria-labelledby="' + id + '">' +
+          p.opciones.map(function (o, i) { return '<button type="button" data-pref="' + esc(p.clave) + '" data-i="' + i + '" aria-pressed="' + igual(valorDe(p, o), prefVal[p.clave]) + '">' + textoDe(p, o) + '</button>'; }).join('') + '</div></div>';
+      }).join('');
+    }
 
     /* ---------- El esqueleto de la página ---------- */
     var nombre = esc(def.nombre || 'Explorador');
@@ -705,6 +963,7 @@
           '<div class="xl-caso" aria-live="polite"><span class="k">Caso</span><span class="v" id="casoNom"></span><span class="m" id="casoMod" hidden>con cambios</span>' +
             '<button type="button" id="casoReset" hidden>' + ico('rot') + 'Volver al caso</button></div>' +
           '<div class="xl-acc">' +
+            (PREFS.length ? '<div class="xl-prefs" id="prefs">' + htmlPrefs('barra') + '</div>' : '') +
             '<button type="button" class="xl-b xl-b--linea" id="btnCfg" aria-label="Configuraciones">' + ico('cuadros') + '<span>Configuraciones</span></button>' +
             '<button type="button" class="xl-b xl-b--amarillo" id="btnCalc">' + ico('sigma') + '¿Cómo se calcula?</button>' +
           '</div>' +
@@ -729,7 +988,7 @@
       '<div class="xl-capa" id="capa" role="dialog" aria-modal="true" aria-labelledby="capaT" hidden>' +
         '<div class="xl-capa-cab"><div><p class="xl-ceja">' + nombre + ' · El modelo</p><h2 id="capaT">¿Cómo se calcula?</h2><p class="xl-capa-ent">' + T.capa + '</p></div>' +
           '<button type="button" class="xl-cerrar" id="capaX">' + ico('x') + '<span>Cerrar</span></button></div>' +
-        '<div class="xl-capa-cuerpo"><div class="xl-capa-lado"><nav class="xl-capa-riel" id="capaRiel" aria-label="Escenas del cálculo"></nav>' +
+        '<div class="xl-capa-cuerpo"><div class="xl-capa-lado' + ((def.datosArriba != null ? def.datosArriba : ESCENAS.length > 9) ? ' xl-datos-arriba' : '') + '"><nav class="xl-capa-riel" id="capaRiel" aria-label="Escenas del cálculo"></nav>' +
           '<div class="xl-datos" id="capaDatos" role="group" aria-labelledby="capaDatosT"></div></div>' +
           '<div class="xl-capa-doc" id="capaDoc"><article class="xl-doc" id="doc"></article></div></div>' +
       '</div>' +
@@ -744,6 +1003,7 @@
     /* ---------- El riel ---------- */
     function riel(cont, enCapa) {
       var h = '', n = 0, idx = 0;
+      cont.setAttribute('data-movil', MOVIL);
       PARTES.forEach(function (p) {
         if (p.pronto) {
           if (enCapa) { n += p.escenas.length; return; }
@@ -770,10 +1030,19 @@
         if (b) { if (enCapa) irCapa(+b.dataset.escena); else ir(+b.dataset.escena); }
       });
     }
+    // la escena activa queda a la vista en el riel, que puede deslizarse de lado (celular) o hacia abajo (computador)
+    function enfocarRiel(cont) {
+      var b = cont && cont.querySelector('.xl-sn.is-active');
+      if (!b) return;
+      [b.parentElement, cont, cont.parentElement].forEach(function (c) {
+        if (!c) return;
+        var cs = getComputedStyle(c), cr = c.getBoundingClientRect(), br = b.getBoundingClientRect();
+        if (/(auto|scroll)/.test(cs.overflowX) && c.scrollWidth > c.clientWidth + 2 && (br.left < cr.left || br.right > cr.right)) c.scrollLeft += br.left - cr.left - (cr.width - br.width) / 2;
+        if (/(auto|scroll)/.test(cs.overflowY) && c.scrollHeight > c.clientHeight + 2 && (br.top < cr.top || br.bottom > cr.bottom)) c.scrollTop += br.top - cr.top - cr.height / 3;
+      });
+    }
 
     /* ---------- Los controles: cada uno cambia solo su clave ---------- */
-    function valorDe(c, x) { return x !== null && typeof x === 'object' ? x.valor : x; }
-    function textoDe(c, x) { return x !== null && typeof x === 'object' ? (x.texto != null ? x.texto : String(x.valor)) : String(x); }
     function lim(c, k) { return typeof c[k] === 'function' ? c[k](estado) : c[k]; }
     function fmtCtrl(k, v) {
       var c = CTRL[k];
@@ -788,11 +1057,18 @@
       if (!c) throw new Error('No hay control declarado para la clave ' + k);
       var nodo = document.createElement('div'), id = 'c-' + k + (compacto ? '-d' : '');
       nodo.className = 'xl-c';
-      var nota = '<p class="xl-c-nota"><span>' + (c.nota || '') + '</span><button type="button" class="xl-caso-b" data-caso>caso: ' + fmtCtrl(k, CASO[k]) + '</button></p>';
+      var nota = '<p class="xl-c-nota"><span>' + (c.nota || '') + '</span><button type="button" class="xl-caso-b" data-caso>caso: ' + fmtCtrl(k, refDe(k)) + '</button></p>';
       if (c.tipo === 'opciones') {
         nodo.innerHTML = '<div class="xl-c-cab"><span class="lb" id="' + id + '">' + c.etiqueta + '</span></div><div class="xl-seg" role="group" aria-labelledby="' + id + '">' +
           c.opciones.map(function (o, i) { return '<button type="button" data-i="' + i + '" data-v="' + esc(String(valorDe(c, o))) + '">' + textoDe(c, o) + '</button>'; }).join('') + '</div>' + nota;
-        nodo.querySelector('.xl-seg').addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (b) cambiar(k, valorDe(c, c.opciones[+b.dataset.i])); });
+        var sg = nodo.querySelector('.xl-seg');
+        // muchas opciones: en una rejilla de columnas, y la última ocupa lo que sobra de su fila
+        if (c.columnas > 1) {
+          sg.classList.add('rej'); sg.style.setProperty('--cols', c.columnas);
+          var resto = c.opciones.length % c.columnas;
+          if (resto) sg.lastChild.style.gridColumn = 'span ' + (c.columnas - resto + 1);
+        }
+        sg.addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (b) cambiar(k, valorDe(c, c.opciones[+b.dataset.i])); });
       } else if (c.tipo === 'contador') {
         var men = c.menos || 'Uno menos', mas = c.mas || 'Uno más';
         nodo.innerHTML = '<div class="xl-c-cab"><span class="lb" id="' + id + '">' + c.etiqueta + '</span><output></output></div><div class="xl-cont" role="group" aria-labelledby="' + id + '">' +
@@ -807,13 +1083,18 @@
         var inp = nodo.querySelector('input');
         inp.addEventListener('input', function () { cambiar(k, +inp.value); });
       }
-      nodo.querySelector('[data-caso]').addEventListener('click', function () { cambiar(k, CASO[k]); });
+      // «caso: …» lleva el control al valor de la configuración en pantalla
+      nodo.querySelector('[data-caso]').addEventListener('click', function () { cambiar(k, refDe(k)); });
       cont.appendChild(nodo);
       var v = {
         cont: cont,
         refrescar: function () {
-          var val = estado[k], cb = nodo.querySelector('[data-caso]');
-          cb.disabled = igual(val, CASO[k]);
+          // ver(estado): el control solo se muestra cuando aplica
+          var vis = !c.ver || !!c.ver(estado);
+          if (nodo.hidden === vis) nodo.hidden = !vis;
+          var val = estado[k], cb = nodo.querySelector('[data-caso]'), ref = refDe(k), tx = 'caso: ' + fmtCtrl(k, ref);
+          if (cb.textContent !== tx) cb.textContent = tx;
+          cb.disabled = igual(val, ref);
           if (c.tipo === 'opciones') nodo.querySelectorAll('.xl-seg button').forEach(function (b) { b.setAttribute('aria-pressed', igual(valorDe(c, c.opciones[+b.dataset.i]), val) ? 'true' : 'false'); });
           else if (c.tipo === 'contador') {
             nodo.querySelector('output').textContent = c.salida ? c.salida(val) : '';
@@ -835,11 +1116,19 @@
       return v;
     }
     function limpiarVivos(cont) { vivos = vivos.filter(function (v) { return v.cont !== cont && !cont.contains(v.cont); }); }
+    function refrescarVivos() { vivos.forEach(function (v) { v.refrescar(); }); visibles(); }
+    // «Más ajustes» y «Sus datos» se esconden cuando no les queda ningún control a la vista
+    function visibles() {
+      Array.prototype.forEach.call($('ctl').querySelectorAll('details.xl-mas'), function (d) { d.hidden = !d.querySelector('.xl-c:not([hidden])'); });
+      var dd = $('capaDatos');
+      if (dd.childElementCount > 2) dd.hidden = !dd.querySelector('.xl-c:not([hidden])');
+    }
 
     function armarPanel() {
       var e = ESCENAS[escena], ctl = $('ctl');
       limpiarVivos(ctl);
-      ctl.innerHTML = '<div class="xl-hoja-t"><b>Controles · ' + e.titulo + '</b><button type="button" class="xl-cerrar" id="hojaX" aria-label="Cerrar los controles">' + ico('x') + '</button></div><p class="xl-ctl-t">Controles</p>';
+      ctl.innerHTML = '<div class="xl-hoja-t"><b>Controles · ' + e.titulo + '</b><button type="button" class="xl-cerrar" id="hojaX" aria-label="Cerrar los controles">' + ico('x') + '</button></div>' +
+        (PREFS.length ? '<div class="xl-prefs xl-prefs-hoja">' + htmlPrefs('hoja') + '</div>' : '') + '<p class="xl-ctl-t">Controles</p>';
       var caja = document.createElement('div'); ctl.appendChild(caja);
       (e.controles || []).forEach(function (k) { control(k, caja); });
       if (e.info) { var inf = document.createElement('p'); inf.className = 'xl-info'; inf.id = 'info'; ctl.appendChild(inf); }
@@ -850,20 +1139,38 @@
         e.mas.forEach(function (k) { control(k, caja2); });
         ctl.appendChild(det);
       }
+      visibles();
       $('hojaX').addEventListener('click', function () { hoja(false); });
     }
     function indice(x) { if (/^\d+$/.test(String(x))) return +x; return ESCENAS.map(function (e) { return e.id; }).indexOf(String(x)); }
     function infoIr(ev) { var b = ev.target.closest('[data-ir]'); if (b) { var i = indice(b.dataset.ir); if (i >= 0) { hoja(false); ir(i); } } }
 
     /* ---------- La pregunta para predecir: sin puntaje y sin guardar ---------- */
-    var preds = ESCENAS.map(function () { return { elegida: null, revelada: false }; });
+    // prediccion es un objeto o una función (estado, r) que lo devuelve: la pregunta puede depender del estado. Mientras
+    // haya una opción escogida, la tarjeta no cambia; si la función arma el objeto cada vez, ese objeto lleva un id.
+    var preds = ESCENAS.map(function () { return { elegida: null, revelada: false, P: null }; });
+    function predDe(i) { var p = ESCENAS[i].prediccion; return typeof p === 'function' ? p(estado, R) : p; }
+    function mismaPred(a, b) { return a === b || !!(a && b && a.id != null && a.id === b.id); }
+    function predActual() {
+      var st = preds[escena];
+      if (st.elegida !== null && st.P) return st.P;
+      var P = predDe(escena) || null;
+      if (!mismaPred(P, st.P)) st.revelada = false;
+      st.P = P;
+      return P;
+    }
+    // el resultado con unos cambios sobre el estado; si no cambian nada, el que ya está calculado
+    function conCambios(c) {
+      for (var k in c) if (!igual(estado[k], c[k])) return calcular(Object.assign({}, estado, c));
+      return R;
+    }
     function armarPred() {
-      var e = ESCENAS[escena], P = e.prediccion, st = preds[escena], box = $('pred');
+      var st = preds[escena], P = predActual(), box = $('pred');
       box.hidden = !P;
       if (!P) { box.innerHTML = ''; return; }
-      var rb = calcular(Object.assign({}, estado, P.base));
-      var rn = calcular(Object.assign({}, estado, P.llevar));
-      var ok = P.correcta(rn, rb);
+      // la respuesta correcta se calcula solo al revelarla
+      var rb = conCambios(P.base || {}), rn = null, ok = -1;
+      if (st.revelada) { rn = conCambios(P.llevar || {}); ok = P.correcta(rn, rb); }
       var h = '<p class="k">' + ico('ayuda') + 'Prediga antes de mover</p><p class="q">' + P.pregunta(rb) + '</p><ul>';
       P.opciones.forEach(function (o, i) {
         var cls = 'xl-op' + (st.elegida === i ? ' elegida' : '') + (st.revelada && i === ok ? ' correcta' : '');
@@ -882,6 +1189,7 @@
     ESCENAS.forEach(function (e) {
       e._ranuras = (e.figuras || []).map(function (spec, j) { var r = new Ranura(spec, j, e, api); $('figs').appendChild(r.el); return r; });
     });
+    function todasLasRanuras(fn) { ESCENAS.forEach(function (e) { e._ranuras.forEach(fn); }); }
     function figurasDe(i) { return ESCENAS[i]._ranuras.map(function (r) { return r.actual(); }); }
     var enMontaje = false;
     function entrarFiguras(i) {
@@ -915,7 +1223,7 @@
           r.figs.forEach(function (f) {
             var on = base && i === escena && r.actual() === f && f.estado === 'lista' && r.visible;
             f.activar(on);
-            if (on && (f.spec.cuadro || f.tipo.cuadro)) out.push(f);
+            if (on && f.anima()) out.push(f);
           });
         });
       });
@@ -936,9 +1244,13 @@
       es.forEach(function (x) { if (x.target._ranura) x.target._ranura.visible = x.isIntersecting; });
       actividad();
     }) : null;
-    ESCENAS.forEach(function (e) { e._ranuras.forEach(function (r) { r.el._ranura = r; if (io) io.observe(r.el); }); });
+    todasLasRanuras(function (r) { r.el._ranura = r; if (io) io.observe(r.el); });
     document.addEventListener('visibilitychange', actividad);
-    window.addEventListener('pagehide', function (ev) { if (ev.persisted) return; ESCENAS.forEach(function (e) { e._ranuras.forEach(function (r) { r.figs.forEach(function (f) { f.desmontar(); }); }); }); });
+    window.addEventListener('pagehide', function (ev) { if (ev.persisted) return; todasLasRanuras(function (r) { r.figs.forEach(function (f) { f.desmontar(); }); }); });
+    // si el estudiante cambia el movimiento reducido con la página abierta, las cabeceras se rehacen
+    alCambiarMq(mq, function () { todasLasRanuras(function (r) { r.pintarCab(); }); actividad(); });
+    // una isométrica con recorte del celular se vuelve a montar al pasar de la pantalla grande a la del celular
+    alCambiarMq(mqCel, function () { figurasDe(escena).forEach(function (f) { if (f.spec.vistaCel && f.estado === 'lista' && f.celular !== mqCel.matches) f.recargar(); }); });
 
     /* ---------- La escena en pantalla ---------- */
     function pintarKpis() {
@@ -955,24 +1267,25 @@
       if (e.info && $('info')) $('info').innerHTML = e.info(R);
     }
     function casoActual() {
-      var cfg = CONFIGS.filter(function (c) { return c.id === cfgActiva; })[0] || CONFIGS[0];
-      var ref = Object.assign({}, CASO, cfg.cambios), mod = Object.keys(ref).some(function (k) { return !igual(estado[k], ref[k]); });
+      var pi = piActual(), a = activa[pi], cfg = cfgDe(a.id) || CONFIGS[0], cl = clavesDe(pi);
+      var mod = Object.keys(a.ref).some(function (k) { return (!cl || cl(k)) && !igual(estado[k], a.ref[k]); });
       $('casoNom').textContent = cfg.titulo;
       $('casoMod').hidden = !mod;
-      $('casoReset').hidden = !mod && cfgActiva === CONFIGS[0].id;
+      $('casoReset').hidden = !mod && a.id === casoDe(pi).id;
     }
     function ir(i) {
       if (i < 0 || i >= ESCENAS.length) return;
       escena = i;
       var e = ESCENAS[i];
       document.querySelectorAll('#riel .xl-sn[data-escena]').forEach(function (b) { var on = +b.dataset.escena === i; b.classList.toggle('is-active', on); if (on) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+      enfocarRiel($('riel'));
       $('ceja').textContent = 'Escena ' + (i + 1) + ' de ' + ESCENAS.length + (e._parte.titulo ? ' · ' + e._parte.titulo : '');
       $('titulo').textContent = e.titulo;
       $('pregunta').textContent = e.pregunta || '';
       var sig = $('btnSig');
       if (i < ESCENAS.length - 1) { sig.innerHTML = '<span>Siguiente: ' + ESCENAS[i + 1].titulo + '</span>' + ico('der'); sig.onclick = function () { ir(i + 1); }; }
       else { sig.innerHTML = ico('sigma') + '<span>¿Cómo se calcula?</span>'; sig.onclick = function () { abrirCapa(); }; }
-      armarPanel(); armarPred(); pintarKpis();
+      armarPanel(); armarPred(); pintarKpis(); casoActual();
       entrarFiguras(i);
       try { history.replaceState(null, '', '#' + e.id); } catch (err) { /* sin historial */ }
     }
@@ -986,24 +1299,60 @@
       var hay = false;
       for (var k in cambios) if (!igual(estado[k], cambios[k])) { estado[k] = cambios[k]; hay = true; if (M.ajustar) M.ajustar(estado, k); }
       if (hay) recalcular('cambio');
+      return hay;
     }
     function recalcular(modo) {
       R = calcular(estado);
-      vivos.forEach(function (v) { v.refrescar(); });
-      var st = preds[escena], P = ESCENAS[escena].prediccion;
-      if (P && st.elegida !== null && !st.revelada && P.cumple(estado)) st.revelada = true;
+      despues(modo, true);
+    }
+    // lo que sigue a un resultado nuevo: los controles, la predicción, los números, la barra, las figuras y la capa
+    function despues(modo, figuras) {
+      refrescarVivos();
+      var st = preds[escena];
+      if (st.P && st.elegida !== null && !st.revelada && st.P.cumple(estado)) st.revelada = true;
       armarPred(); pintarKpis(); casoActual();
-      figurasDe(escena).forEach(function (f) { f.poner(R, modo); });
+      if (figuras) figurasDe(escena).forEach(function (f) { f.poner(R, modo); });
       if (!$('capa').hidden) pintarDoc();
       if (def.alCambiar) def.alCambiar(R, estado);
     }
+    // vuelve a pintar los números, el veredicto, la nota y la capa sin cambiar el estado (una medición de la figura)
+    function repintar() {
+      pintarKpis();
+      if (!$('capa').hidden) pintarDoc();
+    }
 
     $('pred').addEventListener('click', function (ev) {
-      var P = ESCENAS[escena].prediccion, st = preds[escena], b;
+      var st = preds[escena], P = st.P, b;
       if (!P) return;
       if ((b = ev.target.closest('[data-op]')) && st.elegida === null) { st.elegida = +b.dataset.op; if (P.cumple(estado)) st.revelada = true; armarPred(); var f = $('pred').querySelector('[data-llevar], .otra'); if (f) f.focus(); return; }
       if (ev.target.closest('[data-llevar]')) { ponerVarios(P.llevar); return; }
       if (ev.target.closest('[data-otra]')) { st.elegida = null; st.revelada = false; armarPred(); var p = $('pred').querySelector('[data-op]'); if (p) p.focus(); }
+    });
+
+    /* ---------- Las preferencias de vista ---------- */
+    function preferencia(clave, valor) {
+      if (arguments.length < 2) return prefVal[clave];
+      var p = PREFS.filter(function (x) { return x.clave === clave; })[0];
+      if (!p || igual(prefVal[clave], valor)) return valor;
+      prefVal[clave] = valor;
+      XL.pref(clave, valor);
+      document.querySelectorAll('[data-pref]').forEach(function (b) {
+        if (b.dataset.pref === clave) b.setAttribute('aria-pressed', igual(valorDe(p, p.opciones[+b.dataset.i]), valor) ? 'true' : 'false');
+      });
+      if (def.alPreferencia) def.alPreferencia(clave, valor);
+      // todo lo que muestra números se vuelve a pintar con la preferencia nueva; el estado no cambia
+      armarPanel(); armarPred(); pintarKpis(); casoActual();
+      figurasDe(escena).forEach(function (f) { f.poner(R, 'fijo'); f.rotular(); });
+      if (!$('capa').hidden) irCapa(escCapa);
+      return valor;
+    }
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-pref]');
+      if (!b) return;
+      var p = PREFS.filter(function (x) { return x.clave === b.dataset.pref; })[0], enHoja = !!b.closest('#ctl'), i = b.dataset.i;
+      if (!p) return;
+      preferencia(p.clave, valorDe(p, p.opciones[+i]));
+      if (enHoja) { var n = $('ctl').querySelector('[data-pref="' + p.clave + '"][data-i="' + i + '"]'); if (n) n.focus(); }
     });
 
     /* ---------- «¿Cómo se calcula?» ---------- */
@@ -1025,6 +1374,7 @@
     function irCapa(i) {
       escCapa = i;
       document.querySelectorAll('#capaRiel .xl-sn').forEach(function (b) { b.classList.toggle('is-active', +b.dataset.escena === i); });
+      enfocarRiel($('capaRiel'));
       var e = ESCENAS[i], doc = $('doc');
       limpiarVivos(doc);
       doc.innerHTML = '<p class="xl-ceja">Escena ' + (i + 1) + (e._parte.titulo ? ' · ' + e._parte.titulo : '') + '</p><h3>' + e.titulo + '</h3><p class="xl-preg">' + (e.pregunta || '') + '</p><div id="docCuerpo"></div>';
@@ -1034,6 +1384,7 @@
       dd.hidden = !datos.length;
       dd.innerHTML = '<span class="t" id="capaDatosT">Sus datos</span><p class="d">' + T.datos + '</p>';
       datos.forEach(function (k) { control(k, dd, true); });
+      visibles();
       pintarDoc();
       $('capaDoc').scrollTop = 0;
     }
@@ -1060,8 +1411,11 @@
       else if (c.libro && c.libro.length) h += '<div class="xl-libro"><h4>En el libro</h4><ul>' + c.libro.map(function (l) { return '<li>' + enlace(l[0], l[1]) + '</li>'; }).join('') + '</ul></div>';
       var sc = $('capaDoc').scrollTop;
       cuerpo.innerHTML = h;
+      ajustarEcuaciones(cuerpo);
       $('capaDoc').scrollTop = sc;
     }
+    // la letra de KaTeX puede llegar después: las ecuaciones se vuelven a medir cuando está
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { var c = $('docCuerpo'); if (c && !$('capa').hidden) ajustarEcuaciones(c); });
     $('doc').addEventListener('click', function (ev) {
       var e = ESCENAS[escCapa]; if (!e.calculo) return;
       var c = e.calculo(R).pasos.length;
@@ -1076,9 +1430,10 @@
     function abrirCfg() {
       ultimoFoco = document.activeElement;
       hoja(false);
+      var enPantalla = activa[piActual()].id;
       $('cfgs').innerHTML = CONFIGS.map(function (c) {
-        var r = calcular(Object.assign({}, CASO, c.cambios)), alerta = c.alerta ? c.alerta(r) : false, activa = c.id === cfgActiva;
-        return '<div class="xl-cfg' + (activa ? ' activa' : '') + '"><span class="e">' + c.ceja + (activa ? ' · en pantalla' : '') + '</span><h3>' + c.titulo + '</h3><p>' + c.fija + '</p>' +
+        var r = calcular(estadoCfg(c)), alerta = c.alerta ? c.alerta(r) : false, on = c.id === enPantalla;
+        return '<div class="xl-cfg' + (on ? ' activa' : '') + '"><span class="e">' + c.ceja + (on ? ' · en pantalla' : '') + '</span><h3>' + c.titulo + '</h3><p>' + c.fija + '</p>' +
           (c.resultado ? '<p class="r' + (alerta ? ' alerta' : '') + '">' + c.resultado(r) + '</p>' : '') +
           '<button type="button" class="xl-b xl-b--navy" data-cfg="' + c.id + '">Cargar</button></div>';
       }).join('');
@@ -1086,12 +1441,36 @@
       $('cfgX').focus();
     }
     function cerrarCfg() { $('velo').hidden = true; document.body.style.overflow = ''; if (ultimoFoco && ultimoFoco.focus) ultimoFoco.focus(); }
+    // la escena a la que lleva una tarjeta: la suya (escena: id), la primera de su parte si no se está en ella, o ninguna
+    function destinoDe(c) {
+      if (c.escena != null) return indice(c.escena);
+      if (c._pi >= 0 && ESCENAS[escena]._parte !== PARTES[c._pi]) {
+        for (var i = 0; i < ESCENAS.length; i++) if (ESCENAS[i]._parte === PARTES[c._pi]) return i;
+      }
+      return -1;
+    }
     function cargarCfg(id) {
-      var c = CONFIGS.filter(function (x) { return x.id === id; })[0];
+      var c = cfgDe(id);
       if (!c) return;
-      cfgActiva = id;
-      estado = Object.assign({}, CASO, c.cambios);
-      recalcular('entrar');
+      estado = estadoCfg(c);
+      var ref = Object.assign({}, estado);
+      PARTES.forEach(function (p, q) {
+        if (c._pi === q) activa[q] = { id: c.id, ref: ref };
+        else if (c._pi >= 0 || (c === CONFIGS[0] && p.caso)) { var k = casoDe(q); activa[q] = { id: k.id, ref: k === c ? ref : estadoCfg(k) }; }
+        else activa[q] = { id: c.id, ref: ref };
+      });
+      var d = destinoDe(c);
+      if (d >= 0 && d !== escena) { R = calcular(estado); ir(d); despues('entrar', false); }
+      else recalcular('entrar');
+    }
+    // «Volver al caso»: el caso de la parte en pantalla; si la parte declara sus claves, solo esas vuelven
+    function volverAlCaso() {
+      var pi = piActual(), c = casoDe(pi), cl = clavesDe(pi);
+      if (!cl) { cargarCfg(c.id); return; }
+      var ref = estadoCfg(c), cambios = {};
+      Object.keys(ref).forEach(function (k) { if (cl(k)) cambios[k] = ref[k]; });
+      activa[pi] = { id: c.id, ref: ref };
+      if (!ponerVarios(cambios)) { refrescarVivos(); casoActual(); }
     }
     $('cfgs').addEventListener('click', function (ev) { var b = ev.target.closest('[data-cfg]'); if (b) { cargarCfg(b.dataset.cfg); cerrarCfg(); } });
     $('velo').addEventListener('click', function (ev) { if (ev.target === $('velo')) cerrarCfg(); });
@@ -1103,7 +1482,7 @@
         // la figura, con su cabecera, queda a la vista sobre la hoja
         var r0 = ESCENAS[escena]._ranuras[0], barra = document.querySelector('.xl-barra');
         if (r0) window.scrollTo({ top: Math.max(0, r0.el.getBoundingClientRect().top + window.scrollY - barra.offsetHeight), behavior: mq.matches ? 'auto' : 'smooth' });
-        var f = $('ctl').querySelector('input, button:not(#hojaX)'); if (f) f.focus({ preventScroll: true });
+        var f = $('ctl').querySelector('input, .xl-c button:not([disabled]), .xl-prefs-hoja button'); if (f) f.focus({ preventScroll: true });
       }
     }
 
@@ -1115,6 +1494,7 @@
       if (ev.shiftKey && document.activeElement === a) { ev.preventDefault(); z.focus(); }
       else if (!ev.shiftKey && document.activeElement === z) { ev.preventDefault(); a.focus(); }
     }
+    // las teclas 1 a 9 abren las nueve primeras escenas; ← y → la anterior y la siguiente (así se llega a todas)
     document.addEventListener('keydown', function (ev) {
       var capa = !$('capa').hidden, velo = !$('velo').hidden;
       if (ev.key === 'Escape') { if (velo) cerrarCfg(); else if (capa) cerrarCapa(); else hoja(false); return; }
@@ -1122,6 +1502,11 @@
       if (capa || velo || ev.altKey || ev.ctrlKey || ev.metaKey) return;
       var tag = (ev.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+      if ((ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') && !ev.shiftKey) {
+        var j = escena + (ev.key === 'ArrowRight' ? 1 : -1);
+        if (j >= 0 && j < ESCENAS.length) { ev.preventDefault(); ir(j); }
+        return;
+      }
       var n = parseInt(ev.key, 10);
       if (n >= 1 && n <= Math.min(9, ESCENAS.length)) ir(n - 1);
     });
@@ -1132,13 +1517,14 @@
       R: function () { return R; },
       escena: function () { return escena; },
       escenas: ESCENAS,
-      ir: ir, cambiar: cambiar, ponerVarios: ponerVarios,
-      abrirCapa: abrirCapa, cerrarCapa: cerrarCapa, abrirCfg: abrirCfg, cerrarCfg: cerrarCfg, cargarCfg: cargarCfg,
-      // la figura n de una escena (por id o por número), para las pruebas: { estado, activa, X }
-      figura: function (e, n) { var i = indice(e), r = i >= 0 && ESCENAS[i]._ranuras[n || 0]; if (!r) return null; var f = r.actual(); return { estado: f.estado, activa: f.activa, X: f.X }; },
+      ir: ir, cambiar: cambiar, ponerVarios: ponerVarios, repintar: repintar, preferencia: preferencia,
+      abrirCapa: abrirCapa, cerrarCapa: cerrarCapa, abrirCfg: abrirCfg, cerrarCfg: cerrarCfg, cargarCfg: cargarCfg, volverAlCaso: volverAlCaso,
+      // la figura n de una escena (por id o por número), para las pruebas: { estado, activa, pausada, velocidad, X }
+      figura: function (e, n) { var i = indice(e), r = i >= 0 && ESCENAS[i]._ranuras[n || 0]; if (!r) return null; var f = r.actual(); return { estado: f.estado, activa: f.activa, pausada: f.pausada, velocidad: f.vel, X: f.X }; },
       _figLista: figLista, _actividad: actividad, _despertar: despertar
     });
     XL._app = api;
+    XL.preferencia = function (clave) { return prefVal[clave]; };
     window.Explorador = api;
 
     /* ---------- Arranque ---------- */
@@ -1151,7 +1537,7 @@
     $('capaX').addEventListener('click', cerrarCapa);
     $('btnHoja').addEventListener('click', function () { hoja(true); });
     $('ctl').addEventListener('click', infoIr);
-    $('casoReset').addEventListener('click', function () { cargarCfg(CONFIGS[0].id); });
+    $('casoReset').addEventListener('click', volverAlCaso);
     var inicio = ESCENAS.map(function (e) { return e.id; }).indexOf((location.hash || '').slice(1));
     ir(inicio >= 0 ? inicio : 0);
     casoActual();
@@ -1161,6 +1547,7 @@
       if ((w < 700) !== (anchoAntes < 700) && !$('capa').hidden) pintarDoc();
       anchoAntes = w;
       figurasDe(escena).forEach(function (f) { f.rotular(); });
+      enfocarRiel($('riel'));
     });
     return api;
   };
