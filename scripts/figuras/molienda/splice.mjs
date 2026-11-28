@@ -1,13 +1,17 @@
 /* Mete los equipos de molienda en el Explorador de molienda y tamizado publicado: el código en vivo y los datos de las
    cinco figuras entre /*MLFIG_START*\/ y /*MLFIG_END*\/, el CSS entre /*MLFIG_CSS_START*\/ y /*MLFIG_CSS_END*\/, y copia
    los SVG a simulaciones/fig/molienda/, de donde la página pide el del equipo que se ve.
-   Correr después de node build.mjs --eq=bolas, --eq=mand, --eq=rod, --eq=mart y --eq=disc, y de --eq=tamiz con --n=3 a --n=9. */
+   Correr después de node build.mjs --eq=bolas, --eq=mand, --eq=rod, --eq=mart y --eq=disc, y de --eq=tamiz con --n=3 a --n=9.
+   Uso: node splice.mjs [ruta del HTML] [carpeta de los SVG]. Sin argumentos escribe en el explorador de 2026-20;
+   con la ruta de otro explorador (el de 2027-10, por ejemplo), en ese, y los SVG van a fig/molienda/ junto a él, salvo que se
+   dé otra carpeta. */
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SIM = join(HERE, "../../../public/classroom/iqya-2031-2026-20/simulaciones");
-const PAGE = join(SIM, "Explorador_Molienda.html"), FIG = join(SIM, "fig/molienda");
+const PAGE = process.argv[2] ? resolve(process.argv[2]) : join(SIM, "Explorador_Molienda.html");
+const FIG = process.argv[3] ? resolve(process.argv[3]) : join(dirname(PAGE), "fig/molienda");
 mkdirSync(FIG, { recursive: true });
 const figs = {};
 for (const eq of ["bolas", "mand", "rod", "mart", "disc"]) {
@@ -35,4 +39,4 @@ const round = (k, v) => (typeof v === "number" ? Math.round(v * 1e4) / 1e4 : v);
 put("/*MLFIG_START*/", "/*MLFIG_END*/", readFileSync(join(HERE, "out", "fig.js"), "utf8").trim() + "\nvar ML_FIGS = " + JSON.stringify(figs, round) + ";\nvar ML_TAMIZ = " + JSON.stringify(tamiz, round) + ";");
 put("/*MLFIG_CSS_START*/", "/*MLFIG_CSS_END*/", readFileSync(join(HERE, "out", "fig.css"), "utf8").trim());
 writeFileSync(PAGE, page);
-console.log("Explorador_Molienda.html", page.length, "· fig/molienda: bolas, mandíbulas, rodillos, martillos, discos y la tamizadora de 3 a 9 tamices");
+console.log(PAGE, page.length, "· fig/molienda: bolas, mandíbulas, rodillos, martillos, discos y la tamizadora de 3 a 9 tamices");

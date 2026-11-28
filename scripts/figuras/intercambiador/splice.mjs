@@ -2,13 +2,18 @@
    entre /*HXFIG_START*\/ y /*HXFIG_END*\/, el CSS entre /*HXFIG_CSS_START*\/ y /*HXFIG_CSS_END*\/, y copia los SVG a
    simulaciones/fig/intercambiador/, de donde la página los pide cuando hacen falta. Correr después de node build.mjs --all.
    Si están construidas, mete también la de placas (../placas, marcadores PLFIG_*), la de doble tubo (../doble-tubo,
-   marcadores DPFIG_*) y las del aeroenfriador (../aeroenfriador, marcadores ACFIG_*). */
+   marcadores DPFIG_*) y las del aeroenfriador (../aeroenfriador, marcadores ACFIG_*).
+   Uso: node splice.mjs [ruta del HTML] [carpeta de los SVG]. Sin argumentos escribe en el explorador de 2026-20;
+   con la ruta de otro explorador (el de 2027-10, por ejemplo), en ese, y los SVG van a fig/intercambiador/ junto a él, salvo que se
+   dé otra carpeta.
+   El de 2027-10 pide sus SVG a la carpeta de 2026-20: para rehacerlos, esa es la carpeta que se le da. */
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SIM = join(HERE, "../../../public/classroom/iqya-2031-2026-20/simulaciones");
-const PAGE = join(SIM, "Explorador_Intercambiadores.html"), FIG = join(SIM, "fig/intercambiador");
+const PAGE = process.argv[2] ? resolve(process.argv[2]) : join(SIM, "Explorador_Intercambiadores.html");
+const FIG = process.argv[3] ? resolve(process.argv[3]) : join(dirname(PAGE), "fig/intercambiador");
 mkdirSync(FIG, { recursive: true });
 const figs = {};
 for (const h of ["BEM", "BEU", "AES"]) for (const n of [1, 2, 3]) {
@@ -50,4 +55,4 @@ if (acOk) {
   put("/*ACFIG_CSS_START*/", "/*ACFIG_CSS_END*/", readFileSync(join(ACD, "fig.css"), "utf8").trim());
 }
 writeFileSync(PAGE, page);
-console.log("Explorador_Intercambiadores.html", page.length, "· fig/intercambiador: tubos y coraza (9)" + (existsSync(join(PLD, "placas.svg")) ? ", placas" : "") + (existsSync(join(DPD, "doble.svg")) ? ", doble tubo" : "") + (acOk ? ", aeroenfriador (2)" : ""));
+console.log(PAGE, page.length, "· fig/intercambiador: tubos y coraza (9)" + (existsSync(join(PLD, "placas.svg")) ? ", placas" : "") + (existsSync(join(DPD, "doble.svg")) ? ", doble tubo" : "") + (acOk ? ", aeroenfriador (2)" : ""));

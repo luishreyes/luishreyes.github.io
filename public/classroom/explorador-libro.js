@@ -91,7 +91,11 @@
           var p = pats[j];
           if (t.substr(i, p.length) === p && !(/^\\[a-zA-Z]+$/.test(p) && /[a-zA-Z]/.test(t.charAt(i + p.length)))) { hit = p; break; }
         }
-        if (hit) { out.push({ i: i, p: hit }); i += hit.length; continue; }
+        if (hit) {
+          out.push({ i: i, p: hit });
+          // un \left o un \frac donde se puede partir sigue abriendo su grupo
+          if (hit !== '\\left' && hit !== '\\frac') { i += hit.length; continue; }
+        }
       }
       var c = t.charAt(i);
       if (c === '\\') {
@@ -159,6 +163,7 @@
   }
   var RELACIONES = ['\\approx', '\\geq', '\\leq', '\\ge', '\\le', '='];
   var SUMAS = ['\\times', '\\cdot', '+', '-'];
+  var FACTORES = ['\\left', '\\frac'];
   // los trozos de una línea, cada uno empezando en un patrón a nivel 0 (un − o un + que es signo no parte)
   function trozos(l, pats) {
     var cortes = aNivel0(l, pats).filter(function (h) {
@@ -167,6 +172,8 @@
       if (!antes) return false;
       if (h.p === '\\times' && /^\\times\s*10\^/.test(l.slice(h.i))) return false;   // 1,2 × 10⁵ no se parte
       if (h.p === '+' || h.p === '-') return !/(=|\(|\{|\[|\+|-|\\times|\\cdot|\\ge|\\le|\\geq|\\leq|\\approx|,|;|\\;|\\,|\\quad|\\qquad)$/.test(antes);
+      // entre dos factores seguidos (un paréntesis o una fracción), salvo después de una función, un índice o un operador
+      if (h.p === '\\left' || h.p === '\\frac') return !/(\\(ln|log|exp|max|min|sin|cos|tan|lim|sqrt)|\^|_|=|\+|-|\\times|\\cdot|\(|\[|\{|\\,|\\;)$/.test(antes);
       return true;
     }).map(function (h) { return h.i; });
     var out = [], a = 0;
@@ -193,7 +200,9 @@
     if (anchoTex(l) <= L) return [l];
     var r = empacar(trozos(l, RELACIONES), L);
     if (r.every(function (x) { return anchoTex(x) <= L; })) return r;
-    return empacar(trozos(l, RELACIONES.concat(SUMAS)), L);
+    var m = empacar(trozos(l, RELACIONES.concat(SUMAS)), L);
+    if (m.every(function (x) { return anchoTex(x) <= L; })) return m;
+    return empacar(trozos(l, RELACIONES.concat(SUMAS, FACTORES)), L);
   }
   function partir(tex, ancho) {
     var W = ancho || window.innerWidth;
@@ -1146,16 +1155,15 @@
     function infoIr(ev) { var b = ev.target.closest('[data-ir]'); if (b) { var i = indice(b.dataset.ir); if (i >= 0) { hoja(false); ir(i); } } }
 
     /* ---------- La pregunta para predecir: sin puntaje y sin guardar ---------- */
-    // prediccion es un objeto o una función (estado, r) que lo devuelve: la pregunta puede depender del estado. Mientras
-    // haya una opción escogida, la tarjeta no cambia; si la función arma el objeto cada vez, ese objeto lleva un id.
+    // prediccion es un objeto o una función (estado, r) que lo devuelve: la pregunta puede depender del estado. Cuando el
+    // estado cambia de pregunta, la tarjeta vuelve a empezar con la nueva; si la función arma el objeto cada vez, ese
+    // objeto lleva un id, para que la misma pregunta no se tome por otra.
     var preds = ESCENAS.map(function () { return { elegida: null, revelada: false, P: null }; });
     function predDe(i) { var p = ESCENAS[i].prediccion; return typeof p === 'function' ? p(estado, R) : p; }
     function mismaPred(a, b) { return a === b || !!(a && b && a.id != null && a.id === b.id); }
     function predActual() {
-      var st = preds[escena];
-      if (st.elegida !== null && st.P) return st.P;
-      var P = predDe(escena) || null;
-      if (!mismaPred(P, st.P)) st.revelada = false;
+      var st = preds[escena], P = predDe(escena) || null;
+      if (!mismaPred(P, st.P)) { st.elegida = null; st.revelada = false; }
       st.P = P;
       return P;
     }

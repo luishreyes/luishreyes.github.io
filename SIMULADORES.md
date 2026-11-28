@@ -120,8 +120,14 @@ línea. A la izquierda de la capa quedan los datos de la escena: si el estudiant
 cerrar el explorador sigue donde estaba.
 
 En el celular (y en cualquier pantalla de menos de 1100 px de ancho o 600 de alto) la página es una columna: la figura
-primero, los números, el veredicto, la predicción y la segunda figura; las escenas van en una fila de botones bajo la
-barra, y los controles en una hoja que sube desde abajo con el botón «Controles».
+primero, los números, el veredicto, la predicción y la segunda figura; las escenas van en botones bajo la barra, y los
+controles en una hoja que sube desde abajo con el botón «Controles». Los botones de las escenas toman una de tres formas
+(`rielCelular`): una fila por parte, que se desliza de lado si no cabe (lo normal hasta nueve escenas); una sola fila
+que se desliza, con el nombre de cada parte (`'fila'`, lo normal desde diez); o una rejilla de a tres, sin las partes
+(`'rejilla'`). La escena activa queda siempre a la vista en el riel, en el celular y en el computador.
+
+Si el explorador tiene preferencias de vista (las unidades, por ejemplo), van en la barra, a la izquierda de los dos
+botones, y en el celular arriba de la hoja de controles.
 
 ### El armazón y cada explorador
 
@@ -252,7 +258,12 @@ Un explorador mínimo, con una escena y una figura en SVG:
 | `libro` | `{ capitulo, pie }` o `{ pie, enlaces: [[ruta, texto], …] }`: el pie del riel con el enlace al capítulo en `libro.luishreyes.com`. Las rutas del libro se escriben sin el dominio (`filtracion.html#exm-fil-winter`). |
 | `controles` | Un objeto con un control por clave del estado (ver «Los controles»). |
 | `configuraciones` | Las tarjetas de «Configuraciones»; la primera es el caso (ver abajo). |
-| `partes` | `[{ titulo, escenas: [escena, …] }, …]`. Una parte que todavía no está lleva `pronto: 'en la próxima entrega'` y en `escenas` solo los títulos: sale en el riel sin enlace. Las escenas se numeran seguidas en todo el riel. |
+| `partes` | `[{ id, titulo, escenas: [escena, …], caso, claves }, …]`. Una parte que todavía no está lleva `pronto: 'en la próxima entrega'` y en `escenas` solo los títulos: sale en el riel sin enlace. Las escenas se numeran seguidas en todo el riel. `id`, `caso` y `claves` son opcionales (ver «Las configuraciones»). |
+| `conserva` | Opcional: las claves del estado que todas las configuraciones conservan del estudiante al cargarse (`['fluido']`), salvo que la tarjeta las cambie o declare su propio `conserva`. |
+| `preferencias` | Opcional: las preferencias de vista de la barra, `[{ clave, etiqueta, opciones: [valor | { valor, texto }], inicial }]` (`{ clave: 'unidades', etiqueta: 'Unidades', opciones: [{ valor: 'si', texto: 'm³/h · m' }, { valor: 'us', texto: 'gpm · pie' }] }`). Se recuerdan entre visitas con `XL.pref`, nunca entran al modelo y se leen con `XL.preferencia(clave)` o `X.preferencia(clave)`. Al cambiar una, el armazón vuelve a pintar los controles, los números, la predicción y las figuras (con `'fijo'`), sin tocar el estado. |
+| `alPreferencia(clave, valor)` | Opcional: corre al cambiar una preferencia, antes de volver a pintar. |
+| `rielCelular` | Opcional: `'partes'`, `'fila'` o `'rejilla'`, la forma del riel en el celular (ver «La pantalla»). |
+| `datosArriba` | Opcional: en la capa, los datos de la escena van arriba del riel. Lo hacen solos desde diez escenas. |
 | `textos` | Opcional: `{ capa, configuraciones, datos }` cambia los textos de entrada de la capa, de las configuraciones y de «Sus datos». |
 | `alCambiar(r, estado)` | Opcional: corre después de cada cálculo. |
 
@@ -270,18 +281,35 @@ Cada control cambia solo su clave. Hay tres tipos:
 | `menos`, `mas` | | | lo que dicen los botones a un lector de pantalla («Una placa menos») |
 | `salida(v)` | | | el texto a la derecha de la etiqueta (el área de las placas, por ejemplo) |
 | `formato(v)` | opcional | opcional | opcional: el texto del valor y de «caso: …» |
-| `nota` | opcional: una nota corta bajo el control («ilustrativa», «la del florentino») | | |
+| `nota` | opcional: una nota corta bajo el control («ilustrativa», «la del florentino») | opcional | opcional |
+| `columnas` | | opcional: 2 o 3; las opciones van en una rejilla en vez de una fila, y la última ocupa lo que sobra de su fila | |
+| `ver(estado)` | opcional | opcional | opcional: el control solo se muestra cuando devuelve verdadero (el U dado solo cuando U es un dato) |
 
-El armazón pone a cada uno su botón «caso: …», que vuelve ese control al valor del caso. Una escena muestra
+El armazón pone a cada uno su botón «caso: …», que lleva ese control al valor de la configuración en pantalla (el caso,
+o la tarjeta que el estudiante cargó). «Más ajustes» y «Sus datos» se esconden cuando `ver` no les deja ningún control a
+la vista. Una escena muestra
 `controles` (entre dos y cuatro) y deja los demás en `mas`, dentro de «Más ajustes»; `datos` son los que aparecen en
 «Sus datos» de la capa.
 
 ### Las configuraciones
 
-`{ id, ceja, titulo, cambios, fija, resultado(r), alerta(r) }`. `cambios` son las claves que la tarjeta cambia sobre el
-caso; `fija` dice en una frase qué fija; `resultado` da el número que sale, calculado con el mismo modelo; `alerta`,
-opcional, pinta el resultado en rojo cuando pasa de un límite. Al cargar una, el estado vuelve al caso con esos cambios,
-la barra muestra su título y «Volver al caso» lleva a la primera. Las configuraciones no van en los controles.
+`{ id, ceja, titulo, cambios, fija, resultado(r), alerta(r), conserva, parte, escena }`. `cambios` son las claves que la
+tarjeta cambia sobre el caso; `fija` dice en una frase qué fija; `resultado` da el número que sale, calculado con el
+mismo modelo; `alerta`, opcional, pinta el resultado en rojo cuando pasa de un límite. Al cargar una, el estado vuelve al
+caso con esos cambios, la barra muestra su título y «Volver al caso» lleva a la primera. Las configuraciones no van en los
+controles.
+
+- `conserva`, opcional: las claves que la tarjeta conserva del estado del estudiante (el líquido, por ejemplo), sobre las
+  del explorador (`conserva` de la declaración); `[]` no conserva nada. Lo que la tarjeta pone en `cambios` gana, y
+  entonces su `fija` lo dice. El resultado de la tarjeta se calcula con lo que conserva.
+- `escena`, opcional: el `id` de la escena que abre al cargarse. `parte`, opcional: el `id` de una parte (o su número en
+  `partes`, desde 0); la tarjeta es de esa parte y, si el estudiante está en otra, el explorador abre en la primera escena
+  de la suya.
+- Un caso por parte: cuando las partes son equipos distintos, cada parte puede declarar `caso`, el `id` de la tarjeta que
+  es su caso, y `claves`, las del estado que mueven sus controles (una lista o una función de la clave). La barra muestra
+  la configuración de la parte en pantalla (al cargar la primera tarjeta, cada parte queda en su caso), «con cambios»
+  mira solo sus claves, «Volver al caso» devuelve solo esas claves al caso de la parte y el «caso: …» de cada control es
+  el de esa configuración. La tarjeta del caso de una parte deja sus claves como en el `caso` del modelo.
 
 ### Las escenas
 
@@ -298,7 +326,8 @@ la barra muestra su título y «Volver al caso» lleva a la primera. Las configu
 | `figuras` | Una o dos figuras (ver «Las figuras»); la primera es la grande y en el celular va arriba. |
 | `calculo(r)` | Los pasos de «¿Cómo se calcula?» (ver abajo). |
 
-Las teclas numéricas abren las escenas (la 1, la primera). El botón del veredicto lleva a la escena siguiente y, en la última, a «¿Cómo se
+Las teclas 1 a 9 abren las nueve primeras escenas, y ← y → la anterior y la siguiente, así que con el teclado se llega a
+todas. El botón del veredicto lleva a la escena siguiente y, en la última, a «¿Cómo se
 calcula?».
 
 ### Las figuras
@@ -314,6 +343,9 @@ Cada figura declara su tipo y las funciones de su ciclo de vida. El armazón le 
 | `ancha` | La figura grande de la escena (más ancha que la otra). `peso`, opcional, da otra proporción. |
 | `vista` | `[ancho, alto]` en las unidades del dibujo: el `viewBox` del SVG, las unidades del lienzo o el tamaño de la isométrica. Da también la proporción en el celular. |
 | `repetir(r)`, `repetirTexto` | Si la figura tiene una animación que se puede volver a ver, el botón de la cabecera («Repetir el reposo») la llama. Con movimiento reducido el botón no aparece. |
+| `repetirReducido` | `true` deja el botón de repetir con movimiento reducido, cuando repetir da otra cosa y no solo la animación («Otra muestra»). |
+| `pausa`, `velocidades`, `velocidad` | Para una figura que se anima sola: `pausa: true` pone en su cabecera el botón de pausar y seguir; `velocidades: [0.5, 1, 3]`, los botones de la velocidad (un número multiplica el tiempo; `{ valor, texto }` lleva otro rótulo y deja el tiempo como está, para que la figura lo interprete); `velocidad`, la de arranque (1 si está en la lista). En pausa la figura no recibe `cuadro`; con otra velocidad, `dt` llega multiplicado. Con movimiento reducido no aparecen. |
+| `proporcionCel`, `altoCel` | La forma de la figura en el celular, `[ancho, alto]`, o su alto fijo en px, cuando no debe ser la de `vista` (una barra angosta y alta en el computador, por ejemplo). |
 | `liberar` | `true` desmonta la figura cada vez que el estudiante sale de su escena (las 3D lo hacen siempre). |
 
 El ciclo de vida, igual para todos los tipos:
@@ -328,14 +360,19 @@ El ciclo de vida, igual para todos los tipos:
 | `desmontar(X)` | Al salir de la escena si la figura declara `liberar` (y las 3D siempre), y al cerrar la página. La figura suelta lo suyo; la próxima vez se monta otra vez. |
 
 `X` es el contexto de la figura: `X.reducido()` (movimiento reducido: la figura no se mueve y va derecho al estado
-final), `X.R()` y `X.estado()`, y lo propio de cada tipo. Todas las funciones corren con la figura como `this`, así
+final), `X.R()` y `X.estado()`, `X.pausada()` y `X.velocidad()` (la pausa y la velocidad que escogió el estudiante),
+`X.preferencia(clave)`, `X.leyenda(html, lado)` (isométricas, lienzos y 3D: un recuadro arriba a la izquierda, o abajo
+con `'abajo'` sin tapar el acercamiento; sin `html` se quita; sus piezas, `XL.gradiente([colores])` y
+`XL.muestra(color)`, con el texto en `<em>`) y lo propio de cada tipo. `X.app` es la interfaz del explorador:
+`X.app.repintar()` vuelve a pintar los números, el veredicto y la capa sin cambiar el estado, para lo que llega de la
+figura (una medición del trazador, por ejemplo). El título de la cabecera admite un símbolo con su caja (`XL.nt('t₉₅')`). Todas las funciones corren con la figura como `this`, así
 que pueden guardar ahí lo suyo, o en un objeto de la escena si las dos figuras comparten estado. El armazón monta todas
 las figuras sincrónicas de la escena antes del primer `poner`, en orden, así que una figura puede mover elementos que
 montó la otra (en el piloto, el avance del filtrado llena las placas de una figura y la barra de la carga de la otra).
 
 Lo que una figura no hace: tener su propio `requestAnimationFrame`, escuchar `resize`, `visibilitychange` o
-`IntersectionObserver`, copiar `IsoZoom`, guardar en `localStorage` o cargar three.js por su cuenta. Todo eso lo hace el
-armazón.
+`IntersectionObserver`, copiar `IsoZoom`, guardar en `localStorage`, cargar three.js por su cuenta ni poner en su
+cabecera botones de pausa, de velocidad o de unidades. Todo eso lo hace el armazón.
 
 #### `tipo: 'svg'`, un dibujo propio
 
@@ -380,6 +417,13 @@ var INSTALACION = {
   (`plantilla`: su `id`, o una función de la variante; si devuelve vacío, esa variante se trae del archivo). Las
   figuras que el splice escribe en línea (`<!--FLASH_SVG_START-->`) van dentro de una `<template id="fig-flash">` en el
   `<body>`, con sus marcadores adentro.
+- En el celular, `vistaCel: [ancho, alto]` y `origenCel: [x, y]` (en unidades del `viewBox`) abren la figura en un recorte
+  suyo, que el acercamiento no pasa; sin `origenCel`, el recorte va centrado. Al pasar de una pantalla a la otra, la
+  figura se vuelve a montar.
+- El CSS generado de las figuras usa los nombres de la hoja vieja de los simuladores (`--ink`, `--paper`, `--redline`,
+  `--muted-ink`, `--font-mono`): la hoja del armazón les da los colores y la letra del libro, pone el fondo blanco
+  (`--anatomy-paper` y `--anatomy-card`) y deja sus propios botones del acercamiento por encima de los del CSS generado.
+  La página no lo repite.
 - `vista` es el tamaño de la figura (`W`, `H` de sus datos); si falta, se toma del `viewBox` del SVG. `origen`, opcional,
   es el origen del `viewBox` cuando no es 0, 0 (como la actividad del ecofiltro).
 - `variante(r)` se revisa con cada resultado: si cambia, el armazón desmonta la figura, trae la otra (cada archivo se
@@ -401,7 +445,10 @@ El armazón crea el `<canvas>`, lo mide con la densidad de la pantalla y lo vuel
 Con `vista: [ancho, alto]` la figura dibuja en esas unidades, centradas y a escala, como en un `viewBox` (es lo que
 conviene para una simulación que ya corre en un lienzo de tamaño fijo, como la de molienda de 900 × 490); sin `vista`,
 dibuja en píxeles CSS del recuadro, y `proporcion: [4, 3]` da la forma en el celular. `X.ctx` es el contexto 2D, ya
-escalado; `X.ancho` y `X.alto`, las unidades; `X.limpiar()` borra el lienzo entero, márgenes incluidos.
+escalado; `X.ancho` y `X.alto`, las unidades; `X.limpiar()` borra el lienzo entero, márgenes incluidos. Las letras se
+escriben con `X.fuente(15, 600)` (la fuente completa para `ctx.font`, con la letra de la página) o `X.letra(15)` (el
+tamaño en unidades del lienzo): dan el tamaño pedido salvo que en pantalla quede por debajo de 13 px, y entonces el que
+da 13 px. Cada vez que el lienzo se vuelve a montar, el armazón lo mide de nuevo.
 
 ```js
 var CORTE = {
@@ -472,9 +519,12 @@ prediccion: {
 }
 ```
 
-`rb` es el resultado con el estado del estudiante y los cambios de `base`; `rn`, con los de `llevar`. La respuesta
-correcta sale del modelo (`correcta` devuelve el número de la opción), nunca se escribe a mano, y `explica` usa los
-números de los dos resultados. El estudiante escoge una opción, la tarjeta le pide mover el control (o «Llevarlo ahí»
+`rb` es el resultado con el estado del estudiante y los cambios de `base`; `rn`, con los de `llevar` (si los cambios no
+cambian nada, es el resultado en pantalla, sin calcular otra vez). La respuesta correcta sale del modelo (`correcta`
+devuelve el número de la opción), nunca se escribe a mano, y `explica` usa los números de los dos resultados; `rn` y
+`correcta` se calculan solo al revelar. Si la pregunta depende del estado (el vapor en lugar de un líquido, por ejemplo),
+`prediccion` es una función `(estado, r)` que devuelve la tarjeta, o nada para no mostrarla; cuando el estado cambia de
+pregunta, la tarjeta vuelve a empezar. Si la función arma el objeto cada vez, el objeto lleva un `id`. El estudiante escoge una opción, la tarjeta le pide mover el control (o «Llevarlo ahí»
 lo hace por él) y, cuando el estado cumple, se revela. No hay puntaje y no se guarda nada. Hasta cuatro opciones.
 
 ### «¿Cómo se calcula?»
@@ -496,8 +546,12 @@ calculo: function (r) { return {
 ```
 
 - `ec` es la ecuación en LaTeX; `num`, la misma con los números en pantalla, en renglones separados con `\\`. Los
-  números van con `XL.kn` (coma decimal y espacio de miles para KaTeX) y `XL.kc` (notación científica). En el celular,
-  el armazón parte las ecuaciones largas antes del último «=» y en cada `\qquad`.
+  números van con `XL.kn` (coma decimal y espacio de miles para KaTeX) y `XL.kc` (notación científica; el cero es 0 y
+  lo que no es un número sale «sin dato»). En el celular, el armazón parte la ecuación que no cabe: primero en sus
+  separadores (`\\`, `\qquad`, `\quad` y `\Rightarrow`), después antes de un «=», ≥, ≤ o ≈ y, si todavía no cabe, antes
+  de un + o un −, siempre fuera de llaves, paréntesis, `\left…\right` y `\begin…\end` (un `cases` queda entero). Lo
+  que aun así no cabe se encoge hasta el 82 %, y solo entonces su recuadro se desliza de lado. Una fracción ancha no se
+  parte: si su denominador es largo, conviene escribir el número en dos renglones.
 - La capa muestra un paso y el botón «Siguiente paso»; al final, la lista «En el libro» con los enlaces de `libro`.
 - Cada paso con una ecuación lleva su `libro`, el ancla de la ecuación, la sección o el ejemplo en el libro en línea,
   y su `fuente` cuando el dato no es del estudiante. La ecuación y los números deben ser los del libro; lo que el libro
@@ -510,6 +564,8 @@ calculo: function (r) { return {
   nominal corta («El reposo», «La gota de corte», «Sin reposo»), nunca la conclusión. La pregunta de la escena es una
   pregunta de diseño, y la respuesta va en los números y en el veredicto.
 - Ningún párrafo empieza con un rótulo en negrita; la negrita queda para la cifra que importa en el veredicto.
+- Los rótulos de los números y las cabeceras de las figuras van en versalitas: un símbolo o una unidad que no debe pasar
+  a mayúsculas (t₉₅, ρ, σ, µm, r/min) va con `XL.nt('t₉₅')`.
 - El veredicto es una sola línea que dice qué significa lo que se ve, con el número; el texto de los pasos es prosa con
   la voz del profesor. No se copia texto del libro al sitio: se escribe de nuevo y se remite a su sección.
 - Velocidad de giro en r/min, miles con espacio (14 264), coma decimal, «estado estacionario» y «cantidad de
@@ -529,9 +585,9 @@ explorador de 2026-20, que sigue en curso:
 | `flash/splice.mjs` | `FLASH_CSS`, `FLASH_SVG`, `FLASH_JS` | `iqya-2031-2026-20/simulaciones/Explorador_Equilibrio_Flash.html` | sí | |
 | `alambique/splice.mjs` | `STILL_CSS`, `STILL_SVG`, `STILL_JS` | `iqya-2031-2026-20/simulaciones/Explorador_Destilacion_por_Lotes.html` | sí | `fig/alambique/columna.svg`, junto a la página que recibe |
 | `ecofiltro/splice.mjs` | `ECO_CSS`, `ECO_SVG`, `ECO_JS` | `iqya-2031-2026-20/simulaciones/Explorador_Ecofiltro.html` | sí | |
-| `bomba/splice.mjs` | `/*PBFIG_START*/`, `/*PBFIG_CSS_START*/` (y sus `_END`) | `iqya-2031-2026-20/simulaciones/Explorador_Bombas_Centrifugas.html` | no | `fig/bomba/bomba-inundada.svg` y `bomba-elevacion.svg` de 2026-20 |
-| `intercambiador/splice.mjs` | `HXFIG`, `HXFIG_CSS`, `PLFIG`, `PLFIG_CSS`, `DPFIG`, `DPFIG_CSS`, `ACFIG`, `ACFIG_CSS` | `iqya-2031-2026-20/simulaciones/Explorador_Intercambiadores.html` | no | `fig/intercambiador/` de 2026-20 (`tc-*.svg`, `placas.svg`, `doble.svg`, `aero-par.svg`, `aero-impar.svg`) |
-| `molienda/splice.mjs` | `MLFIG`, `MLFIG_CSS` | `iqya-2031-2026-20/simulaciones/Explorador_Molienda.html` | no | `fig/molienda/` de 2026-20 (`molino-*.svg` y un `tamiz-N.svg` por cada número de tamices) |
+| `bomba/splice.mjs` | `/*PBFIG_START*/`, `/*PBFIG_CSS_START*/` (y sus `_END`) | `iqya-2031-2026-20/simulaciones/Explorador_Bombas_Centrifugas.html` | sí, y la carpeta de los SVG | `fig/bomba/bomba-inundada.svg` y `bomba-elevacion.svg`, junto a la página que recibe |
+| `intercambiador/splice.mjs` | `HXFIG`, `HXFIG_CSS`, `PLFIG`, `PLFIG_CSS`, `DPFIG`, `DPFIG_CSS`, `ACFIG`, `ACFIG_CSS` | `iqya-2031-2026-20/simulaciones/Explorador_Intercambiadores.html` | sí, y la carpeta de los SVG | `fig/intercambiador/` junto a la página que recibe (`tc-*.svg`, `placas.svg`, `doble.svg`, `aero-par.svg`, `aero-impar.svg`) |
+| `molienda/splice.mjs` | `MLFIG`, `MLFIG_CSS` | `iqya-2031-2026-20/simulaciones/Explorador_Molienda.html` | sí, y la carpeta de los SVG | `fig/molienda/` junto a la página que recibe (`molino-*.svg` y un `tamiz-N.svg` por cada número de tamices) |
 
 Los marcadores `_CSS` y `_JS` son comentarios de CSS y de JavaScript (`/*X_START*/ … /*X_END*/`); los `_SVG`, comentarios
 de HTML (`<!--X_SVG_START--> … <!--X_SVG_END-->`). Los de bombas, intercambiadores y molienda no tienen `_SVG`: sus SVG
@@ -551,10 +607,12 @@ Al pasar un explorador al armazón:
   de 2026-20, con `molino-cuch.svg`, que solo está en 2027-10); la de intercambiadores, a
   `/classroom/iqya-2031-2026-20/simulaciones/fig/intercambiador/`. Se conservan esas direcciones.
 - Mientras 2026-20 siga en curso, no se cambia el destino por defecto de ningún `splice.mjs`. Para rehacer la figura de
-  un explorador de 2027-10, se le pasa la ruta del HTML a los scripts que la aceptan
-  (`node splice.mjs ../../../public/classroom/iqya-2031-2027-10/simulaciones/Explorador_….html`); a los tres de ruta
-  fija se les agrega un argumento opcional igual, sin cambiar lo que hacen sin él, y los SVG se copian a la carpeta
-  `fig/` que pide la página de 2027-10.
+  un explorador de 2027-10, se le pasa la ruta del HTML
+  (`node splice.mjs ../../../public/classroom/iqya-2031-2027-10/simulaciones/Explorador_….html`). Los de bombas,
+  intercambiadores y molienda copian los SVG a `fig/{equipo}/` junto a esa página, o a la carpeta que se les dé como
+  segundo argumento; el de intercambiadores de 2027-10 pide los suyos a la carpeta de 2026-20
+  (`node splice.mjs ../../../public/classroom/iqya-2031-2027-10/simulaciones/Explorador_Intercambiadores.html
+  ../../../public/classroom/iqya-2031-2026-20/simulaciones/fig/intercambiador`).
 - `scripts/revisar-simuladores.mjs` quita los bloques `*_CSS_START … *_CSS_END` antes de revisar el `<style>` propio:
   el CSS generado no cuenta para los mínimos.
 
@@ -576,20 +634,24 @@ Al pasar un explorador al armazón:
 | Nombre | Qué hace |
 |---|---|
 | `XL.num(x, d)`, `XL.un(x, d, u)`, `XL.pct(f, d)` | Números con coma decimal, espacio de miles desde 10 000 y signo menos tipográfico; con unidad; en porcentaje. |
-| `XL.kn(x, d)`, `XL.kc(x, d)`, `XL.hc(x, d)` | El número para KaTeX; en notación científica para KaTeX; en notación científica para HTML. |
+| `XL.kn(x, d)`, `XL.kc(x, d)`, `XL.hc(x, d)` | El número para KaTeX; en notación científica para KaTeX; en notación científica para HTML. El cero es 0 y lo que no es un número, «sin dato» (en KaTeX, como texto). |
+| `XL.nt(texto)` | Un símbolo o una unidad que conserva su caja dentro de un rótulo en versalitas. |
+| `XL.gradiente([colores])`, `XL.muestra(color)` | Las piezas de una leyenda (`X.leyenda`): una franja de color y una muestra. |
+| `XL.preferencia(clave)`, `XL.celular()` | El valor de una preferencia de vista; si la pantalla es la del celular. |
 | `XL.K(tex)`, `XL.Ki(tex)`, `XL.enlace(ruta, texto)` | KaTeX en bloque y en línea; un enlace al libro en línea que abre en otra pestaña. |
 | `XL.ico(id)`, `XL.simbolos({ id: '<path …/>' })` | Un ícono Lucide del sprite del armazón; agrega íconos al sprite. |
 | `XL.dib` | Las piezas de dibujo en SVG y la paleta `XL.dib.C` (ver `tipo: 'svg'`). |
 | `XL.IsoZoom`, `XL.three()` | El acercamiento de las isométricas; la promesa de three.js y OrbitControls. |
 | `XL.pref(clave[, valor])` | Una preferencia de vista que se recuerda entre visitas (bajo `xl:{id}:`). Nunca un valor del modelo: el explorador arranca siempre en el caso. |
 | `XL.reducido()` | Si el estudiante pidió movimiento reducido. |
-| `window.Explorador` | Para las pruebas: `estado()`, `R()`, `escena()`, `escenas`, `ir(i)`, `cambiar(clave, valor)`, `ponerVarios({…})`, `abrirCapa()`, `cerrarCapa()`, `abrirCfg()`, `cerrarCfg()`, `cargarCfg(id)` y `figura(escena, n)`, que da `{ estado, activa, X }` de una figura. |
+| `window.Explorador` | Para las pruebas: `estado()`, `R()`, `escena()`, `escenas`, `ir(i)`, `cambiar(clave, valor)`, `ponerVarios({…})`, `repintar()`, `preferencia(clave[, valor])`, `abrirCapa()`, `cerrarCapa()`, `abrirCfg()`, `cerrarCfg()`, `cargarCfg(id)`, `volverAlCaso()` y `figura(escena, n)`, que da `{ estado, activa, pausada, velocidad, X }` de una figura. |
 
 Los identificadores de la página también son fijos y sirven a las pruebas: `#titulo`, `#pregunta`, `#kpis`,
 `#veredicto`, `#verTx`, `#btnSig`, `#pred` (opciones `[data-op]`, `[data-llevar]`, `[data-otra]`), `#ctl` (con
 `[data-caso]`, `.xl-seg [data-v]`, `[data-d]`), `#casoNom`, `#casoMod`, `#casoReset`, `#btnCfg`, `#cfgs [data-cfg]`,
-`#btnCalc`, `#capa`, `#capaDatos`, `#doc` (`[data-paso]`, `[data-todos]`, `#paso-N`), `#capaX`, `#btnHoja` y `#riel
-[data-escena]`.
+`#btnCalc`, `#capa`, `#capaDatos`, `#doc` (`[data-paso]`, `[data-todos]`, `#paso-N`), `#capaX`, `#btnHoja`, `#riel
+[data-escena]`, `#prefs [data-pref]` (las preferencias de vista) y, en la cabecera de una figura, `[data-anim="pausa"]` y
+`[data-vel]`.
 
 ### La verificación
 
